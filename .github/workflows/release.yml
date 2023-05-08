@@ -8,6 +8,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python 
@@ -25,4 +26,4 @@ jobs:
       - uses: peaceiris/actions-release@v3.6.1
        with:
         github_token: ${{secrets.GITHUB_TOKEN}}
-        publish_dir: build
+        publish_dir: build 
