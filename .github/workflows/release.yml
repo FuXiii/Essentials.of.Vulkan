@@ -22,7 +22,7 @@ jobs:
           cd doc
           make html
       - name: GitHub Pages action
-        uses: peaceiris/actions-release@v3.6.1
+        uses: peaceiris/actions-gh-pages@v3.6.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: build 
