@@ -20,7 +20,6 @@ jobs:
       - name: Build
         run: |
           make html
-          git update-index --chmod=+x build.cmd
       - name: GitHub Pages action
         uses: peaceiris/actions-gh-pages@v3.6.1
         with:
