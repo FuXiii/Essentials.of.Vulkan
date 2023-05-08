@@ -19,7 +19,6 @@ jobs:
           pip install -U sphinx
       - name: Build
         run: |
-          cd source
           make html
       - name: GitHub Pages action
         uses: peaceiris/actions-gh-pages@v3.6.1
