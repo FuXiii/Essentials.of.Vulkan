@@ -1,0 +1,29 @@
+name: release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    run-on: ubuntu-latest
+
+    steps:
+      -uses: actions/checkout@v2
+      -name: Set up Python 
+       uses: actions/setup-python@v2
+       with:
+        python-version: "3.11"
+      -name: Install dependencies
+       run: |
+        pip install -U sphinx
+      -name: Build
+       run: |
+        cd source
+        make html
+      -name: deploy
+       uses: peaceiris/actions-release@v3.6.1
+       with:
+        github_token: ${{secrets.GITHUB_TOKEN}}
+        publish_dir: build

@@ -28,3 +28,4 @@ Vulkan入门精要
     >
     >* 创建此项目仓库
     >* 初始化`Sphinx`环境
+    >* 增加`.github/workflows/release.yml`部署脚本
