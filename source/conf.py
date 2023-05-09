@@ -6,7 +6,8 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'Essentials.of.Vulkan'
+#project = 'Essentials.of.Vulkan'
+project = 'Vulkan入门精要'
 copyright = '2023, FuXii'
 author = 'FuXii'
 

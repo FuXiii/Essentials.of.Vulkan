@@ -8,6 +8,8 @@
 
 Vulkan入门精要
 
+https://fuxiii.github.io/Essentials.of.Vulkan/
+
 ## Introduction
 
 `Vulkan`入门文档，本文档名称来源于我的图形学之路的源头：《Unity Shader入门精要》（冯乐乐）
@@ -30,3 +32,8 @@ Vulkan入门精要
     >* 初始化`Sphinx`环境
     >* 增加`.github/workflows/release.yml`部署脚本
     >* 使用`furo`主题
+
+* 2023/5/9
+    >
+    >* `README.md`中增加文档链接
+    >* 更新项目名称为中文
