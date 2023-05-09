@@ -9,8 +9,7 @@
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
-
+   :caption: 内容:
 
 
 Indices and tables
