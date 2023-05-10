@@ -37,3 +37,7 @@ https://fuxiii.github.io/Essentials.of.Vulkan/
     >
     >* `README.md`中增加文档链接
     >* 更新项目名称为中文
+
+* 2023/5/10
+    >
+    >* 增加`test.rst`，用于学习测试`reStructuredText`语法

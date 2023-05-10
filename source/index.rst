@@ -4,13 +4,14 @@
    contain the root `toctree` directive.
 
 .. Welcome to Essentials.of.Vulkan's documentation!
-欢迎来到Vulkan入门精要
+欢迎来到 Vulkan 入门精要
 ================================================
 
 .. toctree::
    :maxdepth: 2
    :caption: 内容:
 
+   test
 
 Indices and tables
 ==================
@@ -18,3 +19,5 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+.. note:: texts
