@@ -38,3 +38,5 @@ version = '0.1'
 html_logo = 'Vulkan.png'
 
 html_favicon = 'VulkanLogo.png'
+
+html_title = 'Vulkan入门精要'
