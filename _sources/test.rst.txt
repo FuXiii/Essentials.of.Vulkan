@@ -307,6 +307,22 @@ The hyperlink target above points to this paragraph.
       "just a test"
       print 8/2
 
+.. code-block:::: python
+
+  def my_function():
+      "just a test"
+      print 8/2
+
+.. code:: c++
+
+   float value = 10.0f;
+   VkPhysicalDevice physical_device = VK_NULL_HANDLE;
+
+.. code-block:: c++
+
+   int32_t value = 0;
+   VkInstance instance = VK_NULL_HANDLE;
+
 .. epigraph::
 
    No matter where you go, there you are.
