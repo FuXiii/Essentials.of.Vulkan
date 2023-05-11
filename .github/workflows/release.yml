@@ -18,6 +18,8 @@ jobs:
         run: |
           pip install -U sphinx
           pip install furo
+          pip install --upgrade myst-parser
+          pip install sphinxcontrib-mermaid
       - name: Build
         run: |
           make html

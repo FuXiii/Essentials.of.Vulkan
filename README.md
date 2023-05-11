@@ -41,3 +41,10 @@ https://fuxiii.github.io/Essentials.of.Vulkan/
 * 2023/5/10
     >
     >* 增加`test.rst`，用于学习测试`reStructuredText`语法
+
+* 2023/5/11
+    >
+    >* 增加`markdownTest.md`，用于测试`Sphinx`支持`Markdown`
+    >* 修改`.github/workflows/release.yml`部署脚本和`./source/conf.py`配置文件，使得支持`Markdown`
+    >* 修改`.github/workflows/release.yml`部署脚本和`./source/conf.py`配置文件，使得支持`Mermaid`
+
