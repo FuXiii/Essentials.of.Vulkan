@@ -9,25 +9,12 @@
 
 version |version|
 
-.. container:: global-index-toc
-
-   .. toctree::
-      :caption: Getting Started
-      :maxdepth: 1
-
-      getting_started/about/index.rst
-      getting_started/installing/index.rst
-      getting_started/configuration/index.rst
-      getting_started/help.rst
-
 .. toctree::
+   :caption: 文献翻译
    :maxdepth: 2
-   :caption: 内容:
 
-   test
-   markdownTest
-   literature/LiteratureTest
-   literature/Test/TestChild
+   literature/index.rst
+   test.rst
 
 Indices and tables
 ==================

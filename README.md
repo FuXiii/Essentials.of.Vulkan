@@ -8,7 +8,7 @@
 
 Vulkan入门精要
 
-https://fuxiii.github.io/Essentials.of.Vulkan/
+<https://fuxiii.github.io/Essentials.of.Vulkan/>
 
 ## Introduction
 
@@ -46,4 +46,4 @@ https://fuxiii.github.io/Essentials.of.Vulkan/
     >* 增加`markdownTest.md`，用于测试`Sphinx`支持`Markdown`
     >* 修改`.github/workflows/release.yml`部署脚本和`./source/conf.py`配置文件，使其支持`Markdown`
     >* 修改`.github/workflows/release.yml`部署脚本和`./source/conf.py`配置文件，使其支持`Mermaid`
-
+    >* `source/literature`中增加`VulkanRayTracingFinalSpecificationRelease.md`文献翻译
