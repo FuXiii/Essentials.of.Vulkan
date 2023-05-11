@@ -7,6 +7,8 @@
 欢迎来到 Vulkan 入门精要
 ================================================
 
+version |version|
+
 .. container:: global-index-toc
 
    .. toctree::

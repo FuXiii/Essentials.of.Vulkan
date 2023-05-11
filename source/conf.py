@@ -32,3 +32,9 @@ language = 'zh_CN'
 
 html_theme = 'furo'
 html_static_path = ['_static']
+
+version = '0.1'
+
+html_logo = 'Vulkan.png'
+
+html_favicon = 'VulkanLogo.png'
