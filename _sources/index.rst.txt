@@ -1,13 +1,11 @@
-.. Essentials.of.Vulkan documentation master file, created by
-   sphinx-quickstart on Mon May  8 16:09:08 2023.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-.. Welcome to Essentials.of.Vulkan's documentation!
 欢迎来到 Vulkan 入门精要
 ================================================
 
 version |version|
+
+`Github仓库源`_
+
+.. _Github仓库源: https://github.com/FuXiii/Essentials.of.Vulkan
 
 .. toctree::
    :caption: 文献翻译
