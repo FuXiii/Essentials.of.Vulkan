@@ -98,20 +98,20 @@ This is a paragraph that contains `a link`_.
    This is a heading
    =================
 
-This is a heading
-#################
+This is a heading 2
+####################
 
-This is a heading
-******************
+This is a heading 3
+********************
 
-This is a heading
-------------------
+This is a heading 4
+--------------------
 
-This is a heading
-^^^^^^^^^^^^^^^^^
+This is a heading 5
+^^^^^^^^^^^^^^^^^^^^
 
-This is a heading
-"""""""""""""""""
+This is a heading 6
+"""""""""""""""""""""
 
 :fieldname: Field content
 

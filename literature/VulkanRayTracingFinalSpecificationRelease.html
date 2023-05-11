@@ -1,0 +1,442 @@
+<!doctype html>
+<html class="no-js" lang="zh-CN">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+<link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="搜索" href="../search.html" /><link rel="next" title="Test" href="../test.html" /><link rel="prev" title="文献" href="index.html" />
+
+    <link rel="shortcut icon" href="../_static/VulkanLogo.png"/><!-- Generated with Sphinx 6.2.1 and Furo 2023.03.27 -->
+        <title>Vulkan 光线追踪最终标准发布 - Vulkan入门精要</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Vulkan入门精要</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../_static/Vulkan.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">Vulkan入门精要</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="搜索" name="q" aria-label="搜索">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">文献翻译</span></p>
+<ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">文献</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Vulkan 光线追踪最终标准发布</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../test.html">Test</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="vulkan">
+<h1>Vulkan 光线追踪最终标准发布<a class="headerlink" href="#vulkan" title="此标题的永久链接">#</a></h1>
+<p><a class="reference external" href="https://www.khronos.org/blog/vulkan-ray-tracing-final-specification-release">文献源</a></p>
+<section id="id1">
+<h2>历史回顾<a class="headerlink" href="#id1" title="此标题的永久链接">#</a></h2>
+<p>对于基于硬件的实时光追，最早是<code class="docutils literal notranslate"><span class="pre">NVIDIA</span></code>在2018年10月10日在<code class="docutils literal notranslate"><span class="pre">DirectX</span> <span class="pre">12</span></code>中正式发布的名为<code class="docutils literal notranslate"><span class="pre">DirectX</span> <span class="pre">Raytracing</span> <span class="pre">(DXR)</span></code>的功能。而<code class="docutils literal notranslate"><span class="pre">Khronos</span></code>组织也在2018年的1月成立了<code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>光追组制定<code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>的光追标准，并在2020年3月发布了一个临时扩展（没记错的话应该是<code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.2</span></code>，当时的扩展名为<code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_tracing</span></code>，而<code class="docutils literal notranslate"><span class="pre">VK_NV_ray_tracing</span></code>扩展在这之前就已经发布了），经过一些用户和硬件供应商的反馈，最终在2020年的11月份发布了<code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>实时光追标准的最终版（<code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.2.162</span></code>）。<code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>实时光追标准的发布是里程碑式的存在，标志着第一个工业级开源、跨平台、跨设备的光追加速标准问世（甚至可以在移动设备上使用光追加速）。</p>
+</section>
+<section id="id2">
+<h2>光追标准<a class="headerlink" href="#id2" title="此标题的永久链接">#</a></h2>
+<p>最终发布版与临时发布版大体上没什么区别，最终发布版如下：</p>
+<p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>的扩展标准：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_acceleration_structure.html">VK_KHR_acceleration_structure</a></p></li>
+<li><p><a class="reference external" href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_ray_tracing_pipeline.html">VK_KHR_ray_tracing_pipeline</a></p></li>
+<li><p><a class="reference external" href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_ray_query.html">VK_KHR_ray_query</a></p></li>
+<li><p><a class="reference external" href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_pipeline_library.html">VK_KHR_pipeline_library</a></p></li>
+<li><p><a class="reference external" href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_KHR_deferred_host_operations.html">VK_KHR_deferred_host_operations</a></p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">SPIR-V</span></code>的扩展标准：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="http://htmlpreview.github.io/?https://github.com/KhronosGroup/SPIRV-Registry/blob/master/extensions/KHR/SPV_KHR_ray_tracing.html">SPV_KHR_ray_tracing</a></p></li>
+<li><p><a class="reference external" href="http://htmlpreview.github.io/?https://github.com/KhronosGroup/SPIRV-Registry/blob/master/extensions/KHR/SPV_KHR_ray_query.html">SPV_KHR_ray_query</a></p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">GLSL</span></code>的扩展标准：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/KhronosGroup/GLSL/blob/master/extensions/ext/GLSL_EXT_ray_tracing.txt">GLSL_EXT_ray_tracing</a></p></li>
+<li><p><a class="reference external" href="https://github.com/KhronosGroup/GLSL/blob/master/extensions/ext/GLSL_EXT_ray_query.txt">GLSL_EXT_ray_query</a></p></li>
+<li><p><a class="reference external" href="https://github.com/KhronosGroup/GLSL/blob/master/extensions/ext/GLSL_EXT_ray_flags_primitive_culling.txt">GLSL_EXT_ray_flags_primitive_culling</a></p></li>
+</ul>
+</section>
+<section id="id3">
+<h2>扩展结构<a class="headerlink" href="#id3" title="此标题的永久链接">#</a></h2>
+<p>最终发布版与临时发布版最显著的区别在于临时发布版的<code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_tracing</span></code>扩展在最终发布版中被分成了三个扩展:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">VK_KHR_acceleration_structure</span></code>：用于加速结构的构建和管理</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_tracing_pipeline</span></code>：用于光追着色器阶段和光追管线</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_query</span></code>：用于所有着色器阶段的内部光线查询</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">Khronos</span></code>标准组采纳了一些市场调研和厂家的意见，提供单独的光线查询功能而不需要创建光追管线，所以原先的<code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_tracing</span></code>扩展被细分，用于避免重复和依赖。实现（设备制造商）可以实现<code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_tracing_pipeline</span></code>或者<code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_query</span></code>之一，或是两者都实现，取决于市场需求。两个扩展都依赖于<code class="docutils literal notranslate"><span class="pre">VK_KHR_acceleration_structure</span></code>扩展，该扩展用于提供基本的加速结构的管理。对于桌面级别的设备供应商任致力于都支持<code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_tracing_pipeline</span></code>和<code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_query</span></code>扩展。</p>
+<p>现在<code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>光线追踪扩展标准由原先的临时提升到了核心中，也就是将光追扩展接口从<code class="docutils literal notranslate"><span class="pre">vulkan_beta.h</span></code>中移动到<code class="docutils literal notranslate"><span class="pre">vulkan_core.h</span></code>，所以用户不再需要声明<code class="docutils literal notranslate"><span class="pre">#define</span> <span class="pre">VK_ENABLE_BETA_EXTENSIONS</span></code>来激活<code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>光线追踪的功能</p>
+<p>这些扩展的依赖有些许变化，现在需要依赖<code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.1</span></code>和<code class="docutils literal notranslate"><span class="pre">SPIR-V</span> <span class="pre">1.4</span></code>。<code class="docutils literal notranslate"><span class="pre">VK_KHR_acceleration_structure</span></code>需要依赖<code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.1</span></code>，<code class="docutils literal notranslate"><span class="pre">VK_EXT_descriptor_indexing</span></code>，<code class="docutils literal notranslate"><span class="pre">VK_KHR_buffer_device_address</span></code>和<code class="docutils literal notranslate"><span class="pre">VK_KHR_deferred_host_operations</span></code>。同样我们也意识到这么多依赖链很是繁琐，如果使用<code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.2</span></code>事情将变得简单，但是并不是所有的平台都支持实现了<code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.2</span></code>标准，并且我们并不想在光追标准中再增加其他的人为限值。我们也考虑到将<code class="docutils literal notranslate"><span class="pre">VK_KHR_deferred_host_operations</span></code>作为显示依赖是因为在创建管线时需要延迟操作需要该扩展。我们将<code class="docutils literal notranslate"><span class="pre">VK_KHR_pipeline_library</span></code>作为<code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_tracing_pipeline</span></code>的一种相对松弛的扩展依赖而不是严格依赖，所以仅仅在使用相关扩展功能是才去激活扩展，用于减少负载。此外<code class="docutils literal notranslate"><span class="pre">VK_KHR_acceleration_structure</span></code>，<code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_tracing_pipeline</span></code>和<code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_query</span></code>都需要最小支持<code class="docutils literal notranslate"><span class="pre">SPIR-V</span> <span class="pre">1.4</span></code>（该版本中增加了对于着色器的入口函数的改变），<code class="docutils literal notranslate"><span class="pre">SPIR-V</span> <span class="pre">1.5</span></code>也可以在<code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.2</span></code>上被使用。</p>
+<p>功能方面，如下的标准需要所有的设备支持：</p>
+<p><code class="docutils literal notranslate"><span class="pre">VK_KHR_acceleration_structure</span></code>要求：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">VK_KHR_deferred_host_operations</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">accelerationStructure</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">descriptorBindingAccelerationStructureUpdateAfterBind</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">descriptorIndexing</span></code>有关的所有特性（如果支持<code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.2</span></code>）或者使用<code class="docutils literal notranslate"><span class="pre">VK_EXT_descriptor_indexing</span></code>扩展</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.2</span></code>的<code class="docutils literal notranslate"><span class="pre">bufferDeviceAddress</span></code>或者<code class="docutils literal notranslate"><span class="pre">VK_KHR_buffer_device_address</span></code>扩展</p></li>
+</ul>
+<p>设备如果支持<code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_tracing_pipeline</span></code>要求：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">VK_KHR_acceleration_structure</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rayTracingPipeline</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rayTracingPipelineTraceRaysIndirect</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rayTraversalPrimitiveCulling</span></code>（如果支持<code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_query</span></code>）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">VK_KHR_pipeline_library</span></code></p></li>
+</ul>
+<p>设备如果支持<code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_query</span></code>要求：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">VK_KHR_acceleration_structure</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rayQuery</span></code></p></li>
+</ul>
+<p>此外这些扩展有一些可选的功能。</p>
+<p>对于<code class="docutils literal notranslate"><span class="pre">VK_KHR_acceleration_structure</span></code>要求：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">accelerationStructureCaptureReplay</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">accelerationStructureIndirectBuild</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">accelerationStructureHostCommands</span></code></p></li>
+</ul>
+<p>对于<code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_tracing_pipeline</span></code>要求：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">rayTracingPipelineShaderGroupHandleCaptureReplay</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rayTracingPipelineShaderGroupHandleCaptureReplayMixed</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rayTraversalPrimitiveCulling</span></code>(如果不支持<code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_query</span></code>)</p></li>
+</ul>
+</section>
+<section id="acceleration-structures">
+<h2>加速结构（Acceleration Structures）<a class="headerlink" href="#acceleration-structures" title="此标题的永久链接">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>对于光追扩展标准的最终版中变化最大的就是加速结构的创建和布局。</p>
+<p>我们接纳了<code class="docutils literal notranslate"><span class="pre">API</span></code>转换层作者们的意见（比如<a class="reference external" href="https://github.com/HansKristian-Work/vkd3d-proton">vkd3d-proton</a>），对于将<code class="docutils literal notranslate"><span class="pre">DXR</span></code>层置于<code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>光追加速结构的顶层是不明智的。这使得加速结构的创建大小和存储在<code class="docutils literal notranslate"><span class="pre">VkBuffer</span></code>中发生了改变，而不是使用单独专用的加速结构进行存储。对应的变化位于<code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureKHR</span></code>和<code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureNV</span></code>句柄不再是指代同一实例句柄，并且不能混用。与之相似的结构或者函数在使用这个两个句柄时也不再相同，也不能混用。</p>
+<p>我们同时增加了加速结构类型声明<code class="docutils literal notranslate"><span class="pre">VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHR</span></code>。可以用在当加速结构在创建时还不知道确切的加速结构类型（在顶部或是在底部），确切的加速结构类型必须是<code class="docutils literal notranslate"><span class="pre">VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR</span></code>或者<code class="docutils literal notranslate"><span class="pre">VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR</span></code>，并且一旦创建就不能改变。开发<code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>应用时不应该使用<code class="docutils literal notranslate"><span class="pre">VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHR</span></code>，这会在将来影响设备功能和效率。</p>
+<p>我们也接纳了<code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>层实现作者们的意见（比如<a class="reference external" href="https://github.com/KhronosGroup/MoltenVK">MoltenVK</a>），意见指出一些光追要求（比如设备地址）使得<code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>在层级上难以在其他<code class="docutils literal notranslate"><span class="pre">API</span></code>上实现。不幸的是对于像支持<code class="docutils literal notranslate"><span class="pre">DXR</span></code>的奇偶校验同样是不可能的。我们希望在未来的其他<code class="docutils literal notranslate"><span class="pre">API</span></code>版本中会支持这些特性。</p>
+<p>我们听说开发者比较喜欢统一的创建接口和构造参数，比如同一<code class="docutils literal notranslate"><span class="pre">VK_NV_ray_tracing</span></code>和<code class="docutils literal notranslate"><span class="pre">DXR</span></code>。我们将加速结构的创建更改成基于大小的创建，并且这个大小可与构造时的同一个结构体中计算出来（<code class="docutils literal notranslate"><span class="pre">vkGetAccelerationStructureBuildSizesKHR</span></code>），或者来自于压缩查询（<code class="docutils literal notranslate"><span class="pre">vkCmdWriteAccelerationStructuresPropertiesKHR</span></code>）。我们同时得知一些开发商需要在创建时得到更多信息，所以我们将<code class="docutils literal notranslate"><span class="pre">pMaxPrimitiveCounts</span></code>增加到了<code class="docutils literal notranslate"><span class="pre">vkGetAccelerationStructureBuildSizesKHR</span></code>中。</p>
+<p>之前在几何描述某些方面是存在冲突的并且在自动代码生成方面不尽如人意（比如验证层（<code class="docutils literal notranslate"><span class="pre">validation</span> <span class="pre">layers</span></code>）），并且解决了由于<code class="docutils literal notranslate"><span class="pre">ppGeometries</span></code>的二元对立导致的歧义，并且增加了<code class="docutils literal notranslate"><span class="pre">pGeometries</span></code>，这要求二者在使用时只能指定其中一个使用。</p>
+<p>其他的一些增加包括：加速结构的创建时间捕获和回溯标志位。<code class="docutils literal notranslate"><span class="pre">nullDescriptor</span></code>支持加速结构与<code class="docutils literal notranslate"><span class="pre">VK_EXT_robustness2</span></code>和<code class="docutils literal notranslate"><span class="pre">VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT</span></code>相互作用。</p>
+<p>最后，我们将所有的扩展更改成一致使用设备地址。这其中有很多命名建议，其中一些已被采纳，并且一些名称和命名风格被修改成统一并且可扩展的方式。有关更多细节请查阅<code class="docutils literal notranslate"><span class="pre">VK_KHR_acceleration_structure</span></code>的问题<code class="docutils literal notranslate"><span class="pre">3</span></code>和<code class="docutils literal notranslate"><span class="pre">4</span></code>的更新日志。</p>
+</section>
+<section id="host-deferred-host-operations">
+<h2>Host端的延迟操作（Deferred Host Operations）<a class="headerlink" href="#host-deferred-host-operations" title="此标题的永久链接">#</a></h2>
+<p><em>注：<code class="docutils literal notranslate"><span class="pre">Host</span></code>端一般指<code class="docutils literal notranslate"><span class="pre">CPU</span></code>端</em></p>
+<p>我么改造了<code class="docutils literal notranslate"><span class="pre">vkBuildAccelerationStructuresKHR</span></code>和<code class="docutils literal notranslate"><span class="pre">vkCreateRayTracingPipelinesKHR</span></code>指令的延迟<code class="docutils literal notranslate"><span class="pre">Host</span></code>端操作。取消了使用<code class="docutils literal notranslate"><span class="pre">pNext</span></code>对于各种独立创建和构造的链式操作，现在延迟操作通过指令的上层参数来设置指令是否为延迟操作。当指令为延迟操作的话，应用必须在延迟操作结束之后获取返回的数据。如果之前有一些延迟操作并且没有其他的措施防止不清晰的行为发生，这时难以明确合适能够获取安全数据。我们相信新的语义是清晰的并且对于并行友好，但是付诸的代价就是需要一直开启<code class="docutils literal notranslate"><span class="pre">VK_KHR_deferred_host_operations</span></code>扩展。</p>
+<p><img alt="Acceleration-Structures" src="../_images/2020-Deferred-Host-Operations-enable-Acceleration-Structures-to-be-built-using-multiple-CPU-cores-for-faster-frame-rates-and-elimination-of-frame-stuttering-2.jpg" /></p>
+<p><em>如上图为：<code class="docutils literal notranslate"><span class="pre">Host</span></code>延迟操作使用加速结构在多核<code class="docutils literal notranslate"><span class="pre">CPU</span></code>上部署已达到更高的帧率和限制帧停顿</em></p>
+</section>
+<section id="id4">
+<h2>光追管线<a class="headerlink" href="#id4" title="此标题的永久链接">#</a></h2>
+<p>对于光追管线的改变并不多，基本上都是改变内部的<code class="docutils literal notranslate"><span class="pre">SPIR-V</span></code>和着色器编译链相关。</p>
+<p>此外<code class="docutils literal notranslate"><span class="pre">vkCreateRayTracingPipelinesKHR</span></code>中增加了适用延迟操作的修改，并且将<code class="docutils literal notranslate"><span class="pre">VkPipelineLibraryCreateInfoKHR</span></code>和<code class="docutils literal notranslate"><span class="pre">VkRayTracingPipelineInterfaceCreateInfoKHR</span></code>更改成可选项，这样如果<code class="docutils literal notranslate"><span class="pre">VkPipelineLibraryCreateInfoKHR</span></code>和<code class="docutils literal notranslate"><span class="pre">VkRayTracingPipelineInterfaceCreateInfoKHR</span></code>没有使用就不须要激活<code class="docutils literal notranslate"><span class="pre">VK_KHR_pipeline_library</span></code>扩展了。</p>
+<p>对于光追管线最大的改变就是明确的增加了栈大小的管理。光追管线在进行光线追踪时需要调用所有的有关执行链，这潜在会有大量的着色器集。当着色器执行时，驱动实现可能会使用栈去存储参数数据，这也间接要求栈要足够大，进而可以处理所有着色器的任何执行链的调用。默认的栈大小可能相当的大，所以我们给应用提供在管线编译之后使用更优栈大小的可能。一般当应用可以计算出紧凑型栈内存理应使用更优的策略。并且增加了一个新的动态状态<code class="docutils literal notranslate"><span class="pre">VK_DYNAMIC_STATE_RAY_TRACING_PIPELINE_STACK_SIZE_KHR</span></code>用于使用光追管线去查询着色器组<code class="docutils literal notranslate"><span class="pre">vkGetRayTracingShaderGroupStackSizeKHR</span></code>的栈大小时使用，与此对应的设置管线栈大小的函数即为<code class="docutils literal notranslate"><span class="pre">vkCmdSetRayTracingPipelineStackSizeKHR</span></code>。</p>
+<p>另一个新增特性来自于<code class="docutils literal notranslate"><span class="pre">DXR</span></code>层的积极反馈，即可以通过加速结构地址进行光线追踪。为此，加速结构的设备地址可通过<code class="docutils literal notranslate"><span class="pre">vkGetAccelerationStructureDeviceAddressKHR</span></code>将结果缓存在缓存中或者其他着色器资源中。对于着色器（<code class="docutils literal notranslate"><span class="pre">SPIR-V</span></code>），则可以使用<code class="docutils literal notranslate"><span class="pre">OpConvertUToAccelerationStructureKHR</span></code>显示转换声明<code class="docutils literal notranslate"><span class="pre">OpTypeAccelerationStructureKHR</span></code>描述符类型（在<code class="docutils literal notranslate"><span class="pre">GLSL</span></code>中使用<code class="docutils literal notranslate"><span class="pre">accelerationStructureEXT</span></code>构造）。其结果之后可以用于加速结构中使用<code class="docutils literal notranslate"><span class="pre">OpTraceRayKHR</span></code>指令进行追踪（<code class="docutils literal notranslate"><span class="pre">traceRayEXT()</span></code>）,此种转换是单向的，并且没有其他操作支持加速结构描述符。</p>
+<p><img alt="Ray-tracing-pipelines" src="../_images/2020-Ray-tracing-pipelines-provide-implicit-management-of-ray-intersections-3.jpg" /></p>
+<p><em>如上图为：光追管线提供的隐式光线求交管理</em></p>
+<p><code class="docutils literal notranslate"><span class="pre">SPIR-V</span></code>标准组也对<code class="docutils literal notranslate"><span class="pre">SPIR-V</span></code>的扩展提供了反馈，将<code class="docutils literal notranslate"><span class="pre">Payload</span></code>参数更改成<code class="docutils literal notranslate"><span class="pre">OpTraceRayKHR</span></code>并且将<code class="docutils literal notranslate"><span class="pre">Callable</span> <span class="pre">Data</span></code>参数更改成<code class="docutils literal notranslate"><span class="pre">OpExecuteCallableKHR</span></code>。之前这些参数使用像<code class="docutils literal notranslate"><span class="pre">GLSL</span></code>中的<code class="docutils literal notranslate"><span class="pre">location</span></code>布局来进行匹配，然而这些<code class="docutils literal notranslate"><span class="pre">location</span></code>在<code class="docutils literal notranslate"><span class="pre">SPIR-V</span></code>没有意义，而是直接使用合适的存储类指针直接替换，为了实现这些需要新的指令操作码声明<code class="docutils literal notranslate"><span class="pre">OpTraceRayKHR</span></code>和<code class="docutils literal notranslate"><span class="pre">OpExecuteCallableKHR</span></code>。可以就与<code class="docutils literal notranslate"><span class="pre">SPV_NV_ray_tracing</span></code>进行划分防止混淆了。</p>
+<p>另一个<code class="docutils literal notranslate"><span class="pre">SPIR-V</span></code>的改变来自于内部对于<code class="docutils literal notranslate"><span class="pre">OpIgnoreIntersectionKHR</span></code>和<code class="docutils literal notranslate"><span class="pre">OpTerminateRayKHR</span></code>的反馈，将这些转变成终止指令，因为他们会终止调用者的调用。这也必须是块中的最后一条指令。同样，这需要新的指令操作码。这对<code class="docutils literal notranslate"><span class="pre">GLSL</span></code>的冲击较大，这些函数指令将不再是内置函数，而是跳转语句，当在使用着色器时现在是仅仅使用<code class="docutils literal notranslate"><span class="pre">ignoreIntersectionEXT</span></code>而不是<code class="docutils literal notranslate"><span class="pre">ignoreIntersectionEXT()</span></code>。</p>
+<p><code class="docutils literal notranslate"><span class="pre">SPIR-V</span></code>对于光追管线的的变化总结就是：提供了新功能和枚举<code class="docutils literal notranslate"><span class="pre">RayTracingKHR</span></code>,使得驱动实现和工具链在已过时的<code class="docutils literal notranslate"><span class="pre">SPIR-V</span></code>和最终版之间进行区分。并且对于还对<code class="docutils literal notranslate"><span class="pre">ShaderRecordBufferKHR</span></code>所需的显式布局进行了一些澄清，并将其视为<code class="docutils literal notranslate"><span class="pre">StorageBuffer</span></code>的存储类。同时我们也规定了返回值和对于<code class="docutils literal notranslate"><span class="pre">OpReportIntersectionKHR</span></code>的值<code class="docutils literal notranslate"><span class="pre">T</span></code>越界所返回的相关行为，并澄清一部分位域用于各种光追参数。</p>
+<p>对于<code class="docutils literal notranslate"><span class="pre">VK_KHR_acceleration_structure</span></code>扩展，我们将设备缓存地址独立出来，这样就可以使用光线追踪指令通过<code class="docutils literal notranslate"><span class="pre">VkStridedDeviceAddressRegionKHR</span></code>去获取着色器绑定表中的缓存设备地址。<code class="docutils literal notranslate"><span class="pre">vkCmdTraceRaysIndirectKHR</span></code>也与之相似的，通过缓存设备地址间接获取参数。</p>
+<p>我们也更新了<code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.2</span></code>与<code class="docutils literal notranslate"><span class="pre">VK_KHR_vulkan_memory_model</span></code>扩展之间的交互，并且要求一些内置变量成为<code class="docutils literal notranslate"><span class="pre">Volatile</span></code>变量，供着色器使用。</p>
+<p>其他的改变包括增加创建2023年5月9日15:23:32捕获和着色器组句柄的回溯标志位，增加了一些之前忽略的属性和限值，和一些为了明确用途的重命名。有关更多细节请查阅<code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_tracing_pipeline</span></code>的问题<code class="docutils literal notranslate"><span class="pre">3</span></code>和<code class="docutils literal notranslate"><span class="pre">4</span></code>，<code class="docutils literal notranslate"><span class="pre">SPV_KHR_ray_tracing</span></code>的问题<code class="docutils literal notranslate"><span class="pre">2</span></code>还有扩展的更新日志。</p>
+</section>
+<section id="id5">
+<h2>光线查询<a class="headerlink" href="#id5" title="此标题的永久链接">#</a></h2>
+<p>考虑到<code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>接口对于表面光线查询欠缺，大部分的光线查询改变都在<code class="docutils literal notranslate"><span class="pre">SPIR-V</span></code>扩展和交互中。</p>
+<p><code class="docutils literal notranslate"><span class="pre">SPV_KHR_ray_query</span></code>也是支持通过加速结构地址进行发射光线查询，并且增加<code class="docutils literal notranslate"><span class="pre">OpConvertUToAccelerationStructureKHR</span></code>用于将加速结构设备地址转变成<code class="docutils literal notranslate"><span class="pre">OpTypeAccelerationStructureKHR</span></code>描述符。这些在之后可以通过加速结构使用<code class="docutils literal notranslate"><span class="pre">OpRayQueryInitializeKHR</span></code>进行追踪。</p>
+<p>对于光追管线，也新增了功能和枚举<code class="docutils literal notranslate"><span class="pre">RayQueryKHR</span></code>，这可以是的驱动的实现者将老版的临时版本与最终版明确区分开。我们同时为提出遮罩使用一套位域值，并且不允许查询<code class="docutils literal notranslate"><span class="pre">AABB</span></code>图元的候选<code class="docutils literal notranslate"><span class="pre">T</span></code>值。</p>
+<p>最终，我们对于光线参数进行了数量上的限值，要求<code class="docutils literal notranslate"><span class="pre">HitT</span></code>作为光线间隔用于<code class="docutils literal notranslate"><span class="pre">OpRayQueryGenerateIntersectionKHR</span></code>，并且限值追踪顶级的加速结构。</p>
+<p>对于更多的细节和其他改变，请查阅<code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_query</span></code>的问题<code class="docutils literal notranslate"><span class="pre">1</span></code>，<code class="docutils literal notranslate"><span class="pre">SPV_KHR_ray_query</span></code>的问题<code class="docutils literal notranslate"><span class="pre">1</span></code>和扩展更新日志。</p>
+<p><img alt="Acceleration-Structures" src="../_images/2020-Ray_Queries_provide_explicit_ray_management_from_within_any_shader-4.jpg" /></p>
+<p><em>如上图为：光线查询提供从任意着色器中明确光线管理</em></p>
+</section>
+<section id="id6">
+<h2>正路在此<a class="headerlink" href="#id6" title="此标题的永久链接">#</a></h2>
+<p>这一章将会给出创建加速结构新流程的纵览和对于资源创建与光追进行同步的快速入门。</p>
+<section id="id7">
+<h3>加速结构的创建<a class="headerlink" href="#id7" title="此标题的永久链接">#</a></h3>
+<p><em>注：加速结构的创建和构建是两个不同的东西，创建指的是创建加速结构句柄，构建指的是创建加速结构内部数据和结构</em></p>
+<p>为了创建加速结构，应用必须首先确定加速结构需要的大小。对于创建时的加速结构、缓存大小和更新可通过<code class="docutils literal notranslate"><span class="pre">vkGetAccelerationStructureBuildSizesKHR</span></code>指令使用<code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildSizesInfoKHR</span></code>获得。对于创建加速结构时指定的<code class="docutils literal notranslate"><span class="pre">shape</span></code>和<code class="docutils literal notranslate"><span class="pre">type</span></code>位于<code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildGeometryInfoKHR</span></code>结构体中，该结构体之后也被用于真正的加速结构构建，但是此时加速结构的参数和几何数据并不需要全都填充完善（虽然可以填补完善），仅仅完善加速结构的类型、几何类型、数量和最大大小即可。这个大小可以支持任意足够相似的加速结构。对于加速结构目标会进行紧凑拷贝，这需要从<code class="docutils literal notranslate"><span class="pre">vkCmdWriteAccelerationStructuresPropertiesKHR</span></code>指令中获取大小。一旦需求的大小确定了，为加速结构创建<code class="docutils literal notranslate"><span class="pre">VkBuffer</span></code>（<code class="docutils literal notranslate"><span class="pre">accelerationStructureSize</span></code>），并且一个或多个<code class="docutils literal notranslate"><span class="pre">VkBuffer</span></code>用于创建（<code class="docutils literal notranslate"><span class="pre">buildScratchSize</span></code>）和更新（<code class="docutils literal notranslate"><span class="pre">updateScratchSize</span></code>）缓冲。</p>
+<p>之后，加速结构<code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureKHR</span></code>对象就可以使用<code class="docutils literal notranslate"><span class="pre">vkCreateAccelerationStructureKHR</span></code>指令根据<code class="docutils literal notranslate"><span class="pre">type</span></code>和<code class="docutils literal notranslate"><span class="pre">size</span></code>创建，并将结果存放在<code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureCreateInfoKHR</span></code>中指定的<code class="docutils literal notranslate"><span class="pre">buffer</span></code>的<code class="docutils literal notranslate"><span class="pre">offset</span></code>位置中。与<code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>中的其他资源不同，指定的这一部分魂村将会完全用于加速结构，并不需要额外的缓存用于加速结构的查询或者内存绑定。如果你愿意，多个加速结构甚至可以放在同一个<code class="docutils literal notranslate"><span class="pre">VkBuffer</span></code>中，只需要多个加速结构之间不互相覆盖即可。</p>
+<p>最后，使用<code class="docutils literal notranslate"><span class="pre">vkCmdBuildAccelerationStructuresKHR</span></code>指令可以用于去构建加速结构。此构建使用的是与创建时相同的<code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildGeometryInfoKHR</span></code>结构体，但是此时此时需要指定所有的几何数据（顶点，索引，变换，<code class="docutils literal notranslate"><span class="pre">aabbs</span></code>包围盒，和实例）和缓存数据。一旦构建完成此加速结构将会完全自完善（<code class="docutils literal notranslate"><span class="pre">self-contained</span></code>），并且构建的输入和缓存可以重复利用除非在之后的构建更新中有计划使用他们。</p>
+</section>
+<section id="id8">
+<h3>资源使用和同步<a class="headerlink" href="#id8" title="此标题的永久链接">#</a></h3>
+<p>本章将提供各种缓存使用纵观，并且简单讲解光追操作有关的同步使用。</p>
+<p>用于备份加速结构的缓存将会使用<code class="docutils literal notranslate"><span class="pre">VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR</span></code>进行创建。缓存将会使用<code class="docutils literal notranslate"><span class="pre">VK_BUFFER_USAGE_STORAGE_BUFFER_BIT</span></code>用于暂存空间，并且使用<code class="docutils literal notranslate"><span class="pre">VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR</span></code>用于加速结构的构建输入（比如顶点，索引，变换，<code class="docutils literal notranslate"><span class="pre">aabbs</span></code>包围盒，和实例）。如果缓存用于着色器绑定表将会使用<code class="docutils literal notranslate"><span class="pre">VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR</span></code>创建，并且如果使用间接构建的话追踪参数将会使用<code class="docutils literal notranslate"><span class="pre">VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT</span></code>创建使用。</p>
+<p>为了与加速结构的构建指令（<code class="docutils literal notranslate"><span class="pre">vkCmdBuildAccelerationStructuresKHR</span></code>和<code class="docutils literal notranslate"><span class="pre">vkCmdBuildAccelerationStructuresIndirectKHR</span></code>）进行同步，需要使用<code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR</span></code>管线阶段声明。访问加速结构的数据源或目标数据缓存将使用<code class="docutils literal notranslate"><span class="pre">VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR</span></code>或<code class="docutils literal notranslate"><span class="pre">VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR</span></code>。构建时访问输入缓存（顶点，索引，变换，<code class="docutils literal notranslate"><span class="pre">aabbs</span></code>包围盒，和实例）使用<code class="docutils literal notranslate"><span class="pre">VK_ACCESS_SHADER_READ_BIT</span></code>访问类型并且访问间接参数使用<code class="docutils literal notranslate"><span class="pre">VK_ACCESS_INDIRECT_COMMAND_READ_BIT</span></code>访问类型。</p>
+<p>为了与加速结构的拷贝指令（<code class="docutils literal notranslate"><span class="pre">vkCmdWriteAccelerationStructuresPropertiesKHR</span></code>、<code class="docutils literal notranslate"><span class="pre">vkCmdCopyAccelerationStructureKHR</span></code>、<code class="docutils literal notranslate"><span class="pre">vkCmdCopyAccelerationStructureToMemoryKHR</span></code>和<code class="docutils literal notranslate"><span class="pre">vkCmdCopyMemoryToAccelerationStructureKHR</span></code>）进行同步，同样需要使用<code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR</span></code>管线阶段。访问加速结构的读写使用<code class="docutils literal notranslate"><span class="pre">VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR</span></code>或<code class="docutils literal notranslate"><span class="pre">VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR</span></code>，此外通过设备地址访问的缓存使用<code class="docutils literal notranslate"><span class="pre">VK_ACCESS_TRANSFER_READ_BIT</span></code>或<code class="docutils literal notranslate"><span class="pre">VK_ACCESS_TRANSFER_WRITE_BIT</span></code>访问类型。</p>
+<p>与光追指令（<code class="docutils literal notranslate"><span class="pre">vkCmdTraceRaysKHR</span></code>或<code class="docutils literal notranslate"><span class="pre">vkCmdTraceRaysIndirectKHR</span></code>）进行同步，<code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR</span></code>管线阶段用于着色器访问绑定的缓存表使用<code class="docutils literal notranslate"><span class="pre">VK_ACCESS_SHADER_READ_BIT</span></code>访问，对于访问间接数据在<code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT</span></code>管线阶段使用<code class="docutils literal notranslate"><span class="pre">VK_ACCESS_INDIRECT_COMMAND_READ_BIT</span></code>进行访问。</p>
+<p>与加速结构在任何图形，计算或是光追管线阶段进行光线查询同步，对应的管线阶段使用<code class="docutils literal notranslate"><span class="pre">VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR</span></code>进行数据访问。</p>
+<p><img alt="Acceleration-Structures" src="../_images/2020-Comparing-Vulkan-Ray-Tracing-and-DXR.-It-is-straightforward-to-port-code-between-the-two-APIs-including-re-use-of-ray-tracing-shaders-written-in-HLSL-5_.jpg" /></p>
+<p><em>如上图为：<code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>的光追与<code class="docutils literal notranslate"><span class="pre">DXR</span></code>的比较。两者之间进行移植非常简单，包括可共享的<code class="docutils literal notranslate"><span class="pre">HLSL</span></code>光追着色器</em></p>
+</section>
+</section>
+<section id="id9">
+<h2>结论和资源<a class="headerlink" href="#id9" title="此标题的永久链接">#</a></h2>
+<p>现在最终版的<code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>光追扩展已经发布，现在支持临时版本的嵌入式也会在不久支持最终版光追扩展，有关其他工具和组件可通过<a class="reference external" href="https://khr.io/vulkanrtfeedback">GitHub</a>进行查阅。我们推荐所有的开发者转去使用最终的<code class="docutils literal notranslate"><span class="pre">Khronos</span></code>发布的<code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>光追最终版。</p>
+<p>支持<code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>光追扩展的<code class="docutils literal notranslate"><span class="pre">NVIDIA</span></code>显卡驱动以及哪些显卡支持的信息可在<a class="reference external" href="https://developer.nvidia.com/vulkan-driver">developer.nvidia.com/vulkan-driver</a>中找到。对于<code class="docutils literal notranslate"><span class="pre">AMD</span></code>显卡驱动可在<a class="reference external" href="https://www.amd.com/en/support/kb/release-notes/rn-rad-win-20-11-2-vrt-beta">https://www.amd.com/en/support/kb/release-notes/rn-rad-win-20-11-2-vrt-beta</a>中找到。光追扩展同样可以通过2021年的<code class="docutils literal notranslate"><span class="pre">Intel</span></code>的<code class="docutils literal notranslate"><span class="pre">Xe-HPG</span></code>显卡支持，通过定期的驱动程序更新提供支持。</p>
+<p>有关如何使用<code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>光追用于混合渲染，同时使用光栅化和光追，以此来达到令人信服和画面同时保持交互程度请查看<a class="reference external" href="https://www.khronos.org/blog/vulkan-ray-tracing-best-practices-for-hybrid-rendering">Vulkan Ray Tracing Best Practices for Hybrid Rendering</a>博客讨论有关在<code class="docutils literal notranslate"><span class="pre">Wolfenstein:Youngblood</span></code>（德军总部：新血脉）中使用最终版光追扩展实现的反射效果。</p>
+<p>也可以查阅现今进行更新后支持光追扩展的<a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR">NVIDIA Vulkan Ray Tracing Tutorial</a>和2020年6月份发布的<a class="reference external" href="https://news.developer.nvidia.com/nvidia-announces-nsight-graphics-2020-6/">NVIDIA Nsight Graphics developer tool</a>。请关注更多即将发布的有关的生产驱动程序、工具和示例公告。</p>
+<p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>工作组同样鼓励开发者和内容创建社区使用<code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>的光追扩展并积极反馈问题。这可通过<a class="reference external" href="https://khr.io/slack">Khronos Developer Slack</a>和<a class="reference external" href="https://github.com/KhronosGroup/Vulkan-Docs/issues">Vulkan GitHub Issues Tracker</a>进行讨论和反馈。</p>
+<p>欢迎来到便携式、跨厂商、跨平台光线追踪加速的时代！</p>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../test.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Test</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="index.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">文献</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2023, FuXii
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Vulkan 光线追踪最终标准发布</a><ul>
+<li><a class="reference internal" href="#id1">历史回顾</a></li>
+<li><a class="reference internal" href="#id2">光追标准</a></li>
+<li><a class="reference internal" href="#id3">扩展结构</a></li>
+<li><a class="reference internal" href="#acceleration-structures">加速结构（Acceleration Structures）</a></li>
+<li><a class="reference internal" href="#host-deferred-host-operations">Host端的延迟操作（Deferred Host Operations）</a></li>
+<li><a class="reference internal" href="#id4">光追管线</a></li>
+<li><a class="reference internal" href="#id5">光线查询</a></li>
+<li><a class="reference internal" href="#id6">正路在此</a><ul>
+<li><a class="reference internal" href="#id7">加速结构的创建</a></li>
+<li><a class="reference internal" href="#id8">资源使用和同步</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id9">结论和资源</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/scripts/furo.js"></script>
+    <script src="../_static/translations.js"></script>
+    <script src="https://unpkg.com/mermaid@9.4.0/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
+    </body>
+</html>
