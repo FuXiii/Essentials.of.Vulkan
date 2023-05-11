@@ -21,7 +21,6 @@ https://fuxiii.github.io/Essentials.of.Vulkan/
 ## Sponsor
 
 想赞助的小伙伴，欢迎使用`爱发电`赞助，请量力而为，如果赞助完真有困难可以退回，**未成年人禁止投喂！！！**  
-[![爱发电](https://afdian.moeci.com/1/badge.svg)](https://afdian.net/@TurboEngine)
 ![爱发电Essentials.of.Vulkan](./Aifadian/aifadian.jpg)
 
 ## Log
@@ -45,6 +44,6 @@ https://fuxiii.github.io/Essentials.of.Vulkan/
 * 2023/5/11
     >
     >* 增加`markdownTest.md`，用于测试`Sphinx`支持`Markdown`
-    >* 修改`.github/workflows/release.yml`部署脚本和`./source/conf.py`配置文件，使得支持`Markdown`
-    >* 修改`.github/workflows/release.yml`部署脚本和`./source/conf.py`配置文件，使得支持`Mermaid`
+    >* 修改`.github/workflows/release.yml`部署脚本和`./source/conf.py`配置文件，使其支持`Markdown`
+    >* 修改`.github/workflows/release.yml`部署脚本和`./source/conf.py`配置文件，使其支持`Mermaid`
 
