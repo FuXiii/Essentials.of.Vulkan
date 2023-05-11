@@ -40,3 +40,5 @@ html_logo = 'Vulkan.png'
 html_favicon = 'VulkanLogo.png'
 
 html_title = 'Vulkan入门精要'
+
+html_baseurl = 'https://github.com/FuXiii/Essentials.of.Vulkan'
