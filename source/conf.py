@@ -18,7 +18,7 @@ extensions = ['sphinxcontrib.mermaid', 'myst_parser']
 
 templates_path = ['_templates']
 exclude_patterns = []
-include_patterns = ['**']
+#include_patterns = ['**','literature/*']
 source_suffix = {
     '.rst': 'restructuredtext',
     '.txt': 'restructuredtext',

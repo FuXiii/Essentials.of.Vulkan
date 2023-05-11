@@ -7,13 +7,25 @@
 欢迎来到 Vulkan 入门精要
 ================================================
 
+.. container:: global-index-toc
+
+   .. toctree::
+      :caption: Getting Started
+      :maxdepth: 1
+
+      getting_started/about/index.rst
+      getting_started/installing/index.rst
+      getting_started/configuration/index.rst
+      getting_started/help.rst
+
 .. toctree::
    :maxdepth: 2
    :caption: 内容:
-   :name: mastertoc
 
    test
    markdownTest
+   literature/LiteratureTest
+   literature/Test/TestChild
 
 Indices and tables
 ==================
