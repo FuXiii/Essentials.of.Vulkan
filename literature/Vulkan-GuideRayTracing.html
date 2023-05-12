@@ -1,0 +1,375 @@
+<!doctype html>
+<html class="no-js" lang="zh-CN">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+<link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="搜索" href="../search.html" /><link rel="next" title="Test" href="../test.html" /><link rel="prev" title="Vulkan 光线追踪最终标准发布" href="VulkanRayTracingFinalSpecificationRelease.html" />
+        <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/literature/Vulkan-GuideRayTracing.html" />
+
+    <link rel="shortcut icon" href="../_static/VulkanLogo.png"/><!-- Generated with Sphinx 6.2.1 and Furo 2023.03.27 -->
+        <title>光线追踪 - Vulkan入门精要</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Vulkan入门精要</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../_static/Vulkan.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">Vulkan入门精要</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="搜索" name="q" aria-label="搜索">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">文献翻译</span></p>
+<ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">文献</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="VulkanRayTracingFinalSpecificationRelease.html">Vulkan 光线追踪最终标准发布</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">光线追踪</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../test.html">Test</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/FuXiii/Essentials.of.Vulkan/edit/main/source/literature/Vulkan-GuideRayTracing.rst" title="Edit this page">
+    <svg aria-hidden="true" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
+      <line x1="13.5" y1="6.5" x2="17.5" y2="10.5" />
+    </svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="id1">
+<h1>光线追踪<a class="headerlink" href="#id1" title="此标题的永久链接">#</a></h1>
+<div class="note admonition">
+<p class="admonition-title">更新记录</p>
+<ul class="simple">
+<li><p>2023/5/12 创建本文</p></li>
+<li><p>2023/5/12 创建 <code class="docutils literal notranslate"><span class="pre">VK_KHR_acceleration_structure</span></code> 章节</p></li>
+<li><p>2023/5/12 创建 <code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_tracing_pipeline</span></code> 章节</p></li>
+</ul>
+</div>
+<p><a class="reference external" href="https://github.com/KhronosGroup/Vulkan-Guide/blob/main/chapters/extensions/ray_tracing.adoc">文献源</a></p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">API</span></code> 中有5个与光追相关的扩展</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html">VK_KHR_acceleration_structure</a></p></li>
+<li><p><a class="reference external" href="https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VK_KHR_ray_tracing_pipeline.html">VK_KHR_ray_tracing_pipeline</a></p></li>
+<li><p><a class="reference external" href="https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VK_KHR_ray_query.html">VK_KHR_ray_query</a></p></li>
+<li><p><a class="reference external" href="https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VK_KHR_pipeline_library.html">VK_KHR_pipeline_library</a></p></li>
+<li><p><a class="reference external" href="https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VK_KHR_deferred_host_operations.html">VK_KHR_deferred_host_operations</a></p></li>
+</ul>
+<p>另外也发布了着色器对应 <code class="docutils literal notranslate"><span class="pre">SPIR-V</span></code> 和 <code class="docutils literal notranslate"><span class="pre">GLSL</span></code> 所需要的扩展</p>
+<ul class="simple">
+<li><p><a class="reference external" href="http://htmlpreview.github.io/?https://github.com/KhronosGroup/SPIRV-Registry/blob/master/extensions/KHR/SPV_KHR_ray_tracing.html">SPV_KHR_ray_tracing</a></p></li>
+<li><p><a class="reference external" href="http://htmlpreview.github.io/?https://github.com/KhronosGroup/SPIRV-Registry/blob/master/extensions/KHR/SPV_KHR_ray_query.html">SPV_KHR_ray_query</a></p></li>
+<li><p><a class="reference external" href="https://github.com/KhronosGroup/GLSL/blob/master/extensions/ext/GLSL_EXT_ray_tracing.txt">GLSL_EXT_ray_tracing</a></p></li>
+<li><p><a class="reference external" href="https://github.com/KhronosGroup/GLSL/blob/master/extensions/ext/GLSL_EXT_ray_query.txt">GLSL_EXT_ray_query</a></p></li>
+<li><p><a class="reference external" href="https://github.com/KhronosGroup/GLSL/blob/master/extensions/ext/GLSL_EXT_ray_flags_primitive_culling.txt">GLSL_EXT_ray_flags_primitive_culling</a></p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>很多光追程序都需要分配大量连续内存，由于内存地址空间大小的限值，在32位系统上实现很考验实现能力。虽然可以在32位系统上实现，但是应用可能面临着时不时的内存问题，比如分配内存失败。
+此外一些驱动实现可能根本不会在32位系统中显示支持。</p>
+</div>
+<section id="id3">
+<h2>VK_KHR_acceleration_structure<a class="headerlink" href="#id3" title="此标题的永久链接">#</a></h2>
+<p>加速结构在光追中用于描述几何物体的（内部具体实现是驱动自定义的）。通过将几何体构建进加速结构，光追可基于此种已知的数据布局进行高效计算。
+<code class="docutils literal notranslate"><span class="pre">VK_KHR_acceleration_structure</span></code> 扩展提供了构建和拷贝加速结构的功能，并且支持与内存进行序列化。</p>
+<p>加速结构需要光追管线 <code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_tracing_pipeline</span></code> 和光线查询 <code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_query</span></code> 两个扩展</p>
+<p>对于加速结构的创建：</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>加速结构的 <code class="docutils literal notranslate"><span class="pre">创建</span></code> 和 <code class="docutils literal notranslate"><span class="pre">构建</span></code> 是两个不同的东西，创建是创建加速结构实例，构建是构建加速结构内部数据和结构。</p>
+</div>
+<ul class="simple">
+<li><p>使用 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildGeometryInfoKHR</span></code> 声明加速结构的类型、几何类型、数量和最大大小。此时真正的几何数据可以不指定。</p></li>
+<li><p>调用 <code class="docutils literal notranslate"><span class="pre">vkGetAccelerationStructureBuildSizesKHR</span></code> 获取构建加速结构时的需要的内存大小</p></li>
+<li><p>分配一个足够大的缓存用于存储加速结构（ <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildSizesKHR::accelerationStructureSize</span></code> ）和暂存缓存（ <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildSizesKHR::buildScratchSize</span></code> ）</p></li>
+<li><p>调用 <code class="docutils literal notranslate"><span class="pre">vkCreateAccelerationStructureKHR</span></code> 创建一个加速结构（位于某一个缓存中特定位置）</p></li>
+<li><p>调用 <code class="docutils literal notranslate"><span class="pre">vkCmdBuildAccelerationStructuresKHR</span></code> 去构建加速结构，之前提到的 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildGeometryInfoKHR</span></code> 在此时会被作为参数，将会根据声明的加速结构实例、构建暂存缓存和真正的几何数据（顶点，索引和变换）进行构建</p></li>
+</ul>
+</section>
+<section id="id4">
+<h2>VK_KHR_ray_tracing_pipeline<a class="headerlink" href="#id4" title="此标题的永久链接">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_tracing_pipeline</span></code> 扩展用于光追管线。光追管线是区别于常见光栅化管线的独立渲染管线，光追管线使用一组专用着色器，与传统的顶点、几何、片元着色器独立。并且光追管线也提供独立的渲染指令（ <code class="docutils literal notranslate"><span class="pre">vkCmdTraceRaysKHR</span></code> 和 <code class="docutils literal notranslate"><span class="pre">vkCmdTraceRaysIndirectKHR</span></code> ）。
+这与传统的光栅化绘制类似（ <code class="docutils literal notranslate"><span class="pre">vkCmdDraw</span></code> 和 <code class="docutils literal notranslate"><span class="pre">vkCmdDrawIndirect</span></code> ）。</p>
+<p>为了追踪光线：</p>
+<ul class="simple">
+<li><p>使用 <code class="docutils literal notranslate"><span class="pre">vkCmdBindPipeline</span></code> 绑定光追管线于 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR</span></code> 上。</p></li>
+<li><p>调用 <code class="docutils literal notranslate"><span class="pre">vkCmdTraceRaysKHR</span></code> 或 <code class="docutils literal notranslate"><span class="pre">vkCmdTraceRaysIndirectKHR</span></code></p></li>
+</ul>
+<p>与光追管线有关的着色器如下：</p>
+<img alt="../_images/VK_KHR_ray_tracing_pipeline_shaders_stage.jpg" class="align-center" src="../_images/VK_KHR_ray_tracing_pipeline_shaders_stage.jpg" />
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Ray</span> <span class="pre">generation</span> <span class="pre">shader</span></code> 光线生成着色器（后文简称 <code class="docutils literal notranslate"><span class="pre">光生着色器</span></code> ），作为光追管线的起点。与计算着色器类似将会执行一组着色器调用（ <code class="docutils literal notranslate"><span class="pre">vkCmdTraceRaysKHR</span></code> 和 <code class="docutils literal notranslate"><span class="pre">vkCmdTraceRaysIndirectKHR</span></code> ）。光线生成着色器将会生成光线并且通过在着色器中调用 <code class="docutils literal notranslate"><span class="pre">traceRayEXT()</span></code> 进行追踪。并且处理光线相交结果的集合。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Closest</span> <span class="pre">hit</span> <span class="pre">shaders</span></code> 最近命中着色器（后文简称 <code class="docutils literal notranslate"><span class="pre">中靶着色器</span></code> ）将会在最近命中几何体时执行。应用支持任意数量的中靶着色器。此着色器最常用于光照计算并继续追踪额外的光线。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Miss</span> <span class="pre">shaders</span></code> 未命中着色器（后文简称 <code class="docutils literal notranslate"><span class="pre">脱靶着色器</span></code> ）与中靶着色器相反，当光线没有与任何几何体相交时脱靶着色器会被调用。该着色器常用于采样环境纹理。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Intersection</span> <span class="pre">shaders</span></code> 相交着色器允许自定义处理光线相交，并且内置的相交测试是基于三角形进行测试。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Any</span> <span class="pre">hit</span> <span class="pre">shaders</span></code> 任意命中着色器（后文简称 <code class="docutils literal notranslate"><span class="pre">随靶着色器</span></code> ），与中靶着色器类型，随靶着色器在检测到发生相交时调用，随靶着色器不同的是只要相交发生在 <code class="docutils literal notranslate"><span class="pre">[tmin,</span> <span class="pre">tmax]</span></code> 之间而不是最近的一次命中。随靶着色器用于过滤相交和透明度测试。</p></li>
+</ul>
+</section>
+<section id="id5">
+<h2>VK_KHR_ray_query<a class="headerlink" href="#id5" title="此标题的永久链接">#</a></h2>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../test.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Test</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="VulkanRayTracingFinalSpecificationRelease.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Vulkan 光线追踪最终标准发布</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2023, FuXii
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link " href="https://github.com/FuXiii/Essentials.of.Vulkan" aria-label="GitHub">
+                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path>
+                </svg>
+            </a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">光线追踪</a><ul>
+<li><a class="reference internal" href="#id3">VK_KHR_acceleration_structure</a></li>
+<li><a class="reference internal" href="#id4">VK_KHR_ray_tracing_pipeline</a></li>
+<li><a class="reference internal" href="#id5">VK_KHR_ray_query</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/scripts/furo.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/tabs.js"></script>
+    <script src="../_static/translations.js"></script>
+    <script src="https://unpkg.com/mermaid@9.4.0/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
+    </body>
+</html>
