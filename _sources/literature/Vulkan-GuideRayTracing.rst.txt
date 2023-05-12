@@ -8,6 +8,7 @@
    * 2023/5/12 创建 ``VK_KHR_acceleration_structure`` 章节
    * 2023/5/12 创建 ``VK_KHR_ray_tracing_pipeline`` 章节
    * 2023/5/12 创建 ``VK_KHR_ray_query`` 章节
+   * 2023/5/12 创建 ``VK_KHR_pipeline_library`` 章节
   
 `文献源`_
 
@@ -75,4 +76,29 @@ VK_KHR_ray_tracing_pipeline
 * ``Any hit shaders`` 任意命中着色器，与最近命中着色器类似，任意命中着色器在检测到发生相交时调用，任意命中着色器不同的是只要相交发生在 ``[tmin, tmax]`` 之间而不是最近的一次命中。任意命中着色器用于过滤相交和透明度测试。
 
 VK_KHR_ray_query
+##############################
+
+``VK_KHR_ray_query`` 扩展支持在所有类型着色器中进行光线追踪，包括图形、计算和光追管线。
+
+光线查询要求光线遍历代码必须位于着色器中。与光追管线不同的是，在光追管线中光线生成、求交测试和光线与几何体击中处理，都是在独立不同的着色器阶段。
+所以光线查询允许在广泛的着色器阶段进行光线追踪，当然也有代价，这会限值 ``Vulkan`` 的驱动实现对于光追调度的优化。
+
+该扩展不引入额外的 ``API`` 入口点，其仅仅使用 ``SPIR-V`` 和 ``GLSL`` 的扩展（ ``SPV_KHR_ray_query`` 和 ``GLSL_EXT_ray_query`` ）。
+
+``VK_KHR_ray_query`` 所提供的功能与 ``VK_KHR_ray_tracing_pipeline`` 互补，并且两个扩展可以同时使用。
+
+.. code:: cpp
+
+    rayQueryEXT rq;
+    
+    rayQueryInitializeEXT(rq, accStruct, gl_RayFlagsTerminateOnFirstHitEXT, cullMask, origin, tMin, direction, tMax);
+    
+    // Traverse the acceleration structure and store information about the first intersection (if any)
+    rayQueryProceedEXT(rq);
+    
+    if (rayQueryGetIntersectionTypeEXT(rq, true) == gl_RayQueryCommittedIntersectionNoneEXT) {
+        // Not in shadow
+    }
+
+VK_KHR_pipeline_library
 ##############################

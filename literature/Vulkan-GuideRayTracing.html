@@ -219,6 +219,7 @@
 <li><p>2023/5/12 创建 <code class="docutils literal notranslate"><span class="pre">VK_KHR_acceleration_structure</span></code> 章节</p></li>
 <li><p>2023/5/12 创建 <code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_tracing_pipeline</span></code> 章节</p></li>
 <li><p>2023/5/12 创建 <code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_query</span></code> 章节</p></li>
+<li><p>2023/5/12 创建 <code class="docutils literal notranslate"><span class="pre">VK_KHR_pipeline_library</span></code> 章节</p></li>
 </ul>
 </div>
 <p><a class="reference external" href="https://github.com/KhronosGroup/Vulkan-Guide/blob/main/chapters/extensions/ray_tracing.adoc">文献源</a></p>
@@ -282,6 +283,26 @@
 </section>
 <section id="id5">
 <h2>VK_KHR_ray_query<a class="headerlink" href="#id5" title="此标题的永久链接">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_query</span></code> 扩展支持在所有类型着色器中进行光线追踪，包括图形、计算和光追管线。</p>
+<p>光线查询要求光线遍历代码必须位于着色器中。与光追管线不同的是，在光追管线中光线生成、求交测试和光线与几何体击中处理，都是在独立不同的着色器阶段。
+所以光线查询允许在广泛的着色器阶段进行光线追踪，当然也有代价，这会限值 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的驱动实现对于光追调度的优化。</p>
+<p>该扩展不引入额外的 <code class="docutils literal notranslate"><span class="pre">API</span></code> 入口点，其仅仅使用 <code class="docutils literal notranslate"><span class="pre">SPIR-V</span></code> 和 <code class="docutils literal notranslate"><span class="pre">GLSL</span></code> 的扩展（ <code class="docutils literal notranslate"><span class="pre">SPV_KHR_ray_query</span></code> 和 <code class="docutils literal notranslate"><span class="pre">GLSL_EXT_ray_query</span></code> ）。</p>
+<p><code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_query</span></code> 所提供的功能与 <code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_tracing_pipeline</span></code> 互补，并且两个扩展可以同时使用。</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">rayQueryEXT</span><span class="w"> </span><span class="n">rq</span><span class="p">;</span>
+
+<span class="n">rayQueryInitializeEXT</span><span class="p">(</span><span class="n">rq</span><span class="p">,</span><span class="w"> </span><span class="n">accStruct</span><span class="p">,</span><span class="w"> </span><span class="n">gl_RayFlagsTerminateOnFirstHitEXT</span><span class="p">,</span><span class="w"> </span><span class="n">cullMask</span><span class="p">,</span><span class="w"> </span><span class="n">origin</span><span class="p">,</span><span class="w"> </span><span class="n">tMin</span><span class="p">,</span><span class="w"> </span><span class="n">direction</span><span class="p">,</span><span class="w"> </span><span class="n">tMax</span><span class="p">);</span>
+
+<span class="c1">// Traverse the acceleration structure and store information about the first intersection (if any)</span>
+<span class="n">rayQueryProceedEXT</span><span class="p">(</span><span class="n">rq</span><span class="p">);</span>
+
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">rayQueryGetIntersectionTypeEXT</span><span class="p">(</span><span class="n">rq</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">gl_RayQueryCommittedIntersectionNoneEXT</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Not in shadow</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="id6">
+<h2>VK_KHR_pipeline_library<a class="headerlink" href="#id6" title="此标题的永久链接">#</a></h2>
 </section>
 </section>
 
@@ -351,6 +372,7 @@
 <li><a class="reference internal" href="#id3">VK_KHR_acceleration_structure</a></li>
 <li><a class="reference internal" href="#id4">VK_KHR_ray_tracing_pipeline</a></li>
 <li><a class="reference internal" href="#id5">VK_KHR_ray_query</a></li>
+<li><a class="reference internal" href="#id6">VK_KHR_pipeline_library</a></li>
 </ul>
 </li>
 </ul>
