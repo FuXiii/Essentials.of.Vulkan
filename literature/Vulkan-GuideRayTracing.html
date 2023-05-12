@@ -346,7 +346,7 @@
 <ul class="simple">
 <li><p>对于每个想要参与操作的线程调用 <code class="docutils literal notranslate"><span class="pre">vkDeferredOperationJoinKHR</span></code></p></li>
 <li><dl class="simple">
-<dt>通过 <code class="docutils literal notranslate"><span class="pre">vkDeferredOperationJoinKHR``返回的</span> <span class="pre">``VkResult</span></code> 查看操作结果：</dt><dd><ul>
+<dt>通过 <code class="docutils literal notranslate"><span class="pre">vkDeferredOperationJoinKHR</span></code> 返回的 <code class="docutils literal notranslate"><span class="pre">VkResult</span></code> 查看操作结果：</dt><dd><ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">VK_SUCCESS</span></code> 表示操作完成</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">VK_THREAD_DONE_KHR</span></code> 表示当前调用的线程已经没有要分配的工作了，但是其他的线程可能还在处理额外的工作。当前的线程不应该再通过 <code class="docutils literal notranslate"><span class="pre">vkDeferredOperationJoinKHR</span></code> 再次 <code class="docutils literal notranslate"><span class="pre">join</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">VK_THREAD_IDLE_KHR</span></code> 表示当前调用的线程暂时已经没有要分配的工作了，但是其他额外的工作可能会在不期到来。当前的线程应该执行其他有用的工作，并且调用  <code class="docutils literal notranslate"><span class="pre">vkDeferredOperationJoinKHR</span></code> 再次 <code class="docutils literal notranslate"><span class="pre">join</span></code> 以此达到高收益。</p></li>

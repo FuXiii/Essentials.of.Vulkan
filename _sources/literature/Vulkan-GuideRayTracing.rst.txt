@@ -147,7 +147,7 @@ VK_KHR_deferred_host_operations
 将一个线程加入到一个延迟操作，并且消耗 ``CPU`` 时间去处理该操作：
 
 * 对于每个想要参与操作的线程调用 ``vkDeferredOperationJoinKHR``
-* 通过 ``vkDeferredOperationJoinKHR``返回的 ``VkResult`` 查看操作结果：
+* 通过 ``vkDeferredOperationJoinKHR`` 返回的 ``VkResult`` 查看操作结果：
     * ``VK_SUCCESS`` 表示操作完成
     * ``VK_THREAD_DONE_KHR`` 表示当前调用的线程已经没有要分配的工作了，但是其他的线程可能还在处理额外的工作。当前的线程不应该再通过 ``vkDeferredOperationJoinKHR`` 再次 ``join``
     * ``VK_THREAD_IDLE_KHR`` 表示当前调用的线程暂时已经没有要分配的工作了，但是其他额外的工作可能会在不期到来。当前的线程应该执行其他有用的工作，并且调用  ``vkDeferredOperationJoinKHR`` 再次 ``join`` 以此达到高收益。
