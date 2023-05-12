@@ -1,5 +1,11 @@
 # Vulkan 光线追踪最终标准发布
 
+```{admonition} 更新记录
+:class: note
+
+* 2023/5/11 发布完成
+```
+
 [文献源](https://www.khronos.org/blog/vulkan-ray-tracing-final-specification-release)
 
 ## 历史回顾
