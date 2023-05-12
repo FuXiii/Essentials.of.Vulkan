@@ -7,6 +7,7 @@
    * 2023/5/12 创建本文
    * 2023/5/12 创建 ``VK_KHR_acceleration_structure`` 章节
    * 2023/5/12 创建 ``VK_KHR_ray_tracing_pipeline`` 章节
+   * 2023/5/12 创建 ``VK_KHR_ray_query`` 章节
   
 `文献源`_
 
