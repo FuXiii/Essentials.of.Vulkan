@@ -222,6 +222,7 @@
 <li><p>2023/5/12 创建 <code class="docutils literal notranslate"><span class="pre">VK_KHR_pipeline_library</span></code> 章节</p></li>
 <li><p>2023/5/12 创建 <code class="docutils literal notranslate"><span class="pre">VK_KHR_deferred_host_operations</span></code> 章节</p></li>
 <li><p>2023/5/12 创建 <code class="docutils literal notranslate"><span class="pre">光追最佳实践</span></code> 章节</p></li>
+<li><p>2023/5/12 发布完成</p></li>
 </ul>
 </div>
 <p><a class="reference external" href="https://github.com/KhronosGroup/Vulkan-Guide/blob/main/chapters/extensions/ray_tracing.adoc">文献源</a></p>
@@ -359,6 +360,27 @@
 </section>
 <section id="id9">
 <h2>光追最佳实践<a class="headerlink" href="#id9" title="此标题的永久链接">#</a></h2>
+<section id="id10">
+<h3>最小化并行访问光线查询对象的线程数量<a class="headerlink" href="#id10" title="此标题的永久链接">#</a></h3>
+<p>光线查询对象对于线程的部分私有存储是非常昂贵的，对性能的消耗也是如此，所以用的越少越好。在绝大多数情况下应该使用一个光线查询对象就算追踪多条光线，当一个结束的
+光线发射了其他光线的话亦可以使用同一个光线查询对象。只用当多个光线遍历需要并行执行时光线查询才可在同一着色器中。</p>
+</section>
+<section id="id11">
+<h3>最小化光线、击中属性和可调用数据大小<a class="headerlink" href="#id11" title="此标题的永久链接">#</a></h3>
+<p>光追着色器各阶段可以通过光线负载结构在所有的遍历阶段、遍历控制着色器的击中属性结构、可调用着色器的可调用数据之间进行参数和结果的访问。</p>
+<p>这三个结构体都会消耗驱动管理内存，具体消耗多少依赖于结构本身、并行的光线数量和其他因素，比如递归层级。</p>
+<p>着色器需要保持这些结构尽量的小。</p>
+</section>
+<section id="id12">
+<h3>多用设备本地的内存<a class="headerlink" href="#id12" title="此标题的永久链接">#</a></h3>
+<div class="note admonition">
+<p class="admonition-title">设备本地的内存</p>
+<p>设备本地的内存，多称为 <code class="docutils literal notranslate"><span class="pre">device-local</span></code> 或 <code class="docutils literal notranslate"><span class="pre">device</span></code> 端，其多指 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 设备中的内存。而 <code class="docutils literal notranslate"><span class="pre">host</span></code> 端多指 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 使用的内存条的内存，为系统内存。
+其实也不绝对，有时内存条上的部分内存为 <code class="docutils literal notranslate"><span class="pre">device</span></code> 端和 <code class="docutils literal notranslate"><span class="pre">host</span></code> 端公有的内存，具体设备具体实现。</p>
+</div>
+<p>加速结构可以建立在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的任何内存堆上，使用内存在本地设备的加速结构进行光线追踪会得到更加优良的性能，并且应该是首选。
+对于使用 <code class="docutils literal notranslate"><span class="pre">host</span></code> 端的内存（比如 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 可访问的系统内存）只有当设备本地数据的大小有限时才考虑使用，其光追性能大概率到不了设备本地内存的性能。</p>
+</section>
 </section>
 </section>
 
@@ -430,7 +452,12 @@
 <li><a class="reference internal" href="#id5">VK_KHR_ray_query</a></li>
 <li><a class="reference internal" href="#id6">VK_KHR_pipeline_library</a></li>
 <li><a class="reference internal" href="#id8">VK_KHR_deferred_host_operations</a></li>
-<li><a class="reference internal" href="#id9">光追最佳实践</a></li>
+<li><a class="reference internal" href="#id9">光追最佳实践</a><ul>
+<li><a class="reference internal" href="#id10">最小化并行访问光线查询对象的线程数量</a></li>
+<li><a class="reference internal" href="#id11">最小化光线、击中属性和可调用数据大小</a></li>
+<li><a class="reference internal" href="#id12">多用设备本地的内存</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
