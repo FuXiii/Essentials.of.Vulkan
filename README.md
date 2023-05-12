@@ -47,3 +47,8 @@ Vulkan入门精要
     >* 修改`.github/workflows/release.yml`部署脚本和`./source/conf.py`配置文件，使其支持`Markdown`
     >* 修改`.github/workflows/release.yml`部署脚本和`./source/conf.py`配置文件，使其支持`Mermaid`
     >* `source/literature`中增加`VulkanRayTracingFinalSpecificationRelease.md`文献翻译
+
+* 2023/5/12
+    >
+    >* 修改`.github/workflows/release.yml`部署脚本和`./source/conf.py`配置文件，使其支持拷贝代码按钮
+    >* 修改`.github/workflows/release.yml`部署脚本和`./source/conf.py`配置文件，使其支持连级按钮

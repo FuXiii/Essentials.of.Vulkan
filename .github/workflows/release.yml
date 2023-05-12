@@ -20,6 +20,8 @@ jobs:
           pip install furo
           pip install --upgrade myst-parser
           pip install sphinxcontrib-mermaid
+          pip install sphinx-copybutton
+          pip install sphinx-inline-tabs
       - name: Build
         run: |
           make html
