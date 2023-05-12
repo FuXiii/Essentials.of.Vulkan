@@ -49,7 +49,7 @@ html_title = 'Vulkan入门精要'
 html_baseurl = 'https://github.com/FuXiii/Essentials.of.Vulkan'
 
 html_theme_options = {
-    "announcement": "<em>Important</em> announcement!",
+    #"announcement": "<em>Important</em> announcement!",
     "source_repository": "https://github.com/FuXiii/Essentials.of.Vulkan",
     "source_branch": "main",
     "source_directory": "source/",
