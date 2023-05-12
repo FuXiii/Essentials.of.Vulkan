@@ -68,11 +68,11 @@ VK_KHR_ray_tracing_pipeline
 .. image:: ../_static/VK_KHR_ray_tracing_pipeline_shaders_stage.jpg
     :align: center
 
-* ``Ray generation shader`` 光线生成着色器（后文简称 ``光生着色器`` ），作为光追管线的起点。与计算着色器类似将会执行一组着色器调用（ ``vkCmdTraceRaysKHR`` 和 ``vkCmdTraceRaysIndirectKHR`` ）。光线生成着色器将会生成光线并且通过在着色器中调用 ``traceRayEXT()`` 进行追踪。并且处理光线相交结果的集合。
-* ``Closest hit shaders`` 最近命中着色器（后文简称 ``中靶着色器`` ）将会在最近命中几何体时执行。应用支持任意数量的中靶着色器。此着色器最常用于光照计算并继续追踪额外的光线。
-* ``Miss shaders`` 未命中着色器（后文简称 ``脱靶着色器`` ）与中靶着色器相反，当光线没有与任何几何体相交时脱靶着色器会被调用。该着色器常用于采样环境纹理。
+* ``Ray generation shader`` 光线生成着色器，作为光追管线的起点。与计算着色器类似将会执行一组着色器调用（ ``vkCmdTraceRaysKHR`` 和 ``vkCmdTraceRaysIndirectKHR`` ）。光线生成着色器将会生成光线并且通过在着色器中调用 ``traceRayEXT()`` 进行追踪。并且处理光线相交结果的集合。
+* ``Closest hit shaders`` 最近命中着色器将会在最近命中几何体时执行。应用支持任意数量的最近命中着色器。此着色器最常用于光照计算并继续追踪额外的光线。
+* ``Miss shaders`` 未命中着色器与最近命中着色器相反，当光线没有与任何几何体相交时未命中着色器会被调用。该着色器常用于采样环境纹理。
 * ``Intersection shaders`` 相交着色器允许自定义处理光线相交，并且内置的相交测试是基于三角形进行测试。
-* ``Any hit shaders`` 任意命中着色器（后文简称 ``随靶着色器`` ），与中靶着色器类型，随靶着色器在检测到发生相交时调用，随靶着色器不同的是只要相交发生在 ``[tmin, tmax]`` 之间而不是最近的一次命中。随靶着色器用于过滤相交和透明度测试。
+* ``Any hit shaders`` 任意命中着色器，与最近命中着色器类似，任意命中着色器在检测到发生相交时调用，任意命中着色器不同的是只要相交发生在 ``[tmin, tmax]`` 之间而不是最近的一次命中。任意命中着色器用于过滤相交和透明度测试。
 
 VK_KHR_ray_query
 ##############################
