@@ -220,6 +220,8 @@
 <li><p>2023/5/12 创建 <code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_tracing_pipeline</span></code> 章节</p></li>
 <li><p>2023/5/12 创建 <code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_query</span></code> 章节</p></li>
 <li><p>2023/5/12 创建 <code class="docutils literal notranslate"><span class="pre">VK_KHR_pipeline_library</span></code> 章节</p></li>
+<li><p>2023/5/12 创建 <code class="docutils literal notranslate"><span class="pre">VK_KHR_deferred_host_operations</span></code> 章节</p></li>
+<li><p>2023/5/12 创建 <code class="docutils literal notranslate"><span class="pre">光追最佳实践</span></code> 章节</p></li>
 </ul>
 </div>
 <p><a class="reference external" href="https://github.com/KhronosGroup/Vulkan-Guide/blob/main/chapters/extensions/ray_tracing.adoc">文献源</a></p>
@@ -303,6 +305,60 @@
 </section>
 <section id="id6">
 <h2>VK_KHR_pipeline_library<a class="headerlink" href="#id6" title="此标题的永久链接">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">VK_KHR_pipeline_library</span></code> 用于管线库，一个管线库是使用 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_LIBRARY_BIT_KHR</span></code> 创建的特殊管线，其并不能直接绑定和使用，而是用于代表一组着色器或着色器组和相关其他管线相关的状态。</p>
+<p><code class="docutils literal notranslate"><span class="pre">VK_KHR_pipeline_library</span></code> 并没有直接增加新 <code class="docutils literal notranslate"><span class="pre">API</span></code> 也没有定义如何创建管线库，而相关的功能是交于那些使用 <code class="docutils literal notranslate"><span class="pre">VK_KHR_pipeline_library</span></code> 提供功能的扩展。
+当前仅仅提供了 <code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_tracing_pipeline</span></code> 的例子。</p>
+<div class="note admonition">
+<p class="admonition-title">当前仅仅提供了 <code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_tracing_pipeline</span></code> 的例子</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">KhronosGroup</span></code> 的 <a class="reference external" href="https://github.com/KhronosGroup/Vulkan-Samples">Vulkan-Samples</a> 项目中目前已经不单单只有 <code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_tracing_pipeline</span></code> 例子，还有 <a class="reference external" href="https://github.com/KhronosGroup/Vulkan-Samples/tree/main/samples/extensions">其他扩展示例</a>。</p>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">VK_KHR_pipeline_library</span></code> 被定义成独立的扩展，为了是在未来其它扩展共用此扩展而不需要依赖于光追扩展。</p>
+<p>对于创建光追管线库：</p>
+<ul class="simple">
+<li><p>当调用 <code class="docutils literal notranslate"><span class="pre">vkCreateRayTracingPipelinesKHR</span></code> 时指定 <code class="docutils literal notranslate"><span class="pre">VkRayTracingPipelineCreateInfoKHR::flags</span></code> 中有 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_LIBRARY_BIT_KHR</span></code></p></li>
+</ul>
+<p>对于将光追管线链接到一个完整管线中：</p>
+<ul class="simple">
+<li><p>设置 <code class="docutils literal notranslate"><span class="pre">VkRayTracingPipelineCreateInfoKHR::pLibraryInfo</span></code> 指向一个 <code class="docutils literal notranslate"><span class="pre">VkPipelineLibraryCreateInfoKHR</span></code> 实例指针</p></li>
+<li><p>将 <code class="docutils literal notranslate"><span class="pre">VkPipelineLibraryCreateInfoKHR::pLibraries</span></code> 中设置的管线作为管线库中用于输入连接的管线，并且设置 <code class="docutils literal notranslate"><span class="pre">VkPipelineLibraryCreateInfoKHR::libraryCount</span></code> 设置适当值</p></li>
+</ul>
+</section>
+<section id="id8">
+<h2>VK_KHR_deferred_host_operations<a class="headerlink" href="#id8" title="此标题的永久链接">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">VK_KHR_deferred_host_operations</span></code> 提供了将繁重的 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 的工作通过多线程进行分摊的机制。 <code class="docutils literal notranslate"><span class="pre">VK_KHR_deferred_host_operations</span></code> 被设计成允许应用创建和管理线程。</p>
+<p>和 <code class="docutils literal notranslate"><span class="pre">VK_KHR_pipeline_library</span></code> 类似， <code class="docutils literal notranslate"><span class="pre">VK_KHR_deferred_host_operations</span></code> 也是个独立的扩展，目的也是为了在未来其他扩展共用该扩展功能。</p>
+<p>只有在标注了支持延迟操作时才可以进行延迟操作。当前支持的延迟操作为 <code class="docutils literal notranslate"><span class="pre">vkCreateRayTracingPipelinesKHR</span></code> 、 <code class="docutils literal notranslate"><span class="pre">vkBuildAccelerationStructuresKHR</span></code> 、 <code class="docutils literal notranslate"><span class="pre">vkCopyAccelerationStructureKHR</span></code> 、 <code class="docutils literal notranslate"><span class="pre">vkCopyMemoryToAccelerationStructureKHR</span></code> 和 <code class="docutils literal notranslate"><span class="pre">vkCopyAccelerationStructureToMemoryKHR</span></code> 。</p>
+<p>为了操作时延迟的：</p>
+<ul class="simple">
+<li><p>通过 <code class="docutils literal notranslate"><span class="pre">vkCreateDeferredOperationKHR</span></code> 创建一个 <code class="docutils literal notranslate"><span class="pre">VkDeferredOperationKHR</span></code> 句柄</p></li>
+<li><p>将 <code class="docutils literal notranslate"><span class="pre">VkDeferredOperationKHR</span></code> 作为参数调用需要的延迟操作</p></li>
+<li><dl class="simple">
+<dt>通过返回的 <code class="docutils literal notranslate"><span class="pre">VkResult</span></code> 查看之前的操作结果：</dt><dd><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">VK_OPERATION_DEFERRED_KHR</span></code> 表示延迟操作成功</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">VK_OPERATION_NOT_DEFERRED_KHR</span></code> 表示操作立即成功完成了</p></li>
+<li><p>其他任意错误值表示有错误发生</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>将一个线程加入到一个延迟操作，并且消耗 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 时间去处理该操作：</p>
+<ul class="simple">
+<li><p>对于每个想要参与操作的线程调用 <code class="docutils literal notranslate"><span class="pre">vkDeferredOperationJoinKHR</span></code></p></li>
+<li><dl class="simple">
+<dt>通过 <code class="docutils literal notranslate"><span class="pre">vkDeferredOperationJoinKHR``返回的</span> <span class="pre">``VkResult</span></code> 查看操作结果：</dt><dd><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">VK_SUCCESS</span></code> 表示操作完成</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">VK_THREAD_DONE_KHR</span></code> 表示当前调用的线程已经没有要分配的工作了，但是其他的线程可能还在处理额外的工作。当前的线程不应该再通过 <code class="docutils literal notranslate"><span class="pre">vkDeferredOperationJoinKHR</span></code> 再次 <code class="docutils literal notranslate"><span class="pre">join</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">VK_THREAD_IDLE_KHR</span></code> 表示当前调用的线程暂时已经没有要分配的工作了，但是其他额外的工作可能会在不期到来。当前的线程应该执行其他有用的工作，并且调用  <code class="docutils literal notranslate"><span class="pre">vkDeferredOperationJoinKHR</span></code> 再次 <code class="docutils literal notranslate"><span class="pre">join</span></code> 以此达到高收益。</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>当一个延迟操作完成后（比如 <code class="docutils literal notranslate"><span class="pre">vkDeferredOperationJoinKHR</span></code> 返回了  <code class="docutils literal notranslate"><span class="pre">VK_SUCCESS</span></code> ），调用 <code class="docutils literal notranslate"><span class="pre">vkGetDeferredOperationResultKHR</span></code> 获取延迟操作的结果。</p>
+</section>
+<section id="id9">
+<h2>光追最佳实践<a class="headerlink" href="#id9" title="此标题的永久链接">#</a></h2>
 </section>
 </section>
 
@@ -373,6 +429,8 @@
 <li><a class="reference internal" href="#id4">VK_KHR_ray_tracing_pipeline</a></li>
 <li><a class="reference internal" href="#id5">VK_KHR_ray_query</a></li>
 <li><a class="reference internal" href="#id6">VK_KHR_pipeline_library</a></li>
+<li><a class="reference internal" href="#id8">VK_KHR_deferred_host_operations</a></li>
+<li><a class="reference internal" href="#id9">光追最佳实践</a></li>
 </ul>
 </li>
 </ul>
