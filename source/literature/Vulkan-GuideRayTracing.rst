@@ -9,6 +9,8 @@
    * 2023/5/12 创建 ``VK_KHR_ray_tracing_pipeline`` 章节
    * 2023/5/12 创建 ``VK_KHR_ray_query`` 章节
    * 2023/5/12 创建 ``VK_KHR_pipeline_library`` 章节
+   * 2023/5/12 创建 ``VK_KHR_deferred_host_operations`` 章节
+   * 2023/5/12 创建 ``光追最佳实践`` 章节
   
 `文献源`_
 
@@ -102,3 +104,55 @@ VK_KHR_ray_query
 
 VK_KHR_pipeline_library
 ##############################
+
+``VK_KHR_pipeline_library`` 用于管线库，一个管线库是使用 ``VK_PIPELINE_CREATE_LIBRARY_BIT_KHR`` 创建的特殊管线，其并不能直接绑定和使用，而是用于代表一组着色器或着色器组和相关其他管线相关的状态。
+
+``VK_KHR_pipeline_library`` 并没有直接增加新 ``API`` 也没有定义如何创建管线库，而相关的功能是交于那些使用 ``VK_KHR_pipeline_library`` 提供功能的扩展。
+当前仅仅提供了 ``VK_KHR_ray_tracing_pipeline`` 的例子。
+
+.. admonition:: 当前仅仅提供了 ``VK_KHR_ray_tracing_pipeline`` 的例子
+    :class: note
+
+    在 ``KhronosGroup`` 的 `Vulkan-Samples <https://github.com/KhronosGroup/Vulkan-Samples>`_ 项目中目前已经不单单只有 ``VK_KHR_ray_tracing_pipeline`` 例子，还有 `其他扩展示例 <https://github.com/KhronosGroup/Vulkan-Samples/tree/main/samples/extensions>`_。
+
+``VK_KHR_pipeline_library`` 被定义成独立的扩展，为了是在未来其它扩展共用此扩展而不需要依赖于光追扩展。
+
+对于创建光追管线库：
+
+* 当调用 ``vkCreateRayTracingPipelinesKHR`` 时指定 ``VkRayTracingPipelineCreateInfoKHR::flags`` 中有 ``VK_PIPELINE_CREATE_LIBRARY_BIT_KHR`` 
+
+对于将光追管线链接到一个完整管线中：
+
+* 设置 ``VkRayTracingPipelineCreateInfoKHR::pLibraryInfo`` 指向一个 ``VkPipelineLibraryCreateInfoKHR`` 实例指针
+* 将 ``VkPipelineLibraryCreateInfoKHR::pLibraries`` 中设置的管线作为管线库中用于输入连接的管线，并且设置 ``VkPipelineLibraryCreateInfoKHR::libraryCount`` 设置适当值
+
+VK_KHR_deferred_host_operations
+##################################
+
+``VK_KHR_deferred_host_operations`` 提供了将繁重的 ``CPU`` 的工作通过多线程进行分摊的机制。 ``VK_KHR_deferred_host_operations`` 被设计成允许应用创建和管理线程。
+
+和 ``VK_KHR_pipeline_library`` 类似， ``VK_KHR_deferred_host_operations`` 也是个独立的扩展，目的也是为了在未来其他扩展共用该扩展功能。
+
+只有在标注了支持延迟操作时才可以进行延迟操作。当前支持的延迟操作为 ``vkCreateRayTracingPipelinesKHR`` 、 ``vkBuildAccelerationStructuresKHR`` 、 ``vkCopyAccelerationStructureKHR`` 、 ``vkCopyMemoryToAccelerationStructureKHR`` 和 ``vkCopyAccelerationStructureToMemoryKHR`` 。
+
+为了操作时延迟的：
+
+* 通过 ``vkCreateDeferredOperationKHR`` 创建一个 ``VkDeferredOperationKHR`` 句柄
+* 将 ``VkDeferredOperationKHR`` 作为参数调用需要的延迟操作
+* 通过返回的 ``VkResult`` 查看之前的操作结果：
+    * ``VK_OPERATION_DEFERRED_KHR`` 表示延迟操作成功
+    * ``VK_OPERATION_NOT_DEFERRED_KHR`` 表示操作立即成功完成了
+    * 其他任意错误值表示有错误发生
+
+将一个线程加入到一个延迟操作，并且消耗 ``CPU`` 时间去处理该操作：
+
+* 对于每个想要参与操作的线程调用 ``vkDeferredOperationJoinKHR``
+* 通过 ``vkDeferredOperationJoinKHR``返回的 ``VkResult`` 查看操作结果：
+    * ``VK_SUCCESS`` 表示操作完成
+    * ``VK_THREAD_DONE_KHR`` 表示当前调用的线程已经没有要分配的工作了，但是其他的线程可能还在处理额外的工作。当前的线程不应该再通过 ``vkDeferredOperationJoinKHR`` 再次 ``join``
+    * ``VK_THREAD_IDLE_KHR`` 表示当前调用的线程暂时已经没有要分配的工作了，但是其他额外的工作可能会在不期到来。当前的线程应该执行其他有用的工作，并且调用  ``vkDeferredOperationJoinKHR`` 再次 ``join`` 以此达到高收益。
+
+当一个延迟操作完成后（比如 ``vkDeferredOperationJoinKHR`` 返回了  ``VK_SUCCESS`` ），调用 ``vkGetDeferredOperationResultKHR`` 获取延迟操作的结果。
+
+光追最佳实践
+##################################
