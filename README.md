@@ -58,3 +58,5 @@ Vulkan入门精要
     >
     >* `source\literature\index.rst`中增加`序言`章节
     >* `source\literature\index.rst`中增加相关链接
+    >* `source\literature\index.rst`中增加`介绍`文章
+    >* 增加`source\Introduction.rst`文章
