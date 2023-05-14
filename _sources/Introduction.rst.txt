@@ -49,6 +49,11 @@ Vulkan
 实现 ``OpenGL`` 的接口，反之则不行。要说 ``Vulkan`` 与 ``OpenGL`` 之间有什么相同点？确切说，除了图新学上统一的概念在 ``Vulkan`` 与 ``OpenGL`` 中是相同的（比如顶点属性，顶点着色器，片元着色器等等），其他没有任何相似的地方。读者完全
 可以把 ``Vulkan`` 当做全新的架构去学，不需要提前学完 ``OpenGL`` ，当然如果提前了解了 ``OpenGL`` ，对于 ``Vulkan`` 中的一些概念是相通的，会对理解起一些帮助。但是读者放心，您在学习本教程时不需要会  ``OpenGL`` 也可以理解其中的奥妙。
 
+.. admonition:: ``Vulkan`` 与 ``DirectX 12``
+    :class: tip
+     
+    是同一级别的标准，都是现代图形接口标准。
+
 .. admonition:: 有关学习 ``Vulkan``
    :class: important
 
