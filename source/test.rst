@@ -164,9 +164,9 @@ below.
 
 The hyperlink target above points to this paragraph.
 
-.. image:: ../Aifadian/aifadian.jpg
+.. image:: _static/aifadian.jpg
 
-.. figure:: ../Aifadian/aifadian.jpg
+.. figure:: _static/aifadian.jpg
 
    The larch.
 
@@ -176,7 +176,7 @@ The hyperlink target above points to this paragraph.
 
 .. Danger: modify at your own risk!
 
-.. figure:: ../Aifadian/aifadian.jpg
+.. figure:: _static/aifadian.jpg
    :scale: 50
 
    The larch.
@@ -239,14 +239,14 @@ The hyperlink target above points to this paragraph.
 
 :Version: 1.1
 
-.. image:: ../Aifadian/aifadian.jpg
+.. image:: _static/aifadian.jpg
    :height: 100px
    :width: 200 px
    :scale: 50 %
    :alt: alternate text
    :align: right
 
-.. figure:: ../Aifadian/aifadian.jpg
+.. figure:: _static/aifadian.jpg
    :scale: 50 %
    :alt: map to buried treasure
 
@@ -259,11 +259,11 @@ The hyperlink target above points to this paragraph.
    +---------------------------------------+-----------------------+
    | Symbol                                | Meaning               |
    +=======================================+=======================+
-   | .. image:: ../Aifadian/aifadian.jpg   | Campground            |
+   | .. image:: _static/aifadian.jpg       | Campground            |
    +---------------------------------------+-----------------------+
-   | .. image:: ../Aifadian/aifadian.jpg   | Lake                  |
+   | .. image:: _static/aifadian.jpg       | Lake                  |
    +---------------------------------------+-----------------------+
-   | .. image:: ../Aifadian/aifadian.jpg   | Mountain              |
+   | .. image:: _static/aifadian.jpg       | Mountain              |
    +---------------------------------------+-----------------------+
 
 .. header:: This space for rent.
@@ -412,7 +412,7 @@ Lorem ipsum [Ref]_ dolor sit amet.
 
 .. |name| replace:: replacement *text*
 
-.. |caution| image:: ../Aifadian/aifadian.jpg
+.. |caution| image:: _static/aifadian.jpg
              :alt: Warning!
 
 .. productionlist::
