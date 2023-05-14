@@ -6,6 +6,7 @@
 
    * 2023/5/11 增加 ``文献翻译`` 目录
    * 2023/5/14 增加 ``序言`` 目录
+   * 2023/5/14 增加 ``介绍`` 目录
 
 .. image:: https://img.shields.io/badge/QQ%20Group-128656761-deepgreen?logo=tencentqq
    :target: https://jq.qq.com/?_wv=1027&k=rZGd2LHr
@@ -46,6 +47,14 @@
 在这里感谢我的父母家人，朋友，老师和小伙伴们的鼎力支持，谢谢。
 
 致良知，知行合一。让我们步入 ``Vulkan`` 的学习吧~ (๑•̀ㅂ•́)و✧
+
+.. important:: 文章来源于本人学习总结，会出现讲解错误，请各位及时提出指正，谢谢。
+
+.. toctree::
+   :caption: 入门精要
+   :maxdepth: 2
+
+   Introduction.rst
 
 .. toctree::
    :caption: 文献翻译
