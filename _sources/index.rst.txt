@@ -7,15 +7,24 @@
    * 2023/5/11 增加 ``文献翻译`` 目录
    * 2023/5/14 增加 ``序言`` 目录
 
+.. image:: https://img.shields.io/badge/QQ%20Group-128656761-deepgreen?logo=tencentqq
+   :target: https://jq.qq.com/?_wv=1027&k=rZGd2LHr
+   
+.. image:: https://img.shields.io/badge/Email-g1018505124@outlook.com-deepgreen
+
+
 序言
 ####################
 
-.. sidebar:: 赞助
+.. sidebar:: 赞助 |biohazard|
    :subtitle: 请量力而为，如果赞助完真有困难可以退回。
 
    .. image:: _static/aifadian.jpg
 
    .. attention:: 未成年人禁止投喂
+
+.. |biohazard| image:: https://afdian.moeci.com/1/badge.svg
+   :target: https://afdian.net/@TurboEngine
 
 摇想童年看到游戏中那些酷炫的画面难以自拔，为了制作游戏，多年后填报了软件工程专业，但学了才知道该专业只是教一些通用的计算机知识，并不会教你如何制作游戏。遥想那是大二的夏天，网络搜索游戏制作，
 映入眼帘的就是 `Unity <https://unity.com/>`_ ，有个人免费版，也就下载下来玩玩，继续搜索 ``Unity`` 是如何绘制酷炫的画面的，映入眼帘的就是 ``Shader`` 这个单词，继续搜索找到了冯乐乐的 ``《Unity Shader入门精要》``，
