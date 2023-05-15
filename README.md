@@ -58,12 +58,15 @@ Vulkan入门精要
 
 * 2023/5/14
     >
-    >* `source\literature\index.rst`中增加`序言`章节
-    >* `source\literature\index.rst`中增加相关链接
-    >* `source\literature\index.rst`中增加`介绍`文章
-    >* 增加`source\Introduction.rst`文章
+    >* `source/literature/index.rst`中增加`序言`章节
+    >* `source/literature/index.rst`中增加相关链接
+    >* `source/literature/index.rst`中增加`介绍`文章
+    >* 增加`source/Introduction.rst`文章
 
 * 2023/5/15
     >
-    >* 增加`source\Overview.rst`文章
-    >* 更新`source\Introduction.rst`文章
+    >* 增加`source/Overview.rst`文章
+    >* 更新`source/Introduction.rst`文章
+    >* 更新`source/literature/index.rst`文章
+    >* 增加`source/literature/NVIDIAVulkanRayTracingTutorial.rst`文章
+    >* 增加`source/literature/vk_mini_path_tracer.rst`文章
