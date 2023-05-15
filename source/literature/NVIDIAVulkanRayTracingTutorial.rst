@@ -38,7 +38,7 @@ NVIDIA Vulkan 光线追踪教程
 配置环境
 ####################
 
-推荐的方式是通过 ``nvpro-samples `` 的 ``build_all`` 脚本去下载包括 ``NVVK`` 在内的工程。
+推荐的方式是通过 ``nvpro-samples`` 的 ``build_all`` 脚本去下载包括 ``NVVK`` 在内的工程。
 
 在命令行中，从 https://github.com/nvpro-samples/build_all 中克隆 ``nvpro-samples/build_all`` 仓库：
 
