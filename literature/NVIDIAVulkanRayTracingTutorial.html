@@ -3,11 +3,11 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="搜索" href="../search.html" /><link rel="next" title="Vulkan 光线追踪最终标准发布" href="VulkanRayTracingFinalSpecificationRelease.html" /><link rel="prev" title="纵览" href="../Overview.html" />
-        <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/literature/index.html" />
+<link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="搜索" href="../search.html" /><link rel="next" title="Vulkan迷你路径追踪" href="vk_mini_path_tracer.html" /><link rel="prev" title="光线追踪" href="Vulkan-GuideRayTracing.html" />
+        <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/literature/NVIDIAVulkanRayTracingTutorial.html" />
 
     <link rel="shortcut icon" href="../_static/VulkanLogo.png"/><!-- Generated with Sphinx 6.2.1 and Furo 2023.03.27 -->
-        <title>文献 - Vulkan入门精要</title>
+        <title>NVIDIA Vulkan 光线追踪教程 - Vulkan入门精要</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
@@ -137,7 +137,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -167,10 +167,10 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">文献翻译</span></p>
 <ul class="current">
-<li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">文献</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">文献</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="VulkanRayTracingFinalSpecificationRelease.html">Vulkan 光线追踪最终标准发布</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Vulkan-GuideRayTracing.html">光线追踪</a></li>
-<li class="toctree-l2"><a class="reference internal" href="NVIDIAVulkanRayTracingTutorial.html">NVIDIA Vulkan 光线追踪教程</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">NVIDIA Vulkan 光线追踪教程</a></li>
 <li class="toctree-l2"><a class="reference internal" href="vk_mini_path_tracer.html">Vulkan迷你路径追踪</a></li>
 </ul>
 </li>
@@ -195,7 +195,7 @@
         </a>
         <div class="content-icon-container">
           <div class="edit-this-page">
-  <a class="muted-link" href="https://github.com/FuXiii/Essentials.of.Vulkan/edit/main/source/literature/index.rst" title="Edit this page">
+  <a class="muted-link" href="https://github.com/FuXiii/Essentials.of.Vulkan/edit/main/source/literature/NVIDIAVulkanRayTracingTutorial.rst" title="Edit this page">
     <svg aria-hidden="true" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
@@ -211,54 +211,81 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="id1">
-<h1>文献<a class="headerlink" href="#id1" title="此标题的永久链接">#</a></h1>
+          <section id="nvidia-vulkan">
+<h1>NVIDIA Vulkan 光线追踪教程<a class="headerlink" href="#nvidia-vulkan" title="此标题的永久链接">#</a></h1>
 <div class="note admonition">
 <p class="admonition-title">更新记录</p>
 <ul class="simple">
-<li><p>2023/5/11 增加 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">光线追踪最终标准发布</span></code> 文章</p></li>
-<li><p>2023/5/12 增加 <code class="docutils literal notranslate"><span class="pre">光线追踪</span></code> 文章</p></li>
-<li><p>2023/5/12 增加 <code class="docutils literal notranslate"><span class="pre">NVIDIA</span> <span class="pre">Vulkan</span> <span class="pre">光线追踪教程</span></code> 文章</p></li>
-<li><p>2023/5/12 增加 <code class="docutils literal notranslate"><span class="pre">Vulkan迷你路径追踪</span></code> 文章</p></li>
+<li><p>2023/5/15 创建本文</p></li>
+<li><p>2023/5/15 增加 <code class="docutils literal notranslate"><span class="pre">介绍</span></code> 章节</p></li>
+<li><p>2023/5/15 增加 <code class="docutils literal notranslate"><span class="pre">配置环境</span></code> 章节</p></li>
+<li><p>2023/5/15 增加 <code class="docutils literal notranslate"><span class="pre">生成解决方案</span></code> 章节</p></li>
 </ul>
 </div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="VulkanRayTracingFinalSpecificationRelease.html">Vulkan 光线追踪最终标准发布</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="VulkanRayTracingFinalSpecificationRelease.html#id1">历史回顾</a></li>
-<li class="toctree-l2"><a class="reference internal" href="VulkanRayTracingFinalSpecificationRelease.html#id2">光追标准</a></li>
-<li class="toctree-l2"><a class="reference internal" href="VulkanRayTracingFinalSpecificationRelease.html#id3">扩展结构</a></li>
-<li class="toctree-l2"><a class="reference internal" href="VulkanRayTracingFinalSpecificationRelease.html#acceleration-structures">加速结构（Acceleration Structures）</a></li>
-<li class="toctree-l2"><a class="reference internal" href="VulkanRayTracingFinalSpecificationRelease.html#host-deferred-host-operations">Host端的延迟操作（Deferred Host Operations）</a></li>
-<li class="toctree-l2"><a class="reference internal" href="VulkanRayTracingFinalSpecificationRelease.html#id4">光追管线</a></li>
-<li class="toctree-l2"><a class="reference internal" href="VulkanRayTracingFinalSpecificationRelease.html#id5">光线查询</a></li>
-<li class="toctree-l2"><a class="reference internal" href="VulkanRayTracingFinalSpecificationRelease.html#id6">正路在此</a></li>
-<li class="toctree-l2"><a class="reference internal" href="VulkanRayTracingFinalSpecificationRelease.html#id9">结论和资源</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Vulkan-GuideRayTracing.html">光线追踪</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Vulkan-GuideRayTracing.html#id3">VK_KHR_acceleration_structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Vulkan-GuideRayTracing.html#id4">VK_KHR_ray_tracing_pipeline</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Vulkan-GuideRayTracing.html#id5">VK_KHR_ray_query</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Vulkan-GuideRayTracing.html#id6">VK_KHR_pipeline_library</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Vulkan-GuideRayTracing.html#id8">VK_KHR_deferred_host_operations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Vulkan-GuideRayTracing.html#id9">光追最佳实践</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="NVIDIAVulkanRayTracingTutorial.html">NVIDIA Vulkan 光线追踪教程</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="NVIDIAVulkanRayTracingTutorial.html#id2">介绍</a></li>
-<li class="toctree-l2"><a class="reference internal" href="NVIDIAVulkanRayTracingTutorial.html#id3">配置环境</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="vk_mini_path_tracer.html">Vulkan迷你路径追踪</a></li>
-</ul>
+<p><a class="reference external" href="https://nvpro-samples.github.io/vk_raytracing_tutorial_KHR/">文献源</a></p>
+<p>本文所提供的的代码和文档聚焦于使用 <a class="reference external" href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/vkspec.html#VK_KHR_ray_tracing_pipeline">VK_KHR_ray_tracing_pipeline</a> 扩展展示一个基础光追示例。
+该教程从一个基于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 开发的基础程序开始，并且提供一步步的介绍去修改和增加函数和功能。</p>
+<figure class="align-default" id="id6">
+<img alt="../_images/resultRaytraceShadowMedieval.png" src="../_images/resultRaytraceShadowMedieval.png" />
+<figcaption>
+<p><span class="caption-text">最终结果</span><a class="headerlink" href="#id6" title="此图像的永久链接">#</a></p>
+</figcaption>
+</figure>
+<div class="note admonition">
+<p class="admonition-title">GitHub仓库</p>
+<p><a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR">https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR</a></p>
 </div>
+<section id="id2">
+<h2>介绍<a class="headerlink" href="#id2" title="此标题的永久链接">#</a></h2>
+<p>本教程重点介绍将光线跟踪添加到现有 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 应用中的步骤，并假设您对 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 有一定的了解。
+对于像交换链管理、 <code class="docutils literal notranslate"><span class="pre">Render</span> <span class="pre">Pass</span></code> 等常见的组件已经封装在了 <a class="reference external" href="https://github.com/nvpro-samples/nvpro_core/tree/master/nvvk">C++ API helpers</a> 和
+英伟达的 <a class="reference external" href="https://github.com/nvpro-samples/build_all">nvpro-samples</a> 框架中。这个框架包含很多高级示例，对于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 和 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 最佳实践也在其中。
+我们同时使用一个助手去生成光追的加速结构，我们会在本文中对其进行详细说明。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>出于教育的目的，所有的代码都在分散一些很小的文件中。要将这些结合起来需要额外的抽象层级。</p>
+</div>
+</section>
+<section id="id3">
+<h2>配置环境<a class="headerlink" href="#id3" title="此标题的永久链接">#</a></h2>
+<p>推荐的方式是通过 <code class="docutils literal notranslate"><span class="pre">nvpro-samples</span> <span class="pre">``</span> <span class="pre">的</span> <span class="pre">``build_all</span></code> 脚本去下载包括 <code class="docutils literal notranslate"><span class="pre">NVVK</span></code> 在内的工程。</p>
+<p>在命令行中，从 <a class="reference external" href="https://github.com/nvpro-samples/build_all">https://github.com/nvpro-samples/build_all</a> 中克隆 <code class="docutils literal notranslate"><span class="pre">nvpro-samples/build_all</span></code> 仓库：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">nvpro</span><span class="o">-</span><span class="n">samples</span><span class="o">/</span><span class="n">build_all</span><span class="o">.</span><span class="n">git</span>
+</pre></div>
+</div>
+<p>之后打开 <code class="docutils literal notranslate"><span class="pre">build_all</span></code> 文件夹并切执行 <code class="docutils literal notranslate"><span class="pre">clone_all.bat</span></code> ( <code class="docutils literal notranslate"><span class="pre">Windows</span></code> ) 或 <code class="docutils literal notranslate"><span class="pre">clone_all.sh</span></code> ( <code class="docutils literal notranslate"><span class="pre">Linux</span></code> )。</p>
+<p>如果你希望克隆尽可能少的仓库，打开命令行，并且执行如下指令，只克隆您需要的仓库：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="o">--</span><span class="n">recursive</span> <span class="o">--</span><span class="n">shallow</span><span class="o">-</span><span class="n">submodules</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">nvpro</span><span class="o">-</span><span class="n">samples</span><span class="o">/</span><span class="n">nvpro_core</span><span class="o">.</span><span class="n">git</span>
+<span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">nvpro</span><span class="o">-</span><span class="n">samples</span><span class="o">/</span><span class="n">vk_raytracing_tutorial_KHR</span><span class="o">.</span><span class="n">git</span>
+</pre></div>
+</div>
+<section id="id4">
+<h3>生成解决方案<a class="headerlink" href="#id4" title="此标题的永久链接">#</a></h3>
+<p>对于存储构建生成的解决方案，最经典的是在工程主目录下创建一个 <code class="docutils literal notranslate"><span class="pre">build</span></code> 文件夹。您可以是使用 <code class="docutils literal notranslate"><span class="pre">CMake-GUI</span></code> 或者如下指令生成目标工程：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">vk_raytracing_tutorial_KHR</span>
+<span class="n">mkdir</span> <span class="n">build</span>
+<span class="n">cd</span> <span class="n">build</span>
+<span class="n">cmake</span> <span class="o">..</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>如果您没有使用 <code class="docutils literal notranslate"><span class="pre">Visual</span> <span class="pre">Studio</span> <span class="pre">2019</span></code> 或者更高版本，请确保 <code class="docutils literal notranslate"><span class="pre">Visual</span> <span class="pre">Studio</span></code> 中目标平台选择的是 <code class="docutils literal notranslate"><span class="pre">x64</span></code> 平台。
+对于 <code class="docutils literal notranslate"><span class="pre">Visual</span> <span class="pre">Studio</span> <span class="pre">2019</span></code> 来说默认是 <code class="docutils literal notranslate"><span class="pre">x64</span></code> 平台，但老版本就不一定了。</p>
+</div>
+</section>
+<section id="id5">
+<h3>工具安装<a class="headerlink" href="#id5" title="此标题的永久链接">#</a></h3>
+<p>我们需要一张支持 <code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_tracing_pipeline</span></code> 扩展的显卡。对于英伟达的图形卡，您需要最起码是 <code class="docutils literal notranslate"><span class="pre">2021年</span></code> 或之后的 <a class="reference external" href="https://developer.nvidia.com/vulkan-driver">Vulkan驱动</a> 。</p>
+<p>该工程最低需要 <a class="reference external" href="https://vulkan.lunarg.com/sdk/home">Vulkan SDK</a> 的版本为 <code class="docutils literal notranslate"><span class="pre">1.2.161</span></code>。该工程是使用 <code class="docutils literal notranslate"><span class="pre">1.2.182.0</span></code> 进行测试的。</p>
+</section>
+</section>
 </section>
 
         </article>
@@ -266,23 +293,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="VulkanRayTracingFinalSpecificationRelease.html">
+          <a class="next-page" href="vk_mini_path_tracer.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Vulkan 光线追踪最终标准发布</div>
+                <div class="title">Vulkan迷你路径追踪</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="../Overview.html">
+          <a class="prev-page" href="Vulkan-GuideRayTracing.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">纵览</div>
+                <div class="title">光线追踪</div>
                 
               </div>
             </a>
@@ -311,8 +338,32 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">NVIDIA Vulkan 光线追踪教程</a><ul>
+<li><a class="reference internal" href="#id2">介绍</a></li>
+<li><a class="reference internal" href="#id3">配置环境</a><ul>
+<li><a class="reference internal" href="#id4">生成解决方案</a></li>
+<li><a class="reference internal" href="#id5">工具安装</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
