@@ -225,10 +225,34 @@
 <li><p>2023/5/14 增加 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 章节</p></li>
 <li><p>2023/5/14 增加 <code class="docutils literal notranslate"><span class="pre">图形接口</span></code> 章节</p></li>
 <li><p>2023/5/14 增加 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 章节</p></li>
+<li><p>2023/5/15 增加 <code class="docutils literal notranslate"><span class="pre">计算机图形学</span></code> 章节</p></li>
+<li><p>2023/5/15 增加 <code class="docutils literal notranslate"><span class="pre">实时渲染和离线渲染</span></code> 章节</p></li>
 </ul>
 </div>
 <section id="id2">
-<h2>图形接口<a class="headerlink" href="#id2" title="此标题的永久链接">#</a></h2>
+<h2>计算机图形学<a class="headerlink" href="#id2" title="此标题的永久链接">#</a></h2>
+<p>计算机图形学的主要研究内容就是研究如何在计算机中表示图形、以及利用计算机进行图形的计算、处理和显示的相关原理与算法。（来源于 <a class="reference external" href="https://baike.baidu.com/item/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/279486">百度百科</a> ，说的不错）。</p>
+<p>目前计算机中对于图形应用的开发一般有三种途径：</p>
+<ol class="arabic simple">
+<li><p>基于 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 的硬实时渲染（一般简称 <code class="docutils literal notranslate"><span class="pre">实时渲染</span></code>）</p></li>
+<li><p>基于 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 的 <code class="docutils literal notranslate"><span class="pre">离线渲染</span></code></p></li>
+<li><p>基于 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 的软实时渲染（一般简称 <code class="docutils literal notranslate"><span class="pre">软光栅</span></code>）</p></li>
+</ol>
+<p>每一种都有自己的特色和应用领域。</p>
+</section>
+<section id="id4">
+<h2>实时渲染和离线渲染<a class="headerlink" href="#id4" title="此标题的永久链接">#</a></h2>
+<p>基于 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 的实时渲染，所谓 <code class="docutils literal notranslate"><span class="pre">实时</span></code> 目的是在尽可能短的时间里（一般小于1秒）对相应数据的输入，给出及时的反馈，其多为性能敏感。多见于游戏的画面渲染。而厂家为了用户使用自家显卡设备，都会推出设备对应的图形接口供用户访问使用。</p>
+<p>基于 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 的离线渲染，多见于影视照片级别的光线追踪渲染中，像电影特效、逼真、震撼的影视场景一般都属于离线渲染。其多为计算密集型，计算一幅图像所需要的时间往往是巨大的（可能需要三天甚至更多时间渲染一幅图像）。</p>
+<p>基于 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 的软光栅，多见于开发者学习 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 的实时渲染原理，并使用 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 来实现相关工作，优点是开发者可随心探索底层原理，缺点是性能堪忧，效果有限，不够灵活。多用于学习探索的目的，基本没有用此方法开发产品的。</p>
+<div class="tip admonition">
+<p class="admonition-title">实时、离线与光线追踪</p>
+<p>随着设备的发展和性能的提升，不断有开发者尝试攻破离线渲染在 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 上渲染过于缓慢的问题，他们在努力尝试将 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 上的光追计算使用 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 进行计算，想要打破实时渲染和离线渲染之间的鸿沟。随着 <code class="docutils literal notranslate"><span class="pre">DirectX</span> <span class="pre">12</span></code> 和 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 这样的
+现代图形接口的发布，支持在 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 上进行实时光线追踪，实时渲染和离线渲染之间的鸿沟被彻底打破，实时渲染将在未来的大趋势下占有更加重要的一席。</p>
+</div>
+</section>
+<section id="id5">
+<h2>图形接口<a class="headerlink" href="#id5" title="此标题的永久链接">#</a></h2>
 <p>图形接口，也称图形 <code class="docutils literal notranslate"><span class="pre">API</span></code> ，其目的是定义一套规范用于与图形功能硬件设备进行沟通。由于市面上硬件设备产品众多每一家都可以定义一套自己设备的图形接口，这就会导致设备使用用户需要每一个设备单独适配，其工作了繁重重复不稳定，
 所以硬件设备生产商联合起来定一个统一的图形接口，使用此接口可以与任何支持该接口的设备进行沟通。当今天下有四套图形标准：</p>
 <ol class="arabic simple">
@@ -336,7 +360,9 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">介绍</a><ul>
-<li><a class="reference internal" href="#id2">图形接口</a></li>
+<li><a class="reference internal" href="#id2">计算机图形学</a></li>
+<li><a class="reference internal" href="#id4">实时渲染和离线渲染</a></li>
+<li><a class="reference internal" href="#id5">图形接口</a></li>
 <li><a class="reference internal" href="#khronos">Khronos组织</a></li>
 <li><a class="reference internal" href="#opengl">OpenGL</a></li>
 <li><a class="reference internal" href="#vulkan">Vulkan</a></li>
