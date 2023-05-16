@@ -22,6 +22,7 @@ jobs:
           pip install sphinxcontrib-mermaid
           pip install sphinx-copybutton
           pip install sphinx-inline-tabs
+          pip install sphinx_last_updated_by_git
       - name: Build
         run: |
           make html

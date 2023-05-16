@@ -18,7 +18,8 @@ extensions = [
     'sphinxcontrib.mermaid', 
     'myst_parser', 
     'sphinx_copybutton',
-    'sphinx_inline_tabs'
+    'sphinx_inline_tabs',
+    'sphinx_last_updated_by_git'
     ]
 
 templates_path = ['_templates']

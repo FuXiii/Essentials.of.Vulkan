@@ -76,4 +76,5 @@ Vulkan入门精要
     >
     >* 更新`source/Overview.rst`文章
     >* 增加`source/StartFromVulkanSDK.rst`文章
+    >* 增加`sphinx_last_updated_by_git`扩展，可以在页面底端显示最新更新日期
 
