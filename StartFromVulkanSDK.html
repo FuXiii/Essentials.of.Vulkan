@@ -396,6 +396,31 @@
 <h2>Vulkan Loader<a class="headerlink" href="#vulkan-loader" title="此标题的永久链接">#</a></h2>
 <p>之前说过可以通过硬件设备驱动获取设备支持的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本，在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中这是通过调用 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准函数 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceProperties</span></code> 函数获取到的，之前说过 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 统一了函数获取方式，对于 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceProperties</span></code> 是通过
 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 获取到的。顾名思义 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 就是用于获取 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准函数的模块， <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中所有的标准函数都是通过 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 获取到。</p>
+<div class="note admonition">
+<p class="admonition-title">vkGetPhysicalDeviceProperties</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中可通过调用 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceProperties</span></code> 函数获取到对应物理设备的属性。该函数通过指定 <code class="docutils literal notranslate"><span class="pre">目标物理设备句柄</span></code> 获取 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceProperties</span></code> 结构体数据，以此获得目标物理设备的属性。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由Vulkan1.0提供</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">vkGetPhysicalDeviceProperties</span><span class="p">(</span>
+<span class="w">   </span><span class="n">VkPhysicalDevice</span><span class="w"> </span><span class="n">physicalDevice</span><span class="p">,</span>
+<span class="w">   </span><span class="n">VkPhysicalDeviceProperties</span><span class="o">*</span><span class="w"> </span><span class="n">pProperties</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由Vulkan1.0提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkPhysicalDeviceProperties</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">apiVersion</span><span class="p">;</span>
+<span class="w">   </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">driverVersion</span><span class="p">;</span>
+<span class="w">   </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">vendorID</span><span class="p">;</span>
+<span class="w">   </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">deviceID</span><span class="p">;</span>
+<span class="w">   </span><span class="n">VkPhysicalDeviceType</span><span class="w"> </span><span class="n">deviceType</span><span class="p">;</span>
+<span class="w">   </span><span class="kt">char</span><span class="w"> </span><span class="n">deviceName</span><span class="p">[</span><span class="n">VK_MAX_PHYSICAL_DEVICE_NAME_SIZE</span><span class="p">];</span>
+<span class="w">   </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">pipelineCacheUUID</span><span class="p">[</span><span class="n">VK_UUID_SIZE</span><span class="p">];</span>
+<span class="w">   </span><span class="n">VkPhysicalDeviceLimits</span><span class="w"> </span><span class="n">limits</span><span class="p">;</span>
+<span class="w">   </span><span class="n">VkPhysicalDeviceSparseProperties</span><span class="w"> </span><span class="n">sparseProperties</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkPhysicalDeviceProperties</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>您可能还不太清楚 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceProperties</span></code> 中的每一项都是什么意思，不过大可放心，所有的项目都将会在之后的教程中讲解，我们目前需要先关注 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceProperties::apiVersion</span></code> 这一项，此项即为目标设备支持的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本。</p>
+</div>
 <p>那 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 是什么？具体长什么样呢？在哪里能找到？</p>
 <p>其实 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 就是一个动态库，和常见的动态库没什么区别，在 <code class="docutils literal notranslate"><span class="pre">Windows</span></code> 操作系统中为 <code class="docutils literal notranslate"><span class="pre">vulkan-1.dll</span></code>，在 <code class="docutils literal notranslate"><span class="pre">Linux</span></code> 操作系统中为 <code class="docutils literal notranslate"><span class="pre">libvulkan.so.1</span></code> 或 <code class="docutils literal notranslate"><span class="pre">libvulkan.so</span></code>，一般都在系统目录下 。
 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 实现了 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">API</span></code> 入口，并且管理 <code class="docutils literal notranslate"><span class="pre">Layers</span></code>，扩展，和驱动。</p>
@@ -412,7 +437,19 @@
 </section>
 <section id="vulkan">
 <h2>Vulkan的版本<a class="headerlink" href="#vulkan" title="此标题的永久链接">#</a></h2>
-<p>一旦系统中安装了支持 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的驱动</p>
+<p>一旦系统中安装了支持 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的驱动，这里会有两个 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本，一个版本是 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 的版本，一个是物理设备的版本。</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> <code class="docutils literal notranslate"><span class="pre">Instance</span></code> 的版本</p>
+<blockquote>
+<div><p>这也是 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 的版本。如果命令行中执行 <code class="docutils literal notranslate"><span class="pre">vulkaninfo</span></code> 指令， <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> <code class="docutils literal notranslate"><span class="pre">Instance</span></code> 的版本将会第一个显示。 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 是跟随您的设备驱动更新而一同发行的。</p>
+</div></blockquote>
+</li>
+<li><p>每个物理设备的版本</p>
+<blockquote>
+<div><p>对应的就是 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceProperties::apiVersion</span></code> 的版本，该版本是设备 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 驱动的版本。您可以在执行 <code class="docutils literal notranslate"><span class="pre">vulkaninfo</span></code> 指令后于 <code class="docutils literal notranslate"><span class="pre">Device</span> <span class="pre">Properties</span> <span class="pre">and</span> <span class="pre">Extensions</span></code> 文字标签之后找到 <code class="docutils literal notranslate"><span class="pre">apiVersion</span></code> 的相关信息。</p>
+</div></blockquote>
+</li>
+</ul>
 </section>
 <section id="id5">
 <h2>Vulkan的库<a class="headerlink" href="#id5" title="此标题的永久链接">#</a></h2>
