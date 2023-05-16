@@ -191,7 +191,7 @@ Vulkan Loader
 .. admonition:: Layer
    :class: note
 
-   在 ``Vulkan`` 是 ``Vulkan Loader`` 的一种插件，一般用于为应用开发提供验证和函数调试，用于检查您开发的程序哪里出现了错误，并及时给出提示。
+   是 ``Vulkan Loader`` 的一种插件，一般用于为应用开发提供验证和函数调试，用于检查您开发的程序哪里出现了错误，并及时给出提示。
   
 如果系统中安装了支持 ``Vulkan`` 的驱动或安装了 ``Vulkan SDK`` 的话， 就会有 ``Vulkan`` 的运行时，该运行时自身就有 ``Vulkan Loader`` 的动态库。如果系统没有找到 ``Vulkan`` 的运行时的话，可以从
 `Vulkan SDK <https://vulkan.lunarg.com/home/welcome>`_ 官方网页获取最新的 ``Vulkan Runtime``。
