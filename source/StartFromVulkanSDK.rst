@@ -183,6 +183,37 @@ Vulkan Loader
 之前说过可以通过硬件设备驱动获取设备支持的 ``Vulkan`` 版本，在 ``Vulkan`` 中这是通过调用 ``Vulkan`` 标准函数 ``vkGetPhysicalDeviceProperties`` 函数获取到的，之前说过 ``Vulkan`` 统一了函数获取方式，对于 ``vkGetPhysicalDeviceProperties`` 是通过
 ``Vulkan Loader`` 获取到的。顾名思义 ``Vulkan Loader`` 就是用于获取 ``Vulkan`` 标准函数的模块， ``Vulkan`` 中所有的标准函数都是通过 ``Vulkan Loader`` 获取到。
 
+.. admonition:: vkGetPhysicalDeviceProperties
+   :class: note
+
+   在 ``Vulkan`` 中可通过调用 ``vkGetPhysicalDeviceProperties`` 函数获取到对应物理设备的属性。该函数通过指定 ``目标物理设备句柄`` 获取 ``VkPhysicalDeviceProperties`` 结构体数据，以此获得目标物理设备的属性。
+
+   .. code:: c++
+
+      // 由Vulkan1.0提供
+      void vkGetPhysicalDeviceProperties(
+         VkPhysicalDevice physicalDevice,
+         VkPhysicalDeviceProperties* pProperties);
+
+   .. code-block:: c++
+      
+      // 由Vulkan1.0提供
+      typedef struct VkPhysicalDeviceProperties {
+         uint32_t apiVersion;
+         uint32_t driverVersion;
+         uint32_t vendorID;
+         uint32_t deviceID;
+         VkPhysicalDeviceType deviceType;
+         char deviceName[VK_MAX_PHYSICAL_DEVICE_NAME_SIZE];
+         uint8_t pipelineCacheUUID[VK_UUID_SIZE];
+         VkPhysicalDeviceLimits limits;
+         VkPhysicalDeviceSparseProperties sparseProperties;
+      } VkPhysicalDeviceProperties;
+   
+   您可能还不太清楚 ``VkPhysicalDeviceProperties`` 中的每一项都是什么意思，不过大可放心，所有的项目都将会在之后的教程中讲解，我们目前需要先关注 ``VkPhysicalDeviceProperties::apiVersion`` 这一项，此项即为目标设备支持的 ``Vulkan`` 版本。
+
+
+
 那 ``Vulkan Loader`` 是什么？具体长什么样呢？在哪里能找到？
 
 其实 ``Vulkan Loader`` 就是一个动态库，和常见的动态库没什么区别，在 ``Windows`` 操作系统中为 ``vulkan-1.dll``，在 ``Linux`` 操作系统中为 ``libvulkan.so.1`` 或 ``libvulkan.so``，一般都在系统目录下 。
@@ -203,7 +234,15 @@ Vulkan Loader
 Vulkan的版本
 ####################
 
-一旦系统中安装了支持 ``Vulkan`` 的驱动
+一旦系统中安装了支持 ``Vulkan`` 的驱动，这里会有两个 ``Vulkan`` 版本，一个版本是 ``Vulkan Loader`` 的版本，一个是物理设备的版本。
+
+* ``Vulkan`` ``Instance`` 的版本
+
+   这也是 ``Vulkan Loader`` 的版本。如果命令行中执行 ``vulkaninfo`` 指令， ``Vulkan`` ``Instance`` 的版本将会第一个显示。 ``Vulkan Loader`` 是跟随您的设备驱动更新而一同发行的。
+
+* 每个物理设备的版本
+
+   对应的就是 ``VkPhysicalDeviceProperties::apiVersion`` 的版本，该版本是设备 ``Vulkan`` 驱动的版本。您可以在执行 ``vulkaninfo`` 指令后于 ``Device Properties and Extensions`` 文字标签之后找到 ``apiVersion`` 的相关信息。
 
 
 Vulkan的库
