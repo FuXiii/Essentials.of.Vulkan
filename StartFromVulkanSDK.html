@@ -1,0 +1,517 @@
+<!doctype html>
+<html class="no-js" lang="zh-CN">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+<link rel="index" title="索引" href="genindex.html" /><link rel="search" title="搜索" href="search.html" /><link rel="next" title="纵览" href="Overview.html" /><link rel="prev" title="介绍" href="Introduction.html" />
+        <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/StartFromVulkanSDK.html" />
+
+    <link rel="shortcut icon" href="_static/VulkanLogo.png"/><!-- Generated with Sphinx 6.2.1 and Furo 2023.03.27 -->
+        <title>开始于 Vulkan SDK - Vulkan入门精要</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">Vulkan入门精要</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="_static/Vulkan.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">Vulkan入门精要</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="搜索" name="q" aria-label="搜索">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">入门精要</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Introduction.html">介绍</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">开始于 Vulkan SDK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Overview.html">纵览</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">文献翻译</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="literature/index.html">文献</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="literature/VulkanRayTracingFinalSpecificationRelease.html">Vulkan 光线追踪最终标准发布</a></li>
+<li class="toctree-l2"><a class="reference internal" href="literature/Vulkan-GuideRayTracing.html">光线追踪</a></li>
+<li class="toctree-l2"><a class="reference internal" href="literature/NVIDIAVulkanRayTracingTutorial.html">NVIDIA Vulkan 光线追踪教程</a></li>
+<li class="toctree-l2"><a class="reference internal" href="literature/vk_mini_path_tracer.html">Vulkan迷你路径追踪</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="test.html">Test</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/FuXiii/Essentials.of.Vulkan/edit/main/source/StartFromVulkanSDK.rst" title="Edit this page">
+    <svg aria-hidden="true" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
+      <line x1="13.5" y1="6.5" x2="17.5" y2="10.5" />
+    </svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="vulkan-sdk">
+<h1>开始于 Vulkan SDK<a class="headerlink" href="#vulkan-sdk" title="此标题的永久链接">#</a></h1>
+<div class="note admonition">
+<p class="admonition-title">更新记录</p>
+<ul class="simple">
+<li><p>2023/5/16 增加该文章</p></li>
+<li><p>2023/5/16 增加 <code class="docutils literal notranslate"><span class="pre">安装</span> <span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 章节</p></li>
+<li><p>2023/5/16 增加 <code class="docutils literal notranslate"><span class="pre">验证安装</span></code> 章节</p></li>
+<li><p>2023/5/16 增加 <code class="docutils literal notranslate"><span class="pre">SDK的版本</span></code> 章节</p></li>
+<li><p>2023/5/16 增加 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 章节</p></li>
+<li><p>2023/5/16 增加 <code class="docutils literal notranslate"><span class="pre">Vulkan的版本</span></code> 章节</p></li>
+<li><p>2023/5/16 增加 <code class="docutils literal notranslate"><span class="pre">Vulkan的库</span></code> 章节</p></li>
+<li><p>2023/5/16 增加 <code class="docutils literal notranslate"><span class="pre">Vulkan的头文件</span></code> 章节</p></li>
+</ul>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Khronos</span></code> 这次推出了 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 官方的软件开发工具包 <a class="reference external" href="https://vulkan.lunarg.com/home/welcome">Vulkan SDK</a> ，这避免了像 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 开发环境混乱的情形再次上演。</p>
+<p>目前 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 支持如下平台：</p>
+<ul class="simple">
+<li><p>Windows</p></li>
+<li><p>Linux</p></li>
+<li><p>MacOS</p></li>
+<li><p>Android</p></li>
+</ul>
+<p>下载对应平台的安装包，安装即可。</p>
+<div class="admonition important">
+<p class="admonition-title">重要</p>
+<p><code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 并不会安装硬件设备的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 驱动！！仅仅提供用于应用开发和调试的工具和库，如果您在尝试安装驱动，请移步至对应硬件设备供应商的官网处获取驱动。</p>
+</div>
+<section id="id2">
+<h2>安装 Vulkan SDK<a class="headerlink" href="#id2" title="此标题的永久链接">#</a></h2>
+<div class="admonition hint">
+<p class="admonition-title">提示</p>
+<p>本人目前只完整适配过 <code class="docutils literal notranslate"><span class="pre">Windows</span></code> 和 <code class="docutils literal notranslate"><span class="pre">Linux</span></code> 系统，主要以这两个操作系统讲解。
+有关 <code class="docutils literal notranslate"><span class="pre">Android</span></code> 的适配应该和 <code class="docutils literal notranslate"><span class="pre">Linux</span></code> 是相通的， <code class="docutils literal notranslate"><span class="pre">MacOS</span></code> 没适配，苹果的电脑太贵了。 ┑(￣Д ￣)┍</p>
+<p>对于 <code class="docutils literal notranslate"><span class="pre">Android</span></code> 和  <code class="docutils literal notranslate"><span class="pre">MacOS</span></code> 有适配过的小伙伴，欢迎分享~ ꒰’ꀾ’꒱ 。</p>
+</div>
+<ul>
+<li><p>对于 <code class="docutils literal notranslate"><span class="pre">Windows</span></code> 操作系统</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 是一个自解压安装包，运行下载的可执行文件即可。默认的安装地址为 <code class="docutils literal notranslate"><span class="pre">C:\VulkanSDK\version</span></code> 。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>如果你已经下载安装了一个或多个新版的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> （ <code class="docutils literal notranslate"><span class="pre">1.2.189.1</span></code> 或是更新的版本 ），此时如果您需要安装一个老版本的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> （早于 <code class="docutils literal notranslate"><span class="pre">1.2.189.1</span></code>）的话，
+您必须将最近安装的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 卸载掉，可以使用 <code class="docutils literal notranslate"><span class="pre">Windows</span></code> 系统的控制面板的应用管理进行卸载，或是通过 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 安装目录下的
+<code class="docutils literal notranslate"><span class="pre">maintenancetool.exe</span></code> 进行卸载。</p>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 安装之后将会将安装目录作为 <code class="docutils literal notranslate"><span class="pre">VULKAN_SDK</span></code> 的变量添加到环境变量中，并且也会将 <code class="docutils literal notranslate"><span class="pre">%VULKAN_SDK%\Bin</span></code> 目录添加到系统的 <code class="docutils literal notranslate"><span class="pre">PATH</span></code> 环境变量中。同时也会增加
+<code class="docutils literal notranslate"><span class="pre">VK_SDK_PATH</span></code> 环境变量，其值和 <code class="docutils literal notranslate"><span class="pre">VULKAN_SDK</span></code> 环境变量是一样的。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>一些程序和命令行环境在没有重新启动时可能获取不到 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 相关的环境变量。</p>
+</div>
+</div></blockquote>
+</li>
+<li><p>对于 <code class="docutils literal notranslate"><span class="pre">Linux</span></code> 操作系统</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 是一个压缩文件，将其解压出来放到任意您想放到的位置即可。</p>
+<ol class="arabic">
+<li><p>创建一个文件夹，用于存放安装的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 。假如这个文件夹叫 <code class="docutils literal notranslate"><span class="pre">vulkan</span></code>，在您的 <code class="docutils literal notranslate"><span class="pre">HOME</span></code> 目录下。</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cd ~</span>
+<span class="go">mkdir vulkan</span>
+<span class="go">cd vulkan</span>
+</pre></div>
+</div>
+</li>
+<li><p>使用 <code class="docutils literal notranslate"><span class="pre">sha256sum</span></code> 检查下载的压缩文件的完整性。假如压缩包下载到了 <code class="docutils literal notranslate"><span class="pre">$HOME/Downloads</span></code>。</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">sha256sum $</span>HOME/Downloads/vulkansdk-linux-x86_64-1.x.yy.z.tar.gz
+</pre></div>
+</div>
+</li>
+<li><p>解压 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 压缩包。假如压缩包下载到了 <code class="docutils literal notranslate"><span class="pre">$HOME/Downloads</span></code>。</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">tar xf $HOME/Downloads/vulkansdk-linux-x86_64-1.x.yy.z.tar.gz</span>
+</pre></div>
+</div>
+</li>
+<li><p>如果没有安装运行时依赖，安装之。</p>
+<p>Ubuntu 22.04:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo apt install qtbase5-dev libxcb-xinput0 libxcb-xinerama0</span>
+</pre></div>
+</div>
+<p>Ubuntu 20.04:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo apt install qt5-default libxcb-xinput0 libxcb-xinerama0</span>
+</pre></div>
+</div>
+<p>Fedora:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo dnf install qt xinput libXinerama</span>
+</pre></div>
+</div>
+<p>Arch Linux:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo pacman -S qt5-base libxcb libxinerama</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<p>与 <code class="docutils literal notranslate"><span class="pre">Windows</span></code> 系统不同的是， <code class="docutils literal notranslate"><span class="pre">Linux</span></code> 的环境变量需要自己手动设置。要设置的环境变量如下表所示，其中 <code class="docutils literal notranslate"><span class="pre">VULKAN_SDK</span></code> 环境变量是安装 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 的目录（比如 <code class="docutils literal notranslate"><span class="pre">~/vulkan/1.x.yy.z/x86_64</span></code> ），剩下的
+环境变量路径都相对于 <code class="docutils literal notranslate"><span class="pre">VULKAN_SDK</span></code> 路径。</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>环境变量</p></th>
+<th class="head"><p>文件/路径</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PATH</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">$VULKAN_SDK/bin</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">LD_LIBRARY_PATH</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">$VULKAN_SDK/lib</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">VK_LAYER_PATH</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">$VULKAN_SDK/etc/vulkan/explicit_layer.d</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">VK_ADD_LAYER_PATH</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">$VULKAN_SDK/etc/vulkan/explicit_layer.d</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>使用 <code class="docutils literal notranslate"><span class="pre">source</span></code> 指令去加载设置环境变量脚本：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">source ~/vulkan/1.x.yy.z/setup-env.sh</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p><code class="docutils literal notranslate"><span class="pre">x</span></code> 、<code class="docutils literal notranslate"><span class="pre">yy</span></code> 和 <code class="docutils literal notranslate"><span class="pre">z</span></code> 是解压出来的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 对应版本。</p>
+</div>
+<p>或者可以自己手动设置环境变量：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">export VULKAN_SDK=~/vulkan/1.x.yy.z/x86_64</span>
+<span class="go">export PATH=$VULKAN_SDK/bin:$PATH</span>
+<span class="go">export LD_LIBRARY_PATH=$VULKAN_SDK/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}</span>
+<span class="go">export VK_LAYER_PATH=$VULKAN_SDK/etc/vulkan/explicit_layer.d</span>
+</pre></div>
+</div>
+<div class="note admonition">
+<p class="admonition-title">永久性设置 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 环境变量</p>
+<p>以上的两种方式为临时设置环境变量，当更换或重启控制台、重启计算机都会使之前设置的环境变量失效。
+如果想要永久性设置环境变量，请参考对应 <code class="docutils literal notranslate"><span class="pre">shell</span></code> 或桌面文档，不同系统有些许区别。比如在大多数 <code class="docutils literal notranslate"><span class="pre">Ubuntu</span></code> 的桌面系统中，在 <code class="docutils literal notranslate"><span class="pre">.profile</span></code> 文件中增加
+<code class="docutils literal notranslate"><span class="pre">setup-env.sh</span></code> 文件的源，用于设置永久性环境变量，该环境变量之后就可以全局使用而不需要单独配置。</p>
+</div>
+<p>对于卸载 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 仅通过删除 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 解压安装的文件夹即可，例如：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">rm -rf ~/vulkan/1.x.yy.z</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ul>
+</section>
+<section id="id3">
+<h2>验证安装<a class="headerlink" href="#id3" title="此标题的永久链接">#</a></h2>
+<p>安装完 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> ，并配置完环境变量后，打开终端命令行程序，运行：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">vkcube</span>
+</pre></div>
+</div>
+<p>你将会看到一个旋转的方盒子，说明安装配置成功。</p>
+<figure class="align-default" id="id7">
+<img alt="_images/vkcube.png" src="_images/vkcube.png" />
+<figcaption>
+<p><span class="caption-text">vkcube</span><a class="headerlink" href="#id7" title="此图像的永久链接">#</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="sdk">
+<h2>SDK的版本<a class="headerlink" href="#sdk" title="此标题的永久链接">#</a></h2>
+<p>安装的 <code class="docutils literal notranslate"><span class="pre">SDK</span></code> 版本是由其中发布的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 头文件的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本所决定的， <code class="docutils literal notranslate"><span class="pre">SDK</span></code> 版本号的组成结构为 <code class="docutils literal notranslate"><span class="pre">主版本号.副版本号.补丁版本号.修订版本号</span></code> 。
+最后的修订版本号代指同一 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 头文件版本下 <code class="docutils literal notranslate"><span class="pre">SDK</span></code> 的修订版本，一般用于在同一 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本中发布多个 <code class="docutils literal notranslate"><span class="pre">SDK</span></code> 时使用。
+比如 <code class="docutils literal notranslate"><span class="pre">SDK</span></code> 的版本为 <code class="docutils literal notranslate"><span class="pre">1.1.70.0</span></code> 意味着此 <code class="docutils literal notranslate"><span class="pre">SDK</span></code> 使用的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 头文件版本为 <code class="docutils literal notranslate"><span class="pre">1.1.70</span></code></p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p><code class="docutils literal notranslate"><span class="pre">SDK</span></code> 的版本版本内容是向下兼容的，新版本的 <code class="docutils literal notranslate"><span class="pre">SDK</span></code> 支持老版本的内容，而反过来则不行。比如 <code class="docutils literal notranslate"><span class="pre">1.1.130.0</span></code> 的 <code class="docutils literal notranslate"><span class="pre">SDK</span></code> 可以用于开发 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.0</span></code> 和 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.1</span></code> 而不能开发 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.2</span></code> 的功能。
+还有就是， <code class="docutils literal notranslate"><span class="pre">SDK</span></code> 的版本并不一定显示什么版本就能用什么版本开发，具体支持什么版本的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> ，需要从设备驱动中获取返回该设备支持的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本，才能知道可以使用什么版本的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的功能 ，比如你下安装了支持 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.3</span></code> 的 <code class="docutils literal notranslate"><span class="pre">SDK</span></code> ，
+而硬件设备驱动返回其仅支持 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.0</span></code> ，则你可以使用此 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.3</span></code> 的 <code class="docutils literal notranslate"><span class="pre">SDK</span></code> 开发 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.0</span></code> 的功能。</p>
+</div>
+</section>
+<section id="vulkan-loader">
+<h2>Vulkan Loader<a class="headerlink" href="#vulkan-loader" title="此标题的永久链接">#</a></h2>
+<p>之前说过可以通过硬件设备驱动获取设备支持的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本，在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中这是通过调用 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准函数 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceProperties</span></code> 函数获取到的，之前说过 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 统一了函数获取方式，对于 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceProperties</span></code> 是通过
+<code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 获取到的。顾名思义 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 就是用于获取 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准函数的模块， <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中所有的标准函数都是通过 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 获取到。</p>
+<p>那 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 是什么？具体长什么样呢？在哪里能找到？</p>
+<p>其实 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 就是一个动态库，和常见的动态库没什么区别，在 <code class="docutils literal notranslate"><span class="pre">Windows</span></code> 操作系统中为 <code class="docutils literal notranslate"><span class="pre">vulkan-1.dll</span></code>，在 <code class="docutils literal notranslate"><span class="pre">Linux</span></code> 操作系统中为 <code class="docutils literal notranslate"><span class="pre">libvulkan.so.1</span></code> 或 <code class="docutils literal notranslate"><span class="pre">libvulkan.so</span></code>，一般都在系统目录下 。
+<code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 实现了 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">API</span></code> 入口，并且管理 <code class="docutils literal notranslate"><span class="pre">Layers</span></code>，扩展，和驱动。</p>
+<div class="note admonition">
+<p class="admonition-title">Layer</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 是 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 的一种插件，一般用于为应用开发提供验证和函数调试，用于检查您开发的程序哪里出现了错误，并及时给出提示。</p>
+</div>
+<p>如果系统中安装了支持 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的驱动或安装了 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 的话， 就会有 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的运行时，该运行时自身就有 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 的动态库。如果系统没有找到 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的运行时的话，可以从
+<a class="reference external" href="https://vulkan.lunarg.com/home/welcome">Vulkan SDK</a> 官方网页获取最新的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Runtime</span></code>。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的运行时一般不需要单独下载安装，一般操作系统都自带该运行时。也就是操作系统一般都自带 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 。</p>
+</div>
+</section>
+<section id="vulkan">
+<h2>Vulkan的版本<a class="headerlink" href="#vulkan" title="此标题的永久链接">#</a></h2>
+<p>一旦系统中安装了支持 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的驱动</p>
+</section>
+<section id="id5">
+<h2>Vulkan的库<a class="headerlink" href="#id5" title="此标题的永久链接">#</a></h2>
+</section>
+<section id="id6">
+<h2>Vulkan的头文件<a class="headerlink" href="#id6" title="此标题的永久链接">#</a></h2>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="Overview.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">纵览</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="Introduction.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">介绍</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2023, FuXii
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link " href="https://github.com/FuXiii/Essentials.of.Vulkan" aria-label="GitHub">
+                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path>
+                </svg>
+            </a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">开始于 Vulkan SDK</a><ul>
+<li><a class="reference internal" href="#id2">安装 Vulkan SDK</a></li>
+<li><a class="reference internal" href="#id3">验证安装</a></li>
+<li><a class="reference internal" href="#sdk">SDK的版本</a></li>
+<li><a class="reference internal" href="#vulkan-loader">Vulkan Loader</a></li>
+<li><a class="reference internal" href="#vulkan">Vulkan的版本</a></li>
+<li><a class="reference internal" href="#id5">Vulkan的库</a></li>
+<li><a class="reference internal" href="#id6">Vulkan的头文件</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/scripts/furo.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/tabs.js"></script>
+    <script src="_static/translations.js"></script>
+    <script src="https://unpkg.com/mermaid@9.4.0/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
+    </body>
+</html>
