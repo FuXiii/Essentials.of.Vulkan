@@ -227,15 +227,18 @@
 <li><p>2023/5/15 增加 <code class="docutils literal notranslate"><span class="pre">介绍</span></code> 章节</p></li>
 <li><p>2023/5/15 增加 <code class="docutils literal notranslate"><span class="pre">配置环境</span></code> 章节</p></li>
 <li><p>2023/5/15 增加 <code class="docutils literal notranslate"><span class="pre">生成解决方案</span></code> 章节</p></li>
+<li><p>2023/5/17 增加 <code class="docutils literal notranslate"><span class="pre">生成解决方案</span></code> 章节</p></li>
+<li><p>2023/5/17 增加 <code class="docutils literal notranslate"><span class="pre">编译和运行</span></code> 章节</p></li>
+<li><p>2023/5/17 增加 <code class="docutils literal notranslate"><span class="pre">开始步入光线追踪</span></code> 章节</p></li>
 </ul>
 </div>
 <p><a class="reference external" href="https://nvpro-samples.github.io/vk_raytracing_tutorial_KHR/">文献源</a></p>
 <p>本文所提供的的代码和文档聚焦于使用 <a class="reference external" href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/vkspec.html#VK_KHR_ray_tracing_pipeline">VK_KHR_ray_tracing_pipeline</a> 扩展展示一个基础光追示例。
 该教程从一个基于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 开发的基础程序开始，并且提供一步步的介绍去修改和增加函数和功能。</p>
-<figure class="align-default" id="id6">
+<figure class="align-default" id="id8">
 <img alt="../_images/resultRaytraceShadowMedieval.png" src="../_images/resultRaytraceShadowMedieval.png" />
 <figcaption>
-<p><span class="caption-text">最终结果</span><a class="headerlink" href="#id6" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">最终结果</span><a class="headerlink" href="#id8" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <div class="note admonition">
@@ -286,6 +289,24 @@
 <p>我们需要一张支持 <code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_tracing_pipeline</span></code> 扩展的显卡。对于英伟达的图形卡，您需要最起码是 <code class="docutils literal notranslate"><span class="pre">2021年</span></code> 或之后的 <a class="reference external" href="https://developer.nvidia.com/vulkan-driver">Vulkan驱动</a> 。</p>
 <p>该工程最低需要 <a class="reference external" href="https://vulkan.lunarg.com/sdk/home">Vulkan SDK</a> 的版本为 <code class="docutils literal notranslate"><span class="pre">1.2.161</span></code>。该工程是使用 <code class="docutils literal notranslate"><span class="pre">1.2.182.0</span></code> 进行测试的。</p>
 </section>
+</section>
+<section id="id6">
+<h2>编译和运行<a class="headerlink" href="#id6" title="此标题的永久链接">#</a></h2>
+<p>打开位于 <code class="docutils literal notranslate"><span class="pre">build</span></code> 目录下的解决方案，之后编译并运行 <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing__before">vk_ray_tracing__before_KHR</a> 。</p>
+<p>该示例将会是此教程的示例起点。这是一个用于加载 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 文件并使用 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 光栅化渲染他们的小框架。您可以通过阅读 <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/blob/master/ray_tracing__before/README.md#nvidia-vulkan-ray-tracing-tutorial">Base Overview</a> 来纵观该示例是如何实现的。
+我们将使用这个框架加载几何体并且渲染场景来实现光线追踪。</p>
+<figure class="align-default" id="id9">
+<img alt="../_images/resultRasterCube.png" src="../_images/resultRasterCube.png" />
+<figcaption>
+<p><span class="caption-text">首次执行</span><a class="headerlink" href="#id9" title="此图像的永久链接">#</a></p>
+</figcaption>
+</figure>
+<p>接下来的步骤将是修改 <code class="docutils literal notranslate"><span class="pre">vk_ray_tracing__before_KHR</span></code> 使其支持光线追踪。该教程修改后的最终结果将是同 <code class="docutils literal notranslate"><span class="pre">vk_ray_tracing__simple_KHR</span></code> 一样。如果开发过程发生错误
+可以看看该工程。</p>
+<p><code class="docutils literal notranslate"><span class="pre">vk_ray_tracing__simple_KHR</span></code> 工程将会作为额外教程的起点进行开发讲解。</p>
+</section>
+<section id="id7">
+<h2>开始步入光线追踪<a class="headerlink" href="#id7" title="此标题的永久链接">#</a></h2>
 </section>
 </section>
 
@@ -358,6 +379,8 @@
 <li><a class="reference internal" href="#id5">工具安装</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#id6">编译和运行</a></li>
+<li><a class="reference internal" href="#id7">开始步入光线追踪</a></li>
 </ul>
 </li>
 </ul>

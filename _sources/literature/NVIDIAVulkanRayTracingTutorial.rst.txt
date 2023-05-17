@@ -8,6 +8,9 @@ NVIDIA Vulkan 光线追踪教程
    * 2023/5/15 增加 ``介绍`` 章节
    * 2023/5/15 增加 ``配置环境`` 章节
    * 2023/5/15 增加 ``生成解决方案`` 章节
+   * 2023/5/17 增加 ``生成解决方案`` 章节
+   * 2023/5/17 增加 ``编译和运行`` 章节
+   * 2023/5/17 增加 ``开始步入光线追踪`` 章节
 
 `文献源`_
 
@@ -78,3 +81,23 @@ NVIDIA Vulkan 光线追踪教程
 我们需要一张支持 ``VK_KHR_ray_tracing_pipeline`` 扩展的显卡。对于英伟达的图形卡，您需要最起码是 ``2021年`` 或之后的 `Vulkan驱动 <https://developer.nvidia.com/vulkan-driver>`_ 。
 
 该工程最低需要 `Vulkan SDK <https://vulkan.lunarg.com/sdk/home>`_ 的版本为 ``1.2.161``。该工程是使用 ``1.2.182.0`` 进行测试的。
+
+编译和运行
+####################
+
+打开位于 ``build`` 目录下的解决方案，之后编译并运行 `vk_ray_tracing__before_KHR <https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing__before>`_ 。
+
+该示例将会是此教程的示例起点。这是一个用于加载 ``OBJ`` 文件并使用 ``Vulkan`` 光栅化渲染他们的小框架。您可以通过阅读 `Base Overview <https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/blob/master/ray_tracing__before/README.md#nvidia-vulkan-ray-tracing-tutorial>`_ 来纵观该示例是如何实现的。
+我们将使用这个框架加载几何体并且渲染场景来实现光线追踪。
+
+.. figure:: ../_static/resultRasterCube.png
+
+    首次执行
+
+接下来的步骤将是修改 ``vk_ray_tracing__before_KHR`` 使其支持光线追踪。该教程修改后的最终结果将是同 ``vk_ray_tracing__simple_KHR`` 一样。如果开发过程发生错误
+可以看看该工程。
+
+``vk_ray_tracing__simple_KHR`` 工程将会作为额外教程的起点进行开发讲解。
+
+开始步入光线追踪
+####################
