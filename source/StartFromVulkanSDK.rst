@@ -12,6 +12,8 @@
    * 2023/5/16 增加 ``Vulkan的版本`` 章节
    * 2023/5/16 增加 ``Vulkan的库`` 章节
    * 2023/5/16 增加 ``Vulkan的头文件`` 章节
+   * 2023/5/17 更新 ``安装 Vulkan SDK`` 章节
+   * 2023/5/17 更新 ``Vulkan的版本`` 章节
 
 ``Khronos`` 这次推出了 ``Vulkan`` 官方的软件开发工具包 `Vulkan SDK <https://vulkan.lunarg.com/home/welcome>`_ ，这避免了像 ``OpenGL`` 开发环境混乱的情形再次上演。
 
@@ -73,6 +75,10 @@
 
          sha256sum $HOME/Downloads/vulkansdk-linux-x86_64-1.x.yy.z.tar.gz
 
+      .. note::
+
+         ``x`` 、``yy`` 和 ``z`` 是解压出来的 ``Vulkan SDK`` 对应版本，下文皆是如此。
+
    3. 解压 ``Vulkan SDK`` 压缩包。假如压缩包下载到了 ``$HOME/Downloads``。
 
       .. code:: console
@@ -122,10 +128,6 @@
    .. code:: console
 
       source ~/vulkan/1.x.yy.z/setup-env.sh
-   
-   .. note::
-
-      ``x`` 、``yy`` 和 ``z`` 是解压出来的 ``Vulkan SDK`` 对应版本。
 
    或者可以自己手动设置环境变量：
 
@@ -195,7 +197,7 @@ Vulkan Loader
          VkPhysicalDevice physicalDevice,
          VkPhysicalDeviceProperties* pProperties);
 
-   .. code-block:: c++
+   .. code:: c++
       
       // 由Vulkan1.0提供
       typedef struct VkPhysicalDeviceProperties {
@@ -240,10 +242,159 @@ Vulkan的版本
 
    这也是 ``Vulkan Loader`` 的版本。如果命令行中执行 ``vulkaninfo`` 指令， ``Vulkan`` ``Instance`` 的版本将会第一个显示。 ``Vulkan Loader`` 是跟随您的设备驱动更新而一同发行的。
 
+   .. admonition:: Instance
+      :class: note
+
+      ``Instance`` 是指在 ``Vulkan`` 中最初之物: ``VkInstance`` 。 ``VkInstance`` 在 ``Vulkan`` 中是一个句柄，在开发 ``Vulkan`` 应用时要做的第一步就是创建 ``VkInstance``。这是用过调用 ``vkCreateInstance`` 函数创建的，其中
+      在创建时需要指定 ``VkInstanceCreateInfo`` 数据，该数据下还需要指定 ``VkApplicationInfo`` 数据，此  ``VkApplicationInfo`` 内部有个 ``apiVersion`` 成员变量，此成员变量即为 ``Vulkan`` ``Instance`` 的版本。
+
+      .. code:: c++
+
+         // 由Vulkan1.0提供
+         VkResult vkCreateInstance(
+            const VkInstanceCreateInfo*                 pCreateInfo,
+            const VkAllocationCallbacks*                pAllocator,
+            VkInstance*                                 pInstance);
+      
+      .. code:: c++
+
+         // 由Vulkan1.0提供
+         typedef struct VkInstanceCreateInfo {
+            VkStructureType             sType;
+            const void*                 pNext;
+            VkInstanceCreateFlags       flags;
+            const VkApplicationInfo*    pApplicationInfo;
+            uint32_t                    enabledLayerCount;
+            const char* const*          ppEnabledLayerNames;
+            uint32_t                    enabledExtensionCount;
+            const char* const*          ppEnabledExtensionNames;
+         } VkInstanceCreateInfo;
+
+      .. code:: c++
+
+         // 由Vulkan1.0提供
+         typedef struct VkApplicationInfo {
+            VkStructureType    sType;
+            const void*        pNext;
+            const char*        pApplicationName;
+            uint32_t           applicationVersion;
+            const char*        pEngineName;
+            uint32_t           engineVersion;
+            uint32_t           apiVersion;
+         } VkApplicationInfo;
+
 * 每个物理设备的版本
 
    对应的就是 ``VkPhysicalDeviceProperties::apiVersion`` 的版本，该版本是设备 ``Vulkan`` 驱动的版本。您可以在执行 ``vulkaninfo`` 指令后于 ``Device Properties and Extensions`` 文字标签之后找到 ``apiVersion`` 的相关信息。
 
+随着 ``Vulkan`` 的更新和发展， ``Vulkan`` 的版本号也随之增长。最开始发布了 ``Vulkan1.0`` 版本，之后 ``Vulkan1.1`` 、 ``Vulkan1.2`` 再到后来发布的 ``Vulkan1.3`` ，每一个版本的更新都意味着更多丰富的功能的增加。
+无论是 ``VkApplicationInfo::apiVersion`` 还是 ``VkPhysicalDeviceProperties::apiVersion`` 其数据类型都是 ``uint32_t``，而 ``Vulkan`` 的版本都是 ``主版本号.副版本号.补丁版本号.修订版本号`` （有时补丁版本号省略）这样的，如何用 ``uint32_t`` 表示呢？
+
+``Vulkan`` 为我们提供了 ``VK_MAKE_VERSION``、 ``VK_VERSION_MAJOR``、 ``VK_VERSION_MINOR``、 ``VK_VERSION_PATCH`` 函数（宏函数），帮助我们将 ``主版本号.副版本号.补丁版本号`` 和 ``uint32_t`` 之间进行转换。
+
+.. note:: 这里没有 ``修订版本号`` 的描述，是因为当时 ``Vulkan`` 标准组当时仅考虑使用 ``主版本号.副版本号.补丁版本号`` 作为有效版本（补丁版本号在使用时一般为 ``0`` ）， ``修订版本号`` 仅为一些小修改不会影响有效版本的标准。
+
+.. code:: c++
+
+   // 由Vulkan1.0提供
+   #define VK_MAKE_VERSION(major, minor, patch) \
+    ((((uint32_t)(major)) << 22U) | (((uint32_t)(minor)) << 12U) | ((uint32_t)(patch)))
+
+.. code:: c++
+
+   // 由Vulkan1.0提供
+   #define VK_VERSION_MAJOR(version) ((uint32_t)(version) >> 22U)
+
+.. code:: c++
+
+   // 由Vulkan1.0提供
+   #define VK_VERSION_MINOR(version) (((uint32_t)(version) >> 12U) & 0x3FFU)
+
+.. code:: c++
+
+   // 由Vulkan1.0提供
+   #define VK_VERSION_PATCH(version) ((uint32_t)(version) & 0xFFFU)
+
+当 ``Vulkan1.2.175`` 发布后，对于 ``Vulkan`` 的版本增加了对于 ``变体版本号`` 的描述（对于 ``Vulkan`` 接口来说  ``变体版本号`` 永远是 ``0`` 。并且改变塞入了 ``Vulkan1.0`` 标准中 ），之前与版本有关的函数被遗弃，而是提供了新的描述函数：
+
+.. code:: c++
+
+   // 由Vulkan1.0提供，代替之前的VK_MAKE_VERSION
+   #define VK_MAKE_API_VERSION(variant, major, minor, patch) \
+       ((((uint32_t)(variant)) << 29U) | (((uint32_t)(major)) << 22U) | (((uint32_t)(minor)) << 12U) | ((uint32_t)(patch)))
+
+.. code:: c++
+
+   // 由Vulkan1.0提供
+   #define VK_API_VERSION_VARIANT(version) ((uint32_t)(version) >> 29U)
+
+.. code:: c++
+
+   // 由Vulkan1.0提供，代替之前的VK_VERSION_MAJOR
+   #define VK_API_VERSION_MAJOR(version) (((uint32_t)(version) >> 22U) & 0x7FU)
+
+.. code:: c++
+
+   // 由Vulkan1.0提供，代替之前的VK_VERSION_MINOR
+   #define VK_API_VERSION_MINOR(version) (((uint32_t)(version) >> 12U) & 0x3FFU)
+
+.. code:: c++
+
+   // 由Vulkan1.0提供，代替之前的VK_VERSION_PATCH
+   #define VK_API_VERSION_PATCH(version) ((uint32_t)(version) & 0xFFFU)
+
+不难发现每个版本的不同分量是使用位域将对应分量版本号存入 ``uint32_t`` 数据中，其中：
+
+.. note:: 一共 ``32`` 位
+
+* ``31`` - ``29`` 位使用 ``3`` 位存储 ``变体版本号``
+* ``28`` - ``22`` 位使用 ``7`` 位存储 ``主版本号``
+* ``21`` - ``12`` 位使用 ``10`` 位存储 ``副版本号``
+* ``11`` - ``0`` 位使用 ``12`` 位存储 ``补丁版本号``
+
+同时 ``Vulkan`` 还很贴心的为我们提前声明了一些有效版本：
+
+.. code:: c++
+
+   // 由Vulkan1.0提供
+   #define VK_HEADER_VERSION 247
+
+.. code:: c++
+
+   // 由Vulkan1.0提供
+   #define VK_API_VERSION_1_0 VK_MAKE_API_VERSION(0, 1, 0, 0)
+
+.. code:: c++
+
+   // 由Vulkan1.0提供
+   #define VK_HEADER_VERSION_COMPLETE VK_MAKE_API_VERSION(0, 1, 3, VK_HEADER_VERSION)
+
+.. code:: c++
+
+   // 由Vulkan1.1提供
+   #define VK_API_VERSION_1_1 VK_MAKE_API_VERSION(0, 1, 1, 0)
+
+.. code:: c++
+
+   // 由Vulkan1.2提供
+   #define VK_API_VERSION_1_2 VK_MAKE_API_VERSION(0, 1, 2, 0)
+
+.. code:: c++
+
+   // 由Vulkan1.3提供
+   #define VK_API_VERSION_1_3 VK_MAKE_API_VERSION(0, 1, 3, 0)
+
+.. note:: ``VK_HEADER_VERSION`` 为 ``Vulkan`` 头文件发布版本号，一般为补丁版本号。
+
+这样就可以使用 ``uint32_t`` 承接 ``Vulkan`` 的版本了：
+
+.. code:: c++
+
+   uint32_t api_version_1_0 = VK_MAKE_API_VERSION(0, 1, 0, 0);
+   uint32_t api_version_variant = VK_API_VERSION_VARIANT(api_version_1_0);//0
+   uint32_t api_version_major = VK_API_VERSION_MAJOR(api_version_1_0);//1
+   uint32_t api_version_minor = VK_API_VERSION_MINOR(api_version_1_0);//0
+   uint32_t api_version_patch = VK_API_VERSION_PATCH(api_version_1_0);//0
 
 Vulkan的库
 ####################
