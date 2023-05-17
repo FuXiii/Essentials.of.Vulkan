@@ -231,6 +231,8 @@
 <li><p>2023/5/16 增加 <code class="docutils literal notranslate"><span class="pre">Vulkan的版本</span></code> 章节</p></li>
 <li><p>2023/5/16 增加 <code class="docutils literal notranslate"><span class="pre">Vulkan的库</span></code> 章节</p></li>
 <li><p>2023/5/16 增加 <code class="docutils literal notranslate"><span class="pre">Vulkan的头文件</span></code> 章节</p></li>
+<li><p>2023/5/17 更新 <code class="docutils literal notranslate"><span class="pre">安装</span> <span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 章节</p></li>
+<li><p>2023/5/17 更新 <code class="docutils literal notranslate"><span class="pre">Vulkan的版本</span></code> 章节</p></li>
 </ul>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">Khronos</span></code> 这次推出了 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 官方的软件开发工具包 <a class="reference external" href="https://vulkan.lunarg.com/home/welcome">Vulkan SDK</a> ，这避免了像 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 开发环境混乱的情形再次上演。</p>
@@ -287,6 +289,10 @@
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">sha256sum $</span>HOME/Downloads/vulkansdk-linux-x86_64-1.x.yy.z.tar.gz
 </pre></div>
 </div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p><code class="docutils literal notranslate"><span class="pre">x</span></code> 、<code class="docutils literal notranslate"><span class="pre">yy</span></code> 和 <code class="docutils literal notranslate"><span class="pre">z</span></code> 是解压出来的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 对应版本，下文皆是如此。</p>
+</div>
 </li>
 <li><p>解压 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 压缩包。假如压缩包下载到了 <code class="docutils literal notranslate"><span class="pre">$HOME/Downloads</span></code>。</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">tar xf $HOME/Downloads/vulkansdk-linux-x86_64-1.x.yy.z.tar.gz</span>
@@ -340,10 +346,6 @@
 <p>使用 <code class="docutils literal notranslate"><span class="pre">source</span></code> 指令去加载设置环境变量脚本：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">source ~/vulkan/1.x.yy.z/setup-env.sh</span>
 </pre></div>
-</div>
-<div class="admonition note">
-<p class="admonition-title">备注</p>
-<p><code class="docutils literal notranslate"><span class="pre">x</span></code> 、<code class="docutils literal notranslate"><span class="pre">yy</span></code> 和 <code class="docutils literal notranslate"><span class="pre">z</span></code> 是解压出来的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 对应版本。</p>
 </div>
 <p>或者可以自己手动设置环境变量：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">export VULKAN_SDK=~/vulkan/1.x.yy.z/x86_64</span>
@@ -442,6 +444,43 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> <code class="docutils literal notranslate"><span class="pre">Instance</span></code> 的版本</p>
 <blockquote>
 <div><p>这也是 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 的版本。如果命令行中执行 <code class="docutils literal notranslate"><span class="pre">vulkaninfo</span></code> 指令， <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> <code class="docutils literal notranslate"><span class="pre">Instance</span></code> 的版本将会第一个显示。 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 是跟随您的设备驱动更新而一同发行的。</p>
+<div class="note admonition">
+<p class="admonition-title">Instance</p>
+<p><code class="docutils literal notranslate"><span class="pre">Instance</span></code> 是指在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中最初之物: <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 。 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中是一个句柄，在开发 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 应用时要做的第一步就是创建 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code>。这是用过调用 <code class="docutils literal notranslate"><span class="pre">vkCreateInstance</span></code> 函数创建的，其中
+在创建时需要指定 <code class="docutils literal notranslate"><span class="pre">VkInstanceCreateInfo</span></code> 数据，该数据下还需要指定 <code class="docutils literal notranslate"><span class="pre">VkApplicationInfo</span></code> 数据，此  <code class="docutils literal notranslate"><span class="pre">VkApplicationInfo</span></code> 内部有个 <code class="docutils literal notranslate"><span class="pre">apiVersion</span></code> 成员变量，此成员变量即为 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> <code class="docutils literal notranslate"><span class="pre">Instance</span></code> 的版本。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由Vulkan1.0提供</span>
+<span class="n">VkResult</span><span class="w"> </span><span class="nf">vkCreateInstance</span><span class="p">(</span>
+<span class="w">   </span><span class="k">const</span><span class="w"> </span><span class="n">VkInstanceCreateInfo</span><span class="o">*</span><span class="w">                 </span><span class="n">pCreateInfo</span><span class="p">,</span>
+<span class="w">   </span><span class="k">const</span><span class="w"> </span><span class="n">VkAllocationCallbacks</span><span class="o">*</span><span class="w">                </span><span class="n">pAllocator</span><span class="p">,</span>
+<span class="w">   </span><span class="n">VkInstance</span><span class="o">*</span><span class="w">                                 </span><span class="n">pInstance</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由Vulkan1.0提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkInstanceCreateInfo</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="n">VkStructureType</span><span class="w">             </span><span class="n">sType</span><span class="p">;</span>
+<span class="w">   </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w">                 </span><span class="n">pNext</span><span class="p">;</span>
+<span class="w">   </span><span class="n">VkInstanceCreateFlags</span><span class="w">       </span><span class="n">flags</span><span class="p">;</span>
+<span class="w">   </span><span class="k">const</span><span class="w"> </span><span class="n">VkApplicationInfo</span><span class="o">*</span><span class="w">    </span><span class="n">pApplicationInfo</span><span class="p">;</span>
+<span class="w">   </span><span class="kt">uint32_t</span><span class="w">                    </span><span class="n">enabledLayerCount</span><span class="p">;</span>
+<span class="w">   </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="k">const</span><span class="o">*</span><span class="w">          </span><span class="n">ppEnabledLayerNames</span><span class="p">;</span>
+<span class="w">   </span><span class="kt">uint32_t</span><span class="w">                    </span><span class="n">enabledExtensionCount</span><span class="p">;</span>
+<span class="w">   </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="k">const</span><span class="o">*</span><span class="w">          </span><span class="n">ppEnabledExtensionNames</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkInstanceCreateInfo</span><span class="p">;</span>
+</pre></div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由Vulkan1.0提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkApplicationInfo</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="n">VkStructureType</span><span class="w">    </span><span class="n">sType</span><span class="p">;</span>
+<span class="w">   </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w">        </span><span class="n">pNext</span><span class="p">;</span>
+<span class="w">   </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w">        </span><span class="n">pApplicationName</span><span class="p">;</span>
+<span class="w">   </span><span class="kt">uint32_t</span><span class="w">           </span><span class="n">applicationVersion</span><span class="p">;</span>
+<span class="w">   </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w">        </span><span class="n">pEngineName</span><span class="p">;</span>
+<span class="w">   </span><span class="kt">uint32_t</span><span class="w">           </span><span class="n">engineVersion</span><span class="p">;</span>
+<span class="w">   </span><span class="kt">uint32_t</span><span class="w">           </span><span class="n">apiVersion</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkApplicationInfo</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
 </div></blockquote>
 </li>
 <li><p>每个物理设备的版本</p>
@@ -450,6 +489,100 @@
 </div></blockquote>
 </li>
 </ul>
+<p>随着 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的更新和发展， <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的版本号也随之增长。最开始发布了 <code class="docutils literal notranslate"><span class="pre">Vulkan1.0</span></code> 版本，之后 <code class="docutils literal notranslate"><span class="pre">Vulkan1.1</span></code> 、 <code class="docutils literal notranslate"><span class="pre">Vulkan1.2</span></code> 再到后来发布的 <code class="docutils literal notranslate"><span class="pre">Vulkan1.3</span></code> ，每一个版本的更新都意味着更多丰富的功能的增加。
+无论是 <code class="docutils literal notranslate"><span class="pre">VkApplicationInfo::apiVersion</span></code> 还是 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceProperties::apiVersion</span></code> 其数据类型都是 <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code>，而 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的版本都是 <code class="docutils literal notranslate"><span class="pre">主版本号.副版本号.补丁版本号.修订版本号</span></code> （有时补丁版本号省略）这样的，如何用 <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code> 表示呢？</p>
+<p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 为我们提供了 <code class="docutils literal notranslate"><span class="pre">VK_MAKE_VERSION</span></code>、 <code class="docutils literal notranslate"><span class="pre">VK_VERSION_MAJOR</span></code>、 <code class="docutils literal notranslate"><span class="pre">VK_VERSION_MINOR</span></code>、 <code class="docutils literal notranslate"><span class="pre">VK_VERSION_PATCH</span></code> 函数（宏函数），帮助我们将 <code class="docutils literal notranslate"><span class="pre">主版本号.副版本号.补丁版本号</span></code> 和 <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code> 之间进行转换。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>这里没有 <code class="docutils literal notranslate"><span class="pre">修订版本号</span></code> 的描述，是因为当时 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准组当时仅考虑使用 <code class="docutils literal notranslate"><span class="pre">主版本号.副版本号.补丁版本号</span></code> 作为有效版本（补丁版本号在使用时一般为 <code class="docutils literal notranslate"><span class="pre">0</span></code> ）， <code class="docutils literal notranslate"><span class="pre">修订版本号</span></code> 仅为一些小修改不会影响有效版本的标准。</p>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由Vulkan1.0提供</span>
+<span class="cp">#define VK_MAKE_VERSION(major, minor, patch) \</span>
+<span class="cp"> ((((uint32_t)(major)) &lt;&lt; 22U) | (((uint32_t)(minor)) &lt;&lt; 12U) | ((uint32_t)(patch)))</span>
+</pre></div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由Vulkan1.0提供</span>
+<span class="cp">#define VK_VERSION_MAJOR(version) ((uint32_t)(version) &gt;&gt; 22U)</span>
+</pre></div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由Vulkan1.0提供</span>
+<span class="cp">#define VK_VERSION_MINOR(version) (((uint32_t)(version) &gt;&gt; 12U) &amp; 0x3FFU)</span>
+</pre></div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由Vulkan1.0提供</span>
+<span class="cp">#define VK_VERSION_PATCH(version) ((uint32_t)(version) &amp; 0xFFFU)</span>
+</pre></div>
+</div>
+<p>当 <code class="docutils literal notranslate"><span class="pre">Vulkan1.2.175</span></code> 发布后，对于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的版本增加了对于 <code class="docutils literal notranslate"><span class="pre">变体版本号</span></code> 的描述（对于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 接口来说  <code class="docutils literal notranslate"><span class="pre">变体版本号</span></code> 永远是 <code class="docutils literal notranslate"><span class="pre">0</span></code> 。并且改变塞入了 <code class="docutils literal notranslate"><span class="pre">Vulkan1.0</span></code> 标准中 ），之前与版本有关的函数被遗弃，而是提供了新的描述函数：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由Vulkan1.0提供，代替之前的VK_MAKE_VERSION</span>
+<span class="cp">#define VK_MAKE_API_VERSION(variant, major, minor, patch) \</span>
+<span class="cp">    ((((uint32_t)(variant)) &lt;&lt; 29U) | (((uint32_t)(major)) &lt;&lt; 22U) | (((uint32_t)(minor)) &lt;&lt; 12U) | ((uint32_t)(patch)))</span>
+</pre></div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由Vulkan1.0提供</span>
+<span class="cp">#define VK_API_VERSION_VARIANT(version) ((uint32_t)(version) &gt;&gt; 29U)</span>
+</pre></div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由Vulkan1.0提供，代替之前的VK_VERSION_MAJOR</span>
+<span class="cp">#define VK_API_VERSION_MAJOR(version) (((uint32_t)(version) &gt;&gt; 22U) &amp; 0x7FU)</span>
+</pre></div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由Vulkan1.0提供，代替之前的VK_VERSION_MINOR</span>
+<span class="cp">#define VK_API_VERSION_MINOR(version) (((uint32_t)(version) &gt;&gt; 12U) &amp; 0x3FFU)</span>
+</pre></div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由Vulkan1.0提供，代替之前的VK_VERSION_PATCH</span>
+<span class="cp">#define VK_API_VERSION_PATCH(version) ((uint32_t)(version) &amp; 0xFFFU)</span>
+</pre></div>
+</div>
+<p>不难发现每个版本的不同分量是使用位域将对应分量版本号存入 <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code> 数据中，其中：</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>一共 <code class="docutils literal notranslate"><span class="pre">32</span></code> 位</p>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">31</span></code> - <code class="docutils literal notranslate"><span class="pre">29</span></code> 位使用 <code class="docutils literal notranslate"><span class="pre">3</span></code> 位存储 <code class="docutils literal notranslate"><span class="pre">变体版本号</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">28</span></code> - <code class="docutils literal notranslate"><span class="pre">22</span></code> 位使用 <code class="docutils literal notranslate"><span class="pre">7</span></code> 位存储 <code class="docutils literal notranslate"><span class="pre">主版本号</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">21</span></code> - <code class="docutils literal notranslate"><span class="pre">12</span></code> 位使用 <code class="docutils literal notranslate"><span class="pre">10</span></code> 位存储 <code class="docutils literal notranslate"><span class="pre">副版本号</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">11</span></code> - <code class="docutils literal notranslate"><span class="pre">0</span></code> 位使用 <code class="docutils literal notranslate"><span class="pre">12</span></code> 位存储 <code class="docutils literal notranslate"><span class="pre">补丁版本号</span></code></p></li>
+</ul>
+<p>同时 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 还很贴心的为我们提前声明了一些有效版本：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由Vulkan1.0提供</span>
+<span class="cp">#define VK_HEADER_VERSION 247</span>
+</pre></div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由Vulkan1.0提供</span>
+<span class="cp">#define VK_API_VERSION_1_0 VK_MAKE_API_VERSION(0, 1, 0, 0)</span>
+</pre></div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由Vulkan1.0提供</span>
+<span class="cp">#define VK_HEADER_VERSION_COMPLETE VK_MAKE_API_VERSION(0, 1, 3, VK_HEADER_VERSION)</span>
+</pre></div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由Vulkan1.1提供</span>
+<span class="cp">#define VK_API_VERSION_1_1 VK_MAKE_API_VERSION(0, 1, 1, 0)</span>
+</pre></div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由Vulkan1.2提供</span>
+<span class="cp">#define VK_API_VERSION_1_2 VK_MAKE_API_VERSION(0, 1, 2, 0)</span>
+</pre></div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由Vulkan1.3提供</span>
+<span class="cp">#define VK_API_VERSION_1_3 VK_MAKE_API_VERSION(0, 1, 3, 0)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p><code class="docutils literal notranslate"><span class="pre">VK_HEADER_VERSION</span></code> 为 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 头文件发布版本号，一般为补丁版本号。</p>
+</div>
+<p>这样就可以使用 <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code> 承接 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的版本了：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">api_version_1_0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_MAKE_API_VERSION</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="kt">uint32_t</span><span class="w"> </span><span class="n">api_version_variant</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_API_VERSION_VARIANT</span><span class="p">(</span><span class="n">api_version_1_0</span><span class="p">);</span><span class="c1">//0</span>
+<span class="kt">uint32_t</span><span class="w"> </span><span class="n">api_version_major</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_API_VERSION_MAJOR</span><span class="p">(</span><span class="n">api_version_1_0</span><span class="p">);</span><span class="c1">//1</span>
+<span class="kt">uint32_t</span><span class="w"> </span><span class="n">api_version_minor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_API_VERSION_MINOR</span><span class="p">(</span><span class="n">api_version_1_0</span><span class="p">);</span><span class="c1">//0</span>
+<span class="kt">uint32_t</span><span class="w"> </span><span class="n">api_version_patch</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_API_VERSION_PATCH</span><span class="p">(</span><span class="n">api_version_1_0</span><span class="p">);</span><span class="c1">//0</span>
+</pre></div>
+</div>
 </section>
 <section id="id5">
 <h2>Vulkan的库<a class="headerlink" href="#id5" title="此标题的永久链接">#</a></h2>
