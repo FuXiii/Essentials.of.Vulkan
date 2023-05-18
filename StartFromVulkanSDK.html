@@ -234,6 +234,7 @@
 <li><p>2023/5/17 更新 <code class="docutils literal notranslate"><span class="pre">安装</span> <span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 章节</p></li>
 <li><p>2023/5/17 更新 <code class="docutils literal notranslate"><span class="pre">Vulkan的版本</span></code> 章节</p></li>
 <li><p>2023/5/18 更新 <code class="docutils literal notranslate"><span class="pre">Vulkan的头文件</span></code> 章节</p></li>
+<li><p>2023/5/18 增加 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span> <span class="pre">最佳实践</span></code> 章节</p></li>
 </ul>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">Khronos</span></code> 这次推出了 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 官方的软件开发工具包 <a class="reference external" href="https://vulkan.lunarg.com/home/welcome">Vulkan SDK</a> ，这避免了像 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 开发环境混乱的情形再次上演。</p>
@@ -376,10 +377,10 @@
 </pre></div>
 </div>
 <p>你将会看到一个旋转的方盒子，说明安装配置成功。</p>
-<figure class="align-default" id="id7">
+<figure class="align-default" id="id9">
 <img alt="_images/vkcube.png" src="_images/vkcube.png" />
 <figcaption>
-<p><span class="caption-text">vkcube</span><a class="headerlink" href="#id7" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">vkcube</span><a class="headerlink" href="#id9" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 </section>
@@ -656,6 +657,20 @@
 </section>
 <section id="id6">
 <h2>Vulkan的库<a class="headerlink" href="#id6" title="此标题的永久链接">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的库在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 中为静态库。如果您在安装 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 时勾选安装 <code class="docutils literal notranslate"><span class="pre">32</span></code> 位的库（默认只安装 <code class="docutils literal notranslate"><span class="pre">64</span></code> 位）的库，则 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 下会有两个库文件夹：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Lib</span></code> 用于 <code class="docutils literal notranslate"><span class="pre">64</span></code> 位开发的静态库</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Lib32</span></code> 用于 <code class="docutils literal notranslate"><span class="pre">32</span></code> 位开发的静态库</p></li>
+</ul>
+<p>其包括整个 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 的静态库。其中我们主要只关注 <code class="docutils literal notranslate"><span class="pre">vulkan-1.lib</span></code> 这个库，使用此静态链接库，在开发 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 应用时将其链接进程序就可以调用 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的函数了。</p>
+<div class="attention admonition">
+<p class="admonition-title">vulkan-1.lib</p>
+<p>现在已经不推荐使用静态库链接到 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 了。而是推荐直接使用 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的动态库，也就是 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 运行时的那个动态库， <code class="docutils literal notranslate"><span class="pre">Windows</span></code> 下为 <code class="docutils literal notranslate"><span class="pre">vulkan-1.dll</span></code> ，
+在 <code class="docutils literal notranslate"><span class="pre">Linux</span></code> 操作系统中为 <code class="docutils literal notranslate"><span class="pre">libvulkan.so.1</span></code> 或 <code class="docutils literal notranslate"><span class="pre">libvulkan.so</span></code> 。有关原因请查阅 <a class="reference external" href="https://github.com/KhronosGroup/Vulkan-Loader/blob/main/docs/LoaderApplicationInterface.md#static-linking">Vulkan-Loader</a> 文档</p>
+</div>
+</section>
+<section id="id8">
+<h2>Vulkan SDK 最佳实践<a class="headerlink" href="#id8" title="此标题的永久链接">#</a></h2>
 </section>
 </section>
 
@@ -729,6 +744,7 @@
 <li><a class="reference internal" href="#vulkan">Vulkan的版本</a></li>
 <li><a class="reference internal" href="#id5">Vulkan的头文件</a></li>
 <li><a class="reference internal" href="#id6">Vulkan的库</a></li>
+<li><a class="reference internal" href="#id8">Vulkan SDK 最佳实践</a></li>
 </ul>
 </li>
 </ul>
