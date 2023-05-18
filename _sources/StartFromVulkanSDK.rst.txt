@@ -16,7 +16,6 @@
    * 2023/5/17 更新 ``Vulkan的版本`` 章节
    * 2023/5/18 更新 ``Vulkan的头文件`` 章节
    * 2023/5/18 增加 ``Vulkan SDK 最佳实践`` 章节
-   * 2023/5/18 基本完成
 
 ``Khronos`` 这次推出了 ``Vulkan`` 官方的软件开发工具包 `Vulkan SDK <https://vulkan.lunarg.com/home/welcome>`_ ，这避免了像 ``OpenGL`` 开发环境混乱的情形再次上演。
 
