@@ -14,6 +14,7 @@
    * 2023/5/16 增加 ``Vulkan的头文件`` 章节
    * 2023/5/17 更新 ``安装 Vulkan SDK`` 章节
    * 2023/5/17 更新 ``Vulkan的版本`` 章节
+   * 2023/5/18 更新 ``Vulkan的头文件`` 章节
 
 ``Khronos`` 这次推出了 ``Vulkan`` 官方的软件开发工具包 `Vulkan SDK <https://vulkan.lunarg.com/home/welcome>`_ ，这避免了像 ``OpenGL`` 开发环境混乱的情形再次上演。
 
@@ -245,7 +246,7 @@ Vulkan的版本
    .. admonition:: Instance
       :class: note
 
-      ``Instance`` 是指在 ``Vulkan`` 中最初之物: ``VkInstance`` 。 ``VkInstance`` 在 ``Vulkan`` 中是一个句柄，在开发 ``Vulkan`` 应用时要做的第一步就是创建 ``VkInstance``。这是用过调用 ``vkCreateInstance`` 函数创建的，其中
+      ``Instance`` 是指在 ``Vulkan`` 中最初之物: ``VkInstance`` 。 ``VkInstance`` 在 ``Vulkan`` 中是一个句柄，在开发 ``Vulkan`` 应用时要做的第一步就是创建 ``VkInstance``。这是通过调用 ``vkCreateInstance`` 函数创建的，其中
       在创建时需要指定 ``VkInstanceCreateInfo`` 数据，该数据下还需要指定 ``VkApplicationInfo`` 数据，此  ``VkApplicationInfo`` 内部有个 ``apiVersion`` 成员变量，此成员变量即为 ``Vulkan`` ``Instance`` 的版本。
 
       .. code:: c++
@@ -396,9 +397,85 @@ Vulkan的版本
    uint32_t api_version_minor = VK_API_VERSION_MINOR(api_version_1_0);//0
    uint32_t api_version_patch = VK_API_VERSION_PATCH(api_version_1_0);//0
 
+
+Vulkan的头文件
+####################
+
+大家已经在之前见过 ``Vulkan`` 的一些函数和定义了，比如 ``VK_MAKE_API_VERSION`` 、 ``vkCreateInstance`` 等， ``Vulkan`` 标准中所有的这一切都定义在 ``Vulkan`` 的头文件。
+
+头文件位于 ``Vulkan SDK`` 的安装目录下： ``$VULKAN_SDK/Include`` 。
+
+.. note:: 
+
+   ``$VULKAN_SDK/Include`` 的目录下一般不仅包括 ``Vulkan`` 的头文件，其包括整个 ``Vulkan SDK`` 的头文件。其中 ``vk_video`` 和 ``vulkan`` 内包含 ``Vulkan`` 的头文件。
+
+在 ``$VULKAN_SDK/Include/vulkan`` 文件夹下有三个头文件比较重要：
+
+* ``vk_platform.h`` 包含一些跨平台相关的通用宏定义和声明
+* ``vulkan_core.h`` 该头文件为 ``Vulkan`` 的核心头文件， ``Vulkan`` 所有的核心声明定义都在此头文件夹下。
+* ``vulkan.h`` 内部包含 ``vk_platform.h`` 和 ``vulkan_core.h`` 两个头文件，并且包含特定平台的头文件。
+
+.. important:: ``vulkan_core.h`` 是最重要的头文件。
+
+让我们看一下 ``vulkan.h`` :
+
+.. code:: c++
+
+   // vulkan.h
+
+   #include "vk_platform.h"
+   #include "vulkan_core.h"
+
+   #ifdef VK_USE_PLATFORM_ANDROID_KHR
+   #include "vulkan_android.h"
+   #endif
+
+   #ifdef VK_USE_PLATFORM_WAYLAND_KHR
+   #include "vulkan_wayland.h"
+   #endif
+
+   ...
+
+   #ifdef VK_USE_PLATFORM_WIN32_KHR
+   #include <windows.h>
+   #include "vulkan_win32.h"
+   #endif
+
+   #ifdef VK_USE_PLATFORM_XCB_KHR
+   #include <xcb/xcb.h>
+   #include "vulkan_xcb.h"
+   #endif
+
+   #ifdef VK_USE_PLATFORM_XLIB_KHR
+   #include <X11/Xlib.h>
+   #include "vulkan_xlib.h"
+   #endif
+
+   ...
+
+   #ifdef VK_ENABLE_BETA_EXTENSIONS
+   #include "vulkan_beta.h"
+   #endif
+
+   #endif // VULKAN_H_
+
+
+可以看到 ``vulkan.h`` 包含 ``vk_platform.h`` 和 ``vulkan_core.h`` ，并且使用平台宏包含特定平台的头文件。
+其中 ``vulkan_beta.h`` 为 ``Vulkan`` 的测试功能声明（在不远的将来会提升至 ``Vulkan`` 的核心或是扩展）。
+
+如果在 ``Windows`` 系统下开发则需要在使用 ``vulkan.h`` 之前定义 ``VK_USE_PLATFORM_WIN32_KHR`` 宏定义。
+
+.. code:: c++
+
+   #define VK_USE_PLATFORM_WIN32_KHR
+   #include <vulkan.h>
+
+剩下的 ``Vulkan`` 头文件，大部分就是 ``Vulkan`` 的扩展功能头文件。还有一个 ``vk_enum_string_helper.h`` 头文件，该头文件可以帮助我们将
+``Vulkan`` 的定义和声明输出成字符串，这对于开发调试输出信息很重要。
+
+如果开发者不想使用 ``Vulkan SDK`` 中的头文件，可以到 `Vulkan-Headers <https://github.com/KhronosGroup/Vulkan-Headers>`_ 仓库获取最新 ``Vulkan`` 头文件。
+
 Vulkan的库
 ####################
 
 
-Vulkan的头文件
-####################
