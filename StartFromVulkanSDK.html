@@ -233,6 +233,7 @@
 <li><p>2023/5/16 增加 <code class="docutils literal notranslate"><span class="pre">Vulkan的头文件</span></code> 章节</p></li>
 <li><p>2023/5/17 更新 <code class="docutils literal notranslate"><span class="pre">安装</span> <span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 章节</p></li>
 <li><p>2023/5/17 更新 <code class="docutils literal notranslate"><span class="pre">Vulkan的版本</span></code> 章节</p></li>
+<li><p>2023/5/18 更新 <code class="docutils literal notranslate"><span class="pre">Vulkan的头文件</span></code> 章节</p></li>
 </ul>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">Khronos</span></code> 这次推出了 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 官方的软件开发工具包 <a class="reference external" href="https://vulkan.lunarg.com/home/welcome">Vulkan SDK</a> ，这避免了像 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 开发环境混乱的情形再次上演。</p>
@@ -446,7 +447,7 @@
 <div><p>这也是 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 的版本。如果命令行中执行 <code class="docutils literal notranslate"><span class="pre">vulkaninfo</span></code> 指令， <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> <code class="docutils literal notranslate"><span class="pre">Instance</span></code> 的版本将会第一个显示。 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 是跟随您的设备驱动更新而一同发行的。</p>
 <div class="note admonition">
 <p class="admonition-title">Instance</p>
-<p><code class="docutils literal notranslate"><span class="pre">Instance</span></code> 是指在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中最初之物: <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 。 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中是一个句柄，在开发 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 应用时要做的第一步就是创建 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code>。这是用过调用 <code class="docutils literal notranslate"><span class="pre">vkCreateInstance</span></code> 函数创建的，其中
+<p><code class="docutils literal notranslate"><span class="pre">Instance</span></code> 是指在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中最初之物: <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 。 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中是一个句柄，在开发 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 应用时要做的第一步就是创建 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code>。这是通过调用 <code class="docutils literal notranslate"><span class="pre">vkCreateInstance</span></code> 函数创建的，其中
 在创建时需要指定 <code class="docutils literal notranslate"><span class="pre">VkInstanceCreateInfo</span></code> 数据，该数据下还需要指定 <code class="docutils literal notranslate"><span class="pre">VkApplicationInfo</span></code> 数据，此  <code class="docutils literal notranslate"><span class="pre">VkApplicationInfo</span></code> 内部有个 <code class="docutils literal notranslate"><span class="pre">apiVersion</span></code> 成员变量，此成员变量即为 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> <code class="docutils literal notranslate"><span class="pre">Instance</span></code> 的版本。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由Vulkan1.0提供</span>
 <span class="n">VkResult</span><span class="w"> </span><span class="nf">vkCreateInstance</span><span class="p">(</span>
@@ -585,10 +586,76 @@
 </div>
 </section>
 <section id="id5">
-<h2>Vulkan的库<a class="headerlink" href="#id5" title="此标题的永久链接">#</a></h2>
+<h2>Vulkan的头文件<a class="headerlink" href="#id5" title="此标题的永久链接">#</a></h2>
+<p>大家已经在之前见过 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的一些函数和定义了，比如 <code class="docutils literal notranslate"><span class="pre">VK_MAKE_API_VERSION</span></code> 、 <code class="docutils literal notranslate"><span class="pre">vkCreateInstance</span></code> 等， <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准中所有的这一切都定义在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的头文件。</p>
+<p>头文件位于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 的安装目录下： <code class="docutils literal notranslate"><span class="pre">$VULKAN_SDK/Include</span></code> 。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p><code class="docutils literal notranslate"><span class="pre">$VULKAN_SDK/Include</span></code> 的目录下一般不仅包括 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的头文件，其包括整个 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 的头文件。其中 <code class="docutils literal notranslate"><span class="pre">vk_video</span></code> 和 <code class="docutils literal notranslate"><span class="pre">vulkan</span></code> 内包含 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的头文件。</p>
+</div>
+<p>在 <code class="docutils literal notranslate"><span class="pre">$VULKAN_SDK/Include/vulkan</span></code> 文件夹下有三个头文件比较重要：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">vk_platform.h</span></code> 包含一些跨平台相关的通用宏定义和声明</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vulkan_core.h</span></code> 该头文件为 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的核心头文件， <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 所有的核心声明定义都在此头文件夹下。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vulkan.h</span></code> 内部包含 <code class="docutils literal notranslate"><span class="pre">vk_platform.h</span></code> 和 <code class="docutils literal notranslate"><span class="pre">vulkan_core.h</span></code> 两个头文件，并且包含特定平台的头文件。</p></li>
+</ul>
+<div class="admonition important">
+<p class="admonition-title">重要</p>
+<p><code class="docutils literal notranslate"><span class="pre">vulkan_core.h</span></code> 是最重要的头文件。</p>
+</div>
+<p>让我们看一下 <code class="docutils literal notranslate"><span class="pre">vulkan.h</span></code> :</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// vulkan.h</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;vk_platform.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;vulkan_core.h&quot;</span>
+
+<span class="cp">#ifdef VK_USE_PLATFORM_ANDROID_KHR</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;vulkan_android.h&quot;</span>
+<span class="cp">#endif</span>
+
+<span class="cp">#ifdef VK_USE_PLATFORM_WAYLAND_KHR</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;vulkan_wayland.h&quot;</span>
+<span class="cp">#endif</span>
+
+<span class="p">...</span>
+
+<span class="cp">#ifdef VK_USE_PLATFORM_WIN32_KHR</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;windows.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;vulkan_win32.h&quot;</span>
+<span class="cp">#endif</span>
+
+<span class="cp">#ifdef VK_USE_PLATFORM_XCB_KHR</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;xcb/xcb.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;vulkan_xcb.h&quot;</span>
+<span class="cp">#endif</span>
+
+<span class="cp">#ifdef VK_USE_PLATFORM_XLIB_KHR</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;X11/Xlib.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;vulkan_xlib.h&quot;</span>
+<span class="cp">#endif</span>
+
+<span class="p">...</span>
+
+<span class="cp">#ifdef VK_ENABLE_BETA_EXTENSIONS</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;vulkan_beta.h&quot;</span>
+<span class="cp">#endif</span>
+
+<span class="cp">#endif </span><span class="c1">// VULKAN_H_</span>
+</pre></div>
+</div>
+<p>可以看到 <code class="docutils literal notranslate"><span class="pre">vulkan.h</span></code> 包含 <code class="docutils literal notranslate"><span class="pre">vk_platform.h</span></code> 和 <code class="docutils literal notranslate"><span class="pre">vulkan_core.h</span></code> ，并且使用平台宏包含特定平台的头文件。
+其中 <code class="docutils literal notranslate"><span class="pre">vulkan_beta.h</span></code> 为 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的测试功能声明（在不远的将来会提升至 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的核心或是扩展）。</p>
+<p>如果在 <code class="docutils literal notranslate"><span class="pre">Windows</span></code> 系统下开发则需要在使用 <code class="docutils literal notranslate"><span class="pre">vulkan.h</span></code> 之前定义 <code class="docutils literal notranslate"><span class="pre">VK_USE_PLATFORM_WIN32_KHR</span></code> 宏定义。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#define VK_USE_PLATFORM_WIN32_KHR</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vulkan.h&gt;</span>
+</pre></div>
+</div>
+<p>剩下的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 头文件，大部分就是 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的扩展功能头文件。还有一个 <code class="docutils literal notranslate"><span class="pre">vk_enum_string_helper.h</span></code> 头文件，该头文件可以帮助我们将
+<code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的定义和声明输出成字符串，这对于开发调试输出信息很重要。</p>
+<p>如果开发者不想使用 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 中的头文件，可以到 <a class="reference external" href="https://github.com/KhronosGroup/Vulkan-Headers">Vulkan-Headers</a> 仓库获取最新 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 头文件。</p>
 </section>
 <section id="id6">
-<h2>Vulkan的头文件<a class="headerlink" href="#id6" title="此标题的永久链接">#</a></h2>
+<h2>Vulkan的库<a class="headerlink" href="#id6" title="此标题的永久链接">#</a></h2>
 </section>
 </section>
 
@@ -660,8 +727,8 @@
 <li><a class="reference internal" href="#sdk">SDK的版本</a></li>
 <li><a class="reference internal" href="#vulkan-loader">Vulkan Loader</a></li>
 <li><a class="reference internal" href="#vulkan">Vulkan的版本</a></li>
-<li><a class="reference internal" href="#id5">Vulkan的库</a></li>
-<li><a class="reference internal" href="#id6">Vulkan的头文件</a></li>
+<li><a class="reference internal" href="#id5">Vulkan的头文件</a></li>
+<li><a class="reference internal" href="#id6">Vulkan的库</a></li>
 </ul>
 </li>
 </ul>
