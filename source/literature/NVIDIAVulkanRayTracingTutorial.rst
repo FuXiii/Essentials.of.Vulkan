@@ -2,7 +2,7 @@ NVIDIA Vulkan 光线追踪教程
 =============================
 
 .. admonition:: 更新记录
-   :class: note
+   :class: admonition
 
    * 2023/5/15 创建本文
    * 2023/5/15 增加 ``介绍`` 章节
@@ -11,6 +11,8 @@ NVIDIA Vulkan 光线追踪教程
    * 2023/5/17 增加 ``生成解决方案`` 章节
    * 2023/5/17 增加 ``编译和运行`` 章节
    * 2023/5/17 增加 ``开始步入光线追踪`` 章节
+   * 2023/5/18 更新 ``开始步入光线追踪`` 章节
+   * 2023/5/18 增加 ``加速结构`` 章节
 
 `文献源`_
 
@@ -100,4 +102,66 @@ NVIDIA Vulkan 光线追踪教程
 ``vk_ray_tracing__simple_KHR`` 工程将会作为额外教程的起点进行开发讲解。
 
 开始步入光线追踪
+####################
+
+首先进入 ``main.cpp`` 文件的 ``main`` 函数，找到使用 ``nvvk::ContextCreateInfo`` 设置需要的 ``Vulkan`` 扩展。为了激活使用光线追踪，我们需要 ``VK_KHR_ACCELERATION_STRUCTURE`` 和 ``VK_KHR_RAY_TRACING_PIPELINE`` 两个扩展。这两个扩展
+还依赖于其他扩展，如下是所有需要激活的扩展。
+
+.. code:: c++
+
+    // #VKRay: 激活光线追踪扩展
+    VkPhysicalDeviceAccelerationStructureFeaturesKHR accelFeature{VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR};
+    contextInfo.addDeviceExtension(VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME, false, &accelFeature);  // 用于构建加速结构
+    VkPhysicalDeviceRayTracingPipelineFeaturesKHR rtPipelineFeature{VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR};
+    contextInfo.addDeviceExtension(VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME, false, &rtPipelineFeature);  // 用于 vkCmdTraceRaysKHR
+    contextInfo.addDeviceExtension(VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME);  // 光线追踪光线的依赖
+
+在这写代码背后，其帮助我们选择一个支持激活 ``VK_KHR_*`` 扩展的物理设备，之后在调用 ``vkCreateDevice`` 之前将 ``VkPhysicalDevice*FeaturesKHR`` 结构体插入 ``VkDeviceCreateInfo`` 的 ``pNext`` 链中。
+这将激活光线追踪特性并且获取有关设备对于光线追踪的能力。如果你对背后的原理好奇，可与预览 ``Vulkan`` 上下文封装 `Context::initInstance() <https://github.com/nvpro-samples/nvpro_core/blob/1c59039a1ab0d777c79a29b09879a2686ec286dc/nvvk/context_vk.cpp#L211>`_ 。
+
+.. admonition:: 加载函数指针
+    :class: note
+
+    与 ``OpenGL`` 一样，当在 ``Vulkan`` 中使用扩展时，您需要使用 ``vkGetInstanceProcAddr`` 和 ``vkGetDeviceProcAddr`` 手动加载扩展函数指针。该示例的 ``nvvk::Context`` 类在内部使用魔法已经为您做好了，对于获取 ``Vulkan`` 的 ``C`` 语言的 ``API`` 可以通过调用 `load_VK_EXTENSIONS <https://github.com/nvpro-samples/nvpro_core/blob/fd6f14c4ddcb6b2ec1e79462d372b32f3838b016/nvvk/extensions_vk.cpp#L2647>`_ 获取。
+
+在 ``hello_vulkan.h`` 中的 ``HelloVulkan`` 类中，增加一个初始化函数和用于存储 ``GPU`` 的光追属性的成员变量。
+
+.. code:: c++
+
+    // #VKRay
+    void initRayTracing();
+    VkPhysicalDeviceRayTracingPipelinePropertiesKHR m_rtProperties{VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_PROPERTIES_KHR};
+
+在 ``hello_vulkan.cpp`` 结尾增加 ``initRayTracing()`` 函数体，该函数将会使用扩展查询 ``GPU`` 的光追属性。特别是对于获取最大递归深度的属性，例如对于单个光线可调用操作的嵌套式追踪数量。其可以看做场景中的单条光线递归路径追踪中可以反弹的次数。
+需要注意的是，为了性能考量，递归应该尽量保持最小，这有利于循环执行。这也会查询之后章节创建着色器绑定表所需要的着色器头部大小。
+
+.. code:: c++
+
+    // 初始化Vulkan光线追踪
+    // #VKRay
+    void HelloVulkan::initRayTracing()
+    {
+      // 设置光追属性
+      VkPhysicalDeviceProperties2 prop2{VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2};
+      prop2.pNext = &m_rtProperties;
+      vkGetPhysicalDeviceProperties2(m_physicalDevice, &prop2);
+    }
+
+main
+********************
+
+在 ``main.cpp`` 的 ``main()`` 函数中，我们在 ``helloVk.updateDescriptorSet()`` 之后调用初始化函数。
+
+.. code:: c++
+
+    // #VKRay
+    helloVk.initRayTracing();
+
+.. admonition:: 练习
+    :class: note
+
+    当执行该程序时，您可以在 ``initRayTracing()`` 函数出打个断点查看光追属性数据。在 ``Quadro RTX 6000`` 设备上，
+    最大的递归深度是 ``31`` ，着色器组处理组的大小是 ``16``。
+
+加速结构
 ####################

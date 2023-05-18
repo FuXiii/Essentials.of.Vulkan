@@ -2,7 +2,7 @@
 =========
 
 .. admonition:: 更新记录
-   :class: note
+   :class: admonition
 
    * 2023/5/12 创建本文
    * 2023/5/12 创建 ``VK_KHR_acceleration_structure`` 章节

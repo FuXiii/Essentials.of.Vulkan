@@ -86,3 +86,4 @@ Vulkan入门精要
 * 2023/5/18
     >
     >* 更新`source/StartFromVulkanSDK.rst`文章
+    >* 更新`source/literature/NVIDIAVulkanRayTracingTutorial.rst`文章

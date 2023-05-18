@@ -2,7 +2,7 @@
 =========
 
 .. admonition:: 更新记录
-   :class: note
+   :class: admonition
 
    * 2023/5/14 增加该文章
    * 2023/5/14 增加 ``Khronos组织`` 章节
