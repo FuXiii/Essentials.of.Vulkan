@@ -15,6 +15,10 @@
    
 .. image:: https://img.shields.io/badge/Email-g1018505124@outlook.com-deepgreen
 
+.. important:: 
+
+   如果您觉得本教程对您起到了帮助，如果能给该 `Essentials.of.Vulkan <https://github.com/FuXiii/Essentials.of.Vulkan>`_ 项目一个小星星，您的支持将是我坚持的动力，不胜感激。๐•ᴗ•๐
+
 序言
 ####################
 
