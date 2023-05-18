@@ -16,6 +16,7 @@
    * 2023/5/17 更新 ``Vulkan的版本`` 章节
    * 2023/5/18 更新 ``Vulkan的头文件`` 章节
    * 2023/5/18 增加 ``Vulkan SDK 最佳实践`` 章节
+   * 2023/5/18 基本完成
 
 ``Khronos`` 这次推出了 ``Vulkan`` 官方的软件开发工具包 `Vulkan SDK <https://vulkan.lunarg.com/home/welcome>`_ ，这避免了像 ``OpenGL`` 开发环境混乱的情形再次上演。
 
@@ -496,3 +497,22 @@ Vulkan的库
 Vulkan SDK 最佳实践
 ######################
 
+对于 ``Vulkan SDK`` 的最佳实践最佳实践就是 ``不使用`` ``Vulkan SDK`` 。是的，不使用安装的 ``Vulkan SDK`` 中的头文件和静态库。
+
+* 对于库
+
+   使用 ``Vulkan`` 运行时的动态库，因为不是每个电脑都安装了 ``Vulkan SDK`` ，但是想要运行 ``Vulkan`` 应用，其运行时是必须的，也就是说基本上每台设备上都有该 ``Vulkan`` 动态库。
+
+   .. admonition:: 使用 ``Vulkan`` 动态库
+      :class: note
+
+      有关如何使用 ``Vulkan`` 动态库加载 ``Vulkan`` 函数，将在后文细说 ``Vulkan`` 时详细讲解。
+
+* 对于 ``Vulkan`` 的头文件
+
+   使用 `Vulkan-Headers <https://github.com/KhronosGroup/Vulkan-Headers>`_ 仓库获取最新 ``Vulkan`` 头文件。
+
+.. admonition:: 不使用 ``Vulkan SDK``
+   :class: caution
+
+   理论上来说是不需要依赖 ``Vulkan SDK`` 的，但是如果使用一些第三方库，这些第三方库可能会依赖  ``Vulkan SDK`` ，比如 `VulkanMemoryAllocator <https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator>`_ 。此时 ``Vulkan SDK`` 还是需要的。
