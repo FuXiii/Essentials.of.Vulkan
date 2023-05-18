@@ -15,6 +15,7 @@
    * 2023/5/17 更新 ``安装 Vulkan SDK`` 章节
    * 2023/5/17 更新 ``Vulkan的版本`` 章节
    * 2023/5/18 更新 ``Vulkan的头文件`` 章节
+   * 2023/5/18 增加 ``Vulkan SDK 最佳实践`` 章节
 
 ``Khronos`` 这次推出了 ``Vulkan`` 官方的软件开发工具包 `Vulkan SDK <https://vulkan.lunarg.com/home/welcome>`_ ，这避免了像 ``OpenGL`` 开发环境混乱的情形再次上演。
 
@@ -478,4 +479,20 @@ Vulkan的头文件
 Vulkan的库
 ####################
 
+``Vulkan`` 的库在 ``Vulkan SDK`` 中为静态库。如果您在安装 ``Vulkan SDK`` 时勾选安装 ``32`` 位的库（默认只安装 ``64`` 位）的库，则 ``Vulkan SDK`` 下会有两个库文件夹：
+
+* ``Lib`` 用于 ``64`` 位开发的静态库
+* ``Lib32`` 用于 ``32`` 位开发的静态库
+
+其包括整个 ``Vulkan SDK`` 的静态库。其中我们主要只关注 ``vulkan-1.lib`` 这个库，使用此静态链接库，在开发 ``Vulkan`` 应用时将其链接进程序就可以调用 ``Vulkan`` 的函数了。
+
+.. admonition:: vulkan-1.lib
+   :class: attention
+
+   现在已经不推荐使用静态库链接到 ``Vulkan`` 了。而是推荐直接使用 ``Vulkan`` 的动态库，也就是 ``Vulkan`` 运行时的那个动态库， ``Windows`` 下为 ``vulkan-1.dll`` ，
+   在 ``Linux`` 操作系统中为 ``libvulkan.so.1`` 或 ``libvulkan.so`` 。有关原因请查阅 `Vulkan-Loader <https://github.com/KhronosGroup/Vulkan-Loader/blob/main/docs/LoaderApplicationInterface.md#static-linking>`_ 文档
+
+
+Vulkan SDK 最佳实践
+######################
 
