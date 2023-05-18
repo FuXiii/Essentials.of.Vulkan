@@ -497,7 +497,7 @@ Vulkan的库
 Vulkan SDK 最佳实践
 ######################
 
-对于 ``Vulkan SDK`` 的最佳实践最佳实践就是 ``不使用`` ``Vulkan SDK`` 。是的，不使用安装的 ``Vulkan SDK`` 中的头文件和静态库。
+对于 ``Vulkan SDK`` 的最佳实践就是 ``不使用`` ``Vulkan SDK`` 。是的，不使用安装的 ``Vulkan SDK`` 中的头文件和静态库。
 
 * 对于库
 
