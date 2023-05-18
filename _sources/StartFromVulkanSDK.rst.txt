@@ -2,7 +2,7 @@
 ===================
 
 .. admonition:: 更新记录
-   :class: note
+   :class: admonition
 
    * 2023/5/16 增加该文章
    * 2023/5/16 增加 ``安装 Vulkan SDK`` 章节

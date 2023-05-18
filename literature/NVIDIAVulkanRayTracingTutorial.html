@@ -220,7 +220,7 @@
         <article role="main">
           <section id="nvidia-vulkan">
 <h1>NVIDIA Vulkan 光线追踪教程<a class="headerlink" href="#nvidia-vulkan" title="此标题的永久链接">#</a></h1>
-<div class="note admonition">
+<div class="admonition">
 <p class="admonition-title">更新记录</p>
 <ul class="simple">
 <li><p>2023/5/15 创建本文</p></li>
@@ -230,15 +230,17 @@
 <li><p>2023/5/17 增加 <code class="docutils literal notranslate"><span class="pre">生成解决方案</span></code> 章节</p></li>
 <li><p>2023/5/17 增加 <code class="docutils literal notranslate"><span class="pre">编译和运行</span></code> 章节</p></li>
 <li><p>2023/5/17 增加 <code class="docutils literal notranslate"><span class="pre">开始步入光线追踪</span></code> 章节</p></li>
+<li><p>2023/5/18 更新 <code class="docutils literal notranslate"><span class="pre">开始步入光线追踪</span></code> 章节</p></li>
+<li><p>2023/5/18 增加 <code class="docutils literal notranslate"><span class="pre">加速结构</span></code> 章节</p></li>
 </ul>
 </div>
 <p><a class="reference external" href="https://nvpro-samples.github.io/vk_raytracing_tutorial_KHR/">文献源</a></p>
 <p>本文所提供的的代码和文档聚焦于使用 <a class="reference external" href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/vkspec.html#VK_KHR_ray_tracing_pipeline">VK_KHR_ray_tracing_pipeline</a> 扩展展示一个基础光追示例。
 该教程从一个基于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 开发的基础程序开始，并且提供一步步的介绍去修改和增加函数和功能。</p>
-<figure class="align-default" id="id8">
+<figure class="align-default" id="id9">
 <img alt="../_images/resultRaytraceShadowMedieval.png" src="../_images/resultRaytraceShadowMedieval.png" />
 <figcaption>
-<p><span class="caption-text">最终结果</span><a class="headerlink" href="#id8" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">最终结果</span><a class="headerlink" href="#id9" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <div class="note admonition">
@@ -295,10 +297,10 @@
 <p>打开位于 <code class="docutils literal notranslate"><span class="pre">build</span></code> 目录下的解决方案，之后编译并运行 <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing__before">vk_ray_tracing__before_KHR</a> 。</p>
 <p>该示例将会是此教程的示例起点。这是一个用于加载 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 文件并使用 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 光栅化渲染他们的小框架。您可以通过阅读 <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/blob/master/ray_tracing__before/README.md#nvidia-vulkan-ray-tracing-tutorial">Base Overview</a> 来纵观该示例是如何实现的。
 我们将使用这个框架加载几何体并且渲染场景来实现光线追踪。</p>
-<figure class="align-default" id="id9">
+<figure class="align-default" id="id10">
 <img alt="../_images/resultRasterCube.png" src="../_images/resultRasterCube.png" />
 <figcaption>
-<p><span class="caption-text">首次执行</span><a class="headerlink" href="#id9" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">首次执行</span><a class="headerlink" href="#id10" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <p>接下来的步骤将是修改 <code class="docutils literal notranslate"><span class="pre">vk_ray_tracing__before_KHR</span></code> 使其支持光线追踪。该教程修改后的最终结果将是同 <code class="docutils literal notranslate"><span class="pre">vk_ray_tracing__simple_KHR</span></code> 一样。如果开发过程发生错误
@@ -307,6 +309,57 @@
 </section>
 <section id="id7">
 <h2>开始步入光线追踪<a class="headerlink" href="#id7" title="此标题的永久链接">#</a></h2>
+<p>首先进入 <code class="docutils literal notranslate"><span class="pre">main.cpp</span></code> 文件的 <code class="docutils literal notranslate"><span class="pre">main</span></code> 函数，找到使用 <code class="docutils literal notranslate"><span class="pre">nvvk::ContextCreateInfo</span></code> 设置需要的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 扩展。为了激活使用光线追踪，我们需要 <code class="docutils literal notranslate"><span class="pre">VK_KHR_ACCELERATION_STRUCTURE</span></code> 和 <code class="docutils literal notranslate"><span class="pre">VK_KHR_RAY_TRACING_PIPELINE</span></code> 两个扩展。这两个扩展
+还依赖于其他扩展，如下是所有需要激活的扩展。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// #VKRay: 激活光线追踪扩展</span>
+<span class="n">VkPhysicalDeviceAccelerationStructureFeaturesKHR</span><span class="w"> </span><span class="n">accelFeature</span><span class="p">{</span><span class="n">VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR</span><span class="p">};</span>
+<span class="n">contextInfo</span><span class="p">.</span><span class="n">addDeviceExtension</span><span class="p">(</span><span class="n">VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">accelFeature</span><span class="p">);</span><span class="w">  </span><span class="c1">// 用于构建加速结构</span>
+<span class="n">VkPhysicalDeviceRayTracingPipelineFeaturesKHR</span><span class="w"> </span><span class="n">rtPipelineFeature</span><span class="p">{</span><span class="n">VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR</span><span class="p">};</span>
+<span class="n">contextInfo</span><span class="p">.</span><span class="n">addDeviceExtension</span><span class="p">(</span><span class="n">VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">rtPipelineFeature</span><span class="p">);</span><span class="w">  </span><span class="c1">// 用于 vkCmdTraceRaysKHR</span>
+<span class="n">contextInfo</span><span class="p">.</span><span class="n">addDeviceExtension</span><span class="p">(</span><span class="n">VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME</span><span class="p">);</span><span class="w">  </span><span class="c1">// 光线追踪光线的依赖</span>
+</pre></div>
+</div>
+<p>在这写代码背后，其帮助我们选择一个支持激活 <code class="docutils literal notranslate"><span class="pre">VK_KHR_*</span></code> 扩展的物理设备，之后在调用 <code class="docutils literal notranslate"><span class="pre">vkCreateDevice</span></code> 之前将 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDevice*FeaturesKHR</span></code> 结构体插入 <code class="docutils literal notranslate"><span class="pre">VkDeviceCreateInfo</span></code> 的 <code class="docutils literal notranslate"><span class="pre">pNext</span></code> 链中。
+这将激活光线追踪特性并且获取有关设备对于光线追踪的能力。如果你对背后的原理好奇，可与预览 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 上下文封装 <a class="reference external" href="https://github.com/nvpro-samples/nvpro_core/blob/1c59039a1ab0d777c79a29b09879a2686ec286dc/nvvk/context_vk.cpp#L211">Context::initInstance()</a> 。</p>
+<div class="note admonition">
+<p class="admonition-title">加载函数指针</p>
+<p>与 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 一样，当在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中使用扩展时，您需要使用 <code class="docutils literal notranslate"><span class="pre">vkGetInstanceProcAddr</span></code> 和 <code class="docutils literal notranslate"><span class="pre">vkGetDeviceProcAddr</span></code> 手动加载扩展函数指针。该示例的 <code class="docutils literal notranslate"><span class="pre">nvvk::Context</span></code> 类在内部使用魔法已经为您做好了，对于获取 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的 <code class="docutils literal notranslate"><span class="pre">C</span></code> 语言的 <code class="docutils literal notranslate"><span class="pre">API</span></code> 可以通过调用 <a class="reference external" href="https://github.com/nvpro-samples/nvpro_core/blob/fd6f14c4ddcb6b2ec1e79462d372b32f3838b016/nvvk/extensions_vk.cpp#L2647">load_VK_EXTENSIONS</a> 获取。</p>
+</div>
+<p>在 <code class="docutils literal notranslate"><span class="pre">hello_vulkan.h</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">HelloVulkan</span></code> 类中，增加一个初始化函数和用于存储 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 的光追属性的成员变量。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// #VKRay</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">initRayTracing</span><span class="p">();</span>
+<span class="n">VkPhysicalDeviceRayTracingPipelinePropertiesKHR</span><span class="w"> </span><span class="n">m_rtProperties</span><span class="p">{</span><span class="n">VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_PROPERTIES_KHR</span><span class="p">};</span>
+</pre></div>
+</div>
+<p>在 <code class="docutils literal notranslate"><span class="pre">hello_vulkan.cpp</span></code> 结尾增加 <code class="docutils literal notranslate"><span class="pre">initRayTracing()</span></code> 函数体，该函数将会使用扩展查询 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 的光追属性。特别是对于获取最大递归深度的属性，例如对于单个光线可调用操作的嵌套式追踪数量。其可以看做场景中的单条光线递归路径追踪中可以反弹的次数。
+需要注意的是，为了性能考量，递归应该尽量保持最小，这有利于循环执行。这也会查询之后章节创建着色器绑定表所需要的着色器头部大小。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 初始化Vulkan光线追踪</span>
+<span class="c1">// #VKRay</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">HelloVulkan::initRayTracing</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="c1">// 设置光追属性</span>
+<span class="w">  </span><span class="n">VkPhysicalDeviceProperties2</span><span class="w"> </span><span class="n">prop2</span><span class="p">{</span><span class="n">VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2</span><span class="p">};</span>
+<span class="w">  </span><span class="n">prop2</span><span class="p">.</span><span class="n">pNext</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">m_rtProperties</span><span class="p">;</span>
+<span class="w">  </span><span class="n">vkGetPhysicalDeviceProperties2</span><span class="p">(</span><span class="n">m_physicalDevice</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">prop2</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<section id="main">
+<h3>main<a class="headerlink" href="#main" title="此标题的永久链接">#</a></h3>
+<p>在 <code class="docutils literal notranslate"><span class="pre">main.cpp</span></code> 的 <code class="docutils literal notranslate"><span class="pre">main()</span></code> 函数中，我们在 <code class="docutils literal notranslate"><span class="pre">helloVk.updateDescriptorSet()</span></code> 之后调用初始化函数。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// #VKRay</span>
+<span class="n">helloVk</span><span class="p">.</span><span class="n">initRayTracing</span><span class="p">();</span>
+</pre></div>
+</div>
+<div class="note admonition">
+<p class="admonition-title">练习</p>
+<p>当执行该程序时，您可以在 <code class="docutils literal notranslate"><span class="pre">initRayTracing()</span></code> 函数出打个断点查看光追属性数据。在 <code class="docutils literal notranslate"><span class="pre">Quadro</span> <span class="pre">RTX</span> <span class="pre">6000</span></code> 设备上，
+最大的递归深度是 <code class="docutils literal notranslate"><span class="pre">31</span></code> ，着色器组处理组的大小是 <code class="docutils literal notranslate"><span class="pre">16</span></code>。</p>
+</div>
+</section>
+</section>
+<section id="id8">
+<h2>加速结构<a class="headerlink" href="#id8" title="此标题的永久链接">#</a></h2>
 </section>
 </section>
 
@@ -380,7 +433,11 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#id6">编译和运行</a></li>
-<li><a class="reference internal" href="#id7">开始步入光线追踪</a></li>
+<li><a class="reference internal" href="#id7">开始步入光线追踪</a><ul>
+<li><a class="reference internal" href="#main">main</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id8">加速结构</a></li>
 </ul>
 </li>
 </ul>

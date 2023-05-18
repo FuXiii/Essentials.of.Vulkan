@@ -2,7 +2,7 @@ Vulkan迷你路径追踪
 =============================
 
 .. admonition:: 更新记录
-   :class: note
+   :class: admonition
 
    * 2023/5/15 创建本文
 
