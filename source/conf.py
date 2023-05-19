@@ -22,6 +22,19 @@ extensions = [
     'sphinx_last_updated_by_git'
     ]
 
+myst_enable_extensions = [
+    #'amsmath',
+    'dollarmath',
+    #'myst_dmath_allow_labels',
+    #'myst_dmath_allow_space',
+    #'myst_dmath_allow_digits',
+    #'myst_dmath_double_inline',
+    #'dmath_allow_labels',
+    #'dmath_allow_space',
+    #'dmath_allow_digits',
+    #'dmath_double_inline',
+    ]
+
 templates_path = ['_templates']
 exclude_patterns = []
 #include_patterns = ['**','literature/*']

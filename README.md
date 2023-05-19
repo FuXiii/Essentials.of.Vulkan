@@ -87,3 +87,8 @@ Vulkan入门精要
     >
     >* 更新`source/StartFromVulkanSDK.rst`文章
     >* 更新`source/literature/NVIDIAVulkanRayTracingTutorial.rst`文章
+
+* 2023/5/19
+    >
+    >* 增加`source/application`文件夹，用于存放 `Vulkan` 应用文档。
+    >* 增加`source/application/VolumetricCloud.md`文档
