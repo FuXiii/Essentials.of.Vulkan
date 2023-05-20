@@ -9,7 +9,7 @@
    * 2023/5/14 增加 ``介绍`` 目录
    * 2023/5/15 增加 ``纵览`` 目录
    * 2023/5/16 增加 ``开始于 Vulkan SDK`` 目录
-   * 2023/5/19 增加 ``应用`` 目录
+   * 2023/5/19 增加 ``工程应用`` 目录
 
 .. image:: https://img.shields.io/badge/QQ%20Group-128656761-deepgreen?logo=tencentqq
    :target: https://jq.qq.com/?_wv=1027&k=rZGd2LHr
