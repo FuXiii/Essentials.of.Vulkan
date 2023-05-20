@@ -241,15 +241,16 @@
 <li><p>2023/5/18 增加 <code class="docutils literal notranslate"><span class="pre">加速结构</span></code> 章节</p></li>
 <li><p>2023/5/20 更新 <code class="docutils literal notranslate"><span class="pre">加速结构</span></code> 章节</p></li>
 <li><p>2023/5/20 增加 <code class="docutils literal notranslate"><span class="pre">底层加速结构</span></code> 章节</p></li>
+<li><p>2023/5/20 增加 <code class="docutils literal notranslate"><span class="pre">帮助类细节：RaytracingBuilder::buildBlas()</span></code> 章节</p></li>
 </ul>
 </div>
 <p><a class="reference external" href="https://nvpro-samples.github.io/vk_raytracing_tutorial_KHR/">文献源</a></p>
 <p>本文所提供的的代码和文档聚焦于使用 <a class="reference external" href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/vkspec.html#VK_KHR_ray_tracing_pipeline">VK_KHR_ray_tracing_pipeline</a> 扩展展示一个基础光追示例。
 该教程从一个基于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 开发的基础程序开始，并且提供一步步的介绍去修改和增加函数和功能。</p>
-<figure class="align-default" id="id10">
+<figure class="align-default" id="id11">
 <img alt="../_images/resultRaytraceShadowMedieval.png" src="../_images/resultRaytraceShadowMedieval.png" />
 <figcaption>
-<p><span class="caption-text">最终结果</span><a class="headerlink" href="#id10" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">最终结果</span><a class="headerlink" href="#id11" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <div class="note admonition">
@@ -306,10 +307,10 @@
 <p>打开位于 <code class="docutils literal notranslate"><span class="pre">build</span></code> 目录下的解决方案，之后编译并运行 <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing__before">vk_ray_tracing__before_KHR</a> 。</p>
 <p>该示例将会是此教程的示例起点。这是一个用于加载 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 文件并使用 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 光栅化渲染他们的小框架。您可以通过阅读 <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/blob/master/ray_tracing__before/README.md#nvidia-vulkan-ray-tracing-tutorial">Base Overview</a> 来纵观该示例是如何实现的。
 我们将使用这个框架加载几何体并且渲染场景来实现光线追踪。</p>
-<figure class="align-default" id="id11">
+<figure class="align-default" id="id12">
 <img alt="../_images/resultRasterCube.png" src="../_images/resultRasterCube.png" />
 <figcaption>
-<p><span class="caption-text">首次执行</span><a class="headerlink" href="#id11" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">首次执行</span><a class="headerlink" href="#id12" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <p>接下来的步骤将是修改 <code class="docutils literal notranslate"><span class="pre">vk_ray_tracing__before_KHR</span></code> 使其支持光线追踪。该教程修改后的最终结果将是同 <code class="docutils literal notranslate"><span class="pre">vk_ray_tracing__simple_KHR</span></code> 一样。如果开发过程发生错误
@@ -380,9 +381,9 @@
 据经验来说，底层加速结构越少越好。</p>
 </div>
 <p>顶层加速结构将会包含物体的实例，每一个实例都会有自己的变换矩阵并且引用一个具体的底层加速结构。我们将会从一个底层加速结构和一个单位矩阵的顶层加速结构实例开始实现。</p>
-<figure class="align-default" id="id12">
+<figure class="align-default" id="id13">
 <img alt="../_images/AccelerationStructure.svg" src="../_images/AccelerationStructure.svg" /><figcaption>
-<p><span class="caption-text">加速结构</span><a class="headerlink" href="#id12" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">加速结构</span><a class="headerlink" href="#id13" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <p>该教程将会加载一个 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 文件，并将其索引、顶点和材质数据存储到 <code class="docutils literal notranslate"><span class="pre">ObjModel</span></code> 数据结构中。该模型同时引用一个 <code class="docutils literal notranslate"><span class="pre">ObjInstance</span></code> 数据结构，其中包含用于特定实例的变换矩阵。对于光线追踪， <code class="docutils literal notranslate"><span class="pre">ObjModel</span></code> 和一系列的 <code class="docutils literal notranslate"><span class="pre">ObjInstances</span></code> 将在之后分别用于构建底层加速结构和顶层加速结构。</p>
@@ -454,7 +455,7 @@
 <span class="w">  </span><span class="c1">//triangles.transformData = {};</span>
 <span class="w">  </span><span class="n">triangles</span><span class="p">.</span><span class="n">maxVertex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">model</span><span class="p">.</span><span class="n">nbVertices</span><span class="p">;</span>
 
-<span class="w">  </span><span class="c1">// 将之前但三角形设定成不透明</span>
+<span class="w">  </span><span class="c1">// 将之前的三角形设定成不透明</span>
 <span class="w">  </span><span class="n">VkAccelerationStructureGeometryKHR</span><span class="w"> </span><span class="n">asGeom</span><span class="p">{</span><span class="n">VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR</span><span class="p">};</span>
 <span class="w">  </span><span class="n">asGeom</span><span class="p">.</span><span class="n">geometryType</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="n">VK_GEOMETRY_TYPE_TRIANGLES_KHR</span><span class="p">;</span>
 <span class="w">  </span><span class="n">asGeom</span><span class="p">.</span><span class="n">flags</span><span class="w">              </span><span class="o">=</span><span class="w"> </span><span class="n">VK_GEOMETRY_OPAQUE_BIT_KHR</span><span class="p">;</span>
@@ -507,6 +508,35 @@
 <span class="p">}</span>
 </pre></div>
 </div>
+<section id="raytracingbuilder-buildblas">
+<h4>帮助类细节： <code class="docutils literal notranslate"><span class="pre">RaytracingBuilder::buildBlas()</span></code><a class="headerlink" href="#raytracingbuilder-buildblas" title="此标题的永久链接">#</a></h4>
+<p>这个帮助函数可以在 <code class="docutils literal notranslate"><span class="pre">raytraceKHR_vkpp.hpp</span></code> 中找到：其可以在很多项目中重用，并且也是 <a class="reference external" href="https://github.com/nvpro-samples">nvpro-samples</a> 中众多帮助类中的其中之一。该函数会对每一个 <code class="docutils literal notranslate"><span class="pre">RaytracingBuilderKHR::BlasInput</span></code> 生成一个底层加速结构。</p>
+<p>创建一个底层加速结构需要如下元素：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildGeometryInfoKHR</span></code> ：创建并构建加速结构，其基于 <code class="docutils literal notranslate"><span class="pre">objectToVkGeometryKHR()</span></code> 中创建的 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryKHR</span></code> 数组。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildRangeInfoKHR</span></code> ：范围引用，与 <code class="docutils literal notranslate"><span class="pre">objectToVkGeometryKHR()</span></code> 中使用的相同。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildSizesInfoKHR</span></code> ：创建加速结构所需要的大小和缓存信息</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nvvk::AccelKHR</span></code> ：结果</p></li>
+</ul>
+<p>如上这些数据蒋村存到一个名为 <code class="docutils literal notranslate"><span class="pre">BuildAccelerationStructure</span></code> 结构体中用于简化创建。</p>
+<p>在函数一开始，我们仅仅初始化我们之后需要的数据。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">//--------------------------------------------------------------------------------------------------</span>
+<span class="c1">// 使用BlasInput的数组创建所有的底层加速结构</span>
+<span class="c1">// - input数组中的每一个BlasInput都对应一个底层加速结构</span>
+<span class="c1">// - 底层加速结构的数量将会和input.size()一样</span>
+<span class="c1">// - 创建的底层加速结构将会存储在m_blas，并可以通过数组索引获取引用</span>
+<span class="c1">// - 如果flag里设置了Compact位域，底层加速结构将会被压缩</span>
+<span class="c1">//</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">nvvk::RaytracingBuilderKHR::buildBlas</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">BlasInput</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">input</span><span class="p">,</span><span class="w"> </span><span class="n">VkBuildAccelerationStructureFlagsKHR</span><span class="w"> </span><span class="n">flags</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">m_cmdPool</span><span class="p">.</span><span class="n">init</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">m_queueIndex</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">uint32_t</span><span class="w">     </span><span class="n">nbBlas</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">input</span><span class="p">.</span><span class="n">size</span><span class="p">());</span>
+<span class="w">  </span><span class="n">VkDeviceSize</span><span class="w"> </span><span class="n">asTotalSize</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span><span class="w">     </span><span class="c1">// 所有要分配的底层加速结构所需要的内存大小</span>
+<span class="w">  </span><span class="kt">uint32_t</span><span class="w">     </span><span class="n">nbCompactions</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span><span class="w">   </span><span class="c1">// Nb of BLAS requesting compaction</span>
+<span class="w">  </span><span class="n">VkDeviceSize</span><span class="w"> </span><span class="n">maxScratchSize</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span><span class="w">  </span><span class="c1">// 最大的跨度大小</span>
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 </section>
@@ -586,7 +616,10 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#id8">加速结构</a><ul>
-<li><a class="reference internal" href="#id9">底层加速结构</a></li>
+<li><a class="reference internal" href="#id9">底层加速结构</a><ul>
+<li><a class="reference internal" href="#raytracingbuilder-buildblas">帮助类细节： <code class="docutils literal notranslate"><span class="pre">RaytracingBuilder::buildBlas()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
