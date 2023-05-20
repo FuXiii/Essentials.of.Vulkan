@@ -13,6 +13,8 @@ NVIDIA Vulkan 光线追踪教程
    * 2023/5/17 增加 ``开始步入光线追踪`` 章节
    * 2023/5/18 更新 ``开始步入光线追踪`` 章节
    * 2023/5/18 增加 ``加速结构`` 章节
+   * 2023/5/20 更新 ``加速结构`` 章节
+   * 2023/5/20 增加 ``末级加速结构`` 章节
 
 `文献源`_
 
@@ -165,3 +167,52 @@ main
 
 加速结构
 ####################
+
+为了提高效率，光线追踪使用加速结构（ ``acceleration structure`` ( ``AS`` ) ）组织几何体，这样在渲染时将减少光线-三角形求交测试的次数。该结构在硬件上使用经典的层级数据结构存储，但给用户提供可接触的层级只有
+两级：一个顶级加速结构 （ ``top-level acceleration structure`` ( ``TLAS`` ) ）可以引用任意数量的末级加速结构 （ ``bottom-level acceleration structures`` ( ``BLAS`` ) ）。对于可以支持多少个顶级加速结构，
+可通过 ``VkPhysicalDeviceAccelerationStructurePropertiesKHR::maxInstanceCount`` 获取到。通常一个末级加速结构对应场景中一个单独的 ``3D`` 模型，并且一个顶级加速结构通过每一个单独的末级加速结构所对应的的位置（使用 ``3×4`` 的变换矩阵）
+构建场景。
+
+末级加速结构存储确切具体的顶点数据，末级加速结构使用一个或多个顶点缓存（ ``vertex buffers`` ）构建，每一个顶点缓存都会有自己的变换矩阵（这与顶级加速结构的矩阵进行区分），这样我们就可以在一个末级加速结构中存储多个有位置数据的模型。
+
+.. note::
+    
+    如果一个物体在同一个末级加速结构中实例化多次，他们的几何体数据将会进行复制。这对于提高一些静态，未实例化的场景的性能特别有帮助。
+    据经验来说，末级加速结构越少越好。
+
+顶级加速结构将会包含物体的实例，每一个实例都会有自己的变换矩阵并且引用一个具体的末级加速结构。我们将会从一个末级加速结构和一个单位矩阵的顶级加速结构实例开始实现。
+
+.. figure:: ../_static/AccelerationStructure.svg
+
+    加速结构
+
+该教程将会加载一个 ``OBJ`` 文件，并将其索引、顶点和材质数据存储到 ``ObjModel`` 数据结构中。该模型同时引用一个 ``ObjInstance`` 数据结构，其中包含用于特定实例的变换矩阵。对于光线追踪， ``ObjModel`` 和一系列的 ``ObjInstances`` 将在之后分别用于构建末级加速结构和顶级加速结构。
+
+为了假话光线追踪，我们使用一个帮助类，用于充当一个顶级加速结构和多个末级加速结构的容器，并且提供构建加速结构的接口函数。在 ``hello_vulkan.h`` 的头文件中包含 ``raytrace_vkpp`` 帮助类。
+
+.. code:: c++
+
+    // #VKRay
+    #include "nvvk/raytraceKHR_vk.hpp"
+
+之后我们可以在 ``HelloVulkan`` 类中增加该类型的成员变量。
+
+.. code:: c++
+
+    nvvk::RaytracingBuilderKHR m_rtBuilder;
+
+并且在 ``initRaytracing()`` 末尾进行初始化。
+
+.. code:: c++
+
+    m_rtBuilder.setup(m_device, &m_alloc, m_graphicsQueueIndex);
+
+.. admonition:: 内存管理
+   :class: note
+
+   该光追帮助类使用 `nvvk/resourceallocator_vk.hpp <https://github.com/nvpro-samples/nvpro_core/blob/master/nvvk/resourceallocator_vk.hpp>`_ 避免去管理 ``Vulkan`` 内存。其内部提供 ``nvvk::AccelKHR`` 类型，该类型包含 ``VkAccelerationStructureKHR`` 用于缓存创建和备份所需要的信息。
+   该资源可以使用不同的内存分配策略进行分配。在该教程中我们使用我们自己的 `DMA <https://github.com/nvpro-samples/nvpro_core/blob/master/nvvk/memallocator_dma_vk.hpp>`_ 。其他的内存分配器也是可以使用的，
+   比如 `Vulkan Memory Allocator（VMA） <https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator>`_ 或是专用内存分配器（比如一个 ``VkDeviceMemory`` 对应一个对象的策略，这种分配策略对于教学目的最容易理解，但是并不能用于产品开发）。
+
+末级加速结构
+********************
