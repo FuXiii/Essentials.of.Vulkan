@@ -240,7 +240,7 @@
 <li><p>2023/5/18 更新 <code class="docutils literal notranslate"><span class="pre">开始步入光线追踪</span></code> 章节</p></li>
 <li><p>2023/5/18 增加 <code class="docutils literal notranslate"><span class="pre">加速结构</span></code> 章节</p></li>
 <li><p>2023/5/20 更新 <code class="docutils literal notranslate"><span class="pre">加速结构</span></code> 章节</p></li>
-<li><p>2023/5/20 增加 <code class="docutils literal notranslate"><span class="pre">末级加速结构</span></code> 章节</p></li>
+<li><p>2023/5/20 增加 <code class="docutils literal notranslate"><span class="pre">底层加速结构</span></code> 章节</p></li>
 </ul>
 </div>
 <p><a class="reference external" href="https://nvpro-samples.github.io/vk_raytracing_tutorial_KHR/">文献源</a></p>
@@ -370,23 +370,23 @@
 <section id="id8">
 <h2>加速结构<a class="headerlink" href="#id8" title="此标题的永久链接">#</a></h2>
 <p>为了提高效率，光线追踪使用加速结构（ <code class="docutils literal notranslate"><span class="pre">acceleration</span> <span class="pre">structure</span></code> ( <code class="docutils literal notranslate"><span class="pre">AS</span></code> ) ）组织几何体，这样在渲染时将减少光线-三角形求交测试的次数。该结构在硬件上使用经典的层级数据结构存储，但给用户提供可接触的层级只有
-两级：一个顶级加速结构 （ <code class="docutils literal notranslate"><span class="pre">top-level</span> <span class="pre">acceleration</span> <span class="pre">structure</span></code> ( <code class="docutils literal notranslate"><span class="pre">TLAS</span></code> ) ）可以引用任意数量的末级加速结构 （ <code class="docutils literal notranslate"><span class="pre">bottom-level</span> <span class="pre">acceleration</span> <span class="pre">structures</span></code> ( <code class="docutils literal notranslate"><span class="pre">BLAS</span></code> ) ）。对于可以支持多少个顶级加速结构，
-可通过 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceAccelerationStructurePropertiesKHR::maxInstanceCount</span></code> 获取到。通常一个末级加速结构对应场景中一个单独的 <code class="docutils literal notranslate"><span class="pre">3D</span></code> 模型，并且一个顶级加速结构通过每一个单独的末级加速结构所对应的的位置（使用 <code class="docutils literal notranslate"><span class="pre">3×4</span></code> 的变换矩阵）
+两级：一个顶层加速结构 （ <code class="docutils literal notranslate"><span class="pre">top-level</span> <span class="pre">acceleration</span> <span class="pre">structure</span></code> ( <code class="docutils literal notranslate"><span class="pre">TLAS</span></code> ) ）可以引用任意数量的底层加速结构 （ <code class="docutils literal notranslate"><span class="pre">bottom-level</span> <span class="pre">acceleration</span> <span class="pre">structures</span></code> ( <code class="docutils literal notranslate"><span class="pre">BLAS</span></code> ) ）。对于可以支持多少个顶层加速结构，
+可通过 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceAccelerationStructurePropertiesKHR::maxInstanceCount</span></code> 获取到。通常一个底层加速结构对应场景中一个单独的 <code class="docutils literal notranslate"><span class="pre">3D</span></code> 模型，并且一个顶层加速结构通过每一个单独的底层加速结构所对应的的位置（使用 <code class="docutils literal notranslate"><span class="pre">3×4</span></code> 的变换矩阵）
 构建场景。</p>
-<p>末级加速结构存储确切具体的顶点数据，末级加速结构使用一个或多个顶点缓存（ <code class="docutils literal notranslate"><span class="pre">vertex</span> <span class="pre">buffers</span></code> ）构建，每一个顶点缓存都会有自己的变换矩阵（这与顶级加速结构的矩阵进行区分），这样我们就可以在一个末级加速结构中存储多个有位置数据的模型。</p>
+<p>底层加速结构存储确切具体的顶点数据，底层加速结构使用一个或多个顶点缓存（ <code class="docutils literal notranslate"><span class="pre">vertex</span> <span class="pre">buffers</span></code> ）构建，每一个顶点缓存都会有自己的变换矩阵（这与顶层加速结构的矩阵进行区分），这样我们就可以在一个底层加速结构中存储多个有位置数据的模型。</p>
 <div class="admonition note">
 <p class="admonition-title">备注</p>
-<p>如果一个物体在同一个末级加速结构中实例化多次，他们的几何体数据将会进行复制。这对于提高一些静态，未实例化的场景的性能特别有帮助。
-据经验来说，末级加速结构越少越好。</p>
+<p>如果一个物体在同一个底层加速结构中实例化多次，他们的几何体数据将会进行复制。这对于提高一些静态，未实例化的场景的性能特别有帮助。
+据经验来说，底层加速结构越少越好。</p>
 </div>
-<p>顶级加速结构将会包含物体的实例，每一个实例都会有自己的变换矩阵并且引用一个具体的末级加速结构。我们将会从一个末级加速结构和一个单位矩阵的顶级加速结构实例开始实现。</p>
+<p>顶层加速结构将会包含物体的实例，每一个实例都会有自己的变换矩阵并且引用一个具体的底层加速结构。我们将会从一个底层加速结构和一个单位矩阵的顶层加速结构实例开始实现。</p>
 <figure class="align-default" id="id12">
 <img alt="../_images/AccelerationStructure.svg" src="../_images/AccelerationStructure.svg" /><figcaption>
 <p><span class="caption-text">加速结构</span><a class="headerlink" href="#id12" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
-<p>该教程将会加载一个 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 文件，并将其索引、顶点和材质数据存储到 <code class="docutils literal notranslate"><span class="pre">ObjModel</span></code> 数据结构中。该模型同时引用一个 <code class="docutils literal notranslate"><span class="pre">ObjInstance</span></code> 数据结构，其中包含用于特定实例的变换矩阵。对于光线追踪， <code class="docutils literal notranslate"><span class="pre">ObjModel</span></code> 和一系列的 <code class="docutils literal notranslate"><span class="pre">ObjInstances</span></code> 将在之后分别用于构建末级加速结构和顶级加速结构。</p>
-<p>为了假话光线追踪，我们使用一个帮助类，用于充当一个顶级加速结构和多个末级加速结构的容器，并且提供构建加速结构的接口函数。在 <code class="docutils literal notranslate"><span class="pre">hello_vulkan.h</span></code> 的头文件中包含 <code class="docutils literal notranslate"><span class="pre">raytrace_vkpp</span></code> 帮助类。</p>
+<p>该教程将会加载一个 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 文件，并将其索引、顶点和材质数据存储到 <code class="docutils literal notranslate"><span class="pre">ObjModel</span></code> 数据结构中。该模型同时引用一个 <code class="docutils literal notranslate"><span class="pre">ObjInstance</span></code> 数据结构，其中包含用于特定实例的变换矩阵。对于光线追踪， <code class="docutils literal notranslate"><span class="pre">ObjModel</span></code> 和一系列的 <code class="docutils literal notranslate"><span class="pre">ObjInstances</span></code> 将在之后分别用于构建底层加速结构和顶层加速结构。</p>
+<p>为了假话光线追踪，我们使用一个帮助类，用于充当一个顶层加速结构和多个底层加速结构的容器，并且提供构建加速结构的接口函数。在 <code class="docutils literal notranslate"><span class="pre">hello_vulkan.h</span></code> 的头文件中包含 <code class="docutils literal notranslate"><span class="pre">raytrace_vkpp</span></code> 帮助类。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// #VKRay</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;nvvk/raytraceKHR_vk.hpp&quot;</span>
 </pre></div>
@@ -406,7 +406,76 @@
 比如 <a class="reference external" href="https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator">Vulkan Memory Allocator（VMA）</a> 或是专用内存分配器（比如一个 <code class="docutils literal notranslate"><span class="pre">VkDeviceMemory</span></code> 对应一个对象的策略，这种分配策略对于教学目的最容易理解，但是并不能用于产品开发）。</p>
 </div>
 <section id="id9">
-<h3>末级加速结构<a class="headerlink" href="#id9" title="此标题的永久链接">#</a></h3>
+<h3>底层加速结构<a class="headerlink" href="#id9" title="此标题的永久链接">#</a></h3>
+<p>构建底层加速器的第一步就是将 <code class="docutils literal notranslate"><span class="pre">ObjModel</span></code> 的几何数据转换成构建加速结构所需要的多个结构体中。我们使用 <code class="docutils literal notranslate"><span class="pre">nvvk::RaytracingBuilderKHR::BlasInput</span></code> 来维护所有的的结构体。</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">HelloVulkan</span></code> 类中增加一个新函数：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">objectToVkGeometryKHR</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ObjModel</span><span class="o">&amp;</span><span class="w"> </span><span class="n">model</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p><code class="docutils literal notranslate"><span class="pre">objectToVkGeometryKHR()</span></code> 函数返回类型为 <code class="docutils literal notranslate"><span class="pre">nvvk::RaytracingBuilderKHR::BlasInput</span></code> 但是这里我们使用 <code class="docutils literal notranslate"><span class="pre">C++</span></code> 的 <code class="docutils literal notranslate"><span class="pre">auto</span></code> 来将返回值的类型推演交给编译器。</p>
+</div>
+<p>此函数内部将会填充三个结构体，这些结构体之后会用于构建加速结构（ <code class="docutils literal notranslate"><span class="pre">vkCmdBuildAccelerationStructuresKHR</span></code> ） 。</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryTrianglesDataKHR</span></code> ：指向存有三角形的顶点，索引数据的缓存，以数组解析其中的数据（跨度，数据类型等）。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryKHR</span></code> ：使用集合类型的枚举（此例为三角形）和加速结构的构建 <code class="docutils literal notranslate"><span class="pre">flags</span></code> 将之前的加速结构的几何数据进行打包。这一步是需要的，因为 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryTrianglesDataKHR</span></code> 是作为联合 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryDataKHR</span></code> 的一部分而传入的（几何体也可以是实例，用于顶层加速结构的构建或者 <code class="docutils literal notranslate"><span class="pre">AABBs</span></code> 包围盒，这些该例程并没有涉及到）。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildRangeInfoKHR</span></code> ：指示作为底层加速结构输入的几何体中的顶点数组源的索引。</p></li>
+</ul>
+<div class="tip admonition">
+<p class="admonition-title">对于 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryKHR</span></code> 和 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildRangeInfoKHR</span></code> 分别为独立结构体</p>
+<p>一个潜在的疑惑：为什么 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryKHR</span></code> 和 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildRangeInfoKHR</span></code> 最终在构建加速结构时是单独的不同参数，但是却协同却定了顶点数据源的真正内存。打一个粗略的比方，这有点类似于 <code class="docutils literal notranslate"><span class="pre">glVertexAttribPointer</span></code> 定义的如何将一个缓存解析成顶点数组，并在 <code class="docutils literal notranslate"><span class="pre">glDrawArrays</span></code> 时确定顶点数组中到底那一部分需要绘制。</p>
+</div>
+<p>多个如上的结构体可以组建一个数组并可以用于构建一个底层加速结构。在该示例中，此数组的大小总是 <code class="docutils literal notranslate"><span class="pre">1</span></code> 。 每一个底层加速结构有多个几何体是因为加速结构会更加高效，他会将求交的物体在空间上进行合理的划分。对于那种巨大、单一且静态的物体组需要考虑构建加速结构。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>我们现在认为所有的物体都是不透明的，并以此为前提进行潜在的优化。更具体的说是禁用了任意命中着色器（ <code class="docutils literal notranslate"><span class="pre">anyhit</span> <span class="pre">shader</span></code> ）的调用，之后会细说。</p>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">//--------------------------------------------------------------------------------------------------</span>
+<span class="c1">// 将一个OBJ模型转变成光追几何体用于构建底层加速结构</span>
+<span class="c1">//</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">HelloVulkan</span><span class="o">::</span><span class="n">objectToVkGeometryKHR</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ObjModel</span><span class="o">&amp;</span><span class="w"> </span><span class="n">model</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="c1">// 底层加速结构的侯建需要数据的原内存地址</span>
+<span class="w">  </span><span class="n">VkDeviceAddress</span><span class="w"> </span><span class="n">vertexAddress</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nvvk</span><span class="o">::</span><span class="n">getBufferDeviceAddress</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">model</span><span class="p">.</span><span class="n">vertexBuffer</span><span class="p">.</span><span class="n">buffer</span><span class="p">);</span>
+<span class="w">  </span><span class="n">VkDeviceAddress</span><span class="w"> </span><span class="n">indexAddress</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">nvvk</span><span class="o">::</span><span class="n">getBufferDeviceAddress</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">model</span><span class="p">.</span><span class="n">indexBuffer</span><span class="p">.</span><span class="n">buffer</span><span class="p">);</span>
+
+<span class="w">  </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">maxPrimitiveCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">model</span><span class="p">.</span><span class="n">nbIndices</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// 将缓存描述为VertexObj（顶点）数组</span>
+<span class="w">  </span><span class="n">VkAccelerationStructureGeometryTrianglesDataKHR</span><span class="w"> </span><span class="n">triangles</span><span class="p">{</span><span class="n">VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_TRIANGLES_DATA_KHR</span><span class="p">};</span>
+<span class="w">  </span><span class="n">triangles</span><span class="p">.</span><span class="n">vertexFormat</span><span class="w">             </span><span class="o">=</span><span class="w"> </span><span class="n">VK_FORMAT_R32G32B32_SFLOAT</span><span class="p">;</span><span class="w">  </span><span class="c1">// vec3 vertex position data.</span>
+<span class="w">  </span><span class="n">triangles</span><span class="p">.</span><span class="n">vertexData</span><span class="p">.</span><span class="n">deviceAddress</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vertexAddress</span><span class="p">;</span>
+<span class="w">  </span><span class="n">triangles</span><span class="p">.</span><span class="n">vertexStride</span><span class="w">             </span><span class="o">=</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">VertexObj</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">// 描述索引数据 (32-bit unsigned int)</span>
+<span class="w">  </span><span class="n">triangles</span><span class="p">.</span><span class="n">indexType</span><span class="w">               </span><span class="o">=</span><span class="w"> </span><span class="n">VK_INDEX_TYPE_UINT32</span><span class="p">;</span>
+<span class="w">  </span><span class="n">triangles</span><span class="p">.</span><span class="n">indexData</span><span class="p">.</span><span class="n">deviceAddress</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">indexAddress</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">//当前transformData设置为null时代表是单位矩阵</span>
+<span class="w">  </span><span class="c1">//triangles.transformData = {};</span>
+<span class="w">  </span><span class="n">triangles</span><span class="p">.</span><span class="n">maxVertex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">model</span><span class="p">.</span><span class="n">nbVertices</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// 将之前但三角形设定成不透明</span>
+<span class="w">  </span><span class="n">VkAccelerationStructureGeometryKHR</span><span class="w"> </span><span class="n">asGeom</span><span class="p">{</span><span class="n">VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR</span><span class="p">};</span>
+<span class="w">  </span><span class="n">asGeom</span><span class="p">.</span><span class="n">geometryType</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="n">VK_GEOMETRY_TYPE_TRIANGLES_KHR</span><span class="p">;</span>
+<span class="w">  </span><span class="n">asGeom</span><span class="p">.</span><span class="n">flags</span><span class="w">              </span><span class="o">=</span><span class="w"> </span><span class="n">VK_GEOMETRY_OPAQUE_BIT_KHR</span><span class="p">;</span>
+<span class="w">  </span><span class="n">asGeom</span><span class="p">.</span><span class="n">geometry</span><span class="p">.</span><span class="n">triangles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">triangles</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// 整个数组都将用于构建底层加速结构</span>
+<span class="w">  </span><span class="n">VkAccelerationStructureBuildRangeInfoKHR</span><span class="w"> </span><span class="n">offset</span><span class="p">;</span>
+<span class="w">  </span><span class="n">offset</span><span class="p">.</span><span class="n">firstVertex</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="n">offset</span><span class="p">.</span><span class="n">primitiveCount</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">maxPrimitiveCount</span><span class="p">;</span>
+<span class="w">  </span><span class="n">offset</span><span class="p">.</span><span class="n">primitiveOffset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="n">offset</span><span class="p">.</span><span class="n">transformOffset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// 我们的底层加速结构只用一个几何体描述，但可以使用更多几何体</span>
+<span class="w">  </span><span class="n">nvvk</span><span class="o">::</span><span class="n">RaytracingBuilderKHR</span><span class="o">::</span><span class="n">BlasInput</span><span class="w"> </span><span class="n">input</span><span class="p">;</span>
+<span class="w">  </span><span class="n">input</span><span class="p">.</span><span class="n">asGeometry</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">asGeom</span><span class="p">);</span>
+<span class="w">  </span><span class="n">input</span><span class="p">.</span><span class="n">asBuildOffsetInfo</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">offset</span><span class="p">);</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">input</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </section>
 </section>
 </section>
@@ -486,7 +555,7 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#id8">加速结构</a><ul>
-<li><a class="reference internal" href="#id9">末级加速结构</a></li>
+<li><a class="reference internal" href="#id9">底层加速结构</a></li>
 </ul>
 </li>
 </ul>

@@ -14,7 +14,7 @@ NVIDIA Vulkan 光线追踪教程
    * 2023/5/18 更新 ``开始步入光线追踪`` 章节
    * 2023/5/18 增加 ``加速结构`` 章节
    * 2023/5/20 更新 ``加速结构`` 章节
-   * 2023/5/20 增加 ``末级加速结构`` 章节
+   * 2023/5/20 增加 ``底层加速结构`` 章节
 
 `文献源`_
 
@@ -169,26 +169,26 @@ main
 ####################
 
 为了提高效率，光线追踪使用加速结构（ ``acceleration structure`` ( ``AS`` ) ）组织几何体，这样在渲染时将减少光线-三角形求交测试的次数。该结构在硬件上使用经典的层级数据结构存储，但给用户提供可接触的层级只有
-两级：一个顶级加速结构 （ ``top-level acceleration structure`` ( ``TLAS`` ) ）可以引用任意数量的末级加速结构 （ ``bottom-level acceleration structures`` ( ``BLAS`` ) ）。对于可以支持多少个顶级加速结构，
-可通过 ``VkPhysicalDeviceAccelerationStructurePropertiesKHR::maxInstanceCount`` 获取到。通常一个末级加速结构对应场景中一个单独的 ``3D`` 模型，并且一个顶级加速结构通过每一个单独的末级加速结构所对应的的位置（使用 ``3×4`` 的变换矩阵）
+两级：一个顶层加速结构 （ ``top-level acceleration structure`` ( ``TLAS`` ) ）可以引用任意数量的底层加速结构 （ ``bottom-level acceleration structures`` ( ``BLAS`` ) ）。对于可以支持多少个顶层加速结构，
+可通过 ``VkPhysicalDeviceAccelerationStructurePropertiesKHR::maxInstanceCount`` 获取到。通常一个底层加速结构对应场景中一个单独的 ``3D`` 模型，并且一个顶层加速结构通过每一个单独的底层加速结构所对应的的位置（使用 ``3×4`` 的变换矩阵）
 构建场景。
 
-末级加速结构存储确切具体的顶点数据，末级加速结构使用一个或多个顶点缓存（ ``vertex buffers`` ）构建，每一个顶点缓存都会有自己的变换矩阵（这与顶级加速结构的矩阵进行区分），这样我们就可以在一个末级加速结构中存储多个有位置数据的模型。
+底层加速结构存储确切具体的顶点数据，底层加速结构使用一个或多个顶点缓存（ ``vertex buffers`` ）构建，每一个顶点缓存都会有自己的变换矩阵（这与顶层加速结构的矩阵进行区分），这样我们就可以在一个底层加速结构中存储多个有位置数据的模型。
 
 .. note::
     
-    如果一个物体在同一个末级加速结构中实例化多次，他们的几何体数据将会进行复制。这对于提高一些静态，未实例化的场景的性能特别有帮助。
-    据经验来说，末级加速结构越少越好。
+    如果一个物体在同一个底层加速结构中实例化多次，他们的几何体数据将会进行复制。这对于提高一些静态，未实例化的场景的性能特别有帮助。
+    据经验来说，底层加速结构越少越好。
 
-顶级加速结构将会包含物体的实例，每一个实例都会有自己的变换矩阵并且引用一个具体的末级加速结构。我们将会从一个末级加速结构和一个单位矩阵的顶级加速结构实例开始实现。
+顶层加速结构将会包含物体的实例，每一个实例都会有自己的变换矩阵并且引用一个具体的底层加速结构。我们将会从一个底层加速结构和一个单位矩阵的顶层加速结构实例开始实现。
 
 .. figure:: ../_static/AccelerationStructure.svg
 
     加速结构
 
-该教程将会加载一个 ``OBJ`` 文件，并将其索引、顶点和材质数据存储到 ``ObjModel`` 数据结构中。该模型同时引用一个 ``ObjInstance`` 数据结构，其中包含用于特定实例的变换矩阵。对于光线追踪， ``ObjModel`` 和一系列的 ``ObjInstances`` 将在之后分别用于构建末级加速结构和顶级加速结构。
+该教程将会加载一个 ``OBJ`` 文件，并将其索引、顶点和材质数据存储到 ``ObjModel`` 数据结构中。该模型同时引用一个 ``ObjInstance`` 数据结构，其中包含用于特定实例的变换矩阵。对于光线追踪， ``ObjModel`` 和一系列的 ``ObjInstances`` 将在之后分别用于构建底层加速结构和顶层加速结构。
 
-为了假话光线追踪，我们使用一个帮助类，用于充当一个顶级加速结构和多个末级加速结构的容器，并且提供构建加速结构的接口函数。在 ``hello_vulkan.h`` 的头文件中包含 ``raytrace_vkpp`` 帮助类。
+为了假话光线追踪，我们使用一个帮助类，用于充当一个顶层加速结构和多个底层加速结构的容器，并且提供构建加速结构的接口函数。在 ``hello_vulkan.h`` 的头文件中包含 ``raytrace_vkpp`` 帮助类。
 
 .. code:: c++
 
@@ -208,11 +208,87 @@ main
     m_rtBuilder.setup(m_device, &m_alloc, m_graphicsQueueIndex);
 
 .. admonition:: 内存管理
-   :class: note
+    :class: note
 
-   该光追帮助类使用 `nvvk/resourceallocator_vk.hpp <https://github.com/nvpro-samples/nvpro_core/blob/master/nvvk/resourceallocator_vk.hpp>`_ 避免去管理 ``Vulkan`` 内存。其内部提供 ``nvvk::AccelKHR`` 类型，该类型包含 ``VkAccelerationStructureKHR`` 用于缓存创建和备份所需要的信息。
-   该资源可以使用不同的内存分配策略进行分配。在该教程中我们使用我们自己的 `DMA <https://github.com/nvpro-samples/nvpro_core/blob/master/nvvk/memallocator_dma_vk.hpp>`_ 。其他的内存分配器也是可以使用的，
-   比如 `Vulkan Memory Allocator（VMA） <https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator>`_ 或是专用内存分配器（比如一个 ``VkDeviceMemory`` 对应一个对象的策略，这种分配策略对于教学目的最容易理解，但是并不能用于产品开发）。
+    该光追帮助类使用 `nvvk/resourceallocator_vk.hpp <https://github.com/nvpro-samples/nvpro_core/blob/master/nvvk/resourceallocator_vk.hpp>`_ 避免去管理 ``Vulkan`` 内存。其内部提供 ``nvvk::AccelKHR`` 类型，该类型包含 ``VkAccelerationStructureKHR`` 用于缓存创建和备份所需要的信息。
+    该资源可以使用不同的内存分配策略进行分配。在该教程中我们使用我们自己的 `DMA <https://github.com/nvpro-samples/nvpro_core/blob/master/nvvk/memallocator_dma_vk.hpp>`_ 。其他的内存分配器也是可以使用的，
+    比如 `Vulkan Memory Allocator（VMA） <https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator>`_ 或是专用内存分配器（比如一个 ``VkDeviceMemory`` 对应一个对象的策略，这种分配策略对于教学目的最容易理解，但是并不能用于产品开发）。
 
-末级加速结构
+底层加速结构
 ********************
+
+构建底层加速器的第一步就是将 ``ObjModel`` 的几何数据转换成构建加速结构所需要的多个结构体中。我们使用 ``nvvk::RaytracingBuilderKHR::BlasInput`` 来维护所有的的结构体。
+
+在 ``HelloVulkan`` 类中增加一个新函数：
+
+.. code:: c++
+
+    auto objectToVkGeometryKHR(const ObjModel& model);
+
+.. note::
+
+    ``objectToVkGeometryKHR()`` 函数返回类型为 ``nvvk::RaytracingBuilderKHR::BlasInput`` 但是这里我们使用 ``C++`` 的 ``auto`` 来将返回值的类型推演交给编译器。
+
+此函数内部将会填充三个结构体，这些结构体之后会用于构建加速结构（ ``vkCmdBuildAccelerationStructuresKHR`` ） 。
+
+* ``VkAccelerationStructureGeometryTrianglesDataKHR`` ：指向存有三角形的顶点，索引数据的缓存，以数组解析其中的数据（跨度，数据类型等）。
+* ``VkAccelerationStructureGeometryKHR`` ：使用集合类型的枚举（此例为三角形）和加速结构的构建 ``flags`` 将之前的加速结构的几何数据进行打包。这一步是需要的，因为 ``VkAccelerationStructureGeometryTrianglesDataKHR`` 是作为联合 ``VkAccelerationStructureGeometryDataKHR`` 的一部分而传入的（几何体也可以是实例，用于顶层加速结构的构建或者 ``AABBs`` 包围盒，这些该例程并没有涉及到）。
+* ``VkAccelerationStructureBuildRangeInfoKHR`` ：指示作为底层加速结构输入的几何体中的顶点数组源的索引。
+
+
+.. admonition:: 对于 ``VkAccelerationStructureGeometryKHR`` 和 ``VkAccelerationStructureBuildRangeInfoKHR`` 分别为独立结构体
+    :class: tip
+
+    一个潜在的疑惑：为什么 ``VkAccelerationStructureGeometryKHR`` 和 ``VkAccelerationStructureBuildRangeInfoKHR`` 最终在构建加速结构时是单独的不同参数，但是却协同却定了顶点数据源的真正内存。打一个粗略的比方，这有点类似于 ``glVertexAttribPointer`` 定义的如何将一个缓存解析成顶点数组，并在 ``glDrawArrays`` 时确定顶点数组中到底那一部分需要绘制。
+
+多个如上的结构体可以组建一个数组并可以用于构建一个底层加速结构。在该示例中，此数组的大小总是 ``1`` 。 每一个底层加速结构有多个几何体是因为加速结构会更加高效，他会将求交的物体在空间上进行合理的划分。对于那种巨大、单一且静态的物体组需要考虑构建加速结构。
+
+.. note::
+
+    我们现在认为所有的物体都是不透明的，并以此为前提进行潜在的优化。更具体的说是禁用了任意命中着色器（ ``anyhit shader`` ）的调用，之后会细说。
+
+.. code:: c++
+
+    //--------------------------------------------------------------------------------------------------
+    // 将一个OBJ模型转变成光追几何体用于构建底层加速结构
+    //
+    auto HelloVulkan::objectToVkGeometryKHR(const ObjModel& model)
+    {
+      // 底层加速结构的侯建需要数据的原内存地址
+      VkDeviceAddress vertexAddress = nvvk::getBufferDeviceAddress(m_device, model.vertexBuffer.buffer);
+      VkDeviceAddress indexAddress  = nvvk::getBufferDeviceAddress(m_device, model.indexBuffer.buffer);
+
+      uint32_t maxPrimitiveCount = model.nbIndices / 3;
+
+      // 将缓存描述为VertexObj（顶点）数组
+      VkAccelerationStructureGeometryTrianglesDataKHR triangles{VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_TRIANGLES_DATA_KHR};
+      triangles.vertexFormat             = VK_FORMAT_R32G32B32_SFLOAT;  // vec3 vertex position data.
+      triangles.vertexData.deviceAddress = vertexAddress;
+      triangles.vertexStride             = sizeof(VertexObj);
+      // 描述索引数据 (32-bit unsigned int)
+      triangles.indexType               = VK_INDEX_TYPE_UINT32;
+      triangles.indexData.deviceAddress = indexAddress;
+      //当前transformData设置为null时代表是单位矩阵
+      //triangles.transformData = {};
+      triangles.maxVertex = model.nbVertices;
+
+      // 将之前但三角形设定成不透明
+      VkAccelerationStructureGeometryKHR asGeom{VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR};
+      asGeom.geometryType       = VK_GEOMETRY_TYPE_TRIANGLES_KHR;
+      asGeom.flags              = VK_GEOMETRY_OPAQUE_BIT_KHR;
+      asGeom.geometry.triangles = triangles;
+
+      // 整个数组都将用于构建底层加速结构
+      VkAccelerationStructureBuildRangeInfoKHR offset;
+      offset.firstVertex     = 0;
+      offset.primitiveCount  = maxPrimitiveCount;
+      offset.primitiveOffset = 0;
+      offset.transformOffset = 0;
+
+      // 我们的底层加速结构只用一个几何体描述，但可以使用更多几何体
+      nvvk::RaytracingBuilderKHR::BlasInput input;
+      input.asGeometry.emplace_back(asGeom);
+      input.asBuildOffsetInfo.emplace_back(offset);
+
+      return input;
+    }
