@@ -262,7 +262,7 @@ main
 
       // 将缓存描述为VertexObj（顶点）数组
       VkAccelerationStructureGeometryTrianglesDataKHR triangles{VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_TRIANGLES_DATA_KHR};
-      triangles.vertexFormat             = VK_FORMAT_R32G32B32_SFLOAT;  // vec3 vertex position data.
+      triangles.vertexFormat             = VK_FORMAT_R32G32B32_SFLOAT;  // vec3 顶点位置数据
       triangles.vertexData.deviceAddress = vertexAddress;
       triangles.vertexStride             = sizeof(VertexObj);
       // 描述索引数据 (32-bit unsigned int)
@@ -292,3 +292,41 @@ main
 
       return input;
     }
+
+.. admonition:: 顶点属性
+    :class: note
+
+    在上面的代码中， ``VertexObj`` 结构体中第一个成员是位置数据，如果成员在任意位置，我们需要使用 ``offsetof`` 手动调整 ``vertexAddress`` 。对于加速结构的构建只需位置属性。之后我们将学习
+    在光追时绑定顶点缓存并使用其他顶点属性。
+
+.. admonition:: 内存安全
+    :class: warning
+
+    ``BlasInput`` 作为一个花里胡哨的设备指针指向顶点缓存数据。对于帮助类中并没有顶点数据的拷贝或管理。对于该示例，我们假设所有的模型都在一开始加载并且直到创建底层加速结构时内存不会篡改并有效。
+    如果你是动态加载并且卸载一个大场景的一部分或者动态生成顶点数据，您需要做的是在构建加速结构时避免发生资源竞争。
+
+在 ``HelloVulkan`` 类声明中，我们现在可以增加 ``createBottomLevelAS()`` 函数用于对每一个对象生成 ``nvvk::RaytracingBuilderKHR::BlasInput`` 并用于构建底层加速结构：
+
+.. code:: c++
+
+    void createBottomLevelAS();
+
+在批量创建所有的底层加速结构前，使用一个循环遍历所有的模型，并且填入 ``nvvk::RaytracingBuilderKHR::BlasInput`` 数组中。加速结构的结存将会根据帮助类中的构建顺序存储，这样他们可以直接使用索引进行引用。
+
+.. code:: c++
+
+    void HelloVulkan::createBottomLevelAS()
+    {
+      // 底层加速结构 - 存储每个几何体中的图元
+      std::vector<nvvk::RaytracingBuilderKHR::BlasInput> allBlas;
+      allBlas.reserve(m_objModel.size());
+      for(const auto& obj : m_objModel)
+      {
+        auto blas = objectToVkGeometryKHR(obj);
+
+        // 每一个底层加速结构都可以增加多个几何体，但现在我们只添加一个
+        allBlas.emplace_back(blas);
+      }
+      m_rtBuilder.buildBlas(allBlas, VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR);
+    }
+

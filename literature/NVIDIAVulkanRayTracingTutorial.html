@@ -6,10 +6,10 @@
 <link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="搜索" href="../search.html" /><link rel="next" title="Vulkan迷你路径追踪" href="vk_mini_path_tracer.html" /><link rel="prev" title="光线追踪" href="Vulkan-GuideRayTracing.html" />
         <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/literature/NVIDIAVulkanRayTracingTutorial.html" />
 
-    <link rel="shortcut icon" href="../_static/VulkanLogo.png"/><!-- Generated with Sphinx 6.2.1 and Furo 2023.03.27 -->
+    <link rel="shortcut icon" href="../_static/VulkanLogo.png"/><!-- Generated with Sphinx 6.2.1 and Furo 2023.05.20 -->
         <title>NVIDIA Vulkan 光线追踪教程 - Vulkan入门精要</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=e6660623a769aa55fea372102b9bf3151b292993" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -168,7 +168,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">文献翻译</span></p>
 <ul class="current">
-<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">文献</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">文献</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of 文献</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="VulkanRayTracingFinalSpecificationRelease.html">Vulkan 光线追踪最终标准发布</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Vulkan-GuideRayTracing.html">光线追踪</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">NVIDIA Vulkan 光线追踪教程</a></li>
@@ -179,7 +179,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">工程应用</span></p>
 <ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../application/index.html">应用</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../application/index.html">应用</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of 应用</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../application/VolumetricCloud.html">体积云</a></li>
 </ul>
 </li>
@@ -444,7 +444,7 @@
 
 <span class="w">  </span><span class="c1">// 将缓存描述为VertexObj（顶点）数组</span>
 <span class="w">  </span><span class="n">VkAccelerationStructureGeometryTrianglesDataKHR</span><span class="w"> </span><span class="n">triangles</span><span class="p">{</span><span class="n">VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_TRIANGLES_DATA_KHR</span><span class="p">};</span>
-<span class="w">  </span><span class="n">triangles</span><span class="p">.</span><span class="n">vertexFormat</span><span class="w">             </span><span class="o">=</span><span class="w"> </span><span class="n">VK_FORMAT_R32G32B32_SFLOAT</span><span class="p">;</span><span class="w">  </span><span class="c1">// vec3 vertex position data.</span>
+<span class="w">  </span><span class="n">triangles</span><span class="p">.</span><span class="n">vertexFormat</span><span class="w">             </span><span class="o">=</span><span class="w"> </span><span class="n">VK_FORMAT_R32G32B32_SFLOAT</span><span class="p">;</span><span class="w">  </span><span class="c1">// vec3 顶点位置数据</span>
 <span class="w">  </span><span class="n">triangles</span><span class="p">.</span><span class="n">vertexData</span><span class="p">.</span><span class="n">deviceAddress</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vertexAddress</span><span class="p">;</span>
 <span class="w">  </span><span class="n">triangles</span><span class="p">.</span><span class="n">vertexStride</span><span class="w">             </span><span class="o">=</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">VertexObj</span><span class="p">);</span>
 <span class="w">  </span><span class="c1">// 描述索引数据 (32-bit unsigned int)</span>
@@ -473,6 +473,37 @@
 <span class="w">  </span><span class="n">input</span><span class="p">.</span><span class="n">asBuildOffsetInfo</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">offset</span><span class="p">);</span>
 
 <span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">input</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="note admonition">
+<p class="admonition-title">顶点属性</p>
+<p>在上面的代码中， <code class="docutils literal notranslate"><span class="pre">VertexObj</span></code> 结构体中第一个成员是位置数据，如果成员在任意位置，我们需要使用 <code class="docutils literal notranslate"><span class="pre">offsetof</span></code> 手动调整 <code class="docutils literal notranslate"><span class="pre">vertexAddress</span></code> 。对于加速结构的构建只需位置属性。之后我们将学习
+在光追时绑定顶点缓存并使用其他顶点属性。</p>
+</div>
+<div class="warning admonition">
+<p class="admonition-title">内存安全</p>
+<p><code class="docutils literal notranslate"><span class="pre">BlasInput</span></code> 作为一个花里胡哨的设备指针指向顶点缓存数据。对于帮助类中并没有顶点数据的拷贝或管理。对于该示例，我们假设所有的模型都在一开始加载并且直到创建底层加速结构时内存不会篡改并有效。
+如果你是动态加载并且卸载一个大场景的一部分或者动态生成顶点数据，您需要做的是在构建加速结构时避免发生资源竞争。</p>
+</div>
+<p>在 <code class="docutils literal notranslate"><span class="pre">HelloVulkan</span></code> 类声明中，我们现在可以增加 <code class="docutils literal notranslate"><span class="pre">createBottomLevelAS()</span></code> 函数用于对每一个对象生成 <code class="docutils literal notranslate"><span class="pre">nvvk::RaytracingBuilderKHR::BlasInput</span></code> 并用于构建底层加速结构：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">createBottomLevelAS</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>在批量创建所有的底层加速结构前，使用一个循环遍历所有的模型，并且填入 <code class="docutils literal notranslate"><span class="pre">nvvk::RaytracingBuilderKHR::BlasInput</span></code> 数组中。加速结构的结存将会根据帮助类中的构建顺序存储，这样他们可以直接使用索引进行引用。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">HelloVulkan::createBottomLevelAS</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="c1">// 底层加速结构 - 存储每个几何体中的图元</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">nvvk</span><span class="o">::</span><span class="n">RaytracingBuilderKHR</span><span class="o">::</span><span class="n">BlasInput</span><span class="o">&gt;</span><span class="w"> </span><span class="n">allBlas</span><span class="p">;</span>
+<span class="w">  </span><span class="n">allBlas</span><span class="p">.</span><span class="n">reserve</span><span class="p">(</span><span class="n">m_objModel</span><span class="p">.</span><span class="n">size</span><span class="p">());</span>
+<span class="w">  </span><span class="k">for</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">obj</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">m_objModel</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">blas</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">objectToVkGeometryKHR</span><span class="p">(</span><span class="n">obj</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// 每一个底层加速结构都可以增加多个几何体，但现在我们只添加一个</span>
+<span class="w">    </span><span class="n">allBlas</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">blas</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="n">m_rtBuilder</span><span class="p">.</span><span class="n">buildBlas</span><span class="p">(</span><span class="n">allBlas</span><span class="p">,</span><span class="w"> </span><span class="n">VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR</span><span class="p">);</span>
 <span class="p">}</span>
 </pre></div>
 </div>
