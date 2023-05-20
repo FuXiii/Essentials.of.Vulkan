@@ -15,6 +15,7 @@ NVIDIA Vulkan 光线追踪教程
    * 2023/5/18 增加 ``加速结构`` 章节
    * 2023/5/20 更新 ``加速结构`` 章节
    * 2023/5/20 增加 ``底层加速结构`` 章节
+   * 2023/5/20 增加 ``帮助类细节：RaytracingBuilder::buildBlas()`` 章节
 
 `文献源`_
 
@@ -272,7 +273,7 @@ main
       //triangles.transformData = {};
       triangles.maxVertex = model.nbVertices;
 
-      // 将之前但三角形设定成不透明
+      // 将之前的三角形设定成不透明
       VkAccelerationStructureGeometryKHR asGeom{VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR};
       asGeom.geometryType       = VK_GEOMETRY_TYPE_TRIANGLES_KHR;
       asGeom.flags              = VK_GEOMETRY_OPAQUE_BIT_KHR;
@@ -330,3 +331,35 @@ main
       m_rtBuilder.buildBlas(allBlas, VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR);
     }
 
+帮助类细节： ``RaytracingBuilder::buildBlas()``
+------------------------------------------------------------
+
+这个帮助函数可以在 ``raytraceKHR_vkpp.hpp`` 中找到：其可以在很多项目中重用，并且也是 `nvpro-samples <https://github.com/nvpro-samples>`_ 中众多帮助类中的其中之一。该函数会对每一个 ``RaytracingBuilderKHR::BlasInput`` 生成一个底层加速结构。
+
+创建一个底层加速结构需要如下元素：
+
+* ``VkAccelerationStructureBuildGeometryInfoKHR`` ：创建并构建加速结构，其基于 ``objectToVkGeometryKHR()`` 中创建的 ``VkAccelerationStructureGeometryKHR`` 数组。
+* ``VkAccelerationStructureBuildRangeInfoKHR`` ：范围引用，与 ``objectToVkGeometryKHR()`` 中使用的相同。
+* ``VkAccelerationStructureBuildSizesInfoKHR`` ：创建加速结构所需要的大小和缓存信息
+* ``nvvk::AccelKHR`` ：结果
+
+如上这些数据蒋村存到一个名为 ``BuildAccelerationStructure`` 结构体中用于简化创建。
+
+在函数一开始，我们仅仅初始化我们之后需要的数据。
+
+.. code:: c++
+
+    //--------------------------------------------------------------------------------------------------
+    // 使用BlasInput的数组创建所有的底层加速结构
+    // - input数组中的每一个BlasInput都对应一个底层加速结构
+    // - 底层加速结构的数量将会和input.size()一样
+    // - 创建的底层加速结构将会存储在m_blas，并可以通过数组索引获取引用
+    // - 如果flag里设置了Compact位域，底层加速结构将会被压缩
+    //
+    void nvvk::RaytracingBuilderKHR::buildBlas(const std::vector<BlasInput>& input, VkBuildAccelerationStructureFlagsKHR flags)
+    {
+      m_cmdPool.init(m_device, m_queueIndex);
+      uint32_t     nbBlas = static_cast<uint32_t>(input.size());
+      VkDeviceSize asTotalSize{0};     // 所有要分配的底层加速结构所需要的内存大小
+      uint32_t     nbCompactions{0};   // Nb of BLAS requesting compaction
+      VkDeviceSize maxScratchSize{0};  // 最大的跨度大小
