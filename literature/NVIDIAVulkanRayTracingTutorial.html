@@ -239,15 +239,17 @@
 <li><p>2023/5/17 增加 <code class="docutils literal notranslate"><span class="pre">开始步入光线追踪</span></code> 章节</p></li>
 <li><p>2023/5/18 更新 <code class="docutils literal notranslate"><span class="pre">开始步入光线追踪</span></code> 章节</p></li>
 <li><p>2023/5/18 增加 <code class="docutils literal notranslate"><span class="pre">加速结构</span></code> 章节</p></li>
+<li><p>2023/5/20 更新 <code class="docutils literal notranslate"><span class="pre">加速结构</span></code> 章节</p></li>
+<li><p>2023/5/20 增加 <code class="docutils literal notranslate"><span class="pre">末级加速结构</span></code> 章节</p></li>
 </ul>
 </div>
 <p><a class="reference external" href="https://nvpro-samples.github.io/vk_raytracing_tutorial_KHR/">文献源</a></p>
 <p>本文所提供的的代码和文档聚焦于使用 <a class="reference external" href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/vkspec.html#VK_KHR_ray_tracing_pipeline">VK_KHR_ray_tracing_pipeline</a> 扩展展示一个基础光追示例。
 该教程从一个基于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 开发的基础程序开始，并且提供一步步的介绍去修改和增加函数和功能。</p>
-<figure class="align-default" id="id9">
+<figure class="align-default" id="id10">
 <img alt="../_images/resultRaytraceShadowMedieval.png" src="../_images/resultRaytraceShadowMedieval.png" />
 <figcaption>
-<p><span class="caption-text">最终结果</span><a class="headerlink" href="#id9" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">最终结果</span><a class="headerlink" href="#id10" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <div class="note admonition">
@@ -304,10 +306,10 @@
 <p>打开位于 <code class="docutils literal notranslate"><span class="pre">build</span></code> 目录下的解决方案，之后编译并运行 <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing__before">vk_ray_tracing__before_KHR</a> 。</p>
 <p>该示例将会是此教程的示例起点。这是一个用于加载 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 文件并使用 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 光栅化渲染他们的小框架。您可以通过阅读 <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/blob/master/ray_tracing__before/README.md#nvidia-vulkan-ray-tracing-tutorial">Base Overview</a> 来纵观该示例是如何实现的。
 我们将使用这个框架加载几何体并且渲染场景来实现光线追踪。</p>
-<figure class="align-default" id="id10">
+<figure class="align-default" id="id11">
 <img alt="../_images/resultRasterCube.png" src="../_images/resultRasterCube.png" />
 <figcaption>
-<p><span class="caption-text">首次执行</span><a class="headerlink" href="#id10" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">首次执行</span><a class="headerlink" href="#id11" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <p>接下来的步骤将是修改 <code class="docutils literal notranslate"><span class="pre">vk_ray_tracing__before_KHR</span></code> 使其支持光线追踪。该教程修改后的最终结果将是同 <code class="docutils literal notranslate"><span class="pre">vk_ray_tracing__simple_KHR</span></code> 一样。如果开发过程发生错误
@@ -367,6 +369,45 @@
 </section>
 <section id="id8">
 <h2>加速结构<a class="headerlink" href="#id8" title="此标题的永久链接">#</a></h2>
+<p>为了提高效率，光线追踪使用加速结构（ <code class="docutils literal notranslate"><span class="pre">acceleration</span> <span class="pre">structure</span></code> ( <code class="docutils literal notranslate"><span class="pre">AS</span></code> ) ）组织几何体，这样在渲染时将减少光线-三角形求交测试的次数。该结构在硬件上使用经典的层级数据结构存储，但给用户提供可接触的层级只有
+两级：一个顶级加速结构 （ <code class="docutils literal notranslate"><span class="pre">top-level</span> <span class="pre">acceleration</span> <span class="pre">structure</span></code> ( <code class="docutils literal notranslate"><span class="pre">TLAS</span></code> ) ）可以引用任意数量的末级加速结构 （ <code class="docutils literal notranslate"><span class="pre">bottom-level</span> <span class="pre">acceleration</span> <span class="pre">structures</span></code> ( <code class="docutils literal notranslate"><span class="pre">BLAS</span></code> ) ）。对于可以支持多少个顶级加速结构，
+可通过 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceAccelerationStructurePropertiesKHR::maxInstanceCount</span></code> 获取到。通常一个末级加速结构对应场景中一个单独的 <code class="docutils literal notranslate"><span class="pre">3D</span></code> 模型，并且一个顶级加速结构通过每一个单独的末级加速结构所对应的的位置（使用 <code class="docutils literal notranslate"><span class="pre">3×4</span></code> 的变换矩阵）
+构建场景。</p>
+<p>末级加速结构存储确切具体的顶点数据，末级加速结构使用一个或多个顶点缓存（ <code class="docutils literal notranslate"><span class="pre">vertex</span> <span class="pre">buffers</span></code> ）构建，每一个顶点缓存都会有自己的变换矩阵（这与顶级加速结构的矩阵进行区分），这样我们就可以在一个末级加速结构中存储多个有位置数据的模型。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>如果一个物体在同一个末级加速结构中实例化多次，他们的几何体数据将会进行复制。这对于提高一些静态，未实例化的场景的性能特别有帮助。
+据经验来说，末级加速结构越少越好。</p>
+</div>
+<p>顶级加速结构将会包含物体的实例，每一个实例都会有自己的变换矩阵并且引用一个具体的末级加速结构。我们将会从一个末级加速结构和一个单位矩阵的顶级加速结构实例开始实现。</p>
+<figure class="align-default" id="id12">
+<img alt="../_images/AccelerationStructure.svg" src="../_images/AccelerationStructure.svg" /><figcaption>
+<p><span class="caption-text">加速结构</span><a class="headerlink" href="#id12" title="此图像的永久链接">#</a></p>
+</figcaption>
+</figure>
+<p>该教程将会加载一个 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 文件，并将其索引、顶点和材质数据存储到 <code class="docutils literal notranslate"><span class="pre">ObjModel</span></code> 数据结构中。该模型同时引用一个 <code class="docutils literal notranslate"><span class="pre">ObjInstance</span></code> 数据结构，其中包含用于特定实例的变换矩阵。对于光线追踪， <code class="docutils literal notranslate"><span class="pre">ObjModel</span></code> 和一系列的 <code class="docutils literal notranslate"><span class="pre">ObjInstances</span></code> 将在之后分别用于构建末级加速结构和顶级加速结构。</p>
+<p>为了假话光线追踪，我们使用一个帮助类，用于充当一个顶级加速结构和多个末级加速结构的容器，并且提供构建加速结构的接口函数。在 <code class="docutils literal notranslate"><span class="pre">hello_vulkan.h</span></code> 的头文件中包含 <code class="docutils literal notranslate"><span class="pre">raytrace_vkpp</span></code> 帮助类。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// #VKRay</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;nvvk/raytraceKHR_vk.hpp&quot;</span>
+</pre></div>
+</div>
+<p>之后我们可以在 <code class="docutils literal notranslate"><span class="pre">HelloVulkan</span></code> 类中增加该类型的成员变量。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">nvvk</span><span class="o">::</span><span class="n">RaytracingBuilderKHR</span><span class="w"> </span><span class="n">m_rtBuilder</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>并且在 <code class="docutils literal notranslate"><span class="pre">initRaytracing()</span></code> 末尾进行初始化。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">m_rtBuilder</span><span class="p">.</span><span class="n">setup</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">m_alloc</span><span class="p">,</span><span class="w"> </span><span class="n">m_graphicsQueueIndex</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="note admonition">
+<p class="admonition-title">内存管理</p>
+<p>该光追帮助类使用 <a class="reference external" href="https://github.com/nvpro-samples/nvpro_core/blob/master/nvvk/resourceallocator_vk.hpp">nvvk/resourceallocator_vk.hpp</a> 避免去管理 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 内存。其内部提供 <code class="docutils literal notranslate"><span class="pre">nvvk::AccelKHR</span></code> 类型，该类型包含 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureKHR</span></code> 用于缓存创建和备份所需要的信息。
+该资源可以使用不同的内存分配策略进行分配。在该教程中我们使用我们自己的 <a class="reference external" href="https://github.com/nvpro-samples/nvpro_core/blob/master/nvvk/memallocator_dma_vk.hpp">DMA</a> 。其他的内存分配器也是可以使用的，
+比如 <a class="reference external" href="https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator">Vulkan Memory Allocator（VMA）</a> 或是专用内存分配器（比如一个 <code class="docutils literal notranslate"><span class="pre">VkDeviceMemory</span></code> 对应一个对象的策略，这种分配策略对于教学目的最容易理解，但是并不能用于产品开发）。</p>
+</div>
+<section id="id9">
+<h3>末级加速结构<a class="headerlink" href="#id9" title="此标题的永久链接">#</a></h3>
+</section>
 </section>
 </section>
 
@@ -444,7 +485,10 @@
 <li><a class="reference internal" href="#main">main</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id8">加速结构</a></li>
+<li><a class="reference internal" href="#id8">加速结构</a><ul>
+<li><a class="reference internal" href="#id9">末级加速结构</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
