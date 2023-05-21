@@ -242,6 +242,7 @@
 <li><p>2023/5/20 更新 <code class="docutils literal notranslate"><span class="pre">加速结构</span></code> 章节</p></li>
 <li><p>2023/5/20 增加 <code class="docutils literal notranslate"><span class="pre">底层加速结构</span></code> 章节</p></li>
 <li><p>2023/5/20 增加 <code class="docutils literal notranslate"><span class="pre">帮助类细节：RaytracingBuilder::buildBlas()</span></code> 章节</p></li>
+<li><p>2023/5/21 更新 <code class="docutils literal notranslate"><span class="pre">帮助类细节：RaytracingBuilder::buildBlas()</span></code> 章节</p></li>
 </ul>
 </div>
 <p><a class="reference external" href="https://nvpro-samples.github.io/vk_raytracing_tutorial_KHR/">文献源</a></p>
@@ -515,9 +516,14 @@
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildGeometryInfoKHR</span></code> ：创建并构建加速结构，其基于 <code class="docutils literal notranslate"><span class="pre">objectToVkGeometryKHR()</span></code> 中创建的 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryKHR</span></code> 数组。</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildRangeInfoKHR</span></code> ：范围引用，与 <code class="docutils literal notranslate"><span class="pre">objectToVkGeometryKHR()</span></code> 中使用的相同。</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildSizesInfoKHR</span></code> ：创建加速结构所需要的大小和缓存信息</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildSizesInfoKHR</span></code> ：创建加速结构所需要的大小和暂付缓存信息</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">nvvk::AccelKHR</span></code> ：结果</p></li>
 </ul>
+<div class="note admonition">
+<p class="admonition-title">暂付缓存</p>
+<p>暂付缓存（ <code class="docutils literal notranslate"><span class="pre">scratch</span> <span class="pre">buffer</span></code> ），是 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 对于内部缓存的优化。原本的内部缓存应由 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 驱动内部自身分配和管理，但是有些内部内存会经常性的更新，为了优化这一部分缓存， <code class="docutils literal notranslate"><span class="pre">Vulkan``将这一部分</span>
+<span class="pre">缓存交由用户分配管理，优化了内存使用和读写。</span> <span class="pre">``scratch</span></code> 原本是抓挠之意，由于这部分内存时不时的要更新一下，像猫抓一样，所以叫 <code class="docutils literal notranslate"><span class="pre">抓挠</span></code> 缓存，实则是暂时交付给 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 驱动内部。</p>
+</div>
 <p>如上这些数据蒋村存到一个名为 <code class="docutils literal notranslate"><span class="pre">BuildAccelerationStructure</span></code> 结构体中用于简化创建。</p>
 <p>在函数一开始，我们仅仅初始化我们之后需要的数据。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">//--------------------------------------------------------------------------------------------------</span>
@@ -532,10 +538,11 @@
 <span class="w">  </span><span class="n">m_cmdPool</span><span class="p">.</span><span class="n">init</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">m_queueIndex</span><span class="p">);</span>
 <span class="w">  </span><span class="kt">uint32_t</span><span class="w">     </span><span class="n">nbBlas</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">input</span><span class="p">.</span><span class="n">size</span><span class="p">());</span>
 <span class="w">  </span><span class="n">VkDeviceSize</span><span class="w"> </span><span class="n">asTotalSize</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span><span class="w">     </span><span class="c1">// 所有要分配的底层加速结构所需要的内存大小</span>
-<span class="w">  </span><span class="kt">uint32_t</span><span class="w">     </span><span class="n">nbCompactions</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span><span class="w">   </span><span class="c1">// Nb of BLAS requesting compaction</span>
+<span class="w">  </span><span class="kt">uint32_t</span><span class="w">     </span><span class="n">nbCompactions</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span><span class="w">   </span><span class="c1">// 需要压缩的底层加速结构的数量</span>
 <span class="w">  </span><span class="n">VkDeviceSize</span><span class="w"> </span><span class="n">maxScratchSize</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span><span class="w">  </span><span class="c1">// 最大的跨度大小</span>
 </pre></div>
 </div>
+<p>接下来就是为每个底层加速结构构建 <code class="docutils literal notranslate"><span class="pre">BuildAccelerationStructure</span></code> ，用于引用几何体、构建范围、内存大小和暂付缓存大小。</p>
 </section>
 </section>
 </section>
