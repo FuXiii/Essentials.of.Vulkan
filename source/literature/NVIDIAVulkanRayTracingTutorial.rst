@@ -16,6 +16,7 @@ NVIDIA Vulkan 光线追踪教程
    * 2023/5/20 更新 ``加速结构`` 章节
    * 2023/5/20 增加 ``底层加速结构`` 章节
    * 2023/5/20 增加 ``帮助类细节：RaytracingBuilder::buildBlas()`` 章节
+   * 2023/5/21 更新 ``帮助类细节：RaytracingBuilder::buildBlas()`` 章节
 
 `文献源`_
 
@@ -340,8 +341,15 @@ main
 
 * ``VkAccelerationStructureBuildGeometryInfoKHR`` ：创建并构建加速结构，其基于 ``objectToVkGeometryKHR()`` 中创建的 ``VkAccelerationStructureGeometryKHR`` 数组。
 * ``VkAccelerationStructureBuildRangeInfoKHR`` ：范围引用，与 ``objectToVkGeometryKHR()`` 中使用的相同。
-* ``VkAccelerationStructureBuildSizesInfoKHR`` ：创建加速结构所需要的大小和缓存信息
+* ``VkAccelerationStructureBuildSizesInfoKHR`` ：创建加速结构所需要的大小和暂付缓存信息
 * ``nvvk::AccelKHR`` ：结果
+
+.. admonition:: 暂付缓存
+    :class: note
+
+    暂付缓存（ ``scratch buffer`` ），是 ``Vulkan`` 对于内部缓存的优化。原本的内部缓存应由 ``Vulkan`` 驱动内部自身分配和管理，但是有些内部内存会经常性的更新，为了优化这一部分缓存， ``Vulkan``将这一部分
+    缓存交由用户分配管理，优化了内存使用和读写。 ``scratch`` 原本是抓挠之意，由于这部分内存时不时的要更新一下，像猫抓一样，所以叫 ``抓挠`` 缓存，实则是暂时交付给 ``Vulkan`` 驱动内部。
+
 
 如上这些数据蒋村存到一个名为 ``BuildAccelerationStructure`` 结构体中用于简化创建。
 
@@ -361,5 +369,7 @@ main
       m_cmdPool.init(m_device, m_queueIndex);
       uint32_t     nbBlas = static_cast<uint32_t>(input.size());
       VkDeviceSize asTotalSize{0};     // 所有要分配的底层加速结构所需要的内存大小
-      uint32_t     nbCompactions{0};   // Nb of BLAS requesting compaction
+      uint32_t     nbCompactions{0};   // 需要压缩的底层加速结构的数量
       VkDeviceSize maxScratchSize{0};  // 最大的跨度大小
+
+接下来就是为每个底层加速结构构建 ``BuildAccelerationStructure`` ，用于引用几何体、构建范围、内存大小和暂付缓存大小。
