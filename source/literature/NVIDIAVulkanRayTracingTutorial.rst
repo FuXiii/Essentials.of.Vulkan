@@ -347,7 +347,7 @@ main
 .. admonition:: 暂付缓存
     :class: note
 
-    暂付缓存（ ``scratch buffer`` ），是 ``Vulkan`` 对于内部缓存的优化。原本的内部缓存应由 ``Vulkan`` 驱动内部自身分配和管理，但是有些内部内存会经常性的更新，为了优化这一部分缓存， ``Vulkan``将这一部分
+    暂付缓存（ ``scratch buffer`` ），是 ``Vulkan`` 对于内部缓存的优化。原本的内部缓存应由 ``Vulkan`` 驱动内部自身分配和管理，但是有些内部内存会经常性的更新，为了优化这一部分缓存， ``Vulkan`` 将这一部分
     缓存交由用户分配管理，优化了内存使用和读写。 ``scratch`` 原本是抓挠之意，由于这部分内存时不时的要更新一下，像猫抓一样，所以叫 ``抓挠`` 缓存，实则是暂时交付给 ``Vulkan`` 驱动内部。
 
 
@@ -370,6 +370,46 @@ main
       uint32_t     nbBlas = static_cast<uint32_t>(input.size());
       VkDeviceSize asTotalSize{0};     // 所有要分配的底层加速结构所需要的内存大小
       uint32_t     nbCompactions{0};   // 需要压缩的底层加速结构的数量
-      VkDeviceSize maxScratchSize{0};  // 最大的跨度大小
+      VkDeviceSize maxScratchSize{0};  // 最大的暂付缓存大小
 
-接下来就是为每个底层加速结构构建 ``BuildAccelerationStructure`` ，用于引用几何体、构建范围、内存大小和暂付缓存大小。
+接下来就是为每个底层加速结构构建 ``BuildAccelerationStructure`` ，用于引用几何体、构建范围、内存大小和暂付缓存大小。我们需要在每一次创建时都使用同一个暂付缓存，所以
+我们需要留意需要的暂付缓存的最大大小，之后我们将使用该大小分配暂付缓存。
+
+.. code:: c++
+
+    // 为构建加速结构指令准备必要信息
+    std::vector<BuildAccelerationStructure> buildAs(nbBlas);
+    for(uint32_t idx = 0; idx < nbBlas; idx++)
+    {
+      // 填充VkAccelerationStructureBuildGeometryInfoKHR的部分属性用于获取构建的大小
+      // 其他信息将会在createBlas时填入 (see #2)
+      buildAs[idx].buildInfo.type          = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR;
+      buildAs[idx].buildInfo.mode          = VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR;
+      buildAs[idx].buildInfo.flags         = input[idx].flags | flags;
+      buildAs[idx].buildInfo.geometryCount = static_cast<uint32_t>(input[idx].asGeometry.size());
+      buildAs[idx].buildInfo.pGeometries   = input[idx].asGeometry.data();
+
+      // 设置范围信息
+      buildAs[idx].rangeInfo = input[idx].asBuildOffsetInfo.data();
+
+      // 获取创建加速结构所需的缓存和暂付缓存的大小
+      std::vector<uint32_t> maxPrimCount(input[idx].asBuildOffsetInfo.size());
+      for(auto tt = 0; tt < input[idx].asBuildOffsetInfo.size(); tt++)
+        maxPrimCount[tt] = input[idx].asBuildOffsetInfo[tt].primitiveCount;  // Number of primitives/triangles
+      vkGetAccelerationStructureBuildSizesKHR(m_device, VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR,
+                                              &buildAs[idx].buildInfo, maxPrimCount.data(), &buildAs[idx].sizeInfo);
+
+      // 统计合并必要的数据大小
+      asTotalSize += buildAs[idx].sizeInfo.accelerationStructureSize;
+      maxScratchSize = std::max(maxScratchSize, buildAs[idx].sizeInfo.buildScratchSize);
+      nbCompactions += hasFlag(buildAs[idx].buildInfo.flags, VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_COMPACTION_BIT_KHR);
+    }
+
+在遍历完所有的底层加速结构后，我们有了需要创建的暂付缓存最大的大小。
+
+.. code:: c++
+
+    // 分配一个暂付缓存用于存储加速结构构建的临时数据
+    nvvk::Buffer scratchBuffer = m_alloc->createBuffer(maxScratchSize, VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+    VkBufferDeviceAddressInfo bufferInfo{VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO, nullptr, scratchBuffer.buffer};
+    VkDeviceAddress scratchAddress = vkGetBufferDeviceAddress(m_device, &bufferInfo);

@@ -96,3 +96,7 @@ Vulkan入门精要
 * 2023/5/20
     >
     >* 更新`source/literature/NVIDIAVulkanRayTracingTutorial.rst`文档
+
+* 2023/5/21
+    >
+    >* 更新`source/literature/NVIDIAVulkanRayTracingTutorial.rst`文档
