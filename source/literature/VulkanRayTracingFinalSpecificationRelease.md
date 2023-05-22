@@ -202,3 +202,16 @@
 `Vulkan`工作组同样鼓励开发者和内容创建社区使用`Vulkan`的光追扩展并积极反馈问题。这可通过[Khronos Developer Slack](https://khr.io/slack)和[Vulkan GitHub Issues Tracker](https://github.com/KhronosGroup/Vulkan-Docs/issues)进行讨论和反馈。
 
 欢迎来到便携式、跨厂商、跨平台光线追踪加速的时代！
+
+```{raw} html
+<script
+   type="text/javascript"
+   src="https://utteranc.es/client.js"
+   async="async"
+   repo="FuXiii/Essentials.of.Vulkan"
+   issue-term="pathname"
+   theme="github-light"
+   label="💬 comment"
+   crossorigin="anonymous"
+/>
+```

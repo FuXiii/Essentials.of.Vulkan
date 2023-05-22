@@ -20,8 +20,15 @@ extensions = [
     'sphinx_copybutton',
     'sphinx_inline_tabs',
     'sphinx_last_updated_by_git',
-    'sphinx_design'
+    'sphinx_design',
+    'sphinx_comments'
     ]
+
+comments_config = {
+   "utterances": {
+      "repo": "FuXiii/Essentials.of.Vulkan",
+   }
+}
 
 myst_enable_extensions = [
     #'amsmath',
