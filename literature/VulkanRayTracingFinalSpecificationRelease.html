@@ -391,7 +391,16 @@
 <p>也可以查阅现今进行更新后支持光追扩展的<a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR">NVIDIA Vulkan Ray Tracing Tutorial</a>和2020年6月份发布的<a class="reference external" href="https://news.developer.nvidia.com/nvidia-announces-nsight-graphics-2020-6/">NVIDIA Nsight Graphics developer tool</a>。请关注更多即将发布的有关的生产驱动程序、工具和示例公告。</p>
 <p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>工作组同样鼓励开发者和内容创建社区使用<code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>的光追扩展并积极反馈问题。这可通过<a class="reference external" href="https://khr.io/slack">Khronos Developer Slack</a>和<a class="reference external" href="https://github.com/KhronosGroup/Vulkan-Docs/issues">Vulkan GitHub Issues Tracker</a>进行讨论和反馈。</p>
 <p>欢迎来到便携式、跨厂商、跨平台光线追踪加速的时代！</p>
-</section>
+<script
+   type="text/javascript"
+   src="https://utteranc.es/client.js"
+   async="async"
+   repo="FuXiii/Essentials.of.Vulkan"
+   issue-term="pathname"
+   theme="github-light"
+   label="💬 comment"
+   crossorigin="anonymous"
+/></section>
 </section>
 
         </article>
@@ -488,6 +497,40 @@
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
     <script src="../_static/tabs.js"></script>
+    <script kind="utterances">
+
+    var commentsRunWhenDOMLoaded = cb => {
+    if (document.readyState != 'loading') {
+        cb()
+    } else if (document.addEventListener) {
+        document.addEventListener('DOMContentLoaded', cb)
+    } else {
+        document.attachEvent('onreadystatechange', function() {
+        if (document.readyState == 'complete') cb()
+        })
+    }
+}
+
+var addUtterances = () => {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = "https://utteranc.es/client.js";
+    script.async = "async";
+
+    script.setAttribute("repo", "FuXiii/Essentials.of.Vulkan");
+    script.setAttribute("issue-term", "pathname");
+    script.setAttribute("theme", "github-light");
+    script.setAttribute("label", "💬 comment");
+    script.setAttribute("crossorigin", "anonymous");
+
+    sections = document.querySelectorAll("div.section");
+    if (sections !== null) {
+        section = sections[sections.length-1];
+        section.appendChild(script);
+    }
+}
+commentsRunWhenDOMLoaded(addUtterances);
+</script>
     <script src="../_static/translations.js"></script>
     <script src="../_static/design-tabs.js"></script>
     <script src="https://unpkg.com/mermaid@9.4.0/dist/mermaid.min.js"></script>
