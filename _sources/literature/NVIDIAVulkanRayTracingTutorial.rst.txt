@@ -18,6 +18,8 @@ NVIDIA Vulkan 光线追踪教程
     * 2023/5/20 增加 ``底层加速结构`` 章节
     * 2023/5/20 增加 ``帮助类细节：RaytracingBuilder::buildBlas()`` 章节
     * 2023/5/21 更新 ``帮助类细节：RaytracingBuilder::buildBlas()`` 章节
+    * 2023/5/22 更新 ``帮助类细节：RaytracingBuilder::buildBlas()`` 章节
+    * 2023/5/22 增加 ``cmdCreateBlas`` 章节
 
 `文献源`_
 
@@ -35,7 +37,7 @@ NVIDIA Vulkan 光线追踪教程
 
     https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR
 
-介绍
+1 介绍
 ####################
 
 本教程重点介绍将光线跟踪添加到现有 ``Vulkan`` 应用中的步骤，并假设您对 ``Vulkan`` 有一定的了解。
@@ -45,7 +47,7 @@ NVIDIA Vulkan 光线追踪教程
 
 .. note:: 出于教育的目的，所有的代码都在分散一些很小的文件中。要将这些结合起来需要额外的抽象层级。
 
-配置环境
+2 配置环境
 ####################
 
 推荐的方式是通过 ``nvpro-samples`` 的 ``build_all`` 脚本去下载包括 ``NVVK`` 在内的工程。
@@ -65,7 +67,7 @@ NVIDIA Vulkan 光线追踪教程
     git clone --recursive --shallow-submodules https://github.com/nvpro-samples/nvpro_core.git
     git clone https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR.git
 
-生成解决方案
+2.1 生成解决方案
 ********************
 
 对于存储构建生成的解决方案，最经典的是在工程主目录下创建一个 ``build`` 文件夹。您可以是使用 ``CMake-GUI`` 或者如下指令生成目标工程：
@@ -82,14 +84,14 @@ NVIDIA Vulkan 光线追踪教程
     如果您没有使用 ``Visual Studio 2019`` 或者更高版本，请确保 ``Visual Studio`` 中目标平台选择的是 ``x64`` 平台。
     对于 ``Visual Studio 2019`` 来说默认是 ``x64`` 平台，但老版本就不一定了。
 
-工具安装
+2.2 工具安装
 ********************
 
 我们需要一张支持 ``VK_KHR_ray_tracing_pipeline`` 扩展的显卡。对于英伟达的图形卡，您需要最起码是 ``2021年`` 或之后的 `Vulkan驱动 <https://developer.nvidia.com/vulkan-driver>`_ 。
 
 该工程最低需要 `Vulkan SDK <https://vulkan.lunarg.com/sdk/home>`_ 的版本为 ``1.2.161``。该工程是使用 ``1.2.182.0`` 进行测试的。
 
-编译和运行
+3 编译和运行
 ####################
 
 打开位于 ``build`` 目录下的解决方案，之后编译并运行 `vk_ray_tracing__before_KHR <https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing__before>`_ 。
@@ -106,7 +108,7 @@ NVIDIA Vulkan 光线追踪教程
 
 ``vk_ray_tracing__simple_KHR`` 工程将会作为额外教程的起点进行开发讲解。
 
-开始步入光线追踪
+4 开始步入光线追踪
 ####################
 
 首先进入 ``main.cpp`` 文件的 ``main`` 函数，找到使用 ``nvvk::ContextCreateInfo`` 设置需要的 ``Vulkan`` 扩展。为了激活使用光线追踪，我们需要 ``VK_KHR_ACCELERATION_STRUCTURE`` 和 ``VK_KHR_RAY_TRACING_PIPELINE`` 两个扩展。这两个扩展
@@ -152,7 +154,7 @@ NVIDIA Vulkan 光线追踪教程
       vkGetPhysicalDeviceProperties2(m_physicalDevice, &prop2);
     }
 
-main
+4.1 main
 ********************
 
 在 ``main.cpp`` 的 ``main()`` 函数中，我们在 ``helloVk.updateDescriptorSet()`` 之后调用初始化函数。
@@ -168,7 +170,7 @@ main
     当执行该程序时，您可以在 ``initRayTracing()`` 函数出打个断点查看光追属性数据。在 ``Quadro RTX 6000`` 设备上，
     最大的递归深度是 ``31`` ，着色器组处理组的大小是 ``16``。
 
-加速结构
+5 加速结构
 ####################
 
 为了提高效率，光线追踪使用加速结构（ ``acceleration structure`` ( ``AS`` ) ）组织几何体，这样在渲染时将减少光线-三角形求交测试的次数。该结构在硬件上使用经典的层级数据结构存储，但给用户提供可接触的层级只有
@@ -217,7 +219,7 @@ main
     该资源可以使用不同的内存分配策略进行分配。在该教程中我们使用我们自己的 `DMA <https://github.com/nvpro-samples/nvpro_core/blob/master/nvvk/memallocator_dma_vk.hpp>`_ 。其他的内存分配器也是可以使用的，
     比如 `Vulkan Memory Allocator（VMA） <https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator>`_ 或是专用内存分配器（比如一个 ``VkDeviceMemory`` 对应一个对象的策略，这种分配策略对于教学目的最容易理解，但是并不能用于产品开发）。
 
-底层加速结构
+5.1 底层加速结构
 ********************
 
 构建底层加速器的第一步就是将 ``ObjModel`` 的几何数据转换成构建加速结构所需要的多个结构体中。我们使用 ``nvvk::RaytracingBuilderKHR::BlasInput`` 来维护所有的的结构体。
@@ -333,7 +335,7 @@ main
       m_rtBuilder.buildBlas(allBlas, VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR);
     }
 
-帮助类细节： ``RaytracingBuilder::buildBlas()``
+5.1.1 帮助类细节： ``RaytracingBuilder::buildBlas()``
 ------------------------------------------------------------
 
 这个帮助函数可以在 ``raytraceKHR_vkpp.hpp`` 中找到：其可以在很多项目中重用，并且也是 `nvpro-samples <https://github.com/nvpro-samples>`_ 中众多帮助类中的其中之一。该函数会对每一个 ``RaytracingBuilderKHR::BlasInput`` 生成一个底层加速结构。
@@ -414,3 +416,83 @@ main
     nvvk::Buffer scratchBuffer = m_alloc->createBuffer(maxScratchSize, VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
     VkBufferDeviceAddressInfo bufferInfo{VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO, nullptr, scratchBuffer.buffer};
     VkDeviceAddress scratchAddress = vkGetBufferDeviceAddress(m_device, &bufferInfo);
+
+接下来就是获取每一个底层加速结构的真正的大小。为了得到真正的大小，我们将使用 ``VK_QUERY_TYPE_ACCELERATION_STRUCTURE_COMPACTED_SIZE_KHR`` 类型获取。 如果我们想要在之后压缩加速结构该类型是需要的。默认的情况下， ``vkGetAccelerationStructureBuildSizesKHR`` 将会返回无任何优化（最糟糕）的内存大小。在压缩创建之后，真实占有的空间大小可以相对较小，并且在加速结构之后拷贝仅拷贝必要信息。这将会节省超过 ``50%`` 的设备内存使用。
+
+.. code:: c++
+
+    // 创建一个用于获取每一个底层加速结构的存储大小的查询队列
+    VkQueryPool queryPool{VK_NULL_HANDLE};
+    if(nbCompactions > 0)  // 是否有压缩的需求？
+    {
+      assert(nbCompactions == nbBlas);  // 不允许混合使用压缩与非压缩的底层加速结构
+      VkQueryPoolCreateInfo qpci{VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO};
+      qpci.queryCount = nbBlas;
+      qpci.queryType  = VK_QUERY_TYPE_ACCELERATION_STRUCTURE_COMPACTED_SIZE_KHR;
+      vkCreateQueryPool(m_device, &qpci, nullptr, &queryPool);
+    }
+
+.. admonition:: 压缩
+    :class: note
+
+    为了使用压缩，底层加速结构的 ``flags`` 必须包含 ``VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_COMPACTION_BIT_KHR`` 位域。
+
+``Vulkan`` 允许使用一个命令缓存（ ``command buffer`` ）创建所有的底层加速结构，但是这可能会导致管线的停顿和潜在的创建问题。为了避免这些问题，我们将底层加速结构分割并使用多个大约 ``256MB`` 的内存创建。由于我们限制了内存块分配的大小，如果我们需要压缩，这将是一瞬间的事情。
+
+如下即为将底层加速结构分割创建，对于 ``cmdCreateBlas`` 和 ``cmdCompactBlas`` 函数将会一会儿细说。
+
+.. code:: c++
+
+    // 批量创建/压缩底层加速结构，这样可以存入有限的内存
+    std::vector<uint32_t> indices;  // 底层加速结构创建对应的索引
+    VkDeviceSize          batchSize{0};
+    VkDeviceSize          batchLimit{256'000'000};  // 256 MB
+    for(uint32_t idx = 0; idx < nbBlas; idx++)
+    {
+      indices.push_back(idx);
+      batchSize += buildAs[idx].sizeInfo.accelerationStructureSize;
+      // 超过限值或是最后一个底层加速结构
+      if(batchSize >= batchLimit || idx == nbBlas - 1)
+      {
+        VkCommandBuffer cmdBuf = m_cmdPool.createCommandBuffer();
+        cmdCreateBlas(cmdBuf, indices, buildAs, scratchAddress, queryPool);
+        m_cmdPool.submitAndWait(cmdBuf);
+
+        if(queryPool)
+        {
+          VkCommandBuffer cmdBuf = m_cmdPool.createCommandBuffer();
+          cmdCompactBlas(cmdBuf, indices, buildAs, queryPool);
+          m_cmdPool.submitAndWait(cmdBuf);  // 将命令缓存推送到队列执行并且调用vkQueueWaitIdle等待执行结束
+
+          // 销毁未压缩版本
+          destroyNonCompacted(indices, buildAs);
+        }
+        // 重置
+
+        batchSize = 0;
+        indices.clear();
+      }
+    }
+
+创建的加速机构将会保存在 ``BuildAccelerationStructure`` 中，可以通过索引获取到。
+
+.. code:: c++
+
+    // 存储所有创建的加速结构
+    for(auto& b : buildAs)
+    {
+      m_blas.emplace_back(b.as);
+    }
+
+最后我们将会清空不再需要的对象和内存。
+
+.. code:: c++
+
+    // 清空
+    vkDestroyQueryPool(m_device, queryPool, nullptr);
+    m_alloc->finalizeAndReleaseStaging();
+    m_alloc->destroy(scratchBuffer);
+    m_cmdPool.deinit();
+
+5.1.1.1 cmdCreateBlas
+^^^^^^^^^^^^^^^^^^^^

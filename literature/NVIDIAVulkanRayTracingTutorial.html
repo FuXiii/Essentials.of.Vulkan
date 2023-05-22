@@ -249,6 +249,8 @@
 <li><p class="sd-card-text">2023/5/20 增加 <code class="docutils literal notranslate"><span class="pre">底层加速结构</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/5/20 增加 <code class="docutils literal notranslate"><span class="pre">帮助类细节：RaytracingBuilder::buildBlas()</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/5/21 更新 <code class="docutils literal notranslate"><span class="pre">帮助类细节：RaytracingBuilder::buildBlas()</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/5/22 更新 <code class="docutils literal notranslate"><span class="pre">帮助类细节：RaytracingBuilder::buildBlas()</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/5/22 增加 <code class="docutils literal notranslate"><span class="pre">cmdCreateBlas</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p><a class="reference external" href="https://nvpro-samples.github.io/vk_raytracing_tutorial_KHR/">文献源</a></p>
@@ -265,7 +267,7 @@
 <p><a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR">https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR</a></p>
 </div>
 <section id="id2">
-<h2>介绍<a class="headerlink" href="#id2" title="此标题的永久链接">#</a></h2>
+<h2>1 介绍<a class="headerlink" href="#id2" title="此标题的永久链接">#</a></h2>
 <p>本教程重点介绍将光线跟踪添加到现有 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 应用中的步骤，并假设您对 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 有一定的了解。
 对于像交换链管理、 <code class="docutils literal notranslate"><span class="pre">Render</span> <span class="pre">Pass</span></code> 等常见的组件已经封装在了 <a class="reference external" href="https://github.com/nvpro-samples/nvpro_core/tree/master/nvvk">C++ API helpers</a> 和
 英伟达的 <a class="reference external" href="https://github.com/nvpro-samples/build_all">nvpro-samples</a> 框架中。这个框架包含很多高级示例，对于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 和 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 最佳实践也在其中。
@@ -276,7 +278,7 @@
 </div>
 </section>
 <section id="id3">
-<h2>配置环境<a class="headerlink" href="#id3" title="此标题的永久链接">#</a></h2>
+<h2>2 配置环境<a class="headerlink" href="#id3" title="此标题的永久链接">#</a></h2>
 <p>推荐的方式是通过 <code class="docutils literal notranslate"><span class="pre">nvpro-samples</span></code> 的 <code class="docutils literal notranslate"><span class="pre">build_all</span></code> 脚本去下载包括 <code class="docutils literal notranslate"><span class="pre">NVVK</span></code> 在内的工程。</p>
 <p>在命令行中，从 <a class="reference external" href="https://github.com/nvpro-samples/build_all">https://github.com/nvpro-samples/build_all</a> 中克隆 <code class="docutils literal notranslate"><span class="pre">nvpro-samples/build_all</span></code> 仓库：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">nvpro</span><span class="o">-</span><span class="n">samples</span><span class="o">/</span><span class="n">build_all</span><span class="o">.</span><span class="n">git</span>
@@ -289,7 +291,7 @@
 </pre></div>
 </div>
 <section id="id4">
-<h3>生成解决方案<a class="headerlink" href="#id4" title="此标题的永久链接">#</a></h3>
+<h3>2.1 生成解决方案<a class="headerlink" href="#id4" title="此标题的永久链接">#</a></h3>
 <p>对于存储构建生成的解决方案，最经典的是在工程主目录下创建一个 <code class="docutils literal notranslate"><span class="pre">build</span></code> 文件夹。您可以是使用 <code class="docutils literal notranslate"><span class="pre">CMake-GUI</span></code> 或者如下指令生成目标工程：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">vk_raytracing_tutorial_KHR</span>
 <span class="n">mkdir</span> <span class="n">build</span>
@@ -304,13 +306,13 @@
 </div>
 </section>
 <section id="id5">
-<h3>工具安装<a class="headerlink" href="#id5" title="此标题的永久链接">#</a></h3>
+<h3>2.2 工具安装<a class="headerlink" href="#id5" title="此标题的永久链接">#</a></h3>
 <p>我们需要一张支持 <code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_tracing_pipeline</span></code> 扩展的显卡。对于英伟达的图形卡，您需要最起码是 <code class="docutils literal notranslate"><span class="pre">2021年</span></code> 或之后的 <a class="reference external" href="https://developer.nvidia.com/vulkan-driver">Vulkan驱动</a> 。</p>
 <p>该工程最低需要 <a class="reference external" href="https://vulkan.lunarg.com/sdk/home">Vulkan SDK</a> 的版本为 <code class="docutils literal notranslate"><span class="pre">1.2.161</span></code>。该工程是使用 <code class="docutils literal notranslate"><span class="pre">1.2.182.0</span></code> 进行测试的。</p>
 </section>
 </section>
 <section id="id6">
-<h2>编译和运行<a class="headerlink" href="#id6" title="此标题的永久链接">#</a></h2>
+<h2>3 编译和运行<a class="headerlink" href="#id6" title="此标题的永久链接">#</a></h2>
 <p>打开位于 <code class="docutils literal notranslate"><span class="pre">build</span></code> 目录下的解决方案，之后编译并运行 <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing__before">vk_ray_tracing__before_KHR</a> 。</p>
 <p>该示例将会是此教程的示例起点。这是一个用于加载 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 文件并使用 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 光栅化渲染他们的小框架。您可以通过阅读 <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/blob/master/ray_tracing__before/README.md#nvidia-vulkan-ray-tracing-tutorial">Base Overview</a> 来纵观该示例是如何实现的。
 我们将使用这个框架加载几何体并且渲染场景来实现光线追踪。</p>
@@ -325,7 +327,7 @@
 <p><code class="docutils literal notranslate"><span class="pre">vk_ray_tracing__simple_KHR</span></code> 工程将会作为额外教程的起点进行开发讲解。</p>
 </section>
 <section id="id7">
-<h2>开始步入光线追踪<a class="headerlink" href="#id7" title="此标题的永久链接">#</a></h2>
+<h2>4 开始步入光线追踪<a class="headerlink" href="#id7" title="此标题的永久链接">#</a></h2>
 <p>首先进入 <code class="docutils literal notranslate"><span class="pre">main.cpp</span></code> 文件的 <code class="docutils literal notranslate"><span class="pre">main</span></code> 函数，找到使用 <code class="docutils literal notranslate"><span class="pre">nvvk::ContextCreateInfo</span></code> 设置需要的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 扩展。为了激活使用光线追踪，我们需要 <code class="docutils literal notranslate"><span class="pre">VK_KHR_ACCELERATION_STRUCTURE</span></code> 和 <code class="docutils literal notranslate"><span class="pre">VK_KHR_RAY_TRACING_PIPELINE</span></code> 两个扩展。这两个扩展
 还依赖于其他扩展，如下是所有需要激活的扩展。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// #VKRay: 激活光线追踪扩展</span>
@@ -362,7 +364,7 @@
 </pre></div>
 </div>
 <section id="main">
-<h3>main<a class="headerlink" href="#main" title="此标题的永久链接">#</a></h3>
+<h3>4.1 main<a class="headerlink" href="#main" title="此标题的永久链接">#</a></h3>
 <p>在 <code class="docutils literal notranslate"><span class="pre">main.cpp</span></code> 的 <code class="docutils literal notranslate"><span class="pre">main()</span></code> 函数中，我们在 <code class="docutils literal notranslate"><span class="pre">helloVk.updateDescriptorSet()</span></code> 之后调用初始化函数。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// #VKRay</span>
 <span class="n">helloVk</span><span class="p">.</span><span class="n">initRayTracing</span><span class="p">();</span>
@@ -376,7 +378,7 @@
 </section>
 </section>
 <section id="id8">
-<h2>加速结构<a class="headerlink" href="#id8" title="此标题的永久链接">#</a></h2>
+<h2>5 加速结构<a class="headerlink" href="#id8" title="此标题的永久链接">#</a></h2>
 <p>为了提高效率，光线追踪使用加速结构（ <code class="docutils literal notranslate"><span class="pre">acceleration</span> <span class="pre">structure</span></code> ( <code class="docutils literal notranslate"><span class="pre">AS</span></code> ) ）组织几何体，这样在渲染时将减少光线-三角形求交测试的次数。该结构在硬件上使用经典的层级数据结构存储，但给用户提供可接触的层级只有
 两级：一个顶层加速结构 （ <code class="docutils literal notranslate"><span class="pre">top-level</span> <span class="pre">acceleration</span> <span class="pre">structure</span></code> ( <code class="docutils literal notranslate"><span class="pre">TLAS</span></code> ) ）可以引用任意数量的底层加速结构 （ <code class="docutils literal notranslate"><span class="pre">bottom-level</span> <span class="pre">acceleration</span> <span class="pre">structures</span></code> ( <code class="docutils literal notranslate"><span class="pre">BLAS</span></code> ) ）。对于可以支持多少个顶层加速结构，
 可通过 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceAccelerationStructurePropertiesKHR::maxInstanceCount</span></code> 获取到。通常一个底层加速结构对应场景中一个单独的 <code class="docutils literal notranslate"><span class="pre">3D</span></code> 模型，并且一个顶层加速结构通过每一个单独的底层加速结构所对应的的位置（使用 <code class="docutils literal notranslate"><span class="pre">3×4</span></code> 的变换矩阵）
@@ -414,7 +416,7 @@
 比如 <a class="reference external" href="https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator">Vulkan Memory Allocator（VMA）</a> 或是专用内存分配器（比如一个 <code class="docutils literal notranslate"><span class="pre">VkDeviceMemory</span></code> 对应一个对象的策略，这种分配策略对于教学目的最容易理解，但是并不能用于产品开发）。</p>
 </div>
 <section id="id9">
-<h3>底层加速结构<a class="headerlink" href="#id9" title="此标题的永久链接">#</a></h3>
+<h3>5.1 底层加速结构<a class="headerlink" href="#id9" title="此标题的永久链接">#</a></h3>
 <p>构建底层加速器的第一步就是将 <code class="docutils literal notranslate"><span class="pre">ObjModel</span></code> 的几何数据转换成构建加速结构所需要的多个结构体中。我们使用 <code class="docutils literal notranslate"><span class="pre">nvvk::RaytracingBuilderKHR::BlasInput</span></code> 来维护所有的的结构体。</p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">HelloVulkan</span></code> 类中增加一个新函数：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">objectToVkGeometryKHR</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ObjModel</span><span class="o">&amp;</span><span class="w"> </span><span class="n">model</span><span class="p">);</span>
@@ -516,7 +518,7 @@
 </pre></div>
 </div>
 <section id="raytracingbuilder-buildblas">
-<h4>帮助类细节： <code class="docutils literal notranslate"><span class="pre">RaytracingBuilder::buildBlas()</span></code><a class="headerlink" href="#raytracingbuilder-buildblas" title="此标题的永久链接">#</a></h4>
+<h4>5.1.1 帮助类细节： <code class="docutils literal notranslate"><span class="pre">RaytracingBuilder::buildBlas()</span></code><a class="headerlink" href="#raytracingbuilder-buildblas" title="此标题的永久链接">#</a></h4>
 <p>这个帮助函数可以在 <code class="docutils literal notranslate"><span class="pre">raytraceKHR_vkpp.hpp</span></code> 中找到：其可以在很多项目中重用，并且也是 <a class="reference external" href="https://github.com/nvpro-samples">nvpro-samples</a> 中众多帮助类中的其中之一。该函数会对每一个 <code class="docutils literal notranslate"><span class="pre">RaytracingBuilderKHR::BlasInput</span></code> 生成一个底层加速结构。</p>
 <p>创建一个底层加速结构需要如下元素：</p>
 <ul class="simple">
@@ -586,6 +588,76 @@
 <span class="n">VkDeviceAddress</span><span class="w"> </span><span class="n">scratchAddress</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vkGetBufferDeviceAddress</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">bufferInfo</span><span class="p">);</span>
 </pre></div>
 </div>
+<p>接下来就是获取每一个底层加速结构的真正的大小。为了得到真正的大小，我们将使用 <code class="docutils literal notranslate"><span class="pre">VK_QUERY_TYPE_ACCELERATION_STRUCTURE_COMPACTED_SIZE_KHR</span></code> 类型获取。 如果我们想要在之后压缩加速结构该类型是需要的。默认的情况下， <code class="docutils literal notranslate"><span class="pre">vkGetAccelerationStructureBuildSizesKHR</span></code> 将会返回无任何优化（最糟糕）的内存大小。在压缩创建之后，真实占有的空间大小可以相对较小，并且在加速结构之后拷贝仅拷贝必要信息。这将会节省超过 <code class="docutils literal notranslate"><span class="pre">50%</span></code> 的设备内存使用。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 创建一个用于获取每一个底层加速结构的存储大小的查询队列</span>
+<span class="n">VkQueryPool</span><span class="w"> </span><span class="n">queryPool</span><span class="p">{</span><span class="n">VK_NULL_HANDLE</span><span class="p">};</span>
+<span class="k">if</span><span class="p">(</span><span class="n">nbCompactions</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w">  </span><span class="c1">// 是否有压缩的需求？</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">assert</span><span class="p">(</span><span class="n">nbCompactions</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">nbBlas</span><span class="p">);</span><span class="w">  </span><span class="c1">// 不允许混合使用压缩与非压缩的底层加速结构</span>
+<span class="w">  </span><span class="n">VkQueryPoolCreateInfo</span><span class="w"> </span><span class="n">qpci</span><span class="p">{</span><span class="n">VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO</span><span class="p">};</span>
+<span class="w">  </span><span class="n">qpci</span><span class="p">.</span><span class="n">queryCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nbBlas</span><span class="p">;</span>
+<span class="w">  </span><span class="n">qpci</span><span class="p">.</span><span class="n">queryType</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">VK_QUERY_TYPE_ACCELERATION_STRUCTURE_COMPACTED_SIZE_KHR</span><span class="p">;</span>
+<span class="w">  </span><span class="n">vkCreateQueryPool</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">qpci</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">queryPool</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="note admonition">
+<p class="admonition-title">压缩</p>
+<p>为了使用压缩，底层加速结构的 <code class="docutils literal notranslate"><span class="pre">flags</span></code> 必须包含 <code class="docutils literal notranslate"><span class="pre">VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_COMPACTION_BIT_KHR</span></code> 位域。</p>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 允许使用一个命令缓存（ <code class="docutils literal notranslate"><span class="pre">command</span> <span class="pre">buffer</span></code> ）创建所有的底层加速结构，但是这可能会导致管线的停顿和潜在的创建问题。为了避免这些问题，我们将底层加速结构分割并使用多个大约 <code class="docutils literal notranslate"><span class="pre">256MB</span></code> 的内存创建。由于我们限制了内存块分配的大小，如果我们需要压缩，这将是一瞬间的事情。</p>
+<p>如下即为将底层加速结构分割创建，对于 <code class="docutils literal notranslate"><span class="pre">cmdCreateBlas</span></code> 和 <code class="docutils literal notranslate"><span class="pre">cmdCompactBlas</span></code> 函数将会一会儿细说。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 批量创建/压缩底层加速结构，这样可以存入有限的内存</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">indices</span><span class="p">;</span><span class="w">  </span><span class="c1">// 底层加速结构创建对应的索引</span>
+<span class="n">VkDeviceSize</span><span class="w">          </span><span class="n">batchSize</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+<span class="n">VkDeviceSize</span><span class="w">          </span><span class="n">batchLimit</span><span class="p">{</span><span class="mi">256&#39;000&#39;000</span><span class="p">};</span><span class="w">  </span><span class="c1">// 256 MB</span>
+<span class="k">for</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">idx</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">nbBlas</span><span class="p">;</span><span class="w"> </span><span class="n">idx</span><span class="o">++</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">indices</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">idx</span><span class="p">);</span>
+<span class="w">  </span><span class="n">batchSize</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">buildAs</span><span class="p">[</span><span class="n">idx</span><span class="p">].</span><span class="n">sizeInfo</span><span class="p">.</span><span class="n">accelerationStructureSize</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">// 超过限值或是最后一个底层加速结构</span>
+<span class="w">  </span><span class="k">if</span><span class="p">(</span><span class="n">batchSize</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">batchLimit</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">idx</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">nbBlas</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VkCommandBuffer</span><span class="w"> </span><span class="n">cmdBuf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_cmdPool</span><span class="p">.</span><span class="n">createCommandBuffer</span><span class="p">();</span>
+<span class="w">    </span><span class="n">cmdCreateBlas</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="n">indices</span><span class="p">,</span><span class="w"> </span><span class="n">buildAs</span><span class="p">,</span><span class="w"> </span><span class="n">scratchAddress</span><span class="p">,</span><span class="w"> </span><span class="n">queryPool</span><span class="p">);</span>
+<span class="w">    </span><span class="n">m_cmdPool</span><span class="p">.</span><span class="n">submitAndWait</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="n">queryPool</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="n">VkCommandBuffer</span><span class="w"> </span><span class="n">cmdBuf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_cmdPool</span><span class="p">.</span><span class="n">createCommandBuffer</span><span class="p">();</span>
+<span class="w">      </span><span class="n">cmdCompactBlas</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="n">indices</span><span class="p">,</span><span class="w"> </span><span class="n">buildAs</span><span class="p">,</span><span class="w"> </span><span class="n">queryPool</span><span class="p">);</span>
+<span class="w">      </span><span class="n">m_cmdPool</span><span class="p">.</span><span class="n">submitAndWait</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">);</span><span class="w">  </span><span class="c1">// 将命令缓存推送到队列执行并且调用vkQueueWaitIdle等待执行结束</span>
+
+<span class="w">      </span><span class="c1">// 销毁未压缩版本</span>
+<span class="w">      </span><span class="n">destroyNonCompacted</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span><span class="w"> </span><span class="n">buildAs</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="c1">// 重置</span>
+
+<span class="w">    </span><span class="n">batchSize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="n">indices</span><span class="p">.</span><span class="n">clear</span><span class="p">();</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>创建的加速机构将会保存在 <code class="docutils literal notranslate"><span class="pre">BuildAccelerationStructure</span></code> 中，可以通过索引获取到。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 存储所有创建的加速结构</span>
+<span class="k">for</span><span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">buildAs</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">m_blas</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">b</span><span class="p">.</span><span class="n">as</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>最后我们将会清空不再需要的对象和内存。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 清空</span>
+<span class="n">vkDestroyQueryPool</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">queryPool</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+<span class="n">m_alloc</span><span class="o">-&gt;</span><span class="n">finalizeAndReleaseStaging</span><span class="p">();</span>
+<span class="n">m_alloc</span><span class="o">-&gt;</span><span class="n">destroy</span><span class="p">(</span><span class="n">scratchBuffer</span><span class="p">);</span>
+<span class="n">m_cmdPool</span><span class="p">.</span><span class="n">deinit</span><span class="p">();</span>
+</pre></div>
+</div>
+<section id="cmdcreateblas">
+<h5>5.1.1.1 cmdCreateBlas<a class="headerlink" href="#cmdcreateblas" title="此标题的永久链接">#</a></h5>
+</section>
 </section>
 </section>
 </section>
@@ -654,20 +726,23 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">NVIDIA Vulkan 光线追踪教程</a><ul>
-<li><a class="reference internal" href="#id2">介绍</a></li>
-<li><a class="reference internal" href="#id3">配置环境</a><ul>
-<li><a class="reference internal" href="#id4">生成解决方案</a></li>
-<li><a class="reference internal" href="#id5">工具安装</a></li>
+<li><a class="reference internal" href="#id2">1 介绍</a></li>
+<li><a class="reference internal" href="#id3">2 配置环境</a><ul>
+<li><a class="reference internal" href="#id4">2.1 生成解决方案</a></li>
+<li><a class="reference internal" href="#id5">2.2 工具安装</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id6">编译和运行</a></li>
-<li><a class="reference internal" href="#id7">开始步入光线追踪</a><ul>
-<li><a class="reference internal" href="#main">main</a></li>
+<li><a class="reference internal" href="#id6">3 编译和运行</a></li>
+<li><a class="reference internal" href="#id7">4 开始步入光线追踪</a><ul>
+<li><a class="reference internal" href="#main">4.1 main</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id8">加速结构</a><ul>
-<li><a class="reference internal" href="#id9">底层加速结构</a><ul>
-<li><a class="reference internal" href="#raytracingbuilder-buildblas">帮助类细节： <code class="docutils literal notranslate"><span class="pre">RaytracingBuilder::buildBlas()</span></code></a></li>
+<li><a class="reference internal" href="#id8">5 加速结构</a><ul>
+<li><a class="reference internal" href="#id9">5.1 底层加速结构</a><ul>
+<li><a class="reference internal" href="#raytracingbuilder-buildblas">5.1.1 帮助类细节： <code class="docutils literal notranslate"><span class="pre">RaytracingBuilder::buildBlas()</span></code></a><ul>
+<li><a class="reference internal" href="#cmdcreateblas">5.1.1.1 cmdCreateBlas</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
