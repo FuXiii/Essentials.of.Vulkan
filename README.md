@@ -21,7 +21,7 @@ Vulkan入门精要
 ## Sponsor
 
 想赞助的小伙伴，欢迎使用`爱发电`赞助，请量力而为，如果赞助完真有困难可以退回，**未成年人禁止投喂！！！**  
-![爱发电Essentials.of.Vulkan](./Aifadian/aifadian.jpg)
+![爱发电Essentials.of.Vulkan](./source/_static/aifadian.jpg)
 
 ## Log
 
