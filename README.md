@@ -100,3 +100,8 @@ Vulkan入门精要
 * 2023/5/21
     >
     >* 更新`source/literature/NVIDIAVulkanRayTracingTutorial.rst`文档
+
+* 2023/5/22
+    >
+    >* 增加`sphinx_design`的`sphinx`的扩展
+    >* 将所有的更新记录作为下拉列表样式

@@ -19,7 +19,8 @@ extensions = [
     'myst_parser', 
     'sphinx_copybutton',
     'sphinx_inline_tabs',
-    'sphinx_last_updated_by_git'
+    'sphinx_last_updated_by_git',
+    'sphinx_design'
     ]
 
 myst_enable_extensions = [

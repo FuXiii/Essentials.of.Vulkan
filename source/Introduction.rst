@@ -1,8 +1,9 @@
 介绍
 =========
 
-.. admonition:: 更新记录
-   :class: admonition
+.. dropdown:: 更新记录
+   :color: muted
+   :icon: history
 
    * 2023/5/14 增加该文章
    * 2023/5/14 增加 ``Khronos组织`` 章节

@@ -1,8 +1,9 @@
 Vulkan迷你路径追踪
 =============================
 
-.. admonition:: 更新记录
-   :class: admonition
+.. dropdown:: 更新记录
+   :color: muted
+   :icon: history
 
    * 2023/5/15 创建本文
 

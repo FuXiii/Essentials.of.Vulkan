@@ -1,17 +1,18 @@
 光线追踪
 =========
 
-.. admonition:: 更新记录
-   :class: admonition
+.. dropdown:: 更新记录
+    :color: muted
+    :icon: history
 
-   * 2023/5/12 创建本文
-   * 2023/5/12 创建 ``VK_KHR_acceleration_structure`` 章节
-   * 2023/5/12 创建 ``VK_KHR_ray_tracing_pipeline`` 章节
-   * 2023/5/12 创建 ``VK_KHR_ray_query`` 章节
-   * 2023/5/12 创建 ``VK_KHR_pipeline_library`` 章节
-   * 2023/5/12 创建 ``VK_KHR_deferred_host_operations`` 章节
-   * 2023/5/12 创建 ``光追最佳实践`` 章节
-   * 2023/5/12 发布完成
+    * 2023/5/12 创建本文
+    * 2023/5/12 创建 ``VK_KHR_acceleration_structure`` 章节
+    * 2023/5/12 创建 ``VK_KHR_ray_tracing_pipeline`` 章节
+    * 2023/5/12 创建 ``VK_KHR_ray_query`` 章节
+    * 2023/5/12 创建 ``VK_KHR_pipeline_library`` 章节
+    * 2023/5/12 创建 ``VK_KHR_deferred_host_operations`` 章节
+    * 2023/5/12 创建 ``光追最佳实践`` 章节
+    * 2023/5/12 发布完成
   
 `文献源`_
 
