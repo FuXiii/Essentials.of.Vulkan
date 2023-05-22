@@ -1,8 +1,9 @@
 文献
 ====
 
-.. admonition:: 更新记录
-   :class: admonition
+.. dropdown:: 更新记录
+   :color: muted
+   :icon: history
 
    * 2023/5/11 增加 ``Vulkan 光线追踪最终标准发布`` 文章
    * 2023/5/12 增加 ``光线追踪`` 文章

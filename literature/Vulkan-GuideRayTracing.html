@@ -12,6 +12,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=e6660623a769aa55fea372102b9bf3151b292993" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -227,20 +228,25 @@
         <article role="main">
           <section id="id1">
 <h1>光线追踪<a class="headerlink" href="#id1" title="此标题的永久链接">#</a></h1>
-<div class="admonition">
-<p class="admonition-title">更新记录</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header sd-bg-muted sd-bg-text-muted">
+<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-history" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M1.643 3.143L.427 1.927A.25.25 0 000 2.104V5.75c0 .138.112.25.25.25h3.646a.25.25 0 00.177-.427L2.715 4.215a6.5 6.5 0 11-1.18 4.458.75.75 0 10-1.493.154 8.001 8.001 0 101.6-5.684zM7.75 4a.75.75 0 01.75.75v2.992l2.028.812a.75.75 0 01-.557 1.392l-2.5-1A.75.75 0 017 8.25v-3.5A.75.75 0 017.75 4z"></path></svg></span>更新记录<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
 <ul class="simple">
-<li><p>2023/5/12 创建本文</p></li>
-<li><p>2023/5/12 创建 <code class="docutils literal notranslate"><span class="pre">VK_KHR_acceleration_structure</span></code> 章节</p></li>
-<li><p>2023/5/12 创建 <code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_tracing_pipeline</span></code> 章节</p></li>
-<li><p>2023/5/12 创建 <code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_query</span></code> 章节</p></li>
-<li><p>2023/5/12 创建 <code class="docutils literal notranslate"><span class="pre">VK_KHR_pipeline_library</span></code> 章节</p></li>
-<li><p>2023/5/12 创建 <code class="docutils literal notranslate"><span class="pre">VK_KHR_deferred_host_operations</span></code> 章节</p></li>
-<li><p>2023/5/12 创建 <code class="docutils literal notranslate"><span class="pre">光追最佳实践</span></code> 章节</p></li>
-<li><p>2023/5/12 发布完成</p></li>
+<li><p class="sd-card-text">2023/5/12 创建本文</p></li>
+<li><p class="sd-card-text">2023/5/12 创建 <code class="docutils literal notranslate"><span class="pre">VK_KHR_acceleration_structure</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/5/12 创建 <code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_tracing_pipeline</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/5/12 创建 <code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_query</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/5/12 创建 <code class="docutils literal notranslate"><span class="pre">VK_KHR_pipeline_library</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/5/12 创建 <code class="docutils literal notranslate"><span class="pre">VK_KHR_deferred_host_operations</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/5/12 创建 <code class="docutils literal notranslate"><span class="pre">光追最佳实践</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/5/12 发布完成</p></li>
 </ul>
 </div>
-<p><a class="reference external" href="https://github.com/KhronosGroup/Vulkan-Guide/blob/main/chapters/extensions/ray_tracing.adoc">文献源</a></p>
+</details><p><a class="reference external" href="https://github.com/KhronosGroup/Vulkan-Guide/blob/main/chapters/extensions/ray_tracing.adoc">文献源</a></p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">API</span></code> 中有5个与光追相关的扩展</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html">VK_KHR_acceleration_structure</a></p></li>
@@ -492,6 +498,7 @@
     <script src="../_static/copybutton.js"></script>
     <script src="../_static/tabs.js"></script>
     <script src="../_static/translations.js"></script>
+    <script src="../_static/design-tabs.js"></script>
     <script src="https://unpkg.com/mermaid@9.4.0/dist/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
     </body>

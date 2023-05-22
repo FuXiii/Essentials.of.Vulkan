@@ -1,8 +1,9 @@
 欢迎来到 Vulkan 入门精要
 ================================================
 
-.. admonition:: 更新记录
-   :class: admonition
+.. dropdown:: 更新记录
+   :color: muted
+   :icon: history
 
    * 2023/5/11 增加 ``文献翻译`` 目录
    * 2023/5/14 增加 ``序言`` 目录

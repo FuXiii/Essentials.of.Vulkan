@@ -1,7 +1,8 @@
 # 体积云
 
-```{admonition} 更新记录
-:class: admonition
+```{dropdown} 更新记录
+:color: muted
+:icon: history
 
 * 2023/5/19 增加该文章。从[Turbo](https://github.com/FuXiii/Turbo)引擎文档中将[VolumetricCloud](https://github.com/FuXiii/Turbo/blob/master/docs/VolumetricCloud.md)搬过来。
 ```

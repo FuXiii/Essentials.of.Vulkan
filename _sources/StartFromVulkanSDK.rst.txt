@@ -1,8 +1,9 @@
 开始于 Vulkan SDK
 ===================
 
-.. admonition:: 更新记录
-   :class: admonition
+.. dropdown:: 更新记录
+   :color: muted
+   :icon: history
 
    * 2023/5/16 增加该文章
    * 2023/5/16 增加 ``安装 Vulkan SDK`` 章节

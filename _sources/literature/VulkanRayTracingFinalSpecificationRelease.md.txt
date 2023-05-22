@@ -1,7 +1,8 @@
 # Vulkan 光线追踪最终标准发布
 
-```{admonition} 更新记录
-:class: admonition
+```{dropdown} 更新记录
+:color: muted
+:icon: history
 
 * 2023/5/11 发布完成
 ```
