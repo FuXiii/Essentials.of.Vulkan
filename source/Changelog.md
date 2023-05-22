@@ -84,4 +84,4 @@
 >* 将所有的更新记录作为下拉列表样式
 >* 创建`Changelog.md`文档，用于记录更新纵览
 >* 将`README`文档中的更新记录转移到`Changelog.md`中
-
+>* 更新`source/literature/NVIDIAVulkanRayTracingTutorial.rst`文档
