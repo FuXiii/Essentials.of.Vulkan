@@ -25,9 +25,7 @@ extensions = [
     ]
 
 comments_config = {
-   "utterances": {
-      "repo": "FuXiii/Essentials.of.Vulkan",
-   }
+   "hypothesis": True
 }
 
 myst_enable_extensions = [

@@ -81,6 +81,6 @@
 
 .. toctree::
    :caption: 更新日志
-   :maxdepth: 2
+   :maxdepth: 1
 
    Changelog.md
