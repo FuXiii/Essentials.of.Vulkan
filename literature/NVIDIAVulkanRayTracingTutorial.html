@@ -549,7 +549,7 @@
 <p>暂付缓存（ <code class="docutils literal notranslate"><span class="pre">scratch</span> <span class="pre">buffer</span></code> ），是 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 对于内部缓存的优化。原本的内部缓存应由 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 驱动内部自身分配和管理，但是有些内部内存会经常性的更新，为了优化这一部分缓存， <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 将这一部分
 缓存交由用户分配管理，优化了内存使用和读写。 <code class="docutils literal notranslate"><span class="pre">scratch</span></code> 原本是抓挠之意，由于这部分内存时不时的要更新一下，像猫抓一样，所以叫 <code class="docutils literal notranslate"><span class="pre">抓挠</span></code> 缓存，实则是暂时交付给 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 驱动内部。</p>
 </div>
-<p>如上这些数据将存存储到名为 <code class="docutils literal notranslate"><span class="pre">BuildAccelerationStructure</span></code> 结构体中用于简化创建。</p>
+<p>如上这些数据将存储到名为 <code class="docutils literal notranslate"><span class="pre">BuildAccelerationStructure</span></code> 结构体中用于简化创建。</p>
 <p>在函数一开始，我们仅仅初始化我们之后需要的数据。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">//--------------------------------------------------------------------------------------------------</span>
 <span class="c1">// 使用BlasInput的数组创建所有的底层加速结构</span>
