@@ -259,6 +259,7 @@
 <li><p class="sd-card-text">2023/5/23 更新 <code class="docutils literal notranslate"><span class="pre">5.1</span> <span class="pre">底层加速结构</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/5/23 更新 <code class="docutils literal notranslate"><span class="pre">5.1.1</span> <span class="pre">帮助类细节：RaytracingBuilder::buildBlas()</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/5/23 更新 <code class="docutils literal notranslate"><span class="pre">5.1.1.1</span> <span class="pre">cmdCreateBlas</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/5/23 增加 <code class="docutils literal notranslate"><span class="pre">5.1.1.2</span> <span class="pre">cmdCompactBlas</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p><a class="reference external" href="https://nvpro-samples.github.io/vk_raytracing_tutorial_KHR/">文献源</a></p>
@@ -703,7 +704,48 @@
 <li><p>创建加速结构：使用抽象内存分配器和之前获取的大小信息，调用 <code class="docutils literal notranslate"><span class="pre">createAcceleration()</span></code> 函数来创建缓存和加速结构。</p></li>
 <li><p>构建加速结构：使用加速结构，暂付缓存和几何信息构建真正的底层加速结构。</p></li>
 </ul>
-<p>这之后 <code class="docutils literal notranslate"><span class="pre">m_alloc-&gt;createAcceleration</span></code> 函数</p>
+<p>这之后调用 <code class="docutils literal notranslate"><span class="pre">m_alloc-&gt;createAcceleration</span></code> 函数，该函数背后将按照查询到的加速结构的大小，并使用 <code class="docutils literal notranslate"><span class="pre">VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR</span></code> 和 <code class="docutils literal notranslate"><span class="pre">VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT</span></code> 两个缓存功能位域创建缓存（ 由于之后创建顶层加速结构需要底层加速结构的地址，所以需要 <code class="docutils literal notranslate"><span class="pre">VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT</span></code> ），
+并通过 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureCreateInfoKHR</span></code> 设置目标 <code class="docutils literal notranslate"><span class="pre">buffer</span></code> 以此将分配的内存与加速结构进行绑定。而 <code class="docutils literal notranslate"><span class="pre">buffer</span></code> 和 <code class="docutils literal notranslate"><span class="pre">image</span></code> 在绑定内存上与加速结构不同，对于 <code class="docutils literal notranslate"><span class="pre">buffer</span></code> 和 <code class="docutils literal notranslate"><span class="pre">image</span></code> 其在 <code class="docutils literal notranslate"><span class="pre">Vk*</span></code> 的句柄分配和内存绑定是分开独立进行的，而加速结构是在通过 <code class="docutils literal notranslate"><span class="pre">vkCreateAccelerationStructureKHR</span></code> 创建时同时创建和绑定内存。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 真正的缓存分配和加速结构创建</span>
+<span class="n">VkAccelerationStructureCreateInfoKHR</span><span class="w"> </span><span class="n">createInfo</span><span class="p">{</span><span class="n">VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR</span><span class="p">};</span>
+<span class="n">createInfo</span><span class="p">.</span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR</span><span class="p">;</span>
+<span class="n">createInfo</span><span class="p">.</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">buildAs</span><span class="p">[</span><span class="n">idx</span><span class="p">].</span><span class="n">sizeInfo</span><span class="p">.</span><span class="n">accelerationStructureSize</span><span class="p">;</span><span class="w">  </span><span class="c1">// 将用于内存分配</span>
+<span class="n">buildAs</span><span class="p">[</span><span class="n">idx</span><span class="p">].</span><span class="n">as</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_alloc</span><span class="o">-&gt;</span><span class="n">createAcceleration</span><span class="p">(</span><span class="n">createInfo</span><span class="p">);</span>
+<span class="n">NAME_IDX_VK</span><span class="p">(</span><span class="n">buildAs</span><span class="p">[</span><span class="n">idx</span><span class="p">].</span><span class="n">as</span><span class="p">.</span><span class="n">accel</span><span class="p">,</span><span class="w"> </span><span class="n">idx</span><span class="p">);</span>
+<span class="n">NAME_IDX_VK</span><span class="p">(</span><span class="n">buildAs</span><span class="p">[</span><span class="n">idx</span><span class="p">].</span><span class="n">as</span><span class="p">.</span><span class="n">buffer</span><span class="p">.</span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="n">idx</span><span class="p">);</span>
+
+<span class="c1">// BuildInfo #2 part</span>
+<span class="n">buildAs</span><span class="p">[</span><span class="n">idx</span><span class="p">].</span><span class="n">buildInfo</span><span class="p">.</span><span class="n">dstAccelerationStructure</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">buildAs</span><span class="p">[</span><span class="n">idx</span><span class="p">].</span><span class="n">as</span><span class="p">.</span><span class="n">accel</span><span class="p">;</span><span class="w">  </span><span class="c1">// 设置构建的目标加速结构</span>
+<span class="n">buildAs</span><span class="p">[</span><span class="n">idx</span><span class="p">].</span><span class="n">buildInfo</span><span class="p">.</span><span class="n">scratchData</span><span class="p">.</span><span class="n">deviceAddress</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">scratchAddress</span><span class="p">;</span><span class="w">  </span><span class="c1">// 所有的构建都使用同一个暂付缓存</span>
+
+<span class="c1">// 构建底层加速结构</span>
+<span class="n">vkCmdBuildAccelerationStructuresKHR</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">buildAs</span><span class="p">[</span><span class="n">idx</span><span class="p">].</span><span class="n">buildInfo</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">buildAs</span><span class="p">[</span><span class="n">idx</span><span class="p">].</span><span class="n">rangeInfo</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>注意在每次调用构建之后需要设置栅栏（ <code class="docutils literal notranslate"><span class="pre">barrier</span></code> ）：为了方便起见，在构建时重复使用暂付缓存，所以这里需要确保在开始一个新的构建前，之前的构建已经完成。按理来说，我们应该使用暂付缓存的不同部分以此来同时创建多个底层加速结构。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 一旦暂付缓存被重复使用, 我们需要一个栅栏用于确保之前的构建已经结束才开始构建下一个</span>
+<span class="n">VkMemoryBarrier</span><span class="w"> </span><span class="n">barrier</span><span class="p">{</span><span class="n">VK_STRUCTURE_TYPE_MEMORY_BARRIER</span><span class="p">};</span>
+<span class="n">barrier</span><span class="p">.</span><span class="n">srcAccessMask</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR</span><span class="p">;</span>
+<span class="n">barrier</span><span class="p">.</span><span class="n">dstAccessMask</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR</span><span class="p">;</span>
+<span class="n">vkCmdPipelineBarrier</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="n">VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR</span><span class="p">,</span>
+<span class="w">                     </span><span class="n">VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">barrier</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>之后我们查询需要的加速结构大小</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="p">(</span><span class="n">queryPool</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="c1">// 查询真正需要的内存数量，用于压缩</span>
+<span class="w">  </span><span class="n">vkCmdWriteAccelerationStructuresPropertiesKHR</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">buildAs</span><span class="p">[</span><span class="n">idx</span><span class="p">].</span><span class="n">buildInfo</span><span class="p">.</span><span class="n">dstAccelerationStructure</span><span class="p">,</span>
+<span class="w">                                                </span><span class="n">VK_QUERY_TYPE_ACCELERATION_STRUCTURE_COMPACTED_SIZE_KHR</span><span class="p">,</span><span class="w"> </span><span class="n">queryPool</span><span class="p">,</span><span class="w"> </span><span class="n">queryCnt</span><span class="o">++</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>尽管该方法可以很好的保持所有的底层加速结构的独立性，但构建很多底层加速结构将需要大量的暂付缓存并同时启动多个构建。当前的这个教程并没有使用可以大量减少加速结构内存的压缩策略。有关这两个方面将会在未来的高级教程中有所体现。</p>
+</section>
+<section id="cmdcompactblas">
+<h5>5.1.1.2 cmdCompactBlas<a class="headerlink" href="#cmdcompactblas" title="此标题的永久链接">#</a></h5>
 </section>
 </section>
 </section>
@@ -788,6 +830,7 @@
 <li><a class="reference internal" href="#id9">5.1 底层加速结构</a><ul>
 <li><a class="reference internal" href="#raytracingbuilder-buildblas">5.1.1 帮助类细节： <code class="docutils literal notranslate"><span class="pre">RaytracingBuilder::buildBlas()</span></code></a><ul>
 <li><a class="reference internal" href="#cmdcreateblas">5.1.1.1 cmdCreateBlas</a></li>
+<li><a class="reference internal" href="#cmdcompactblas">5.1.1.2 cmdCompactBlas</a></li>
 </ul>
 </li>
 </ul>
