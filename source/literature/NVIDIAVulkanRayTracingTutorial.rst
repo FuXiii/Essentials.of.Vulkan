@@ -63,9 +63,9 @@ NVIDIA Vulkan 光线追踪教程
 
     git clone https://github.com/nvpro-samples/build_all.git
 
-之后打开 ``build_all`` 文件夹并切执行 ``clone_all.bat`` ( ``Windows`` ) 或 ``clone_all.sh`` ( ``Linux`` )。
+之后打开 ``build_all`` 文件夹并执行 ``clone_all.bat`` ( ``Windows`` ) 或 ``clone_all.sh`` ( ``Linux`` )。
 
-如果你希望克隆尽可能少的仓库，打开命令行，并且执行如下指令，只克隆您需要的仓库：
+如果你希望克隆尽可能少的仓库，打开命令行，并执行如下指令，这将只克隆需要的仓库：
 
 .. code:: 
 
