@@ -255,6 +255,10 @@
 <li><p class="sd-card-text">2023/5/21 更新 <code class="docutils literal notranslate"><span class="pre">帮助类细节：RaytracingBuilder::buildBlas()</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/5/22 更新 <code class="docutils literal notranslate"><span class="pre">帮助类细节：RaytracingBuilder::buildBlas()</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/5/22 增加 <code class="docutils literal notranslate"><span class="pre">cmdCreateBlas</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/5/22 增加章节号</p></li>
+<li><p class="sd-card-text">2023/5/23 更新 <code class="docutils literal notranslate"><span class="pre">5.1</span> <span class="pre">底层加速结构</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/5/23 更新 <code class="docutils literal notranslate"><span class="pre">5.1.1</span> <span class="pre">帮助类细节：RaytracingBuilder::buildBlas()</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/5/23 更新 <code class="docutils literal notranslate"><span class="pre">5.1.1.1</span> <span class="pre">cmdCreateBlas</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p><a class="reference external" href="https://nvpro-samples.github.io/vk_raytracing_tutorial_KHR/">文献源</a></p>
@@ -342,7 +346,7 @@
 <span class="n">contextInfo</span><span class="p">.</span><span class="n">addDeviceExtension</span><span class="p">(</span><span class="n">VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME</span><span class="p">);</span><span class="w">  </span><span class="c1">// 光线追踪光线的依赖</span>
 </pre></div>
 </div>
-<p>在这写代码背后，其帮助我们选择一个支持激活 <code class="docutils literal notranslate"><span class="pre">VK_KHR_*</span></code> 扩展的物理设备，之后在调用 <code class="docutils literal notranslate"><span class="pre">vkCreateDevice</span></code> 之前将 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDevice*FeaturesKHR</span></code> 结构体插入 <code class="docutils literal notranslate"><span class="pre">VkDeviceCreateInfo</span></code> 的 <code class="docutils literal notranslate"><span class="pre">pNext</span></code> 链中。
+<p>在这些代码背后，其帮助我们选择一个支持激活 <code class="docutils literal notranslate"><span class="pre">VK_KHR_*</span></code> 扩展的物理设备，之后在调用 <code class="docutils literal notranslate"><span class="pre">vkCreateDevice</span></code> 之前将 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDevice*FeaturesKHR</span></code> 结构体插入 <code class="docutils literal notranslate"><span class="pre">VkDeviceCreateInfo</span></code> 的 <code class="docutils literal notranslate"><span class="pre">pNext</span></code> 链中。
 这将激活光线追踪特性并且获取有关设备对于光线追踪的能力。如果你对背后的原理好奇，可与预览 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 上下文封装 <a class="reference external" href="https://github.com/nvpro-samples/nvpro_core/blob/1c59039a1ab0d777c79a29b09879a2686ec286dc/nvvk/context_vk.cpp#L211">Context::initInstance()</a> 。</p>
 <div class="note admonition">
 <p class="admonition-title">加载函数指针</p>
@@ -445,7 +449,15 @@
 <p class="admonition-title">备注</p>
 <p>我们现在认为所有的物体都是不透明的，并以此为前提进行潜在的优化。更具体的说是禁用了任意命中着色器（ <code class="docutils literal notranslate"><span class="pre">anyhit</span> <span class="pre">shader</span></code> ）的调用，之后会细说。</p>
 </div>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">//--------------------------------------------------------------------------------------------------</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">VertexObj</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">nvmath</span><span class="o">::</span><span class="n">vec3f</span><span class="w"> </span><span class="n">pos</span><span class="p">;</span>
+<span class="w">    </span><span class="n">nvmath</span><span class="o">::</span><span class="n">vec3f</span><span class="w"> </span><span class="n">nrm</span><span class="p">;</span>
+<span class="w">    </span><span class="n">nvmath</span><span class="o">::</span><span class="n">vec3f</span><span class="w"> </span><span class="n">color</span><span class="p">;</span>
+<span class="w">    </span><span class="n">nvmath</span><span class="o">::</span><span class="n">vec2f</span><span class="w"> </span><span class="n">texCoord</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">//--------------------------------------------------------------------------------------------------</span>
 <span class="c1">// 将一个OBJ模型转变成光追几何体用于构建底层加速结构</span>
 <span class="c1">//</span>
 <span class="k">auto</span><span class="w"> </span><span class="n">HelloVulkan</span><span class="o">::</span><span class="n">objectToVkGeometryKHR</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ObjModel</span><span class="o">&amp;</span><span class="w"> </span><span class="n">model</span><span class="p">)</span>
@@ -542,7 +554,7 @@
 <span class="c1">// 使用BlasInput的数组创建所有的底层加速结构</span>
 <span class="c1">// - input数组中的每一个BlasInput都对应一个底层加速结构</span>
 <span class="c1">// - 底层加速结构的数量将会和input.size()一样</span>
-<span class="c1">// - 创建的底层加速结构将会存储在m_blas，并可以通过数组索引获取引用</span>
+<span class="c1">// - 创建的底层加速结构将会存储在m_blas（类型为std::vector&lt;nvvk::AccelKHR&gt;），并可以通过数组索引获取引用</span>
 <span class="c1">// - 如果flag里设置了Compact位域，底层加速结构将会被压缩</span>
 <span class="c1">//</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">nvvk::RaytracingBuilderKHR::buildBlas</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">BlasInput</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">input</span><span class="p">,</span><span class="w"> </span><span class="n">VkBuildAccelerationStructureFlagsKHR</span><span class="w"> </span><span class="n">flags</span><span class="p">)</span>
@@ -593,11 +605,11 @@
 </pre></div>
 </div>
 <p>接下来就是获取每一个底层加速结构的真正的大小。为了得到真正的大小，我们将使用 <code class="docutils literal notranslate"><span class="pre">VK_QUERY_TYPE_ACCELERATION_STRUCTURE_COMPACTED_SIZE_KHR</span></code> 类型获取。 如果我们想要在之后压缩加速结构该类型是需要的。默认的情况下， <code class="docutils literal notranslate"><span class="pre">vkGetAccelerationStructureBuildSizesKHR</span></code> 将会返回无任何优化（最糟糕）的内存大小。在压缩创建之后，真实占有的空间大小可以相对较小，并且在加速结构之后拷贝仅拷贝必要信息。这将会节省超过 <code class="docutils literal notranslate"><span class="pre">50%</span></code> 的设备内存使用。</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 创建一个用于获取每一个底层加速结构的存储大小的查询队列</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 创建一个用于获取每一个底层加速结构压缩的存储大小的查询队列</span>
 <span class="n">VkQueryPool</span><span class="w"> </span><span class="n">queryPool</span><span class="p">{</span><span class="n">VK_NULL_HANDLE</span><span class="p">};</span>
 <span class="k">if</span><span class="p">(</span><span class="n">nbCompactions</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w">  </span><span class="c1">// 是否有压缩的需求？</span>
 <span class="p">{</span>
-<span class="w">  </span><span class="n">assert</span><span class="p">(</span><span class="n">nbCompactions</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">nbBlas</span><span class="p">);</span><span class="w">  </span><span class="c1">// 不允许混合使用压缩与非压缩的底层加速结构</span>
+<span class="w">  </span><span class="n">assert</span><span class="p">(</span><span class="n">nbCompactions</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">nbBlas</span><span class="p">);</span><span class="w">  </span><span class="c1">// 不允许混合使用压缩与非压缩的底层加速结构（要么全都压缩，要么都不压缩）</span>
 <span class="w">  </span><span class="n">VkQueryPoolCreateInfo</span><span class="w"> </span><span class="n">qpci</span><span class="p">{</span><span class="n">VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO</span><span class="p">};</span>
 <span class="w">  </span><span class="n">qpci</span><span class="p">.</span><span class="n">queryCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nbBlas</span><span class="p">;</span>
 <span class="w">  </span><span class="n">qpci</span><span class="p">.</span><span class="n">queryType</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">VK_QUERY_TYPE_ACCELERATION_STRUCTURE_COMPACTED_SIZE_KHR</span><span class="p">;</span>
@@ -609,7 +621,7 @@
 <p class="admonition-title">压缩</p>
 <p>为了使用压缩，底层加速结构的 <code class="docutils literal notranslate"><span class="pre">flags</span></code> 必须包含 <code class="docutils literal notranslate"><span class="pre">VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_COMPACTION_BIT_KHR</span></code> 位域。</p>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 允许使用一个命令缓存（ <code class="docutils literal notranslate"><span class="pre">command</span> <span class="pre">buffer</span></code> ）创建所有的底层加速结构，但是这可能会导致管线的停顿和潜在的创建问题。为了避免这些问题，我们将底层加速结构分割并使用多个大约 <code class="docutils literal notranslate"><span class="pre">256MB</span></code> 的内存创建。由于我们限制了内存块分配的大小，如果我们需要压缩，这将是一瞬间的事情。</p>
+<p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 允许使用一个命令缓存（ <code class="docutils literal notranslate"><span class="pre">command</span> <span class="pre">buffer</span></code> ）创建所有的底层加速结构，但是这可能会导致管线的停顿和潜在的创建问题。为了避免这些问题，我们将底层加速结构分割并使用多个大约 <code class="docutils literal notranslate"><span class="pre">256MB</span></code> 的内存块创建。如果我们有压缩的需求，我们将立即执行，从而限制所需的内存分配。</p>
 <p>如下即为将底层加速结构分割创建，对于 <code class="docutils literal notranslate"><span class="pre">cmdCreateBlas</span></code> 和 <code class="docutils literal notranslate"><span class="pre">cmdCompactBlas</span></code> 函数将会一会儿细说。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 批量创建/压缩底层加速结构，这样可以存入有限的内存</span>
 <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">indices</span><span class="p">;</span><span class="w">  </span><span class="c1">// 底层加速结构创建对应的索引</span>
@@ -643,10 +655,11 @@
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>创建的加速机构将会保存在 <code class="docutils literal notranslate"><span class="pre">BuildAccelerationStructure</span></code> 中，可以通过索引获取到。</p>
+<p>创建的加速结构将会保存在 <code class="docutils literal notranslate"><span class="pre">BuildAccelerationStructure</span></code> 中，可以通过索引获取到。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 存储所有创建的加速结构</span>
 <span class="k">for</span><span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">buildAs</span><span class="p">)</span>
 <span class="p">{</span>
+<span class="w">  </span><span class="c1">// b.as中的as即为创建的加速结构结果，类型为nvvk::AccelKHR</span>
 <span class="w">  </span><span class="n">m_blas</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">b</span><span class="p">.</span><span class="n">as</span><span class="p">);</span>
 <span class="p">}</span>
 </pre></div>
@@ -661,6 +674,36 @@
 </div>
 <section id="cmdcreateblas">
 <h5>5.1.1.1 cmdCreateBlas<a class="headerlink" href="#cmdcreateblas" title="此标题的永久链接">#</a></h5>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">//--------------------------------------------------------------------------------------------------</span>
+<span class="c1">// 为buildAs数组中所有的BuildAccelerationStructure创建底层加速结构。</span>
+<span class="c1">// BuildAccelerationStructure的数组是在buildBlas函数中构建的。</span>
+<span class="c1">// indices的数组用于限值一次性创建底层加速结构的数量。</span>
+<span class="c1">// 当压缩底层加速结构这将会限值内存量</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">nvvk::RaytracingBuilderKHR::cmdCreateBlas</span><span class="p">(</span><span class="n">VkCommandBuffer</span><span class="w">                          </span><span class="n">cmdBuf</span><span class="p">,</span>
+<span class="w">                                               </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="w">                    </span><span class="n">indices</span><span class="p">,</span>
+<span class="w">                                               </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">BuildAccelerationStructure</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">buildAs</span><span class="p">,</span>
+<span class="w">                                               </span><span class="n">VkDeviceAddress</span><span class="w">                          </span><span class="n">scratchAddress</span><span class="p">,</span>
+<span class="w">                                               </span><span class="n">VkQueryPool</span><span class="w">                              </span><span class="n">queryPool</span><span class="p">)</span>
+<span class="p">{</span>
+</pre></div>
+</div>
+<p>首先我们为了获取底层加速结构的真正的大小需要重置查询。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="p">(</span><span class="n">queryPool</span><span class="p">)</span><span class="w">  </span><span class="c1">// 用于查询压缩大小</span>
+<span class="w">  </span><span class="n">vkResetQueryPool</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">queryPool</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">indices</span><span class="p">.</span><span class="n">size</span><span class="p">()));</span>
+<span class="kt">uint32_t</span><span class="w"> </span><span class="n">queryCnt</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+</pre></div>
+</div>
+<p>该函数将会根据索引数组中的索引创建所有对应的底层加速结构</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">for</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">idx</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">indices</span><span class="p">)</span>
+<span class="p">{</span>
+</pre></div>
+</div>
+<p>创建底层加速结构分两步：</p>
+<ul class="simple">
+<li><p>创建加速结构：使用抽象内存分配器和之前获取的大小信息，调用 <code class="docutils literal notranslate"><span class="pre">createAcceleration()</span></code> 函数来创建缓存和加速结构。</p></li>
+<li><p>构建加速结构：使用加速结构，暂付缓存和几何信息构建真正的底层加速结构。</p></li>
+</ul>
+<p>这之后 <code class="docutils literal notranslate"><span class="pre">m_alloc-&gt;createAcceleration</span></code> 函数</p>
 </section>
 </section>
 </section>
