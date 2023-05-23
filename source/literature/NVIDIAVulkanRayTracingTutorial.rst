@@ -24,6 +24,7 @@ NVIDIA Vulkan 光线追踪教程
     * 2023/5/23 更新 ``5.1 底层加速结构`` 章节
     * 2023/5/23 更新 ``5.1.1 帮助类细节：RaytracingBuilder::buildBlas()`` 章节
     * 2023/5/23 更新 ``5.1.1.1 cmdCreateBlas`` 章节
+    * 2023/5/23 增加 ``5.1.1.2 cmdCompactBlas`` 章节
 
 `文献源`_
 
@@ -544,4 +545,51 @@ NVIDIA Vulkan 光线追踪教程
 * 创建加速结构：使用抽象内存分配器和之前获取的大小信息，调用 ``createAcceleration()`` 函数来创建缓存和加速结构。
 * 构建加速结构：使用加速结构，暂付缓存和几何信息构建真正的底层加速结构。
 
-这之后 ``m_alloc->createAcceleration`` 函数
+这之后调用 ``m_alloc->createAcceleration`` 函数，该函数背后将按照查询到的加速结构的大小，并使用 ``VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR`` 和 ``VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT`` 两个缓存功能位域创建缓存（ 由于之后创建顶层加速结构需要底层加速结构的地址，所以需要 ``VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT`` ），
+并通过 ``VkAccelerationStructureCreateInfoKHR`` 设置目标 ``buffer`` 以此将分配的内存与加速结构进行绑定。而 ``buffer`` 和 ``image`` 在绑定内存上与加速结构不同，对于 ``buffer`` 和 ``image`` 其在 ``Vk*`` 的句柄分配和内存绑定是分开独立进行的，而加速结构是在通过 ``vkCreateAccelerationStructureKHR`` 创建时同时创建和绑定内存。
+
+.. code:: c++
+
+    // 真正的缓存分配和加速结构创建
+    VkAccelerationStructureCreateInfoKHR createInfo{VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR};
+    createInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR;
+    createInfo.size = buildAs[idx].sizeInfo.accelerationStructureSize;  // 将用于内存分配
+    buildAs[idx].as = m_alloc->createAcceleration(createInfo);
+    NAME_IDX_VK(buildAs[idx].as.accel, idx);
+    NAME_IDX_VK(buildAs[idx].as.buffer.buffer, idx);
+
+    // BuildInfo #2 part
+    buildAs[idx].buildInfo.dstAccelerationStructure  = buildAs[idx].as.accel;  // 设置构建的目标加速结构
+    buildAs[idx].buildInfo.scratchData.deviceAddress = scratchAddress;  // 所有的构建都使用同一个暂付缓存
+
+    // 构建底层加速结构
+    vkCmdBuildAccelerationStructuresKHR(cmdBuf, 1, &buildAs[idx].buildInfo, &buildAs[idx].rangeInfo);
+
+注意在每次调用构建之后需要设置栅栏（ ``barrier`` ）：为了方便起见，在构建时重复使用暂付缓存，所以这里需要确保在开始一个新的构建前，之前的构建已经完成。按理来说，我们应该使用暂付缓存的不同部分以此来同时创建多个底层加速结构。
+
+.. code:: c++
+
+    // 一旦暂付缓存被重复使用, 我们需要一个栅栏用于确保之前的构建已经结束才开始构建下一个
+    VkMemoryBarrier barrier{VK_STRUCTURE_TYPE_MEMORY_BARRIER};
+    barrier.srcAccessMask = VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR;
+    barrier.dstAccessMask = VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR;
+    vkCmdPipelineBarrier(cmdBuf, VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR,
+                         VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR, 0, 1, &barrier, 0, nullptr, 0, nullptr);
+
+之后我们查询需要的加速结构大小
+
+.. code:: c++
+
+    if(queryPool)
+    {
+      // 查询真正需要的内存数量，用于压缩
+      vkCmdWriteAccelerationStructuresPropertiesKHR(cmdBuf, 1, &buildAs[idx].buildInfo.dstAccelerationStructure,
+                                                    VK_QUERY_TYPE_ACCELERATION_STRUCTURE_COMPACTED_SIZE_KHR, queryPool, queryCnt++);
+    }
+    }
+    }
+
+尽管该方法可以很好的保持所有的底层加速结构的独立性，但构建很多底层加速结构将需要大量的暂付缓存并同时启动多个构建。当前的这个教程并没有使用可以大量减少加速结构内存的压缩策略。有关这两个方面将会在未来的高级教程中有所体现。
+
+5.1.1.2 cmdCompactBlas
+^^^^^^^^^^^^^^^^^^^^^^^^
