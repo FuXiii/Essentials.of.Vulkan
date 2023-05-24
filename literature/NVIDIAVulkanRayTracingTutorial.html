@@ -263,6 +263,7 @@
 <li><p class="sd-card-text">2023/5/24 更新 <code class="docutils literal notranslate"><span class="pre">5.1.1.2</span> <span class="pre">cmdCompactBlas</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/5/24 更新 <code class="docutils literal notranslate"><span class="pre">5.1.1</span> <span class="pre">帮助类细节：RaytracingBuilder::buildBlas()</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/5/24 增加 <code class="docutils literal notranslate"><span class="pre">5.2</span> <span class="pre">顶层加速结构</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/5/24 更新 <code class="docutils literal notranslate"><span class="pre">5</span> <span class="pre">加速结构</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p><a class="reference external" href="https://nvpro-samples.github.io/vk_raytracing_tutorial_KHR/">文献源</a></p>
@@ -401,7 +402,7 @@
 <p>如果一个物体在同一个底层加速结构中实例化多次，他们的几何体数据将会进行复制。这对于提高一些静态，未实例化的场景的性能特别有帮助。
 据经验来说，底层加速结构越少越好。</p>
 </div>
-<p>顶层加速结构将会包含物体的实体，每一个实体都会有自己的变换矩阵并且引用一个具体的底层加速结构。我们将会从一个底层加速结构和一个单位矩阵的顶层加速结构实例开始实现。</p>
+<p>顶层加速结构可以包含多个物体的实体（ <code class="docutils literal notranslate"><span class="pre">instance</span></code> ），每一个实体都会有自己的变换矩阵并且引用一个具体的底层加速结构。我们将会从一个底层加速结构和一个单位矩阵的顶层加速结构实例开始实现。</p>
 <figure class="align-default" id="id14">
 <img alt="../_images/AccelerationStructure.svg" src="../_images/AccelerationStructure.svg" /><figcaption>
 <p><span class="caption-text">加速结构</span><a class="headerlink" href="#id14" title="此图像的永久链接">#</a></p>
@@ -810,7 +811,20 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">createTopLevelAS</span><span class="p">();</span>
 </pre></div>
 </div>
-<p>我们使用 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureInstanceKHR</span></code> 代表一个实体，其内部有用于与 <code class="docutils literal notranslate"><span class="pre">buildBlas</span></code> 中创建的底层加速结构相关联的变换矩阵（ <code class="docutils literal notranslate"><span class="pre">transform</span></code> ），并且还包括一个实体号，可以在着色器中通过 <code class="docutils literal notranslate"><span class="pre">gl_InstanceCustomIndex</span></code> 获取到，用于表示着色器中对于被击中对象调用组中的索引（ <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureInstanceKHR::instanceShaderBindingTableRecordOffset</span></code> 在帮助类中也叫 <code class="docutils literal notranslate"><span class="pre">hitGroupId</span></code> ）。</p>
+<p>我们使用 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureInstanceKHR</span></code> 代表一个实体，其内部有用于与 <code class="docutils literal notranslate"><span class="pre">buildBlas</span></code> 中创建的底层加速结构相关联的变换矩阵（ <code class="docutils literal notranslate"><span class="pre">transform</span></code> ），并且还包括一个实体 <code class="docutils literal notranslate"><span class="pre">ID</span></code> 号，可以在着色器中通过 <code class="docutils literal notranslate"><span class="pre">gl_InstanceCustomIndex</span></code> 获取到，用于表示着色器中调用被击中对象组中的索引（ <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureInstanceKHR::instanceShaderBindingTableRecordOffset</span></code> 在帮助类中也叫 <code class="docutils literal notranslate"><span class="pre">hitGroupId</span></code> ）。</p>
+<div class="warning admonition">
+<p class="admonition-title">gl_InstanceID</p>
+<p>不要将 <code class="docutils literal notranslate"><span class="pre">gl_InstanceID</span></code> 和 <code class="docutils literal notranslate"><span class="pre">gl_InstanceCustomIndex</span></code> 搞混。 <code class="docutils literal notranslate"><span class="pre">gl_InstanceID</span></code> 仅仅用于表示在顶级加速结构内实体集中被击中的实体索引。</p>
+<p>在本教程中，我们可以暂时忽略自定义索引（ <code class="docutils literal notranslate"><span class="pre">gl_InstanceCustomIndex</span></code> ），因为其值将会与 <code class="docutils literal notranslate"><span class="pre">gl_InstanceID</span></code> 相等（ <code class="docutils literal notranslate"><span class="pre">gl_InstanceID</span></code> 用于表示与当前光线相交的实体索引，目前该索引值与 <code class="docutils literal notranslate"><span class="pre">i</span></code> 值相同）。在之后的例子中该值将会不同。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<ul class="simple">
+<li><p>这个 <code class="docutils literal notranslate"><span class="pre">i</span></code> 突然冒出来，不知所云。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gl_InstanceCustomIndex</span></code> 在 <code class="docutils literal notranslate"><span class="pre">GLSL</span></code> 标准中一般写作 <code class="docutils literal notranslate"><span class="pre">gl_InstanceCustomIndexEXT</span></code>。</p></li>
+</ul>
+<p>详情可参考该 <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/issues/57">Issue</a> 。</p>
+</div>
+</div>
 </section>
 </section>
 </section>
