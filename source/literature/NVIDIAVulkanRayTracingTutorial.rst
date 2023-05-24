@@ -25,6 +25,9 @@ NVIDIA Vulkan 光线追踪教程
     * 2023/5/23 更新 ``5.1.1 帮助类细节：RaytracingBuilder::buildBlas()`` 章节
     * 2023/5/23 更新 ``5.1.1.1 cmdCreateBlas`` 章节
     * 2023/5/23 增加 ``5.1.1.2 cmdCompactBlas`` 章节
+    * 2023/5/24 更新 ``5.1.1.2 cmdCompactBlas`` 章节
+    * 2023/5/24 更新 ``5.1.1 帮助类细节：RaytracingBuilder::buildBlas()`` 章节
+    * 2023/5/24 增加 ``5.2 顶层加速结构`` 章节
 
 `文献源`_
 
@@ -190,13 +193,13 @@ NVIDIA Vulkan 光线追踪教程
     如果一个物体在同一个底层加速结构中实例化多次，他们的几何体数据将会进行复制。这对于提高一些静态，未实例化的场景的性能特别有帮助。
     据经验来说，底层加速结构越少越好。
 
-顶层加速结构将会包含物体的实例，每一个实例都会有自己的变换矩阵并且引用一个具体的底层加速结构。我们将会从一个底层加速结构和一个单位矩阵的顶层加速结构实例开始实现。
+顶层加速结构将会包含物体的实体，每一个实体都会有自己的变换矩阵并且引用一个具体的底层加速结构。我们将会从一个底层加速结构和一个单位矩阵的顶层加速结构实例开始实现。
 
 .. figure:: ../_static/AccelerationStructure.svg
 
     加速结构
 
-该教程将会加载一个 ``OBJ`` 文件，并将其索引、顶点和材质数据存储到 ``ObjModel`` 数据结构中。该模型同时引用一个 ``ObjInstance`` 数据结构，其中包含用于特定实例的变换矩阵。对于光线追踪， ``ObjModel`` 和一系列的 ``ObjInstances`` 将在之后分别用于构建底层加速结构和顶层加速结构。
+该教程将会加载一个 ``OBJ`` 文件，并将其索引、顶点和材质数据存储到 ``ObjModel`` 数据结构中。该模型同时引用一个 ``ObjInstance`` 数据结构，其中包含用于特定实体的变换矩阵。对于光线追踪， ``ObjModel`` 和一系列的 ``ObjInstances`` 将在之后分别用于构建底层加速结构和顶层加速结构。
 
 为了假话光线追踪，我们使用一个帮助类，用于充当一个顶层加速结构和多个底层加速结构的容器，并且提供构建加速结构的接口函数。在 ``hello_vulkan.h`` 的头文件中包含 ``raytrace_vkpp`` 帮助类。
 
@@ -454,6 +457,11 @@ NVIDIA Vulkan 光线追踪教程
 
 如下即为将底层加速结构分割创建，对于 ``cmdCreateBlas`` 和 ``cmdCompactBlas`` 函数将会一会儿细说。
 
+.. admonition:: 256MB
+    :class: attention
+
+    并不是将一个占有巨大内存的加速结构分割成多个 ``256MB`` 的小内存块，而是每当一批加速结构的内存超过 ``256MB`` 的话，创建一个新的命令缓存负责该批加速结构的创建、构建和压缩。是将加速结构分散在不同的命令缓存中。
+
 .. code:: c++
 
     // 批量创建/压缩底层加速结构，这样可以存入有限的内存
@@ -593,3 +601,65 @@ NVIDIA Vulkan 光线追踪教程
 
 5.1.1.2 cmdCompactBlas
 ^^^^^^^^^^^^^^^^^^^^^^^^
+
+当位域（ ``flag`` ）设置了压缩的话将会进入 ``cmdCompactBlas``，将底层加速结构压缩进内存，这一部分功能是可选的。我们将会等待所有的底层加速结构构建完成之后再将其拷贝至合适的内存空间中。这就是为什么我们要在调用 ``cmdCompactBlas`` 函数之前调用 ``m_cmdPool.submitAndWait(cmdBuf)`` 。
+
+.. code:: c++
+
+    //--------------------------------------------------------------------------------------------------
+    // 使用查询队列查询到的大小创建新的缓存和加速结构并替换
+    void nvvk::RaytracingBuilderKHR::cmdCompactBlas(VkCommandBuffer                          cmdBuf,
+                                                    std::vector<uint32_t>                    indices,
+                                                    std::vector<BuildAccelerationStructure>& buildAs,
+                                                    VkQueryPool                              queryPool)
+    {
+
+大体上来说，压缩流程如下：
+
+1. 获取查询到的数据（压缩大小）
+2. 使用较小的大小创建一个新的加速结构
+3. 将之前的加速结构拷贝到新创建的加速结构中
+4. 将之前的加速结构销毁
+
+.. code:: c++
+
+    uint32_t                    queryCtn{0};
+    std::vector<nvvk::AccelKHR> cleanupAS;  // 准备将之前的加速结构销毁
+
+    // 获取查询到的压缩大小
+    std::vector<VkDeviceSize> compactSizes(static_cast<uint32_t>(indices.size()));
+    vkGetQueryPoolResults(m_device, queryPool, 0, (uint32_t)compactSizes.size(), compactSizes.size() * sizeof(VkDeviceSize),
+                          compactSizes.data(), sizeof(VkDeviceSize), VK_QUERY_RESULT_WAIT_BIT);
+
+    for(auto idx : indices)
+    {
+      buildAs[idx].cleanupAS                          = buildAs[idx].as;           // 设置要销毁的加速结构
+      buildAs[idx].sizeInfo.accelerationStructureSize = compactSizes[queryCtn++];  // 使用压缩大小
+
+      // 创建压缩版本的加速结构
+      VkAccelerationStructureCreateInfoKHR asCreateInfo{VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR};
+      asCreateInfo.size = buildAs[idx].sizeInfo.accelerationStructureSize;
+      asCreateInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR;
+      buildAs[idx].as   = m_alloc->createAcceleration(asCreateInfo);
+      NAME_IDX_VK(buildAs[idx].as.accel, idx);
+      NAME_IDX_VK(buildAs[idx].as.buffer.buffer, idx);
+
+      // 将之前的底层加速结构拷贝至压缩版本中
+      VkCopyAccelerationStructureInfoKHR copyInfo{VK_STRUCTURE_TYPE_COPY_ACCELERATION_STRUCTURE_INFO_KHR};
+      copyInfo.src  = buildAs[idx].buildInfo.dstAccelerationStructure;
+      copyInfo.dst  = buildAs[idx].as.accel;
+      copyInfo.mode = VK_COPY_ACCELERATION_STRUCTURE_MODE_COMPACT_KHR;
+      vkCmdCopyAccelerationStructureKHR(cmdBuf, &copyInfo);
+    }
+    }
+
+5.2 顶层加速结构
+********************
+
+顶层加速结构是描述光追场景的入口，并且存有所有的实体。在 ``HelloVulkan`` 类中增加一个新成员方法：
+
+.. code:: c++
+
+    void createTopLevelAS();
+
+我们使用 ``VkAccelerationStructureInstanceKHR`` 代表一个实体，其内部有用于与 ``buildBlas`` 中创建的底层加速结构相关联的变换矩阵（ ``transform`` ），并且还包括一个实体号，可以在着色器中通过 ``gl_InstanceCustomIndex`` 获取到，用于表示着色器中对于被击中对象调用组中的索引（ ``VkAccelerationStructureInstanceKHR::instanceShaderBindingTableRecordOffset`` 在帮助类中也叫 ``hitGroupId`` ）。
