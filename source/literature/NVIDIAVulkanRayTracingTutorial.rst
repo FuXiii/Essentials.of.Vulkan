@@ -28,6 +28,7 @@ NVIDIA Vulkan 光线追踪教程
     * 2023/5/24 更新 ``5.1.1.2 cmdCompactBlas`` 章节
     * 2023/5/24 更新 ``5.1.1 帮助类细节：RaytracingBuilder::buildBlas()`` 章节
     * 2023/5/24 增加 ``5.2 顶层加速结构`` 章节
+    * 2023/5/24 更新 ``5 加速结构`` 章节
 
 `文献源`_
 
@@ -193,7 +194,7 @@ NVIDIA Vulkan 光线追踪教程
     如果一个物体在同一个底层加速结构中实例化多次，他们的几何体数据将会进行复制。这对于提高一些静态，未实例化的场景的性能特别有帮助。
     据经验来说，底层加速结构越少越好。
 
-顶层加速结构将会包含物体的实体，每一个实体都会有自己的变换矩阵并且引用一个具体的底层加速结构。我们将会从一个底层加速结构和一个单位矩阵的顶层加速结构实例开始实现。
+顶层加速结构可以包含多个物体的实体（ ``instance`` ），每一个实体都会有自己的变换矩阵并且引用一个具体的底层加速结构。我们将会从一个底层加速结构和一个单位矩阵的顶层加速结构实例开始实现。
 
 .. figure:: ../_static/AccelerationStructure.svg
 
@@ -662,4 +663,18 @@ NVIDIA Vulkan 光线追踪教程
 
     void createTopLevelAS();
 
-我们使用 ``VkAccelerationStructureInstanceKHR`` 代表一个实体，其内部有用于与 ``buildBlas`` 中创建的底层加速结构相关联的变换矩阵（ ``transform`` ），并且还包括一个实体号，可以在着色器中通过 ``gl_InstanceCustomIndex`` 获取到，用于表示着色器中对于被击中对象调用组中的索引（ ``VkAccelerationStructureInstanceKHR::instanceShaderBindingTableRecordOffset`` 在帮助类中也叫 ``hitGroupId`` ）。
+我们使用 ``VkAccelerationStructureInstanceKHR`` 代表一个实体，其内部有用于与 ``buildBlas`` 中创建的底层加速结构相关联的变换矩阵（ ``transform`` ），并且还包括一个实体 ``ID`` 号，可以在着色器中通过 ``gl_InstanceCustomIndex`` 获取到，用于表示着色器中调用被击中对象组中的索引（ ``VkAccelerationStructureInstanceKHR::instanceShaderBindingTableRecordOffset`` 在帮助类中也叫 ``hitGroupId`` ）。
+
+.. admonition:: gl_InstanceID
+    :class: warning
+
+    不要将 ``gl_InstanceID`` 和 ``gl_InstanceCustomIndex`` 搞混。 ``gl_InstanceID`` 仅仅用于表示在顶级加速结构内实体集中被击中的实体索引。
+
+    在本教程中，我们可以暂时忽略自定义索引（ ``gl_InstanceCustomIndex`` ），因为其值将会与 ``gl_InstanceID`` 相等（ ``gl_InstanceID`` 用于表示与当前光线相交的实体索引，目前该索引值与 ``i`` 值相同）。在之后的例子中该值将会不同。
+
+    .. note::
+
+        * 这个 ``i`` 突然冒出来，不知所云。
+        * ``gl_InstanceCustomIndex`` 在 ``GLSL`` 标准中一般写作 ``gl_InstanceCustomIndexEXT``。
+
+        详情可参考该 `Issue <https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/issues/57>`_ 。
