@@ -29,6 +29,8 @@ NVIDIA Vulkan 光线追踪教程
     * 2023/5/24 更新 ``5.1.1 帮助类细节：RaytracingBuilder::buildBlas()`` 章节
     * 2023/5/24 增加 ``5.2 顶层加速结构`` 章节
     * 2023/5/24 更新 ``5 加速结构`` 章节
+    * 2023/5/25 更新 ``5.2 顶层加速结构`` 章节
+    * 2023/5/25 增加 ``5.2.1 帮助类细节：RaytracingBuilder::buildTlas()`` 章节
 
 `文献源`_
 
@@ -250,7 +252,7 @@ NVIDIA Vulkan 光线追踪教程
 * ``VkAccelerationStructureBuildRangeInfoKHR`` ：指示作为底层加速结构输入的几何体中的顶点数组源的索引。
 
 
-.. admonition:: 对于 ``VkAccelerationStructureGeometryKHR`` 和 ``VkAccelerationStructureBuildRangeInfoKHR`` 分别为独立结构体
+.. admonition:: 对于 VkAccelerationStructureGeometryKHR 和 VkAccelerationStructureBuildRangeInfoKHR 分别为独立结构体
     :class: tip
 
     一个潜在的疑惑：为什么 ``VkAccelerationStructureGeometryKHR`` 和 ``VkAccelerationStructureBuildRangeInfoKHR`` 最终在构建加速结构时是单独的不同参数，但是却协同却定了顶点数据源的真正内存。打一个粗略的比方，这有点类似于 ``glVertexAttribPointer`` 定义的如何将一个缓存解析成顶点数组，并在 ``glDrawArrays`` 时确定顶点数组中到底那一部分需要绘制。
@@ -352,7 +354,7 @@ NVIDIA Vulkan 光线追踪教程
       m_rtBuilder.buildBlas(allBlas, VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR);
     }
 
-5.1.1 帮助类细节： ``RaytracingBuilder::buildBlas()``
+5.1.1 帮助类细节：RaytracingBuilder::buildBlas()
 ------------------------------------------------------------
 
 这个帮助函数可以在 ``raytraceKHR_vkpp.hpp`` 中找到：其可以在很多项目中重用，并且也是 `nvpro-samples <https://github.com/nvpro-samples>`_ 中众多帮助类中的其中之一。该函数会对每一个 ``RaytracingBuilderKHR::BlasInput`` 生成一个底层加速结构。
@@ -674,7 +676,58 @@ NVIDIA Vulkan 光线追踪教程
 
     .. note::
 
-        * 这个 ``i`` 突然冒出来，不知所云。
-        * ``gl_InstanceCustomIndex`` 在 ``GLSL`` 标准中一般写作 ``gl_InstanceCustomIndexEXT``。
+        * 这个 ``i`` 突然冒出来，不知所云。估计应该是着色器中的实体索引：
+
+            .. code:: GLSL
+
+                layout(set = 1, binding = eObjDescs, scalar) buffer objDesc_ {ObjDesc i[];} objDesc;
+
+        * ``gl_InstanceCustomIndex`` 。根据 `GLSL标准 <https://github.com/KhronosGroup/GLSL/blob/883a2113d8ab3cbf0cc534989a90ba1bb0ba6a11/extensions/ext/GLSL_EXT_ray_tracing.txt#L728>`_ 中的描述， 其是用于描述：与当前光线相交的实体中应用自定义的值，该值为 ``32`` 位，使用低 ``24`` 位，高 ``8`` 位是 ``0``。使用时一般写作 ``gl_InstanceCustomIndexEXT`` 。
+        * ``gl_InstanceID`` 根据 `GLSL标准 <https://github.com/KhronosGroup/GLSL/blob/883a2113d8ab3cbf0cc534989a90ba1bb0ba6a11/extensions/ext/GLSL_EXT_ray_tracing.txt#L745>`_ 中的描述， 其是用于描述：与当前光线相交的实体的索引。
 
         详情可参考该 `Issue <https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/issues/57>`_ 。
+
+索引和命中组概念贯穿光追管线和着色器绑定表，将会在后面介绍并用于在运行时选择确认哪些着色器被调用。就目前来说我们整个场景中只会使用一个命中组，所以命中组的索引将一直是 ``0`` 。最终实体也许会指示剔除选项，比如使用 ``VkGeometryInstanceFlagsKHR flags`` 剔除背面。在此例子中我们为了简单和独立输入模型决定禁用剔除。
+
+一旦所有的实体对象创建完成，我们将会构建顶层加速结构，构建器比较喜欢生成光追性能友好的顶层加速结构（比如加速结构的大小不是首要考虑的）。
+
+.. code:: c++
+
+    void HelloVulkan::createTopLevelAS()
+    {
+      std::vector<VkAccelerationStructureInstanceKHR> tlas;
+      tlas.reserve(m_instances.size());
+      for(const HelloVulkan::ObjInstance& inst : m_instances)
+      {
+        VkAccelerationStructureInstanceKHR rayInst{};
+        rayInst.transform                      = nvvk::toTransformMatrixKHR(inst.transform);  // 该实体的位置
+        rayInst.instanceCustomIndex            = inst.objIndex;                               // gl_InstanceCustomIndexEXT
+        rayInst.accelerationStructureReference = m_rtBuilder.getBlasDeviceAddress(inst.objIndex);
+        rayInst.flags                          = VK_GEOMETRY_INSTANCE_TRIANGLE_FACING_CULL_DISABLE_BIT_KHR;
+        rayInst.mask                           = 0xFF;       //  只有当 rayMask & instance.mask != 0 成立方为命中
+        rayInst.instanceShaderBindingTableRecordOffset = 0;  // 对于所有的对象我们将使用相同的命中组
+        tlas.emplace_back(rayInst);
+      }
+      m_rtBuilder.buildTlas(tlas, VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR);
+    }
+
+.. admonition:: m_instances 的 inst.transform 和 inst.objIndex
+    :class: note
+
+    都是在一开始调用 ``loadModel(const std::string& filename, nvmath::mat4f transform = nvmath::mat4f(1))`` 函数加载模型时设置好的，对于 ``inst.transform`` 设置的是默认参数 ``nvmath::mat4f(1)`` 也就是单位矩阵。
+    对于 ``inst.objIndex`` 设置的是读取的第几个模型作为对象索引。每一个模型对应 ``m_instances`` 数组中的一个元素。
+
+.. admonition:: getBlasDeviceAddress(uint32_t blasId)
+    :class: note
+
+    该函数返回 ``blasId`` 索引处的底层加速结构的设备内存地址句柄
+
+和往常使用 ``Vulkan`` 一样，我们需要对于之前创建的对象在 ``HelloVulkan::destroyResources`` 结尾销毁。
+
+.. code:: c++
+
+    // #VKRay
+    m_rtBuilder.destroy();
+
+5.2.1 帮助类细节：RaytracingBuilder::buildTlas()
+------------------------------------------------------------

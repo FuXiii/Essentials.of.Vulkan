@@ -264,15 +264,17 @@
 <li><p class="sd-card-text">2023/5/24 更新 <code class="docutils literal notranslate"><span class="pre">5.1.1</span> <span class="pre">帮助类细节：RaytracingBuilder::buildBlas()</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/5/24 增加 <code class="docutils literal notranslate"><span class="pre">5.2</span> <span class="pre">顶层加速结构</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/5/24 更新 <code class="docutils literal notranslate"><span class="pre">5</span> <span class="pre">加速结构</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/5/25 更新 <code class="docutils literal notranslate"><span class="pre">5.2</span> <span class="pre">顶层加速结构</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/5/25 增加 <code class="docutils literal notranslate"><span class="pre">5.2.1</span> <span class="pre">帮助类细节：RaytracingBuilder::buildTlas()</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p><a class="reference external" href="https://nvpro-samples.github.io/vk_raytracing_tutorial_KHR/">文献源</a></p>
 <p>本文所提供的的代码和文档聚焦于使用 <a class="reference external" href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/vkspec.html#VK_KHR_ray_tracing_pipeline">VK_KHR_ray_tracing_pipeline</a> 扩展展示一个基础光追示例。
 该教程从一个基于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 开发的基础程序开始，并且提供一步步的介绍去修改和增加函数和功能。</p>
-<figure class="align-default" id="id12">
+<figure class="align-default" id="id13">
 <img alt="../_images/resultRaytraceShadowMedieval.png" src="../_images/resultRaytraceShadowMedieval.png" />
 <figcaption>
-<p><span class="caption-text">最终结果</span><a class="headerlink" href="#id12" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">最终结果</span><a class="headerlink" href="#id13" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <div class="note admonition">
@@ -329,10 +331,10 @@
 <p>打开位于 <code class="docutils literal notranslate"><span class="pre">build</span></code> 目录下的解决方案，之后编译并运行 <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing__before">vk_ray_tracing__before_KHR</a> 。</p>
 <p>该示例将会是此教程的示例起点。这是一个用于加载 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 文件并使用 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 光栅化渲染他们的小框架。您可以通过阅读 <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/blob/master/ray_tracing__before/README.md#nvidia-vulkan-ray-tracing-tutorial">Base Overview</a> 来纵观该示例是如何实现的。
 我们将使用这个框架加载几何体并且渲染场景来实现光线追踪。</p>
-<figure class="align-default" id="id13">
+<figure class="align-default" id="id14">
 <img alt="../_images/resultRasterCube.png" src="../_images/resultRasterCube.png" />
 <figcaption>
-<p><span class="caption-text">首次执行</span><a class="headerlink" href="#id13" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">首次执行</span><a class="headerlink" href="#id14" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <p>接下来的步骤将是修改 <code class="docutils literal notranslate"><span class="pre">vk_ray_tracing__before_KHR</span></code> 使其支持光线追踪。该教程修改后的最终结果将是同 <code class="docutils literal notranslate"><span class="pre">vk_ray_tracing__simple_KHR</span></code> 一样。如果开发过程发生错误
@@ -403,9 +405,9 @@
 据经验来说，底层加速结构越少越好。</p>
 </div>
 <p>顶层加速结构可以包含多个物体的实体（ <code class="docutils literal notranslate"><span class="pre">instance</span></code> ），每一个实体都会有自己的变换矩阵并且引用一个具体的底层加速结构。我们将会从一个底层加速结构和一个单位矩阵的顶层加速结构实例开始实现。</p>
-<figure class="align-default" id="id14">
+<figure class="align-default" id="id15">
 <img alt="../_images/AccelerationStructure.svg" src="../_images/AccelerationStructure.svg" /><figcaption>
-<p><span class="caption-text">加速结构</span><a class="headerlink" href="#id14" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">加速结构</span><a class="headerlink" href="#id15" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <p>该教程将会加载一个 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 文件，并将其索引、顶点和材质数据存储到 <code class="docutils literal notranslate"><span class="pre">ObjModel</span></code> 数据结构中。该模型同时引用一个 <code class="docutils literal notranslate"><span class="pre">ObjInstance</span></code> 数据结构，其中包含用于特定实体的变换矩阵。对于光线追踪， <code class="docutils literal notranslate"><span class="pre">ObjModel</span></code> 和一系列的 <code class="docutils literal notranslate"><span class="pre">ObjInstances</span></code> 将在之后分别用于构建底层加速结构和顶层加速结构。</p>
@@ -446,7 +448,7 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildRangeInfoKHR</span></code> ：指示作为底层加速结构输入的几何体中的顶点数组源的索引。</p></li>
 </ul>
 <div class="tip admonition">
-<p class="admonition-title">对于 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryKHR</span></code> 和 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildRangeInfoKHR</span></code> 分别为独立结构体</p>
+<p class="admonition-title">对于 VkAccelerationStructureGeometryKHR 和 VkAccelerationStructureBuildRangeInfoKHR 分别为独立结构体</p>
 <p>一个潜在的疑惑：为什么 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryKHR</span></code> 和 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildRangeInfoKHR</span></code> 最终在构建加速结构时是单独的不同参数，但是却协同却定了顶点数据源的真正内存。打一个粗略的比方，这有点类似于 <code class="docutils literal notranslate"><span class="pre">glVertexAttribPointer</span></code> 定义的如何将一个缓存解析成顶点数组，并在 <code class="docutils literal notranslate"><span class="pre">glDrawArrays</span></code> 时确定顶点数组中到底那一部分需要绘制。</p>
 </div>
 <p>多个如上的结构体可以组建一个数组并可以用于构建一个底层加速结构。在该示例中，此数组的大小总是 <code class="docutils literal notranslate"><span class="pre">1</span></code> 。 每一个底层加速结构有多个几何体是因为加速结构会更加高效，他会将求交的物体在空间上进行合理的划分。对于那种巨大、单一且静态的物体组需要考虑构建加速结构。</p>
@@ -539,7 +541,7 @@
 </pre></div>
 </div>
 <section id="raytracingbuilder-buildblas">
-<h4>5.1.1 帮助类细节： <code class="docutils literal notranslate"><span class="pre">RaytracingBuilder::buildBlas()</span></code><a class="headerlink" href="#raytracingbuilder-buildblas" title="此标题的永久链接">#</a></h4>
+<h4>5.1.1 帮助类细节：RaytracingBuilder::buildBlas()<a class="headerlink" href="#raytracingbuilder-buildblas" title="此标题的永久链接">#</a></h4>
 <p>这个帮助函数可以在 <code class="docutils literal notranslate"><span class="pre">raytraceKHR_vkpp.hpp</span></code> 中找到：其可以在很多项目中重用，并且也是 <a class="reference external" href="https://github.com/nvpro-samples">nvpro-samples</a> 中众多帮助类中的其中之一。该函数会对每一个 <code class="docutils literal notranslate"><span class="pre">RaytracingBuilderKHR::BlasInput</span></code> 生成一个底层加速结构。</p>
 <p>创建一个底层加速结构需要如下元素：</p>
 <ul class="simple">
@@ -818,13 +820,58 @@
 <p>在本教程中，我们可以暂时忽略自定义索引（ <code class="docutils literal notranslate"><span class="pre">gl_InstanceCustomIndex</span></code> ），因为其值将会与 <code class="docutils literal notranslate"><span class="pre">gl_InstanceID</span></code> 相等（ <code class="docutils literal notranslate"><span class="pre">gl_InstanceID</span></code> 用于表示与当前光线相交的实体索引，目前该索引值与 <code class="docutils literal notranslate"><span class="pre">i</span></code> 值相同）。在之后的例子中该值将会不同。</p>
 <div class="admonition note">
 <p class="admonition-title">备注</p>
-<ul class="simple">
-<li><p>这个 <code class="docutils literal notranslate"><span class="pre">i</span></code> 突然冒出来，不知所云。</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">gl_InstanceCustomIndex</span></code> 在 <code class="docutils literal notranslate"><span class="pre">GLSL</span></code> 标准中一般写作 <code class="docutils literal notranslate"><span class="pre">gl_InstanceCustomIndexEXT</span></code>。</p></li>
+<ul>
+<li><p>这个 <code class="docutils literal notranslate"><span class="pre">i</span></code> 突然冒出来，不知所云。估计应该是着色器中的实体索引：</p>
+<blockquote>
+<div><div class="highlight-GLSL notranslate"><div class="highlight"><pre><span></span><span class="k">layout</span><span class="p">(</span><span class="n">set</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">binding</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">eObjDescs</span><span class="p">,</span><span class="w"> </span><span class="n">scalar</span><span class="p">)</span><span class="w"> </span><span class="k">buffer</span><span class="w"> </span><span class="n">objDesc_</span><span class="w"> </span><span class="p">{</span><span class="n">ObjDesc</span><span class="w"> </span><span class="n">i</span><span class="p">[];}</span><span class="w"> </span><span class="n">objDesc</span><span class="p">;</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gl_InstanceCustomIndex</span></code> 。根据 <a class="reference external" href="https://github.com/KhronosGroup/GLSL/blob/883a2113d8ab3cbf0cc534989a90ba1bb0ba6a11/extensions/ext/GLSL_EXT_ray_tracing.txt#L728">GLSL标准</a> 中的描述， 其是用于描述：与当前光线相交的实体中应用自定义的值，该值为 <code class="docutils literal notranslate"><span class="pre">32</span></code> 位，使用低 <code class="docutils literal notranslate"><span class="pre">24</span></code> 位，高 <code class="docutils literal notranslate"><span class="pre">8</span></code> 位是 <code class="docutils literal notranslate"><span class="pre">0</span></code>。使用时一般写作 <code class="docutils literal notranslate"><span class="pre">gl_InstanceCustomIndexEXT</span></code> 。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gl_InstanceID</span></code> 根据 <a class="reference external" href="https://github.com/KhronosGroup/GLSL/blob/883a2113d8ab3cbf0cc534989a90ba1bb0ba6a11/extensions/ext/GLSL_EXT_ray_tracing.txt#L745">GLSL标准</a> 中的描述， 其是用于描述：与当前光线相交的实体的索引。</p></li>
 </ul>
 <p>详情可参考该 <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/issues/57">Issue</a> 。</p>
 </div>
 </div>
+<p>索引和命中组概念贯穿光追管线和着色器绑定表，将会在后面介绍并用于在运行时选择确认哪些着色器被调用。就目前来说我们整个场景中只会使用一个命中组，所以命中组的索引将一直是 <code class="docutils literal notranslate"><span class="pre">0</span></code> 。最终实体也许会指示剔除选项，比如使用 <code class="docutils literal notranslate"><span class="pre">VkGeometryInstanceFlagsKHR</span> <span class="pre">flags</span></code> 剔除背面。在此例子中我们为了简单和独立输入模型决定禁用剔除。</p>
+<p>一旦所有的实体对象创建完成，我们将会构建顶层加速结构，构建器比较喜欢生成光追性能友好的顶层加速结构（比如加速结构的大小不是首要考虑的）。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">HelloVulkan::createTopLevelAS</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">VkAccelerationStructureInstanceKHR</span><span class="o">&gt;</span><span class="w"> </span><span class="n">tlas</span><span class="p">;</span>
+<span class="w">  </span><span class="n">tlas</span><span class="p">.</span><span class="n">reserve</span><span class="p">(</span><span class="n">m_instances</span><span class="p">.</span><span class="n">size</span><span class="p">());</span>
+<span class="w">  </span><span class="k">for</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">HelloVulkan</span><span class="o">::</span><span class="n">ObjInstance</span><span class="o">&amp;</span><span class="w"> </span><span class="n">inst</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">m_instances</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VkAccelerationStructureInstanceKHR</span><span class="w"> </span><span class="n">rayInst</span><span class="p">{};</span>
+<span class="w">    </span><span class="n">rayInst</span><span class="p">.</span><span class="n">transform</span><span class="w">                      </span><span class="o">=</span><span class="w"> </span><span class="n">nvvk</span><span class="o">::</span><span class="n">toTransformMatrixKHR</span><span class="p">(</span><span class="n">inst</span><span class="p">.</span><span class="n">transform</span><span class="p">);</span><span class="w">  </span><span class="c1">// 该实体的位置</span>
+<span class="w">    </span><span class="n">rayInst</span><span class="p">.</span><span class="n">instanceCustomIndex</span><span class="w">            </span><span class="o">=</span><span class="w"> </span><span class="n">inst</span><span class="p">.</span><span class="n">objIndex</span><span class="p">;</span><span class="w">                               </span><span class="c1">// gl_InstanceCustomIndexEXT</span>
+<span class="w">    </span><span class="n">rayInst</span><span class="p">.</span><span class="n">accelerationStructureReference</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_rtBuilder</span><span class="p">.</span><span class="n">getBlasDeviceAddress</span><span class="p">(</span><span class="n">inst</span><span class="p">.</span><span class="n">objIndex</span><span class="p">);</span>
+<span class="w">    </span><span class="n">rayInst</span><span class="p">.</span><span class="n">flags</span><span class="w">                          </span><span class="o">=</span><span class="w"> </span><span class="n">VK_GEOMETRY_INSTANCE_TRIANGLE_FACING_CULL_DISABLE_BIT_KHR</span><span class="p">;</span>
+<span class="w">    </span><span class="n">rayInst</span><span class="p">.</span><span class="n">mask</span><span class="w">                           </span><span class="o">=</span><span class="w"> </span><span class="mh">0xFF</span><span class="p">;</span><span class="w">       </span><span class="c1">//  只有当 rayMask &amp; instance.mask != 0 成立方为命中</span>
+<span class="w">    </span><span class="n">rayInst</span><span class="p">.</span><span class="n">instanceShaderBindingTableRecordOffset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w">  </span><span class="c1">// 对于所有的对象我们将使用相同的命中组</span>
+<span class="w">    </span><span class="n">tlas</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">rayInst</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="n">m_rtBuilder</span><span class="p">.</span><span class="n">buildTlas</span><span class="p">(</span><span class="n">tlas</span><span class="p">,</span><span class="w"> </span><span class="n">VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="note admonition">
+<p class="admonition-title">m_instances 的 inst.transform 和 inst.objIndex</p>
+<p>都是在一开始调用 <code class="docutils literal notranslate"><span class="pre">loadModel(const</span> <span class="pre">std::string&amp;</span> <span class="pre">filename,</span> <span class="pre">nvmath::mat4f</span> <span class="pre">transform</span> <span class="pre">=</span> <span class="pre">nvmath::mat4f(1))</span></code> 函数加载模型时设置好的，对于 <code class="docutils literal notranslate"><span class="pre">inst.transform</span></code> 设置的是默认参数 <code class="docutils literal notranslate"><span class="pre">nvmath::mat4f(1)</span></code> 也就是单位矩阵。
+对于 <code class="docutils literal notranslate"><span class="pre">inst.objIndex</span></code> 设置的是读取的第几个模型作为对象索引。每一个模型对应 <code class="docutils literal notranslate"><span class="pre">m_instances</span></code> 数组中的一个元素。</p>
+</div>
+<div class="note admonition">
+<p class="admonition-title">getBlasDeviceAddress(uint32_t blasId)</p>
+<p>该函数返回 <code class="docutils literal notranslate"><span class="pre">blasId</span></code> 索引处的底层加速结构的设备内存地址句柄</p>
+</div>
+<p>和往常使用 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 一样，我们需要对于之前创建的对象在 <code class="docutils literal notranslate"><span class="pre">HelloVulkan::destroyResources</span></code> 结尾销毁。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// #VKRay</span>
+<span class="n">m_rtBuilder</span><span class="p">.</span><span class="n">destroy</span><span class="p">();</span>
+</pre></div>
+</div>
+<section id="raytracingbuilder-buildtlas">
+<h4>5.2.1 帮助类细节：RaytracingBuilder::buildTlas()<a class="headerlink" href="#raytracingbuilder-buildtlas" title="此标题的永久链接">#</a></h4>
+</section>
 </section>
 </section>
 </section>
@@ -905,14 +952,17 @@
 </li>
 <li><a class="reference internal" href="#id8">5 加速结构</a><ul>
 <li><a class="reference internal" href="#id9">5.1 底层加速结构</a><ul>
-<li><a class="reference internal" href="#raytracingbuilder-buildblas">5.1.1 帮助类细节： <code class="docutils literal notranslate"><span class="pre">RaytracingBuilder::buildBlas()</span></code></a><ul>
+<li><a class="reference internal" href="#raytracingbuilder-buildblas">5.1.1 帮助类细节：RaytracingBuilder::buildBlas()</a><ul>
 <li><a class="reference internal" href="#cmdcreateblas">5.1.1.1 cmdCreateBlas</a></li>
 <li><a class="reference internal" href="#cmdcompactblas">5.1.1.2 cmdCompactBlas</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id11">5.2 顶层加速结构</a></li>
+<li><a class="reference internal" href="#id11">5.2 顶层加速结构</a><ul>
+<li><a class="reference internal" href="#raytracingbuilder-buildtlas">5.2.1 帮助类细节：RaytracingBuilder::buildTlas()</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
