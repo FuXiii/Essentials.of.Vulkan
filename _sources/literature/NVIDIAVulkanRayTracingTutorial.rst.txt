@@ -31,6 +31,9 @@ NVIDIA Vulkan 光线追踪教程
     * 2023/5/24 更新 ``5 加速结构`` 章节
     * 2023/5/25 更新 ``5.2 顶层加速结构`` 章节
     * 2023/5/25 增加 ``5.2.1 帮助类细节：RaytracingBuilder::buildTlas()`` 章节
+    * 2023/5/26 更新 ``5.2.1 帮助类细节：RaytracingBuilder::buildTlas()`` 章节
+    * 2023/5/26 增加 ``5.3 main`` 章节
+    * 2023/5/26 增加 ``6 光线追踪描述符集（Descriptor Set）`` 章节
 
 `文献源`_
 
@@ -65,7 +68,7 @@ NVIDIA Vulkan 光线追踪教程
 
 在命令行中，从 https://github.com/nvpro-samples/build_all 中克隆 ``nvpro-samples/build_all`` 仓库：
 
-.. code:: 
+.. code::
 
     git clone https://github.com/nvpro-samples/build_all.git
 
@@ -73,7 +76,7 @@ NVIDIA Vulkan 光线追踪教程
 
 如果你希望克隆尽可能少的仓库，打开命令行，并执行如下指令，这将只克隆需要的仓库：
 
-.. code:: 
+.. code::
 
     git clone --recursive --shallow-submodules https://github.com/nvpro-samples/nvpro_core.git
     git clone https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR.git
@@ -83,15 +86,15 @@ NVIDIA Vulkan 光线追踪教程
 
 对于存储构建生成的解决方案，最经典的是在工程主目录下创建一个 ``build`` 文件夹。您可以是使用 ``CMake-GUI`` 或者如下指令生成目标工程：
 
-.. code:: 
+.. code::
 
     cd vk_raytracing_tutorial_KHR
     mkdir build
     cd build
     cmake ..
 
-.. note:: 
-    
+.. note::
+
     如果您没有使用 ``Visual Studio 2019`` 或者更高版本，请确保 ``Visual Studio`` 中目标平台选择的是 ``x64`` 平台。
     对于 ``Visual Studio 2019`` 来说默认是 ``x64`` 平台，但老版本就不一定了。
 
@@ -192,7 +195,7 @@ NVIDIA Vulkan 光线追踪教程
 底层加速结构存储确切具体的顶点数据，底层加速结构使用一个或多个顶点缓存（ ``vertex buffers`` ）构建，每一个顶点缓存都会有自己的变换矩阵（这与顶层加速结构的矩阵进行区分），这样我们就可以在一个底层加速结构中存储多个有位置数据的模型。
 
 .. note::
-    
+
     如果一个物体在同一个底层加速结构中实例化多次，他们的几何体数据将会进行复制。这对于提高一些静态，未实例化的场景的性能特别有帮助。
     据经验来说，底层加速结构越少越好。
 
@@ -731,3 +734,206 @@ NVIDIA Vulkan 光线追踪教程
 
 5.2.1 帮助类细节：RaytracingBuilder::buildTlas()
 ------------------------------------------------------------
+
+作为 `nvpro-samples <https://github.com/nvpro-samples>`_ 的一部分，该帮助类提供用于构建构建顶层加速结构并且使用一批 ``Instance`` (实体)对象来创建一个顶层加速结构。
+
+我们首先创建一个命令缓存并且将 ``flags`` 的默认值在这里显示出来。
+
+.. code:: c++
+
+    // 使用一批实体创建顶层加速结构
+    // - 注意instances的类型（一批实体）
+    // - 创建的顶层加速结构的结果将会存储在m_tlas
+    // - 对于顶层加速结构的更新就是使用新的变换矩阵重新构建顶层加速结构
+    void buildTlas(const std::vector<VkAccelerationStructureInstanceKHR>&         instances,
+                   VkBuildAccelerationStructureFlagsKHR flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR,
+                   bool                                 update = false)
+    {
+      // 除非要更新顶层加速结构否则buildTlas函数只能调用一次
+      assert(m_tlas.accel == VK_NULL_HANDLE || update);
+      uint32_t countInstance = static_cast<uint32_t>(instances.size());
+
+      // 用于创建顶层加速结构的命令缓存
+      nvvk::CommandPool genCmdBuf(m_device, m_queueIndex);
+      VkCommandBuffer   cmdBuf = genCmdBuf.createCommandBuffer();
+
+之后，我能需要将实体们加载进设备中。
+
+.. code:: c++
+
+    // 用于创建顶层加速结构的命令缓存
+    nvvk::CommandPool genCmdBuf(m_device, m_queueIndex);
+    VkCommandBuffer   cmdBuf = genCmdBuf.createCommandBuffer();
+
+    // 创建一个缓存用于存放该批实体数据用于加速结构的构建
+    nvvk::Buffer instancesBuffer;  // 该批的实体缓存中包含每个实体的变换矩阵和底层加速结构的ID
+    instancesBuffer = m_alloc->createBuffer(cmdBuf, instances,
+                                            VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
+                                                | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR);
+    NAME_VK(instancesBuffer.buffer);
+    VkBufferDeviceAddressInfo bufferInfo{VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO, nullptr, instancesBuffer.buffer};
+    VkDeviceAddress           instBufferAddr = vkGetBufferDeviceAddress(m_device, &bufferInfo);
+
+    // 插入一个栅栏用于确保在开始构建加速结构之前实体数据的缓存拷贝已经完成（注意下面的备注）
+    VkMemoryBarrier barrier{VK_STRUCTURE_TYPE_MEMORY_BARRIER};
+    barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+    barrier.dstAccessMask = VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR;
+    vkCmdPipelineBarrier(cmdBuf, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR,
+                         0, 1, &barrier, 0, nullptr, 0, nullptr);
+
+.. admonition:: 插入一个栅栏用于确保在开始构建加速结构之前实体数据的缓存拷贝已经完成
+    :class: note
+
+    在调用 ``m_alloc->createBuffer`` 时会进行两步任务
+
+    1. 创建缓存
+    2. 使用命令缓存将外部数据拷贝至缓存中（使用 ``vkCmdCopyBuffer`` ）
+
+    所以这里在之后需要插入一个栅栏，用于确保数据已经复制拷贝完成再进行接下来的任务。
+
+此时我们已经有两一个命令缓存（ ``cmdBuf`` ），实体数量（ ``countInstance`` ）和存有所有 ``VkAccelerationStructureInstanceKHR`` 数据的缓存地址。有了这些信息，我们就可以调用顶层加速结构构建函数了，该函数将会分配一个暂付缓存，该暂付缓存将会在所有工作结束后销毁。
+
+.. code:: c++
+
+        // 创建顶层加速结构
+        nvvk::Buffer scratchBuffer;
+        cmdCreateTlas(cmdBuf, countInstance, instBufferAddr, scratchBuffer, flags, update, motion);
+
+        // 最后销毁临时数据
+        genCmdBuf.submitAndWait(cmdBuf);  // 内部会等待任务执行结束
+        m_alloc->finalizeAndReleaseStaging();
+        m_alloc->destroy(scratchBuffer);
+        m_alloc->destroy(instancesBuffer);
+    }
+
+接下来开始构建真正的顶层加速结构
+
+.. code:: c++
+
+    //--------------------------------------------------------------------------------------------------
+    // 创建顶层加速结构
+    //
+    void nvvk::RaytracingBuilderKHR::cmdCreateTlas(VkCommandBuffer                      cmdBuf,
+                                                   uint32_t                             countInstance,
+                                                   VkDeviceAddress                      instBufferAddr,
+                                                   nvvk::Buffer&                        scratchBuffer,
+                                                   VkBuildAccelerationStructureFlagsKHR flags,
+                                                   bool                                 update,
+                                                   bool                                 motion)
+    {
+
+接下来就是填充创建顶层加速结构的结构体。该加速结构用于表示一个包含很多实体的几何体。
+
+.. admonition:: 该加速结构用于表示一个包含很多实体的几何体
+    :class: note
+
+    创建和构建顶层加速结构其实和构建底层加速结构区别不大，与底层加速结构的主要区别是：底层加速结构的几何信息是真的几何信息，而顶层加速结构的几何信息是实体信息。
+
+.. code:: c++
+
+    // 将之前拷贝上传的实体设备内存进行设置打包
+    VkAccelerationStructureGeometryInstancesDataKHR instancesVk{VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_INSTANCES_DATA_KHR};
+    instancesVk.data.deviceAddress = instBufferAddr;
+
+    // 将instancesVk设置到VkAccelerationStructureGeometryKHR中. 我们需要将实体数据放入联合体中并指定该数据为实体数据（见下面的备注详情）
+    VkAccelerationStructureGeometryKHR topASGeometry{VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR};
+    topASGeometry.geometryType       = VK_GEOMETRY_TYPE_INSTANCES_KHR;
+    topASGeometry.geometry.instances = instancesVk;
+
+    // 获取加速结构大小
+    VkAccelerationStructureBuildGeometryInfoKHR buildInfo{VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR};
+    buildInfo.flags         = flags;
+    buildInfo.geometryCount = 1;
+    buildInfo.pGeometries   = &topASGeometry;
+    buildInfo.mode = update ? VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR : VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR;
+    buildInfo.type                     = VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR;
+    buildInfo.srcAccelerationStructure = VK_NULL_HANDLE;
+
+    VkAccelerationStructureBuildSizesInfoKHR sizeInfo{VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR};
+    vkGetAccelerationStructureBuildSizesKHR(m_device, VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR, &buildInfo,
+                                          &countInstance, &sizeInfo);
+
+.. admonition:: 我们需要将实体数据放入联合体中并指定该数据为实体数据
+    :class: note
+
+    * 对于 ``实体数据放入联合体中``：
+
+        .. code:: c++
+
+            instancesVk.data.deviceAddress = instBufferAddr
+
+        主要是指上面这行代码，将实体数据 ``instBufferAddr`` 设置到 ``instancesVk.data.deviceAddress`` 中。而在 ``Vulkan`` 标准中 ``instancesVk.data`` 的类型为 ``VkDeviceOrHostAddressConstKHR`` ，声明如下：
+
+        .. code:: c++
+
+            // 由VK_KHR_acceleration_structure提供
+            typedef union VkDeviceOrHostAddressConstKHR {
+                VkDeviceAddress    deviceAddress;
+                const void*        hostAddress;
+            } VkDeviceOrHostAddressConstKHR;
+
+        可以看到该结构体被声明为 ``union`` 联合体（ ``Vulkan`` 光追标准中很多相关的结构体都是联合体）。
+
+    * 对于 ``指定该数据为实体数据``：
+
+        .. code:: c++
+
+            topASGeometry.geometryType = VK_GEOMETRY_TYPE_INSTANCES_KHR;
+
+        主要是指上面这行代码，用于告诉 ``Vulkan`` 驱动，将数据解析成实体数据。
+
+现在我们就可以创建加速结构了，目前还没到构建阶段。
+
+.. code:: c++
+
+    VkAccelerationStructureCreateInfoKHR createInfo{VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR};
+    createInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR;
+    createInfo.size = sizeInfo.accelerationStructureSize;
+
+    m_tlas = m_alloc->createAcceleration(createInfo);
+    NAME_VK(m_tlas.accel);
+    NAME_VK(m_tlas.buffer.buffer);
+
+构建顶层加速结构同样需要暂付缓存。
+
+.. code:: c++
+
+    // 分配暂付缓存
+    scratchBuffer = m_alloc->createBuffer(sizeInfo.buildScratchSize,
+                                          VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT);
+
+    VkBufferDeviceAddressInfo bufferInfo{VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO, nullptr, scratchBuffer.buffer};
+    VkDeviceAddress           scratchAddress = vkGetBufferDeviceAddress(m_device, &bufferInfo);
+    NAME_VK(scratchBuffer.buffer);
+
+最后我们就可以构建该顶级加速结构了。
+
+.. code:: c++
+
+      // 更新构建信息
+      buildInfo.srcAccelerationStructure  = VK_NULL_HANDLE;
+      buildInfo.dstAccelerationStructure  = m_tlas.accel;
+      buildInfo.scratchData.deviceAddress = scratchAddress;
+
+      // 构建偏移信息: 实体数量（其实设置的是VkAccelerationStructureBuildRangeInfoKHR::primitiveCount信息）
+      VkAccelerationStructureBuildRangeInfoKHR        buildOffsetInfo{countInstance, 0, 0, 0};
+      const VkAccelerationStructureBuildRangeInfoKHR* pBuildOffsetInfo = &buildOffsetInfo;
+
+      // 构建顶层加速结构
+      vkCmdBuildAccelerationStructuresKHR(cmdBuf, 1, &buildInfo, &pBuildOffsetInfo);
+    }
+
+5.3 main
+********************
+
+在 ``main`` 函数中，我现在可以在初始化光追之后增加对于几何实体和加速结构的创建了。
+
+.. code:: c++
+
+    // #VKRay
+    helloVk.initRayTracing();
+    helloVk.createBottomLevelAS();
+    helloVk.createTopLevelAS();
+
+6 光线追踪描述符集（Descriptor Set）
+#######################################

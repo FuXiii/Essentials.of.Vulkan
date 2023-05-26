@@ -266,15 +266,18 @@
 <li><p class="sd-card-text">2023/5/24 更新 <code class="docutils literal notranslate"><span class="pre">5</span> <span class="pre">加速结构</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/5/25 更新 <code class="docutils literal notranslate"><span class="pre">5.2</span> <span class="pre">顶层加速结构</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/5/25 增加 <code class="docutils literal notranslate"><span class="pre">5.2.1</span> <span class="pre">帮助类细节：RaytracingBuilder::buildTlas()</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/5/26 更新 <code class="docutils literal notranslate"><span class="pre">5.2.1</span> <span class="pre">帮助类细节：RaytracingBuilder::buildTlas()</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/5/26 增加 <code class="docutils literal notranslate"><span class="pre">5.3</span> <span class="pre">main</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/5/26 增加 <code class="docutils literal notranslate"><span class="pre">6</span> <span class="pre">光线追踪描述符集（Descriptor</span> <span class="pre">Set）</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p><a class="reference external" href="https://nvpro-samples.github.io/vk_raytracing_tutorial_KHR/">文献源</a></p>
 <p>本文所提供的的代码和文档聚焦于使用 <a class="reference external" href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/vkspec.html#VK_KHR_ray_tracing_pipeline">VK_KHR_ray_tracing_pipeline</a> 扩展展示一个基础光追示例。
 该教程从一个基于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 开发的基础程序开始，并且提供一步步的介绍去修改和增加函数和功能。</p>
-<figure class="align-default" id="id13">
+<figure class="align-default" id="id15">
 <img alt="../_images/resultRaytraceShadowMedieval.png" src="../_images/resultRaytraceShadowMedieval.png" />
 <figcaption>
-<p><span class="caption-text">最终结果</span><a class="headerlink" href="#id13" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">最终结果</span><a class="headerlink" href="#id15" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <div class="note admonition">
@@ -331,10 +334,10 @@
 <p>打开位于 <code class="docutils literal notranslate"><span class="pre">build</span></code> 目录下的解决方案，之后编译并运行 <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing__before">vk_ray_tracing__before_KHR</a> 。</p>
 <p>该示例将会是此教程的示例起点。这是一个用于加载 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 文件并使用 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 光栅化渲染他们的小框架。您可以通过阅读 <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/blob/master/ray_tracing__before/README.md#nvidia-vulkan-ray-tracing-tutorial">Base Overview</a> 来纵观该示例是如何实现的。
 我们将使用这个框架加载几何体并且渲染场景来实现光线追踪。</p>
-<figure class="align-default" id="id14">
+<figure class="align-default" id="id16">
 <img alt="../_images/resultRasterCube.png" src="../_images/resultRasterCube.png" />
 <figcaption>
-<p><span class="caption-text">首次执行</span><a class="headerlink" href="#id14" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">首次执行</span><a class="headerlink" href="#id16" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <p>接下来的步骤将是修改 <code class="docutils literal notranslate"><span class="pre">vk_ray_tracing__before_KHR</span></code> 使其支持光线追踪。该教程修改后的最终结果将是同 <code class="docutils literal notranslate"><span class="pre">vk_ray_tracing__simple_KHR</span></code> 一样。如果开发过程发生错误
@@ -405,9 +408,9 @@
 据经验来说，底层加速结构越少越好。</p>
 </div>
 <p>顶层加速结构可以包含多个物体的实体（ <code class="docutils literal notranslate"><span class="pre">instance</span></code> ），每一个实体都会有自己的变换矩阵并且引用一个具体的底层加速结构。我们将会从一个底层加速结构和一个单位矩阵的顶层加速结构实例开始实现。</p>
-<figure class="align-default" id="id15">
+<figure class="align-default" id="id17">
 <img alt="../_images/AccelerationStructure.svg" src="../_images/AccelerationStructure.svg" /><figcaption>
-<p><span class="caption-text">加速结构</span><a class="headerlink" href="#id15" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">加速结构</span><a class="headerlink" href="#id17" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <p>该教程将会加载一个 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 文件，并将其索引、顶点和材质数据存储到 <code class="docutils literal notranslate"><span class="pre">ObjModel</span></code> 数据结构中。该模型同时引用一个 <code class="docutils literal notranslate"><span class="pre">ObjInstance</span></code> 数据结构，其中包含用于特定实体的变换矩阵。对于光线追踪， <code class="docutils literal notranslate"><span class="pre">ObjModel</span></code> 和一系列的 <code class="docutils literal notranslate"><span class="pre">ObjInstances</span></code> 将在之后分别用于构建底层加速结构和顶层加速结构。</p>
@@ -871,8 +874,190 @@
 </div>
 <section id="raytracingbuilder-buildtlas">
 <h4>5.2.1 帮助类细节：RaytracingBuilder::buildTlas()<a class="headerlink" href="#raytracingbuilder-buildtlas" title="此标题的永久链接">#</a></h4>
+<p>作为 <a class="reference external" href="https://github.com/nvpro-samples">nvpro-samples</a> 的一部分，该帮助类提供用于构建构建顶层加速结构并且使用一批 <code class="docutils literal notranslate"><span class="pre">Instance</span></code> (实体)对象来创建一个顶层加速结构。</p>
+<p>我们首先创建一个命令缓存并且将 <code class="docutils literal notranslate"><span class="pre">flags</span></code> 的默认值在这里显示出来。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 使用一批实体创建顶层加速结构</span>
+<span class="c1">// - 注意instances的类型（一批实体）</span>
+<span class="c1">// - 创建的顶层加速结构的结果将会存储在m_tlas</span>
+<span class="c1">// - 对于顶层加速结构的更新就是使用新的变换矩阵重新构建顶层加速结构</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">buildTlas</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">VkAccelerationStructureInstanceKHR</span><span class="o">&gt;&amp;</span><span class="w">         </span><span class="n">instances</span><span class="p">,</span>
+<span class="w">               </span><span class="n">VkBuildAccelerationStructureFlagsKHR</span><span class="w"> </span><span class="n">flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR</span><span class="p">,</span>
+<span class="w">               </span><span class="kt">bool</span><span class="w">                                 </span><span class="n">update</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="c1">// 除非要更新顶层加速结构否则buildTlas函数只能调用一次</span>
+<span class="w">  </span><span class="n">assert</span><span class="p">(</span><span class="n">m_tlas</span><span class="p">.</span><span class="n">accel</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">VK_NULL_HANDLE</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">update</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">countInstance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">instances</span><span class="p">.</span><span class="n">size</span><span class="p">());</span>
+
+<span class="w">  </span><span class="c1">// 用于创建顶层加速结构的命令缓存</span>
+<span class="w">  </span><span class="n">nvvk</span><span class="o">::</span><span class="n">CommandPool</span><span class="w"> </span><span class="n">genCmdBuf</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">m_queueIndex</span><span class="p">);</span>
+<span class="w">  </span><span class="n">VkCommandBuffer</span><span class="w">   </span><span class="n">cmdBuf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">genCmdBuf</span><span class="p">.</span><span class="n">createCommandBuffer</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>之后，我能需要将实体们加载进设备中。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 用于创建顶层加速结构的命令缓存</span>
+<span class="n">nvvk</span><span class="o">::</span><span class="n">CommandPool</span><span class="w"> </span><span class="nf">genCmdBuf</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">m_queueIndex</span><span class="p">);</span>
+<span class="n">VkCommandBuffer</span><span class="w">   </span><span class="n">cmdBuf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">genCmdBuf</span><span class="p">.</span><span class="n">createCommandBuffer</span><span class="p">();</span>
+
+<span class="c1">// 创建一个缓存用于存放该批实体数据用于加速结构的构建</span>
+<span class="n">nvvk</span><span class="o">::</span><span class="n">Buffer</span><span class="w"> </span><span class="n">instancesBuffer</span><span class="p">;</span><span class="w">  </span><span class="c1">// 该批的实体缓存中包含每个实体的变换矩阵和底层加速结构的ID</span>
+<span class="n">instancesBuffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_alloc</span><span class="o">-&gt;</span><span class="n">createBuffer</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="n">instances</span><span class="p">,</span>
+<span class="w">                                        </span><span class="n">VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT</span>
+<span class="w">                                            </span><span class="o">|</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR</span><span class="p">);</span>
+<span class="n">NAME_VK</span><span class="p">(</span><span class="n">instancesBuffer</span><span class="p">.</span><span class="n">buffer</span><span class="p">);</span>
+<span class="n">VkBufferDeviceAddressInfo</span><span class="w"> </span><span class="n">bufferInfo</span><span class="p">{</span><span class="n">VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="n">instancesBuffer</span><span class="p">.</span><span class="n">buffer</span><span class="p">};</span>
+<span class="n">VkDeviceAddress</span><span class="w">           </span><span class="n">instBufferAddr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vkGetBufferDeviceAddress</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">bufferInfo</span><span class="p">);</span>
+
+<span class="c1">// 插入一个栅栏用于确保在开始构建加速结构之前实体数据的缓存拷贝已经完成（注意下面的备注）</span>
+<span class="n">VkMemoryBarrier</span><span class="w"> </span><span class="n">barrier</span><span class="p">{</span><span class="n">VK_STRUCTURE_TYPE_MEMORY_BARRIER</span><span class="p">};</span>
+<span class="n">barrier</span><span class="p">.</span><span class="n">srcAccessMask</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_ACCESS_TRANSFER_WRITE_BIT</span><span class="p">;</span>
+<span class="n">barrier</span><span class="p">.</span><span class="n">dstAccessMask</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR</span><span class="p">;</span>
+<span class="n">vkCmdPipelineBarrier</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="n">VK_PIPELINE_STAGE_TRANSFER_BIT</span><span class="p">,</span><span class="w"> </span><span class="n">VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR</span><span class="p">,</span>
+<span class="w">                     </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">barrier</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="note admonition">
+<p class="admonition-title">插入一个栅栏用于确保在开始构建加速结构之前实体数据的缓存拷贝已经完成</p>
+<p>在调用 <code class="docutils literal notranslate"><span class="pre">m_alloc-&gt;createBuffer</span></code> 时会进行两步任务</p>
+<ol class="arabic simple">
+<li><p>创建缓存</p></li>
+<li><p>使用命令缓存将外部数据拷贝至缓存中（使用 <code class="docutils literal notranslate"><span class="pre">vkCmdCopyBuffer</span></code> ）</p></li>
+</ol>
+<p>所以这里在之后需要插入一个栅栏，用于确保数据已经复制拷贝完成再进行接下来的任务。</p>
+</div>
+<p>此时我们已经有两一个命令缓存（ <code class="docutils literal notranslate"><span class="pre">cmdBuf</span></code> ），实体数量（ <code class="docutils literal notranslate"><span class="pre">countInstance</span></code> ）和存有所有 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureInstanceKHR</span></code> 数据的缓存地址。有了这些信息，我们就可以调用顶层加速结构构建函数了，该函数将会分配一个暂付缓存，该暂付缓存将会在所有工作结束后销毁。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="c1">// 创建顶层加速结构</span>
+<span class="w">    </span><span class="n">nvvk</span><span class="o">::</span><span class="n">Buffer</span><span class="w"> </span><span class="n">scratchBuffer</span><span class="p">;</span>
+<span class="w">    </span><span class="n">cmdCreateTlas</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="n">countInstance</span><span class="p">,</span><span class="w"> </span><span class="n">instBufferAddr</span><span class="p">,</span><span class="w"> </span><span class="n">scratchBuffer</span><span class="p">,</span><span class="w"> </span><span class="n">flags</span><span class="p">,</span><span class="w"> </span><span class="n">update</span><span class="p">,</span><span class="w"> </span><span class="n">motion</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// 最后销毁临时数据</span>
+<span class="w">    </span><span class="n">genCmdBuf</span><span class="p">.</span><span class="n">submitAndWait</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">);</span><span class="w">  </span><span class="c1">// 内部会等待任务执行结束</span>
+<span class="w">    </span><span class="n">m_alloc</span><span class="o">-&gt;</span><span class="n">finalizeAndReleaseStaging</span><span class="p">();</span>
+<span class="w">    </span><span class="n">m_alloc</span><span class="o">-&gt;</span><span class="n">destroy</span><span class="p">(</span><span class="n">scratchBuffer</span><span class="p">);</span>
+<span class="w">    </span><span class="n">m_alloc</span><span class="o">-&gt;</span><span class="n">destroy</span><span class="p">(</span><span class="n">instancesBuffer</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>接下来开始构建真正的顶层加速结构</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">//--------------------------------------------------------------------------------------------------</span>
+<span class="c1">// 创建顶层加速结构</span>
+<span class="c1">//</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">nvvk::RaytracingBuilderKHR::cmdCreateTlas</span><span class="p">(</span><span class="n">VkCommandBuffer</span><span class="w">                      </span><span class="n">cmdBuf</span><span class="p">,</span>
+<span class="w">                                               </span><span class="kt">uint32_t</span><span class="w">                             </span><span class="n">countInstance</span><span class="p">,</span>
+<span class="w">                                               </span><span class="n">VkDeviceAddress</span><span class="w">                      </span><span class="n">instBufferAddr</span><span class="p">,</span>
+<span class="w">                                               </span><span class="n">nvvk</span><span class="o">::</span><span class="n">Buffer</span><span class="o">&amp;</span><span class="w">                        </span><span class="n">scratchBuffer</span><span class="p">,</span>
+<span class="w">                                               </span><span class="n">VkBuildAccelerationStructureFlagsKHR</span><span class="w"> </span><span class="n">flags</span><span class="p">,</span>
+<span class="w">                                               </span><span class="kt">bool</span><span class="w">                                 </span><span class="n">update</span><span class="p">,</span>
+<span class="w">                                               </span><span class="kt">bool</span><span class="w">                                 </span><span class="n">motion</span><span class="p">)</span>
+<span class="p">{</span>
+</pre></div>
+</div>
+<p>接下来就是填充创建顶层加速结构的结构体。该加速结构用于表示一个包含很多实体的几何体。</p>
+<div class="note admonition">
+<p class="admonition-title">该加速结构用于表示一个包含很多实体的几何体</p>
+<p>创建和构建顶层加速结构其实和构建底层加速结构区别不大，与底层加速结构的主要区别是：底层加速结构的几何信息是真的几何信息，而顶层加速结构的几何信息是实体信息。</p>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 将之前拷贝上传的实体设备内存进行设置打包</span>
+<span class="n">VkAccelerationStructureGeometryInstancesDataKHR</span><span class="w"> </span><span class="n">instancesVk</span><span class="p">{</span><span class="n">VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_INSTANCES_DATA_KHR</span><span class="p">};</span>
+<span class="n">instancesVk</span><span class="p">.</span><span class="n">data</span><span class="p">.</span><span class="n">deviceAddress</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">instBufferAddr</span><span class="p">;</span>
+
+<span class="c1">// 将instancesVk设置到VkAccelerationStructureGeometryKHR中. 我们需要将实体数据放入联合体中并指定该数据为实体数据（见下面的备注详情）</span>
+<span class="n">VkAccelerationStructureGeometryKHR</span><span class="w"> </span><span class="n">topASGeometry</span><span class="p">{</span><span class="n">VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR</span><span class="p">};</span>
+<span class="n">topASGeometry</span><span class="p">.</span><span class="n">geometryType</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="n">VK_GEOMETRY_TYPE_INSTANCES_KHR</span><span class="p">;</span>
+<span class="n">topASGeometry</span><span class="p">.</span><span class="n">geometry</span><span class="p">.</span><span class="n">instances</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">instancesVk</span><span class="p">;</span>
+
+<span class="c1">// 获取加速结构大小</span>
+<span class="n">VkAccelerationStructureBuildGeometryInfoKHR</span><span class="w"> </span><span class="n">buildInfo</span><span class="p">{</span><span class="n">VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR</span><span class="p">};</span>
+<span class="n">buildInfo</span><span class="p">.</span><span class="n">flags</span><span class="w">         </span><span class="o">=</span><span class="w"> </span><span class="n">flags</span><span class="p">;</span>
+<span class="n">buildInfo</span><span class="p">.</span><span class="n">geometryCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="n">buildInfo</span><span class="p">.</span><span class="n">pGeometries</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">topASGeometry</span><span class="p">;</span>
+<span class="n">buildInfo</span><span class="p">.</span><span class="n">mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">update</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR</span><span class="p">;</span>
+<span class="n">buildInfo</span><span class="p">.</span><span class="n">type</span><span class="w">                     </span><span class="o">=</span><span class="w"> </span><span class="n">VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR</span><span class="p">;</span>
+<span class="n">buildInfo</span><span class="p">.</span><span class="n">srcAccelerationStructure</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_NULL_HANDLE</span><span class="p">;</span>
+
+<span class="n">VkAccelerationStructureBuildSizesInfoKHR</span><span class="w"> </span><span class="n">sizeInfo</span><span class="p">{</span><span class="n">VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR</span><span class="p">};</span>
+<span class="n">vkGetAccelerationStructureBuildSizesKHR</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">buildInfo</span><span class="p">,</span>
+<span class="w">                                      </span><span class="o">&amp;</span><span class="n">countInstance</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">sizeInfo</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="note admonition">
+<p class="admonition-title">我们需要将实体数据放入联合体中并指定该数据为实体数据</p>
+<ul>
+<li><p>对于 <code class="docutils literal notranslate"><span class="pre">实体数据放入联合体中</span></code>：</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">instancesVk</span><span class="p">.</span><span class="n">data</span><span class="p">.</span><span class="n">deviceAddress</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">instBufferAddr</span>
+</pre></div>
+</div>
+<p>主要是指上面这行代码，将实体数据 <code class="docutils literal notranslate"><span class="pre">instBufferAddr</span></code> 设置到 <code class="docutils literal notranslate"><span class="pre">instancesVk.data.deviceAddress</span></code> 中。而在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准中 <code class="docutils literal notranslate"><span class="pre">instancesVk.data</span></code> 的类型为 <code class="docutils literal notranslate"><span class="pre">VkDeviceOrHostAddressConstKHR</span></code> ，声明如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由VK_KHR_acceleration_structure提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">union</span><span class="w"> </span><span class="nc">VkDeviceOrHostAddressConstKHR</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VkDeviceAddress</span><span class="w">    </span><span class="n">deviceAddress</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w">        </span><span class="n">hostAddress</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkDeviceOrHostAddressConstKHR</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>可以看到该结构体被声明为 <code class="docutils literal notranslate"><span class="pre">union</span></code> 联合体（ <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 光追标准中很多相关的结构体都是联合体）。</p>
+</div></blockquote>
+</li>
+<li><p>对于 <code class="docutils literal notranslate"><span class="pre">指定该数据为实体数据</span></code>：</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">topASGeometry</span><span class="p">.</span><span class="n">geometryType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_GEOMETRY_TYPE_INSTANCES_KHR</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>主要是指上面这行代码，用于告诉 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 驱动，将数据解析成实体数据。</p>
+</div></blockquote>
+</li>
+</ul>
+</div>
+<p>现在我们就可以创建加速结构了，目前还没到构建阶段。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkAccelerationStructureCreateInfoKHR</span><span class="w"> </span><span class="n">createInfo</span><span class="p">{</span><span class="n">VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR</span><span class="p">};</span>
+<span class="n">createInfo</span><span class="p">.</span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR</span><span class="p">;</span>
+<span class="n">createInfo</span><span class="p">.</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sizeInfo</span><span class="p">.</span><span class="n">accelerationStructureSize</span><span class="p">;</span>
+
+<span class="n">m_tlas</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_alloc</span><span class="o">-&gt;</span><span class="n">createAcceleration</span><span class="p">(</span><span class="n">createInfo</span><span class="p">);</span>
+<span class="n">NAME_VK</span><span class="p">(</span><span class="n">m_tlas</span><span class="p">.</span><span class="n">accel</span><span class="p">);</span>
+<span class="n">NAME_VK</span><span class="p">(</span><span class="n">m_tlas</span><span class="p">.</span><span class="n">buffer</span><span class="p">.</span><span class="n">buffer</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>构建顶层加速结构同样需要暂付缓存。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 分配暂付缓存</span>
+<span class="n">scratchBuffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_alloc</span><span class="o">-&gt;</span><span class="n">createBuffer</span><span class="p">(</span><span class="n">sizeInfo</span><span class="p">.</span><span class="n">buildScratchSize</span><span class="p">,</span>
+<span class="w">                                      </span><span class="n">VK_BUFFER_USAGE_STORAGE_BUFFER_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT</span><span class="p">);</span>
+
+<span class="n">VkBufferDeviceAddressInfo</span><span class="w"> </span><span class="n">bufferInfo</span><span class="p">{</span><span class="n">VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="n">scratchBuffer</span><span class="p">.</span><span class="n">buffer</span><span class="p">};</span>
+<span class="n">VkDeviceAddress</span><span class="w">           </span><span class="n">scratchAddress</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vkGetBufferDeviceAddress</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">bufferInfo</span><span class="p">);</span>
+<span class="n">NAME_VK</span><span class="p">(</span><span class="n">scratchBuffer</span><span class="p">.</span><span class="n">buffer</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>最后我们就可以构建该顶级加速结构了。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="c1">// 更新构建信息</span>
+<span class="w">  </span><span class="n">buildInfo</span><span class="p">.</span><span class="n">srcAccelerationStructure</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">VK_NULL_HANDLE</span><span class="p">;</span>
+<span class="w">  </span><span class="n">buildInfo</span><span class="p">.</span><span class="n">dstAccelerationStructure</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">m_tlas</span><span class="p">.</span><span class="n">accel</span><span class="p">;</span>
+<span class="w">  </span><span class="n">buildInfo</span><span class="p">.</span><span class="n">scratchData</span><span class="p">.</span><span class="n">deviceAddress</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">scratchAddress</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// 构建偏移信息: 实体数量（其实设置的是VkAccelerationStructureBuildRangeInfoKHR::primitiveCount信息）</span>
+<span class="w">  </span><span class="n">VkAccelerationStructureBuildRangeInfoKHR</span><span class="w">        </span><span class="n">buildOffsetInfo</span><span class="p">{</span><span class="n">countInstance</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">};</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">VkAccelerationStructureBuildRangeInfoKHR</span><span class="o">*</span><span class="w"> </span><span class="n">pBuildOffsetInfo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">buildOffsetInfo</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// 构建顶层加速结构</span>
+<span class="w">  </span><span class="n">vkCmdBuildAccelerationStructuresKHR</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">buildInfo</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">pBuildOffsetInfo</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </section>
 </section>
+<section id="id14">
+<h3>5.3 main<a class="headerlink" href="#id14" title="此标题的永久链接">#</a></h3>
+<p>在 <code class="docutils literal notranslate"><span class="pre">main</span></code> 函数中，我现在可以在初始化光追之后增加对于几何实体和加速结构的创建了。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// #VKRay</span>
+<span class="n">helloVk</span><span class="p">.</span><span class="n">initRayTracing</span><span class="p">();</span>
+<span class="n">helloVk</span><span class="p">.</span><span class="n">createBottomLevelAS</span><span class="p">();</span>
+<span class="n">helloVk</span><span class="p">.</span><span class="n">createTopLevelAS</span><span class="p">();</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="descriptor-set">
+<h2>6 光线追踪描述符集（Descriptor Set）<a class="headerlink" href="#descriptor-set" title="此标题的永久链接">#</a></h2>
 </section>
 </section>
 
@@ -963,8 +1148,10 @@
 <li><a class="reference internal" href="#raytracingbuilder-buildtlas">5.2.1 帮助类细节：RaytracingBuilder::buildTlas()</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#id14">5.3 main</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#descriptor-set">6 光线追踪描述符集（Descriptor Set）</a></li>
 </ul>
 </li>
 </ul>
