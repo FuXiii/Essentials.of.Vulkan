@@ -34,6 +34,7 @@ NVIDIA Vulkan 光线追踪教程
     * 2023/5/26 更新 ``5.2.1 帮助类细节：RaytracingBuilder::buildTlas()`` 章节
     * 2023/5/26 增加 ``5.3 main`` 章节
     * 2023/5/26 增加 ``6 光线追踪描述符集（Descriptor Set）`` 章节
+    * 2023/5/26 增加 ``6.1 增加场景的描述符集`` 章节
 
 `文献源`_
 
@@ -937,3 +938,65 @@ NVIDIA Vulkan 光线追踪教程
 
 6 光线追踪描述符集（Descriptor Set）
 #######################################
+
+与光栅化着色器一样，光线追踪着色器同样使用描述符集来引用外部资源。在光栅化图形管线中使用不同的材质绘制场景，我们可以根据材质来组织要绘制的对象，并根据材质的使用情况确定渲染顺序。只有当材质要绘制物体时才需要绑定对应的材质管线和描述符。
+
+然而，在光线追踪时，不可能事先知道哪些物体会和光线相交，所以在任意时刻都有可能调用某个着色器。为此 ``Vulkan`` 光追扩展使用单独的描述符集集合来描述场景渲染时所需的所有资源。比如，它可能包含所有材质需要的所有纹理。此外加速结构中只存有位置数据，我们需要将顶点和索引缓存传入到着色器中，
+这样我们就可以获取到其他的顶点属性。
+
+为了维持光栅化和光线追踪之间的兼容性，我们将会重复利用之前光栅化渲染器的描述符集，该描述符集不仅会包含场景信息，此外还会增加另外一些描述符集用于引用顶层加速结构和缓存输出结果。
+
+在 ``hello_vulkan.h`` 头文件中，我们声明与的描述符集相关的对象：
+
+.. code:: c++
+
+    void           createRtDescriptorSet();
+
+    nvvk::DescriptorSetBindings                     m_rtDescSetLayoutBind;
+    VkDescriptorPool                                m_rtDescPool;
+    VkDescriptorSetLayout                           m_rtDescSetLayout;
+    VkDescriptorSet                                 m_rtDescSet;
+
+光线生成着色器（ ``Ray Generation shader`` ）将会通过代用 ``TraceRayEXT()`` 来访问加速结构，在该文档的后面，我们也将使用最近命中着色器（ ``Closest Hit shader`` ）来访问加速结构，输出的图片将会通过光栅化离屏输出，并且只有光线生成着色器可以写入。
+
+.. admonition:: 离屏输出
+    :class: note
+
+    离屏输出意思是，输出的图片不与屏幕或者窗口有直接联系，图片也不会直接输出到屏幕上，一般输出的图片为用户自己创建的图片，需要将该图片拷贝至与窗口或屏幕相关的图片上才能显示。
+
+.. code:: c++
+
+    //--------------------------------------------------------------------------------------------------
+    // 该描述符集包含加速结构和输出图片
+    //
+    void HelloVulkan::createRtDescriptorSet()
+    {
+      m_rtDescSetLayoutBind.addBinding(RtxBindings::eTlas, VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR, 1,
+                                       VK_SHADER_STAGE_RAYGEN_BIT_KHR);  // 顶层加速结构
+      m_rtDescSetLayoutBind.addBinding(RtxBindings::eOutImage, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1,
+                                       VK_SHADER_STAGE_RAYGEN_BIT_KHR);  // 输出图片
+
+      m_rtDescPool      = m_rtDescSetLayoutBind.createPool(m_device);
+      m_rtDescSetLayout = m_rtDescSetLayoutBind.createLayout(m_device);
+
+      VkDescriptorSetAllocateInfo allocateInfo{VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO};
+      allocateInfo.descriptorPool     = m_rtDescPool;
+      allocateInfo.descriptorSetCount = 1;
+      allocateInfo.pSetLayouts        = &m_rtDescSetLayout;
+      vkAllocateDescriptorSets(m_device, &allocateInfo, &m_rtDescSet);
+
+
+      VkAccelerationStructureKHR                   tlas = m_rtBuilder.getAccelerationStructure();
+      VkWriteDescriptorSetAccelerationStructureKHR descASInfo{VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_ACCELERATION_STRUCTURE_KHR};
+      descASInfo.accelerationStructureCount = 1;
+      descASInfo.pAccelerationStructures    = &tlas;
+      VkDescriptorImageInfo imageInfo{{}, m_offscreenColor.descriptor.imageView, VK_IMAGE_LAYOUT_GENERAL};
+
+      std::vector<VkWriteDescriptorSet> writes;
+      writes.emplace_back(m_rtDescSetLayoutBind.makeWrite(m_rtDescSet, RtxBindings::eTlas, &descASInfo));
+      writes.emplace_back(m_rtDescSetLayoutBind.makeWrite(m_rtDescSet, RtxBindings::eOutImage, &imageInfo));
+      vkUpdateDescriptorSets(m_device, static_cast<uint32_t>(writes.size()), writes.data(), 0, nullptr);
+    }
+
+6.1 增加场景的描述符集
+***********************
