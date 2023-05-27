@@ -1205,6 +1205,35 @@
 <ul class="simple">
 <li><p>光线生成着色器（ <code class="docutils literal notranslate"><span class="pre">ray</span> <span class="pre">generation</span> <span class="pre">shader</span></code> ），对于每一个像素我们都会调用光线生成着色器。这将会从相机的位置出发，以像素处按照相机镜头评估出一个光线方向。这之后将会调用 <code class="docutils literal notranslate"><span class="pre">traceRayEXT()</span></code> 函数往场景中发射光线。 <code class="docutils literal notranslate"><span class="pre">traceRayEXT()</span></code> 将会调用下文的各类着色器，这些着色器将会使用光追负载传达结果。</p></li>
 </ul>
+<div class="note admonition">
+<p class="admonition-title">光追负载</p>
+<p>光追负载一般是指着色器中使用了 <code class="docutils literal notranslate"><span class="pre">rayPayloadEXT</span></code> 或 <code class="docutils literal notranslate"><span class="pre">rayPayloadInEXT</span></code> 关键字声明的变量，相关介绍下文也有，这里给出一个示例。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">hitPayload</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">vec3</span><span class="w"> </span><span class="n">hitValue</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="n">layout</span><span class="p">(</span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="n">rayPayloadInEXT</span><span class="w"> </span><span class="n">hitPayload</span><span class="w"> </span><span class="n">prd</span><span class="p">;</span>
+<span class="n">layout</span><span class="p">(</span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="n">rayPayloadEXT</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">isShadowed</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<p>光追负载被声明作为 <code class="docutils literal notranslate"><span class="pre">rayPayloadEXT</span></code> 或 <code class="docutils literal notranslate"><span class="pre">rayPayloadInEXT</span></code> 关键字的变量，同时其构成了着色器之间调用与被调用的关系。每一个着色器的执行都会将其
+自身本地声明的 <code class="docutils literal notranslate"><span class="pre">rayPayloadEXT</span></code> 变量拷贝一份，当调用 <code class="docutils literal notranslate"><span class="pre">traceRayEXT()</span></code> 调用其他着色器时，调用者可以选择自身的其中一个负载，使得被调用着色器通
+过 <code class="docutils literal notranslate"><span class="pre">rayPayloadInEXT</span></code> 可以访问到调用者所分享的负载（ 多称为 <code class="docutils literal notranslate"><span class="pre">输入负载</span></code> ）。</p>
+<p>负载需要明确声明，否则将会导致 <code class="docutils literal notranslate"><span class="pre">SM</span></code> 的并行占用率随着内存使用过多而降低。</p>
+<div class="note admonition">
+<p class="admonition-title">SM</p>
+<p>这里的 <code class="docutils literal notranslate"><span class="pre">SM</span></code> 应该是指流式多处理器（ <code class="docutils literal notranslate"><span class="pre">Stream</span> <span class="pre">Multi-processor</span></code> ，简写为 <code class="docutils literal notranslate"><span class="pre">SM</span></code> ），是构建整个 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 的核心模块，一个流式多处理器上一般同时运行多个线程块。每个流式多处理器可以视为具有较小结构的 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> ，支持指令并行。</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">SM</span></code> 的占用率是越高越好</p>
+</div></blockquote>
+</div>
+<p>接下来需要如下两个类型的的着色器：</p>
+<ul class="simple">
+<li><p>未命中着色器（ <code class="docutils literal notranslate"><span class="pre">miss</span> <span class="pre">shader</span></code> ），当没有与任何几何体相交时会调用该着色器。一般用于对环境纹理进行采样或者通过光追负载直接返回一个颜色。</p></li>
+<li><p>最近命中着色器（ <code class="docutils literal notranslate"><span class="pre">closest</span> <span class="pre">hit</span> <span class="pre">shader</span></code> ），当光线与的几何体相交并且离光线起点最近时会调用该着色器。一般用于计算光照并使用光追负载返回结果。有多少最近相交就有多少最近命中着色器的调用，这与基于物体光栅化渲染时覆盖了多少像素概念相通。</p></li>
+</ul>
 </section>
 </section>
 
