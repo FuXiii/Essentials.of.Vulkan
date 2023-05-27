@@ -1190,6 +1190,21 @@
 </section>
 <section id="id18">
 <h2>7 光线追踪管线<a class="headerlink" href="#id18" title="此标题的永久链接">#</a></h2>
+<p>就像前面说的，当进行光线追踪时，不能像光栅化那样，我们不能按照材质组织渲染，所以，所有的的着色器都必须在光追的任意时刻都是有效可执行的，并且具体哪个着色器在执行是在设备运行时动态确定的。
+接下来两个章节最主要的目的就是介绍使用着色器绑定表（ <code class="docutils literal notranslate"><span class="pre">Shader</span> <span class="pre">Binding</span> <span class="pre">Table</span></code> 简称 <code class="docutils literal notranslate"><span class="pre">SBT</span></code>）：该结构使得运行时选择着色器成为可能。该结构的本质是着色器句柄表（也许存储着设备地址），有点
+类似于 <code class="docutils literal notranslate"><span class="pre">C++</span></code> 的虚函数表，但是这张表是需要我们自己构建（用户也可以通过使用 <code class="docutils literal notranslate"><span class="pre">shaderRecordEXT</span></code> ，以此在着色器绑定表中携带更多信息），建表步骤如下：</p>
+<ul class="simple">
+<li><p>像平常一样将需要的着色器加载、编译到 <code class="docutils literal notranslate"><span class="pre">VkShaderModule</span></code> 中</p></li>
+<li><p>将这些 <code class="docutils literal notranslate"><span class="pre">VkShaderModule</span></code> 打包到 <code class="docutils literal notranslate"><span class="pre">VkPipelineShaderStageCreateInfo</span></code> 数组中</p></li>
+<li><p>创建一个 <code class="docutils literal notranslate"><span class="pre">VkRayTracingShaderGroupCreateInfoKHR</span></code> 数组，数组中的每一个 <code class="docutils literal notranslate"><span class="pre">VkRayTracingShaderGroupCreateInfoKHR</span></code> 最终都会成为一个着色器绑定表的入口。此时通过数组的索引从着色器组中区分各自的着色器，此时还没有分配设备内存地址。</p></li>
+<li><p>通过 <code class="docutils literal notranslate"><span class="pre">vkCreateRayTracingPipelineKHR</span></code> 将上述的两个数组编译成一个光线追踪管线</p></li>
+<li><p>管线编译时会根据 <code class="docutils literal notranslate"><span class="pre">VkPipelineShaderStageCreateInfo</span></code> 数组的索引将对应的着色器句柄存入一个数组中。该数组可以通过 <code class="docutils literal notranslate"><span class="pre">vkGetRayTracingShaderGroupHandlesKHR</span></code> 获取。</p></li>
+<li><p>创建一个带有 <code class="docutils literal notranslate"><span class="pre">VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR</span></code> 功能位域的缓存，并将句柄拷贝到该缓存中。</p></li>
+</ul>
+<p>相比于光栅化图形管线，光线追踪管线的行为更像计算着色器。光追的激发维度是在一个虚拟的长宽高三维空间中，追踪结果使用 <code class="docutils literal notranslate"><span class="pre">imageStore</span></code> 手动写入。与激发计算管线使用本地组（ <code class="docutils literal notranslate"><span class="pre">local</span> <span class="pre">group</span></code> ）不同，对于光追需要激发单独的着色器调用。光线追踪的入口为：</p>
+<ul class="simple">
+<li><p>光线生成着色器（ <code class="docutils literal notranslate"><span class="pre">ray</span> <span class="pre">generation</span> <span class="pre">shader</span></code> ），对于每一个像素我们都会调用光线生成着色器。这将会从相机的位置出发，以像素处按照相机镜头评估出一个光线方向。这之后将会调用 <code class="docutils literal notranslate"><span class="pre">traceRayEXT()</span></code> 函数往场景中发射光线。 <code class="docutils literal notranslate"><span class="pre">traceRayEXT()</span></code> 将会调用下文的各类着色器，这些着色器将会使用光追负载传达结果。</p></li>
+</ul>
 </section>
 </section>
 
