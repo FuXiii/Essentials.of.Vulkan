@@ -1093,3 +1093,18 @@ NVIDIA Vulkan 光线追踪教程
 
 7 光线追踪管线
 ####################
+
+就像前面说的，当进行光线追踪时，不能像光栅化那样，我们不能按照材质组织渲染，所以，所有的的着色器都必须在光追的任意时刻都是有效可执行的，并且具体哪个着色器在执行是在设备运行时动态确定的。
+接下来两个章节最主要的目的就是介绍使用着色器绑定表（ ``Shader Binding Table`` 简称 ``SBT``）：该结构使得运行时选择着色器成为可能。该结构的本质是着色器句柄表（也许存储着设备地址），有点
+类似于 ``C++`` 的虚函数表，但是这张表是需要我们自己构建（用户也可以通过使用 ``shaderRecordEXT`` ，以此在着色器绑定表中携带更多信息），建表步骤如下：
+
+* 像平常一样将需要的着色器加载、编译到 ``VkShaderModule`` 中
+* 将这些 ``VkShaderModule`` 打包到 ``VkPipelineShaderStageCreateInfo`` 数组中
+* 创建一个 ``VkRayTracingShaderGroupCreateInfoKHR`` 数组，数组中的每一个 ``VkRayTracingShaderGroupCreateInfoKHR`` 最终都会成为一个着色器绑定表的入口。此时通过数组的索引从着色器组中区分各自的着色器，此时还没有分配设备内存地址。
+* 通过 ``vkCreateRayTracingPipelineKHR`` 将上述的两个数组编译成一个光线追踪管线
+* 管线编译时会根据 ``VkPipelineShaderStageCreateInfo`` 数组的索引将对应的着色器句柄存入一个数组中。该数组可以通过 ``vkGetRayTracingShaderGroupHandlesKHR`` 获取。
+* 创建一个带有 ``VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR`` 功能位域的缓存，并将句柄拷贝到该缓存中。
+
+相比于光栅化图形管线，光线追踪管线的行为更像计算着色器。光追的激发维度是在一个虚拟的长宽高三维空间中，追踪结果使用 ``imageStore`` 手动写入。与激发计算管线使用本地组（ ``local group`` ）不同，对于光追需要激发单独的着色器调用。光线追踪的入口为：
+
+* 光线生成着色器（ ``ray generation shader`` ），对于每一个像素我们都会调用光线生成着色器。这将会从相机的位置出发，以像素处按照相机镜头评估出一个光线方向。这之后将会调用 ``traceRayEXT()`` 函数往场景中发射光线。 ``traceRayEXT()`` 将会调用下文的各类着色器，这些着色器将会使用光追负载传达结果。
