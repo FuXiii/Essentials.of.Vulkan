@@ -1108,3 +1108,36 @@ NVIDIA Vulkan 光线追踪教程
 相比于光栅化图形管线，光线追踪管线的行为更像计算着色器。光追的激发维度是在一个虚拟的长宽高三维空间中，追踪结果使用 ``imageStore`` 手动写入。与激发计算管线使用本地组（ ``local group`` ）不同，对于光追需要激发单独的着色器调用。光线追踪的入口为：
 
 * 光线生成着色器（ ``ray generation shader`` ），对于每一个像素我们都会调用光线生成着色器。这将会从相机的位置出发，以像素处按照相机镜头评估出一个光线方向。这之后将会调用 ``traceRayEXT()`` 函数往场景中发射光线。 ``traceRayEXT()`` 将会调用下文的各类着色器，这些着色器将会使用光追负载传达结果。
+
+.. admonition:: 光追负载
+    :class: note
+
+    光追负载一般是指着色器中使用了 ``rayPayloadEXT`` 或 ``rayPayloadInEXT`` 关键字声明的变量，相关介绍下文也有，这里给出一个示例。
+
+    .. code:: c++
+
+        struct hitPayload
+        {
+          vec3 hitValue;
+        };
+
+        layout(location = 0) rayPayloadInEXT hitPayload prd;
+        layout(location = 1) rayPayloadEXT bool isShadowed;
+
+光追负载被声明作为 ``rayPayloadEXT`` 或 ``rayPayloadInEXT`` 关键字的变量，同时其构成了着色器之间调用与被调用的关系。每一个着色器的执行都会将其
+自身本地声明的 ``rayPayloadEXT`` 变量拷贝一份，当调用 ``traceRayEXT()`` 调用其他着色器时，调用者可以选择自身的其中一个负载，使得被调用着色器通
+过 ``rayPayloadInEXT`` 可以访问到调用者所分享的负载（ 多称为 ``输入负载`` ）。
+
+负载需要明确声明，否则将会导致 ``SM`` 的并行占用率随着内存使用过多而降低。
+
+.. admonition:: SM
+    :class: note
+
+    这里的 ``SM`` 应该是指流式多处理器（ ``Stream Multi-processor`` ，简写为 ``SM`` ），是构建整个 ``GPU`` 的核心模块，一个流式多处理器上一般同时运行多个线程块。每个流式多处理器可以视为具有较小结构的 ``CPU`` ，支持指令并行。
+
+     ``SM`` 的占用率是越高越好
+
+接下来需要如下两个类型的的着色器：
+
+* 未命中着色器（ ``miss shader`` ），当没有与任何几何体相交时会调用该着色器。一般用于对环境纹理进行采样或者通过光追负载直接返回一个颜色。
+* 最近命中着色器（ ``closest hit shader`` ），当光线与的几何体相交并且离光线起点最近时会调用该着色器。一般用于计算光照并使用光追负载返回结果。有多少最近相交就有多少最近命中着色器的调用，这与基于物体光栅化渲染时覆盖了多少像素概念相通。
