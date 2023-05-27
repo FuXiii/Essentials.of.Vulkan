@@ -270,15 +270,19 @@
 <li><p class="sd-card-text">2023/5/26 增加 <code class="docutils literal notranslate"><span class="pre">5.3</span> <span class="pre">main</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/5/26 增加 <code class="docutils literal notranslate"><span class="pre">6</span> <span class="pre">光线追踪描述符集（Descriptor</span> <span class="pre">Set）</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/5/26 增加 <code class="docutils literal notranslate"><span class="pre">6.1</span> <span class="pre">增加场景的描述符集</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/5/27 更新 <code class="docutils literal notranslate"><span class="pre">6.1</span> <span class="pre">增加场景的描述符集</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/5/27 增加 <code class="docutils literal notranslate"><span class="pre">6.2</span> <span class="pre">描述符更新</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/5/27 增加 <code class="docutils literal notranslate"><span class="pre">6.3</span> <span class="pre">main</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/5/27 增加 <code class="docutils literal notranslate"><span class="pre">7</span> <span class="pre">光线追踪管线</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p><a class="reference external" href="https://nvpro-samples.github.io/vk_raytracing_tutorial_KHR/">文献源</a></p>
 <p>本文所提供的的代码和文档聚焦于使用 <a class="reference external" href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/vkspec.html#VK_KHR_ray_tracing_pipeline">VK_KHR_ray_tracing_pipeline</a> 扩展展示一个基础光追示例。
 该教程从一个基于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 开发的基础程序开始，并且提供一步步的介绍去修改和增加函数和功能。</p>
-<figure class="align-default" id="id16">
+<figure class="align-default" id="id19">
 <img alt="../_images/resultRaytraceShadowMedieval.png" src="../_images/resultRaytraceShadowMedieval.png" />
 <figcaption>
-<p><span class="caption-text">最终结果</span><a class="headerlink" href="#id16" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">最终结果</span><a class="headerlink" href="#id19" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <div class="note admonition">
@@ -335,10 +339,10 @@
 <p>打开位于 <code class="docutils literal notranslate"><span class="pre">build</span></code> 目录下的解决方案，之后编译并运行 <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing__before">vk_ray_tracing__before_KHR</a> 。</p>
 <p>该示例将会是此教程的示例起点。这是一个用于加载 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 文件并使用 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 光栅化渲染他们的小框架。您可以通过阅读 <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/blob/master/ray_tracing__before/README.md#nvidia-vulkan-ray-tracing-tutorial">Base Overview</a> 来纵观该示例是如何实现的。
 我们将使用这个框架加载几何体并且渲染场景来实现光线追踪。</p>
-<figure class="align-default" id="id17">
+<figure class="align-default" id="id20">
 <img alt="../_images/resultRasterCube.png" src="../_images/resultRasterCube.png" />
 <figcaption>
-<p><span class="caption-text">首次执行</span><a class="headerlink" href="#id17" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">首次执行</span><a class="headerlink" href="#id20" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <p>接下来的步骤将是修改 <code class="docutils literal notranslate"><span class="pre">vk_ray_tracing__before_KHR</span></code> 使其支持光线追踪。该教程修改后的最终结果将是同 <code class="docutils literal notranslate"><span class="pre">vk_ray_tracing__simple_KHR</span></code> 一样。如果开发过程发生错误
@@ -409,9 +413,9 @@
 据经验来说，底层加速结构越少越好。</p>
 </div>
 <p>顶层加速结构可以包含多个物体的实体（ <code class="docutils literal notranslate"><span class="pre">instance</span></code> ），每一个实体都会有自己的变换矩阵并且引用一个具体的底层加速结构。我们将会从一个底层加速结构和一个单位矩阵的顶层加速结构实例开始实现。</p>
-<figure class="align-default" id="id18">
+<figure class="align-default" id="id21">
 <img alt="../_images/AccelerationStructure.svg" src="../_images/AccelerationStructure.svg" /><figcaption>
-<p><span class="caption-text">加速结构</span><a class="headerlink" href="#id18" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">加速结构</span><a class="headerlink" href="#id21" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <p>该教程将会加载一个 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 文件，并将其索引、顶点和材质数据存储到 <code class="docutils literal notranslate"><span class="pre">ObjModel</span></code> 数据结构中。该模型同时引用一个 <code class="docutils literal notranslate"><span class="pre">ObjInstance</span></code> 数据结构，其中包含用于特定实体的变换矩阵。对于光线追踪， <code class="docutils literal notranslate"><span class="pre">ObjModel</span></code> 和一系列的 <code class="docutils literal notranslate"><span class="pre">ObjInstances</span></code> 将在之后分别用于构建底层加速结构和顶层加速结构。</p>
@@ -1064,7 +1068,7 @@
 这样我们就可以获取到其他的顶点属性。</p>
 <p>为了维持光栅化和光线追踪之间的兼容性，我们将会重复利用之前光栅化渲染器的描述符集，该描述符集不仅会包含场景信息，此外还会增加另外一些描述符集用于引用顶层加速结构和缓存输出结果。</p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">hello_vulkan.h</span></code> 头文件中，我们声明与的描述符集相关的对象：</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w">           </span><span class="nf">createRtDescriptorSet</span><span class="p">();</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">createRtDescriptorSet</span><span class="p">();</span>
 
 <span class="n">nvvk</span><span class="o">::</span><span class="n">DescriptorSetBindings</span><span class="w">                     </span><span class="n">m_rtDescSetLayoutBind</span><span class="p">;</span>
 <span class="n">VkDescriptorPool</span><span class="w">                                </span><span class="n">m_rtDescPool</span><span class="p">;</span>
@@ -1112,7 +1116,80 @@
 </div>
 <section id="id15">
 <h3>6.1 增加场景的描述符集<a class="headerlink" href="#id15" title="此标题的永久链接">#</a></h3>
+<p>光线追踪同样也需要访问场景描述信息，我们需要通过修改 <code class="docutils literal notranslate"><span class="pre">createDescriptorSetLayout()</span></code> 函数将原先这些数据在支持光栅化着色器访问的同时支持光追着色器。光线生成着色器需要访问相机矩阵用于计算光线方向，最近命中着色器需要访问材质，场景的实体，纹理，顶点缓存和索引缓存。尽管顶点和索引缓存目前仅会被光追着色器使用，我们在原本光栅化着色器的基础上增加光追着色器也是符合标准的。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 相机矩阵</span>
+<span class="n">m_descSetLayoutBind</span><span class="p">.</span><span class="n">addBinding</span><span class="p">(</span><span class="n">SceneBindings</span><span class="o">::</span><span class="n">eGlobals</span><span class="p">,</span><span class="w"> </span><span class="n">VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">                               </span><span class="n">VK_SHADER_STAGE_VERTEX_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_RAYGEN_BIT_KHR</span><span class="p">);</span>
+<span class="c1">// 物体描述</span>
+<span class="n">m_descSetLayoutBind</span><span class="p">.</span><span class="n">addBinding</span><span class="p">(</span><span class="n">SceneBindings</span><span class="o">::</span><span class="n">eObjDescs</span><span class="p">,</span><span class="w"> </span><span class="n">VK_DESCRIPTOR_TYPE_STORAGE_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">                               </span><span class="n">VK_SHADER_STAGE_VERTEX_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_FRAGMENT_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR</span><span class="p">);</span>
+<span class="c1">// 纹理</span>
+<span class="n">m_descSetLayoutBind</span><span class="p">.</span><span class="n">addBinding</span><span class="p">(</span><span class="n">SceneBindings</span><span class="o">::</span><span class="n">eTextures</span><span class="p">,</span><span class="w"> </span><span class="n">VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER</span><span class="p">,</span><span class="w"> </span><span class="n">nbTxt</span><span class="p">,</span>
+<span class="w">                               </span><span class="n">VK_SHADER_STAGE_FRAGMENT_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>原本顶点缓存和索引缓存只在光栅化管线中使用，光追踪中这些缓存将会用于存储缓存，所以在分配缓存时设置支持存储功能。此外由于这些缓存将会被加速结构构建器所访问，这种访问需要获取到缓存的原始设备地址（在 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryTrianglesDataKHR</span></code> 中），所以创建该缓存时也需要附上 <code class="docutils literal notranslate"><span class="pre">VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR</span></code> 功能位域。</p>
+<p>我们通过更新 <code class="docutils literal notranslate"><span class="pre">loadModel</span></code> 中的缓存使用来达到此目的：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkBufferUsageFlags</span><span class="w"> </span><span class="n">flag</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT</span><span class="p">;</span>
+<span class="n">VkBufferUsageFlags</span><span class="w"> </span><span class="n">rayTracingFlags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="c1">// 同样也用于构建加速结构</span>
+<span class="w">    </span><span class="n">flag</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_STORAGE_BUFFER_BIT</span><span class="p">;</span>
+<span class="n">model</span><span class="p">.</span><span class="n">vertexBuffer</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="n">m_alloc</span><span class="p">.</span><span class="n">createBuffer</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="n">loader</span><span class="p">.</span><span class="n">m_vertices</span><span class="p">,</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_VERTEX_BUFFER_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">rayTracingFlags</span><span class="p">);</span>
+<span class="n">model</span><span class="p">.</span><span class="n">indexBuffer</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">m_alloc</span><span class="p">.</span><span class="n">createBuffer</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="n">loader</span><span class="p">.</span><span class="n">m_indices</span><span class="p">,</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_INDEX_BUFFER_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">rayTracingFlags</span><span class="p">);</span>
+<span class="n">model</span><span class="p">.</span><span class="n">matColorBuffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_alloc</span><span class="p">.</span><span class="n">createBuffer</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="n">loader</span><span class="p">.</span><span class="n">m_materials</span><span class="p">,</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_STORAGE_BUFFER_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">flag</span><span class="p">);</span>
+<span class="n">model</span><span class="p">.</span><span class="n">matIndexBuffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_alloc</span><span class="p">.</span><span class="n">createBuffer</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="n">loader</span><span class="p">.</span><span class="n">m_matIndx</span><span class="p">,</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_STORAGE_BUFFER_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">flag</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="note admonition">
+<p class="admonition-title">缓存数组</p>
+<p>每一个模型（ <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> ）都是由顶点、索引和材质缓存构成的。因此一个场景有一系列这样的缓存。在着色器中我们通过使用实体的 <code class="docutils literal notranslate"><span class="pre">ObjectID</span></code> 来获取到正确的缓存。
+这对于光追来说很方便，我们可以以此来访问光追场景中的所有数据。</p>
+</div>
 </section>
+<section id="id16">
+<h3>6.2 描述符更新<a class="headerlink" href="#id16" title="此标题的永久链接">#</a></h3>
+<p>和光栅化描述符集一样，光追描述符集也需要当内容放生改变时进行更新，特别是在窗口大小发生改变、输出图片发生了重新创建并且需要重新链接进描述符集。通过在 <code class="docutils literal notranslate"><span class="pre">HelloVulkan</span></code> 类
+中增加一个新成员函数来达到更新描述符集的目的。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">updateRtDescriptorSet</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>该函数的实现非常直接，仅仅更新输出图片的引用：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">//--------------------------------------------------------------------------------------------------</span>
+<span class="c1">// 将输出图片更新到描述符集中</span>
+<span class="c1">// - 当窗口分辨率发生了改变</span>
+<span class="c1">//</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">HelloVulkan::updateRtDescriptorSet</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="c1">// (1) 设置输出纹理</span>
+<span class="w">  </span><span class="n">VkDescriptorImageInfo</span><span class="w"> </span><span class="n">imageInfo</span><span class="p">{{},</span><span class="w"> </span><span class="n">m_offscreenColor</span><span class="p">.</span><span class="n">descriptor</span><span class="p">.</span><span class="n">imageView</span><span class="p">,</span><span class="w"> </span><span class="n">VK_IMAGE_LAYOUT_GENERAL</span><span class="p">};</span>
+<span class="w">  </span><span class="n">VkWriteDescriptorSet</span><span class="w">  </span><span class="n">wds</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_rtDescSetLayoutBind</span><span class="p">.</span><span class="n">makeWrite</span><span class="p">(</span><span class="n">m_rtDescSet</span><span class="p">,</span><span class="w"> </span><span class="n">RtxBindings</span><span class="o">::</span><span class="n">eOutImage</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">imageInfo</span><span class="p">);</span>
+<span class="w">  </span><span class="n">vkUpdateDescriptorSets</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">wds</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>我们使用 <a class="reference external" href="https://github.com/nvpro-samples/nvpro_core/tree/master/nvvk#class-nvvkdescriptorsetbindings">nvvk::DescriptorSetBindings</a> 来辅助创建描述符集。这将会避免很多重复性代码和潜在错误。</p>
+</div>
+<p>之后在 <code class="docutils literal notranslate"><span class="pre">onResize</span></code> 函数（窗口大小发生了改变）中调用该更新函数</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">updateRtDescriptorSet</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>当程序被关闭时我们需要在 <code class="docutils literal notranslate"><span class="pre">destroyResources</span></code> 函数中销毁本章节创建的资源</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">vkDestroyDescriptorPool</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">m_rtDescPool</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+<span class="n">vkDestroyDescriptorSetLayout</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">m_rtDescSetLayout</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="id17">
+<h3>6.3 main<a class="headerlink" href="#id17" title="此标题的永久链接">#</a></h3>
+<p>在 <code class="docutils literal notranslate"><span class="pre">main</span></code> 函数中，我们将在其他光追调用之后开始创建描述符集。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">helloVk</span><span class="p">.</span><span class="n">createRtDescriptorSet</span><span class="p">();</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id18">
+<h2>7 光线追踪管线<a class="headerlink" href="#id18" title="此标题的永久链接">#</a></h2>
 </section>
 </section>
 
@@ -1208,8 +1285,11 @@
 </li>
 <li><a class="reference internal" href="#descriptor-set">6 光线追踪描述符集（Descriptor Set）</a><ul>
 <li><a class="reference internal" href="#id15">6.1 增加场景的描述符集</a></li>
+<li><a class="reference internal" href="#id16">6.2 描述符更新</a></li>
+<li><a class="reference internal" href="#id17">6.3 main</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#id18">7 光线追踪管线</a></li>
 </ul>
 </li>
 </ul>

@@ -35,6 +35,10 @@ NVIDIA Vulkan 光线追踪教程
     * 2023/5/26 增加 ``5.3 main`` 章节
     * 2023/5/26 增加 ``6 光线追踪描述符集（Descriptor Set）`` 章节
     * 2023/5/26 增加 ``6.1 增加场景的描述符集`` 章节
+    * 2023/5/27 更新 ``6.1 增加场景的描述符集`` 章节
+    * 2023/5/27 增加 ``6.2 描述符更新`` 章节
+    * 2023/5/27 增加 ``6.3 main`` 章节
+    * 2023/5/27 增加 ``7 光线追踪管线`` 章节
 
 `文献源`_
 
@@ -950,7 +954,7 @@ NVIDIA Vulkan 光线追踪教程
 
 .. code:: c++
 
-    void           createRtDescriptorSet();
+    void createRtDescriptorSet();
 
     nvvk::DescriptorSetBindings                     m_rtDescSetLayoutBind;
     VkDescriptorPool                                m_rtDescPool;
@@ -1000,3 +1004,92 @@ NVIDIA Vulkan 光线追踪教程
 
 6.1 增加场景的描述符集
 ***********************
+
+光线追踪同样也需要访问场景描述信息，我们需要通过修改 ``createDescriptorSetLayout()`` 函数将原先这些数据在支持光栅化着色器访问的同时支持光追着色器。光线生成着色器需要访问相机矩阵用于计算光线方向，最近命中着色器需要访问材质，场景的实体，纹理，顶点缓存和索引缓存。尽管顶点和索引缓存目前仅会被光追着色器使用，我们在原本光栅化着色器的基础上增加光追着色器也是符合标准的。
+
+.. code:: c++
+
+    // 相机矩阵
+    m_descSetLayoutBind.addBinding(SceneBindings::eGlobals, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1,
+                                   VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_RAYGEN_BIT_KHR);
+    // 物体描述
+    m_descSetLayoutBind.addBinding(SceneBindings::eObjDescs, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1,
+                                   VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR);
+    // 纹理
+    m_descSetLayoutBind.addBinding(SceneBindings::eTextures, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, nbTxt,
+                                   VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR);
+
+原本顶点缓存和索引缓存只在光栅化管线中使用，光追踪中这些缓存将会用于存储缓存，所以在分配缓存时设置支持存储功能。此外由于这些缓存将会被加速结构构建器所访问，这种访问需要获取到缓存的原始设备地址（在 ``VkAccelerationStructureGeometryTrianglesDataKHR`` 中），所以创建该缓存时也需要附上 ``VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR`` 功能位域。
+
+我们通过更新 ``loadModel`` 中的缓存使用来达到此目的：
+
+.. code:: c++
+
+    VkBufferUsageFlags flag   = VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
+    VkBufferUsageFlags rayTracingFlags = // 同样也用于构建加速结构 
+        flag | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
+    model.vertexBuffer   = m_alloc.createBuffer(cmdBuf, loader.m_vertices, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | rayTracingFlags);
+    model.indexBuffer    = m_alloc.createBuffer(cmdBuf, loader.m_indices, VK_BUFFER_USAGE_INDEX_BUFFER_BIT | rayTracingFlags);
+    model.matColorBuffer = m_alloc.createBuffer(cmdBuf, loader.m_materials, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | flag);
+    model.matIndexBuffer = m_alloc.createBuffer(cmdBuf, loader.m_matIndx, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | flag);
+
+.. admonition:: 缓存数组
+    :class: note
+
+    每一个模型（ ``OBJ`` ）都是由顶点、索引和材质缓存构成的。因此一个场景有一系列这样的缓存。在着色器中我们通过使用实体的 ``ObjectID`` 来获取到正确的缓存。
+    这对于光追来说很方便，我们可以以此来访问光追场景中的所有数据。
+
+6.2 描述符更新
+***********************
+
+和光栅化描述符集一样，光追描述符集也需要当内容放生改变时进行更新，特别是在窗口大小发生改变、输出图片发生了重新创建并且需要重新链接进描述符集。通过在 ``HelloVulkan`` 类
+中增加一个新成员函数来达到更新描述符集的目的。
+
+.. code:: c++
+
+    void updateRtDescriptorSet();
+
+该函数的实现非常直接，仅仅更新输出图片的引用：
+
+.. code:: c++
+
+    //--------------------------------------------------------------------------------------------------
+    // 将输出图片更新到描述符集中
+    // - 当窗口分辨率发生了改变
+    //
+    void HelloVulkan::updateRtDescriptorSet()
+    {
+      // (1) 设置输出纹理
+      VkDescriptorImageInfo imageInfo{{}, m_offscreenColor.descriptor.imageView, VK_IMAGE_LAYOUT_GENERAL};
+      VkWriteDescriptorSet  wds = m_rtDescSetLayoutBind.makeWrite(m_rtDescSet, RtxBindings::eOutImage, &imageInfo);
+      vkUpdateDescriptorSets(m_device, 1, &wds, 0, nullptr);
+    }
+
+.. note::
+
+    我们使用 `nvvk::DescriptorSetBindings <https://github.com/nvpro-samples/nvpro_core/tree/master/nvvk#class-nvvkdescriptorsetbindings>`_ 来辅助创建描述符集。这将会避免很多重复性代码和潜在错误。
+
+之后在 ``onResize`` 函数（窗口大小发生了改变）中调用该更新函数
+
+.. code:: c++
+
+    updateRtDescriptorSet();
+
+当程序被关闭时我们需要在 ``destroyResources`` 函数中销毁本章节创建的资源
+
+.. code:: c++
+
+    vkDestroyDescriptorPool(m_device, m_rtDescPool, nullptr);
+    vkDestroyDescriptorSetLayout(m_device, m_rtDescSetLayout, nullptr);
+
+6.3 main
+***********************
+
+在 ``main`` 函数中，我们将在其他光追调用之后开始创建描述符集。
+
+.. code:: c++
+
+    helloVk.createRtDescriptorSet();
+
+7 光线追踪管线
+####################
