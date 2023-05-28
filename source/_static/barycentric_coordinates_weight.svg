@@ -1,0 +1,5 @@
+<svg class="diagram" xmlns="http://www.w3.org/2000/svg" version="1.1" height="128" width="176" style="margin:0 auto 0 auto;"><g transform="translate(8,16 )">
+<path d="M 48,96 L 144,96 " style="fill:none;stroke:black;stroke-width:2"></path>
+<path d="M 96,0 L 144,96 " style="fill:none;stroke:black;stroke-width:2"></path>
+<path d="M 48,96 L 96,0 " style="fill:none;stroke:black;stroke-width:2"></path>
+<g transform="translate(0,0)"><text text-anchor="middle" x="112" y="4">u</text><text text-anchor="middle" x="96" y="36">v</text><text text-anchor="middle" x="104" y="36">1</text><text text-anchor="middle" x="8" y="84">1</text><text text-anchor="middle" x="16" y="84">-</text><text text-anchor="middle" x="24" y="84">u</text><text text-anchor="middle" x="32" y="84">-</text><text text-anchor="middle" x="40" y="84">v</text><text text-anchor="middle" x="72" y="84">v</text><text text-anchor="middle" x="80" y="84">0</text><text text-anchor="middle" x="112" y="84">v</text><text text-anchor="middle" x="120" y="84">2</text><text text-anchor="middle" x="152" y="84">v</text></g></g></svg>
