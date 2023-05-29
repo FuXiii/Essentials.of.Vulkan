@@ -276,6 +276,7 @@
 <li><p class="sd-card-text">2023/5/27 增加 <code class="docutils literal notranslate"><span class="pre">7</span> <span class="pre">光线追踪管线</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/5/28 更新 <code class="docutils literal notranslate"><span class="pre">7</span> <span class="pre">光线追踪管线</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/5/28 增加 <code class="docutils literal notranslate"><span class="pre">7.1</span> <span class="pre">增加着色器</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/5/29 更新 <code class="docutils literal notranslate"><span class="pre">7.1</span> <span class="pre">增加着色器</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p><a class="reference external" href="https://nvpro-samples.github.io/vk_raytracing_tutorial_KHR/">文献源</a></p>
@@ -302,8 +303,8 @@
 <p>出于教育的目的，所有的代码都在分散一些很小的文件中。要将这些结合起来需要额外的抽象层级。</p>
 </div>
 </section>
-<section id="id3">
-<h2>2 配置环境<a class="headerlink" href="#id3" title="此标题的永久链接">#</a></h2>
+<section id="environment-setup">
+<span id="id3"></span><h2>2 配置环境<a class="headerlink" href="#environment-setup" title="此标题的永久链接">#</a></h2>
 <p>推荐的方式是通过 <code class="docutils literal notranslate"><span class="pre">nvpro-samples</span></code> 的 <code class="docutils literal notranslate"><span class="pre">build_all</span></code> 脚本去下载包括 <code class="docutils literal notranslate"><span class="pre">NVVK</span></code> 在内的工程。</p>
 <p>在命令行中，从 <a class="reference external" href="https://github.com/nvpro-samples/build_all">https://github.com/nvpro-samples/build_all</a> 中克隆 <code class="docutils literal notranslate"><span class="pre">nvpro-samples/build_all</span></code> 仓库：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">nvpro</span><span class="o">-</span><span class="n">samples</span><span class="o">/</span><span class="n">build_all</span><span class="o">.</span><span class="n">git</span>
@@ -1267,6 +1268,50 @@
 <p>为了专注于创建管线，我们提供了一些简单的着色器。</p>
 <section id="id19">
 <h3>7.1 增加着色器<a class="headerlink" href="#id19" title="此标题的永久链接">#</a></h3>
+<div class="note admonition">
+<p class="admonition-title">下载光线追踪着色器</p>
+<p>将着色器下载下来并且解压到 <code class="docutils literal notranslate"><span class="pre">src/shaders</span></code> 。之后返回 <code class="docutils literal notranslate"><span class="pre">CMake</span></code> 中再次发布工程，相应的着色器文件将会增加到过程中。</p>
+<div class="hint admonition">
+<p class="admonition-title">着色器下载</p>
+<p>在 <a class="reference internal" href="#environment-setup"><span class="std std-ref">2 配置环境</span></a> 章节中，通过 <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">--recursive</span></code> 指令克隆的项目里已经自带着色器文件，不需要再另外单独下载。</p>
+</div>
+</div>
+<p>目前 <code class="docutils literal notranslate"><span class="pre">shaders</span></code> 文件夹下与光追有关了的着色器文件有三种：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">raytrace.rgen</span></code> 包含光线生成程序。其同时也声明访问输出缓存 <code class="docutils literal notranslate"><span class="pre">image</span></code> 和绑定的 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureKHR</span></code> 光追加速结构 <code class="docutils literal notranslate"><span class="pre">topLevelAS</span></code> 。对于此时该着色器仅仅向输出缓存中写入一个固定颜色。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">raytrace.rmiss</span></code> 用于定义未命中着色器。当没有几何体与光线相交时，该着色器将会被调用，并且会往光追负载 <code class="docutils literal notranslate"><span class="pre">rayPayloadInEXT</span></code> 中写入一个固定颜色。由于我们目前的光线生成程序现在不会追踪任何光线，该未命中着色器将不会被调用。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">raytrace.rchit</span></code> 包含一个非常简单的最近命中着色器。其将在光线击中几何体（三角形）时被调用。与未命中着色器相同，其也会使用光追负载 <code class="docutils literal notranslate"><span class="pre">rayPayloadInEXT</span></code> 。此外该着色器还有另外一个交点属性输入 <code class="docutils literal notranslate"><span class="pre">hitAttributeEXT</span></code> （ 也就是质心坐标 ）作为内置的光线-三角形相交测试结果。目前
+该着色器仅仅往光追负载中写入一个固定颜色。</p></li>
+</ul>
+<p>在头文件中，增加用于构建光线追踪管线的函数，并且增加用于存储管线的成员变量：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w">                                              </span><span class="nf">createRtPipeline</span><span class="p">();</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">VkRayTracingShaderGroupCreateInfoKHR</span><span class="o">&gt;</span><span class="w"> </span><span class="n">m_rtShaderGroups</span><span class="p">;</span>
+<span class="n">VkPipelineLayout</span><span class="w">                                  </span><span class="n">m_rtPipelineLayout</span><span class="p">;</span>
+<span class="n">VkPipeline</span><span class="w">                                        </span><span class="n">m_rtPipeline</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>管线同样也会使用常量推送（ <code class="docutils literal notranslate"><span class="pre">push</span> <span class="pre">constants</span></code> ）存储全局变量，即背景颜色和光源信息。一旦我们在 <code class="docutils literal notranslate"><span class="pre">host</span></code> 端（ <code class="docutils literal notranslate"><span class="pre">CPU</span></code> ）设置了相关数据并在设备中使用，数据的结构声明在 <code class="docutils literal notranslate"><span class="pre">shaders/host_device.h</span></code> 文件中。</p>
+<div class="note admonition">
+<p class="admonition-title">常量推送</p>
+<p>常量推送（ <code class="docutils literal notranslate"><span class="pre">push</span> <span class="pre">constants</span></code> ），一般用于直接向着色器中推送数据，虽然叫常量推送，但每次推送的数据是可以变化的，该推送方式比传统的描述符集推送方便不少，但方便的代价是常量推送可推送的数据大小有限制（一般都比较小）。比如 <code class="docutils literal notranslate"><span class="pre">NVIDIA</span> <span class="pre">GeForce</span> <span class="pre">RTX</span> <span class="pre">3070</span></code> 桌面版的显卡设备支持的最大常量推送大小为 <code class="docutils literal notranslate"><span class="pre">256</span></code> 字节。</p>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// Push constant structure for the ray tracer</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">PushConstantRay</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">vec4</span><span class="w">  </span><span class="n">clearColor</span><span class="p">;</span>
+<span class="w">  </span><span class="n">vec3</span><span class="w">  </span><span class="n">lightPosition</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">lightIntensity</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w">   </span><span class="n">lightType</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>在 <code class="docutils literal notranslate"><span class="pre">HelloVulkan</span></code> 类中增加一个常量推送成员。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 用于光线追踪的常量推送</span>
+<span class="n">PushConstantRay</span><span class="w"> </span><span class="n">m_pcRay</span><span class="p">{};</span>
+</pre></div>
+</div>
+<p>我们实现光线追踪管线是先从光线生成主色器和未命中着色器开始，然后是最近命中着色器。注意，这个着色器顺序是我们自己定的，该 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 光追扩展其实在创建管线时设置的着色器顺序可以是随意的。光追着色器的概念是对光栅化管线着色器的延续，在光线追踪中也有类似光栅化着色器的执行顺序和彼此着色器间的数据流通。</p>
 </section>
 </section>
 </section>
@@ -1335,7 +1380,7 @@
             <ul>
 <li><a class="reference internal" href="#">NVIDIA Vulkan 光线追踪教程</a><ul>
 <li><a class="reference internal" href="#id2">1 介绍</a></li>
-<li><a class="reference internal" href="#id3">2 配置环境</a><ul>
+<li><a class="reference internal" href="#environment-setup">2 配置环境</a><ul>
 <li><a class="reference internal" href="#id4">2.1 生成解决方案</a></li>
 <li><a class="reference internal" href="#id5">2.2 工具安装</a></li>
 </ul>
@@ -1392,7 +1437,5 @@
     <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
     <script src="../_static/translations.js"></script>
     <script src="../_static/design-tabs.js"></script>
-    <script src="https://unpkg.com/mermaid@9.4.0/dist/mermaid.min.js"></script>
-    <script>mermaid.initialize({startOnLoad:true});</script>
     </body>
 </html>
