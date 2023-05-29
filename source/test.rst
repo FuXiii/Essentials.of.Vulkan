@@ -98,6 +98,8 @@ This is a paragraph that contains `a link`_.
    This is a heading
    =================
 
+.. _my-reference-label:
+
 This is a heading 2
 ####################
 
@@ -423,3 +425,5 @@ Lorem ipsum [Ref]_ dolor sit amet.
             : ["finally" ":" `suite`]
    try2_stmt: "try" ":" `suite`
             : "finally" ":" `suite`
+
+It refers to the section itself, see :ref:`my-reference-label`.

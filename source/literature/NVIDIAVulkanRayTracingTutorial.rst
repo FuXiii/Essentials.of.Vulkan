@@ -41,6 +41,7 @@ NVIDIA Vulkan 光线追踪教程
     * 2023/5/27 增加 ``7 光线追踪管线`` 章节
     * 2023/5/28 更新 ``7 光线追踪管线`` 章节
     * 2023/5/28 增加 ``7.1 增加着色器`` 章节
+    * 2023/5/29 更新 ``7.1 增加着色器`` 章节
 
 `文献源`_
 
@@ -67,6 +68,8 @@ NVIDIA Vulkan 光线追踪教程
 我们同时使用一个助手去生成光追的加速结构，我们会在本文中对其进行详细说明。
 
 .. note:: 出于教育的目的，所有的代码都在分散一些很小的文件中。要将这些结合起来需要额外的抽象层级。
+
+.. _Environment Setup:
 
 2 配置环境
 ####################
@@ -1178,3 +1181,56 @@ NVIDIA Vulkan 光线追踪教程
 7.1 增加着色器
 ***********************
 
+.. admonition:: 下载光线追踪着色器
+    :class: note
+
+    将着色器下载下来并且解压到 ``src/shaders`` 。之后返回 ``CMake`` 中再次发布工程，相应的着色器文件将会增加到过程中。
+
+    .. admonition:: 着色器下载
+        :class: hint 
+
+        在 :ref:`Environment Setup` 章节中，通过 ``git clone --recursive`` 指令克隆的项目里已经自带着色器文件，不需要再另外单独下载。
+
+目前 ``shaders`` 文件夹下与光追有关了的着色器文件有三种：
+
+* ``raytrace.rgen`` 包含光线生成程序。其同时也声明访问输出缓存 ``image`` 和绑定的 ``VkAccelerationStructureKHR`` 光追加速结构 ``topLevelAS`` 。对于此时该着色器仅仅向输出缓存中写入一个固定颜色。
+* ``raytrace.rmiss`` 用于定义未命中着色器。当没有几何体与光线相交时，该着色器将会被调用，并且会往光追负载 ``rayPayloadInEXT`` 中写入一个固定颜色。由于我们目前的光线生成程序现在不会追踪任何光线，该未命中着色器将不会被调用。
+* ``raytrace.rchit`` 包含一个非常简单的最近命中着色器。其将在光线击中几何体（三角形）时被调用。与未命中着色器相同，其也会使用光追负载 ``rayPayloadInEXT`` 。此外该着色器还有另外一个交点属性输入 ``hitAttributeEXT`` （ 也就是质心坐标 ）作为内置的光线-三角形相交测试结果。目前
+  该着色器仅仅往光追负载中写入一个固定颜色。
+
+在头文件中，增加用于构建光线追踪管线的函数，并且增加用于存储管线的成员变量：
+
+.. code:: c++
+
+    void                                              createRtPipeline();
+
+    std::vector<VkRayTracingShaderGroupCreateInfoKHR> m_rtShaderGroups;
+    VkPipelineLayout                                  m_rtPipelineLayout;
+    VkPipeline                                        m_rtPipeline;
+
+管线同样也会使用常量推送（ ``push constants`` ）存储全局变量，即背景颜色和光源信息。一旦我们在 ``host`` 端（ ``CPU`` ）设置了相关数据并在设备中使用，数据的结构声明在 ``shaders/host_device.h`` 文件中。
+
+.. admonition:: 常量推送
+    :class: note
+
+    常量推送（ ``push constants`` ），一般用于直接向着色器中推送数据，虽然叫常量推送，但每次推送的数据是可以变化的，该推送方式比传统的描述符集推送方便不少，但方便的代价是常量推送可推送的数据大小有限制（一般都比较小）。比如 ``NVIDIA GeForce RTX 3070`` 桌面版的显卡设备支持的最大常量推送大小为 ``256`` 字节。
+
+.. code:: c++
+
+    // Push constant structure for the ray tracer
+    struct PushConstantRay
+    {
+      vec4  clearColor;
+      vec3  lightPosition;
+      float lightIntensity;
+      int   lightType;
+    };
+
+在 ``HelloVulkan`` 类中增加一个常量推送成员。
+
+.. code:: c++
+
+    // 用于光线追踪的常量推送
+    PushConstantRay m_pcRay{};
+
+我们实现光线追踪管线是先从光线生成主色器和未命中着色器开始，然后是最近命中着色器。注意，这个着色器顺序是我们自己定的，该 ``Vulkan`` 光追扩展其实在创建管线时设置的着色器顺序可以是随意的。光追着色器的概念是对光栅化管线着色器的延续，在光线追踪中也有类似光栅化着色器的执行顺序和彼此着色器间的数据流通。
