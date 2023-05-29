@@ -1270,7 +1270,7 @@
 <h3>7.1 增加着色器<a class="headerlink" href="#id19" title="此标题的永久链接">#</a></h3>
 <div class="note admonition">
 <p class="admonition-title">下载光线追踪着色器</p>
-<p>将着色器下载下来并且解压到 <code class="docutils literal notranslate"><span class="pre">src/shaders</span></code> 。之后返回 <code class="docutils literal notranslate"><span class="pre">CMake</span></code> 中再次发布工程，相应的着色器文件将会增加到过程中。</p>
+<p>将着色器下载下来并且解压到 <code class="docutils literal notranslate"><span class="pre">src/shaders</span></code> 。之后返回 <code class="docutils literal notranslate"><span class="pre">CMake</span></code> 中再次发布工程，相应的着色器文件将会增加到工程中。</p>
 <div class="hint admonition">
 <p class="admonition-title">着色器下载</p>
 <p>在 <a class="reference internal" href="#environment-setup"><span class="std std-ref">2 配置环境</span></a> 章节中，通过 <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">--recursive</span></code> 指令克隆的项目里已经自带着色器文件，不需要再另外单独下载。</p>
@@ -1312,6 +1312,60 @@
 </pre></div>
 </div>
 <p>我们实现光线追踪管线是先从光线生成主色器和未命中着色器开始，然后是最近命中着色器。注意，这个着色器顺序是我们自己定的，该 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 光追扩展其实在创建管线时设置的着色器顺序可以是随意的。光追着色器的概念是对光栅化管线着色器的延续，在光线追踪中也有类似光栅化着色器的执行顺序和彼此着色器间的数据流通。</p>
+<p>所有的着色器都使用 <code class="docutils literal notranslate"><span class="pre">VkPipelineShaderStageCreateInfo</span></code> 类型组成的 <code class="docutils literal notranslate"><span class="pre">std::vector</span></code> 数组存储。如前所属，此时，该着色器数组中的索引值将作为着色器的唯一标识。这三个着色器都会使用同样的 <code class="docutils literal notranslate"><span class="pre">main</span></code> 函数作为入口函数。之后使用 <code class="docutils literal notranslate"><span class="pre">vkCreateShaderModule</span></code> 从已经编译好着色器代码创建着色器句柄 <code class="docutils literal notranslate"><span class="pre">VkShaderModule</span></code> 并定义相关着色器阶段。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">//--------------------------------------------------------------------------------------------------</span>
+<span class="c1">// 光线追踪管线: 所有着色器, 光线生成着色器, 最近命中着色器, 未命中着色器</span>
+<span class="c1">//</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">HelloVulkan::createRtPipeline</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">enum</span><span class="w"> </span><span class="nc">StageIndices</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">eRaygen</span><span class="p">,</span>
+<span class="w">    </span><span class="n">eMiss</span><span class="p">,</span>
+<span class="w">    </span><span class="n">eClosestHit</span><span class="p">,</span>
+<span class="w">    </span><span class="n">eShaderGroupCount</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="c1">// 所有的着色器</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="n">VkPipelineShaderStageCreateInfo</span><span class="p">,</span><span class="w"> </span><span class="n">eShaderGroupCount</span><span class="o">&gt;</span><span class="w"> </span><span class="n">stages</span><span class="p">{};</span>
+<span class="w">  </span><span class="n">VkPipelineShaderStageCreateInfo</span><span class="w">              </span><span class="n">stage</span><span class="p">{</span><span class="n">VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO</span><span class="p">};</span>
+<span class="w">  </span><span class="n">stage</span><span class="p">.</span><span class="n">pName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;main&quot;</span><span class="p">;</span><span class="w">  </span><span class="c1">// 全都使用相同的入口函数</span>
+<span class="w">  </span><span class="c1">// 光线生成着色器</span>
+<span class="w">  </span><span class="n">stage</span><span class="p">.</span><span class="k">module</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nvvk</span><span class="o">::</span><span class="n">createShaderModule</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">nvh</span><span class="o">::</span><span class="n">loadFile</span><span class="p">(</span><span class="s">&quot;spv/raytrace.rgen.spv&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="n">defaultSearchPaths</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">));</span>
+<span class="w">  </span><span class="n">stage</span><span class="p">.</span><span class="n">stage</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_RAYGEN_BIT_KHR</span><span class="p">;</span>
+<span class="w">  </span><span class="n">stages</span><span class="p">[</span><span class="n">eRaygen</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stage</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">// 未命中着色器</span>
+<span class="w">  </span><span class="n">stage</span><span class="p">.</span><span class="k">module</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nvvk</span><span class="o">::</span><span class="n">createShaderModule</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">nvh</span><span class="o">::</span><span class="n">loadFile</span><span class="p">(</span><span class="s">&quot;spv/raytrace.rmiss.spv&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="n">defaultSearchPaths</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">));</span>
+<span class="w">  </span><span class="n">stage</span><span class="p">.</span><span class="n">stage</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_MISS_BIT_KHR</span><span class="p">;</span>
+<span class="w">  </span><span class="n">stages</span><span class="p">[</span><span class="n">eMiss</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stage</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">// 击中组 - 最近命中着色器</span>
+<span class="w">  </span><span class="n">stage</span><span class="p">.</span><span class="k">module</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nvvk</span><span class="o">::</span><span class="n">createShaderModule</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">nvh</span><span class="o">::</span><span class="n">loadFile</span><span class="p">(</span><span class="s">&quot;spv/raytrace.rchit.spv&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="n">defaultSearchPaths</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">));</span>
+<span class="w">  </span><span class="n">stage</span><span class="p">.</span><span class="n">stage</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR</span><span class="p">;</span>
+<span class="w">  </span><span class="n">stages</span><span class="p">[</span><span class="n">eClosestHit</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stage</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>对应的索引标识将会使用 <code class="docutils literal notranslate"><span class="pre">VkRayTracingShaderGroupCreateInfoKHR</span></code> 结构体存储。该结构体第一个参数 <code class="docutils literal notranslate"><span class="pre">type</span></code> 用于表示本结构体中所代表的的着色器组的类型。光线
+生成着色器和未命中着色器属于 <code class="docutils literal notranslate"><span class="pre">general</span></code> 着色器，对应的类型就是 <code class="docutils literal notranslate"><span class="pre">VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR</span></code> ，并且之后仅设置该结构体的 <code class="docutils literal notranslate"><span class="pre">generalShader</span></code> 成员变量，其他成员
+都设置成 <code class="docutils literal notranslate"><span class="pre">VK_SHADER_UNUSED_KHR</span></code> 。这中设置同样适用于可调用着色器（ <code class="docutils literal notranslate"><span class="pre">callable</span> <span class="pre">shaders</span></code> ），但是本教程并没有使用。在我们的布局下光线生成着色器在第一个（ <code class="docutils literal notranslate"><span class="pre">0</span></code> ），之后是未命中着色器（ <code class="docutils literal notranslate"><span class="pre">1</span></code> ）。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 着色器组</span>
+<span class="n">VkRayTracingShaderGroupCreateInfoKHR</span><span class="w"> </span><span class="n">group</span><span class="p">{</span><span class="n">VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR</span><span class="p">};</span>
+<span class="n">group</span><span class="p">.</span><span class="n">anyHitShader</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="n">VK_SHADER_UNUSED_KHR</span><span class="p">;</span>
+<span class="n">group</span><span class="p">.</span><span class="n">closestHitShader</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="n">VK_SHADER_UNUSED_KHR</span><span class="p">;</span>
+<span class="n">group</span><span class="p">.</span><span class="n">generalShader</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="n">VK_SHADER_UNUSED_KHR</span><span class="p">;</span>
+<span class="n">group</span><span class="p">.</span><span class="n">intersectionShader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_SHADER_UNUSED_KHR</span><span class="p">;</span>
+
+<span class="c1">// 光线生成</span>
+<span class="n">group</span><span class="p">.</span><span class="n">type</span><span class="w">          </span><span class="o">=</span><span class="w"> </span><span class="n">VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR</span><span class="p">;</span>
+<span class="n">group</span><span class="p">.</span><span class="n">generalShader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">eRaygen</span><span class="p">;</span>
+<span class="n">m_rtShaderGroups</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">group</span><span class="p">);</span>
+
+<span class="c1">// 未命中</span>
+<span class="n">group</span><span class="p">.</span><span class="n">type</span><span class="w">          </span><span class="o">=</span><span class="w"> </span><span class="n">VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR</span><span class="p">;</span>
+<span class="n">group</span><span class="p">.</span><span class="n">generalShader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">eMiss</span><span class="p">;</span>
+<span class="n">m_rtShaderGroups</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">group</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>如之前所述，求交是使用 <code class="docutils literal notranslate"><span class="pre">3</span></code> 个着色器管理：求交着色器</p>
 </section>
 </section>
 </section>

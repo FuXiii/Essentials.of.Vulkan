@@ -1184,7 +1184,7 @@ NVIDIA Vulkan 光线追踪教程
 .. admonition:: 下载光线追踪着色器
     :class: note
 
-    将着色器下载下来并且解压到 ``src/shaders`` 。之后返回 ``CMake`` 中再次发布工程，相应的着色器文件将会增加到过程中。
+    将着色器下载下来并且解压到 ``src/shaders`` 。之后返回 ``CMake`` 中再次发布工程，相应的着色器文件将会增加到工程中。
 
     .. admonition:: 着色器下载
         :class: hint 
@@ -1234,3 +1234,62 @@ NVIDIA Vulkan 光线追踪教程
     PushConstantRay m_pcRay{};
 
 我们实现光线追踪管线是先从光线生成主色器和未命中着色器开始，然后是最近命中着色器。注意，这个着色器顺序是我们自己定的，该 ``Vulkan`` 光追扩展其实在创建管线时设置的着色器顺序可以是随意的。光追着色器的概念是对光栅化管线着色器的延续，在光线追踪中也有类似光栅化着色器的执行顺序和彼此着色器间的数据流通。
+
+所有的着色器都使用 ``VkPipelineShaderStageCreateInfo`` 类型组成的 ``std::vector`` 数组存储。如前所属，此时，该着色器数组中的索引值将作为着色器的唯一标识。这三个着色器都会使用同样的 ``main`` 函数作为入口函数。之后使用 ``vkCreateShaderModule`` 从已经编译好着色器代码创建着色器句柄 ``VkShaderModule`` 并定义相关着色器阶段。
+
+.. code:: c++
+
+    //--------------------------------------------------------------------------------------------------
+    // 光线追踪管线: 所有着色器, 光线生成着色器, 最近命中着色器, 未命中着色器
+    //
+    void HelloVulkan::createRtPipeline()
+    {
+      enum StageIndices
+      {
+        eRaygen,
+        eMiss,
+        eClosestHit,
+        eShaderGroupCount 
+      };
+
+      // 所有的着色器
+      std::array<VkPipelineShaderStageCreateInfo, eShaderGroupCount> stages{};
+      VkPipelineShaderStageCreateInfo              stage{VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO};
+      stage.pName = "main";  // 全都使用相同的入口函数
+      // 光线生成着色器
+      stage.module = nvvk::createShaderModule(m_device, nvh::loadFile("spv/raytrace.rgen.spv", true, defaultSearchPaths, true));
+      stage.stage    = VK_SHADER_STAGE_RAYGEN_BIT_KHR;
+      stages[eRaygen] = stage;
+      // 未命中着色器
+      stage.module = nvvk::createShaderModule(m_device, nvh::loadFile("spv/raytrace.rmiss.spv", true, defaultSearchPaths, true));
+      stage.stage  = VK_SHADER_STAGE_MISS_BIT_KHR;
+      stages[eMiss] = stage;
+      // 击中组 - 最近命中着色器
+      stage.module = nvvk::createShaderModule(m_device, nvh::loadFile("spv/raytrace.rchit.spv", true, defaultSearchPaths, true));
+      stage.stage  = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
+      stages[eClosestHit] = stage;
+
+对应的索引标识将会使用 ``VkRayTracingShaderGroupCreateInfoKHR`` 结构体存储。该结构体第一个参数 ``type`` 用于表示本结构体中所代表的的着色器组的类型。光线
+生成着色器和未命中着色器属于 ``general`` 着色器，对应的类型就是 ``VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR`` ，并且之后仅设置该结构体的 ``generalShader`` 成员变量，其他成员
+都设置成 ``VK_SHADER_UNUSED_KHR`` 。这中设置同样适用于可调用着色器（ ``callable shaders`` ），但是本教程并没有使用。在我们的布局下光线生成着色器在第一个（ ``0`` ），之后是未命中着色器（ ``1`` ）。
+
+.. code:: c++
+
+    // 着色器组
+    VkRayTracingShaderGroupCreateInfoKHR group{VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR};
+    group.anyHitShader       = VK_SHADER_UNUSED_KHR;
+    group.closestHitShader   = VK_SHADER_UNUSED_KHR;
+    group.generalShader      = VK_SHADER_UNUSED_KHR;
+    group.intersectionShader = VK_SHADER_UNUSED_KHR;
+
+    // 光线生成
+    group.type          = VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR;
+    group.generalShader = eRaygen;
+    m_rtShaderGroups.push_back(group);
+
+    // 未命中
+    group.type          = VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR;
+    group.generalShader = eMiss;
+    m_rtShaderGroups.push_back(group);
+
+如之前所述，求交是使用 ``3`` 个着色器管理：求交着色器
