@@ -277,15 +277,18 @@
 <li><p class="sd-card-text">2023/5/28 更新 <code class="docutils literal notranslate"><span class="pre">7</span> <span class="pre">光线追踪管线</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/5/28 增加 <code class="docutils literal notranslate"><span class="pre">7.1</span> <span class="pre">增加着色器</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/5/29 更新 <code class="docutils literal notranslate"><span class="pre">7.1</span> <span class="pre">增加着色器</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/5/30 更新 <code class="docutils literal notranslate"><span class="pre">7</span> <span class="pre">光线追踪管线</span></code> 章节，增加任意命中着色器中 <code class="docutils literal notranslate"><span class="pre">候选交点</span></code> 说明</p></li>
+<li><p class="sd-card-text">2023/5/30 更新 <code class="docutils literal notranslate"><span class="pre">7.1</span> <span class="pre">增加着色器</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/5/30 增加 <code class="docutils literal notranslate"><span class="pre">8</span> <span class="pre">着色器绑定表</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p><a class="reference external" href="https://nvpro-samples.github.io/vk_raytracing_tutorial_KHR/">文献源</a></p>
 <p>本文所提供的的代码和文档聚焦于使用 <a class="reference external" href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/vkspec.html#VK_KHR_ray_tracing_pipeline">VK_KHR_ray_tracing_pipeline</a> 扩展展示一个基础光追示例。
 该教程从一个基于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 开发的基础程序开始，并且提供一步步的介绍去修改和增加函数和功能。</p>
-<figure class="align-default" id="id20">
+<figure class="align-default" id="id22">
 <img alt="../_images/resultRaytraceShadowMedieval.png" src="../_images/resultRaytraceShadowMedieval.png" />
 <figcaption>
-<p><span class="caption-text">最终结果</span><a class="headerlink" href="#id20" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">最终结果</span><a class="headerlink" href="#id22" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <div class="note admonition">
@@ -342,10 +345,10 @@
 <p>打开位于 <code class="docutils literal notranslate"><span class="pre">build</span></code> 目录下的解决方案，之后编译并运行 <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing__before">vk_ray_tracing__before_KHR</a> 。</p>
 <p>该示例将会是此教程的示例起点。这是一个用于加载 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 文件并使用 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 光栅化渲染他们的小框架。您可以通过阅读 <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/blob/master/ray_tracing__before/README.md#nvidia-vulkan-ray-tracing-tutorial">Base Overview</a> 来纵观该示例是如何实现的。
 我们将使用这个框架加载几何体并且渲染场景来实现光线追踪。</p>
-<figure class="align-default" id="id21">
+<figure class="align-default" id="id23">
 <img alt="../_images/resultRasterCube.png" src="../_images/resultRasterCube.png" />
 <figcaption>
-<p><span class="caption-text">首次执行</span><a class="headerlink" href="#id21" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">首次执行</span><a class="headerlink" href="#id23" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <p>接下来的步骤将是修改 <code class="docutils literal notranslate"><span class="pre">vk_ray_tracing__before_KHR</span></code> 使其支持光线追踪。该教程修改后的最终结果将是同 <code class="docutils literal notranslate"><span class="pre">vk_ray_tracing__simple_KHR</span></code> 一样。如果开发过程发生错误
@@ -416,9 +419,9 @@
 据经验来说，底层加速结构越少越好。</p>
 </div>
 <p>顶层加速结构可以包含多个物体的实体（ <code class="docutils literal notranslate"><span class="pre">instance</span></code> ），每一个实体都会有自己的变换矩阵并且引用一个具体的底层加速结构。我们将会从一个底层加速结构和一个单位矩阵的顶层加速结构实例开始实现。</p>
-<figure class="align-default" id="id22">
+<figure class="align-default" id="id24">
 <img alt="../_images/AccelerationStructure.svg" src="../_images/AccelerationStructure.svg" /><figcaption>
-<p><span class="caption-text">加速结构</span><a class="headerlink" href="#id22" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">加速结构</span><a class="headerlink" href="#id24" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <p>该教程将会加载一个 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 文件，并将其索引、顶点和材质数据存储到 <code class="docutils literal notranslate"><span class="pre">ObjModel</span></code> 数据结构中。该模型同时引用一个 <code class="docutils literal notranslate"><span class="pre">ObjInstance</span></code> 数据结构，其中包含用于特定实体的变换矩阵。对于光线追踪， <code class="docutils literal notranslate"><span class="pre">ObjModel</span></code> 和一系列的 <code class="docutils literal notranslate"><span class="pre">ObjInstances</span></code> 将在之后分别用于构建底层加速结构和顶层加速结构。</p>
@@ -441,8 +444,8 @@
 该资源可以使用不同的内存分配策略进行分配。在该教程中我们使用我们自己的 <a class="reference external" href="https://github.com/nvpro-samples/nvpro_core/blob/master/nvvk/memallocator_dma_vk.hpp">DMA</a> 。其他的内存分配器也是可以使用的，
 比如 <a class="reference external" href="https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator">Vulkan Memory Allocator（VMA）</a> 或是专用内存分配器（比如一个 <code class="docutils literal notranslate"><span class="pre">VkDeviceMemory</span></code> 对应一个对象的策略，这种分配策略对于教学目的最容易理解，但是并不能用于产品开发）。</p>
 </div>
-<section id="id9">
-<h3>5.1 底层加速结构<a class="headerlink" href="#id9" title="此标题的永久链接">#</a></h3>
+<section id="bottom-level-acceleration-structure">
+<span id="id9"></span><h3>5.1 底层加速结构<a class="headerlink" href="#bottom-level-acceleration-structure" title="此标题的永久链接">#</a></h3>
 <p>构建底层加速器的第一步就是将 <code class="docutils literal notranslate"><span class="pre">ObjModel</span></code> 的几何数据转换成构建加速结构所需要的多个结构体中。我们使用 <code class="docutils literal notranslate"><span class="pre">nvvk::RaytracingBuilderKHR::BlasInput</span></code> 来维护所有的的结构体。</p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">HelloVulkan</span></code> 类中增加一个新函数：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">objectToVkGeometryKHR</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ObjModel</span><span class="o">&amp;</span><span class="w"> </span><span class="n">model</span><span class="p">);</span>
@@ -845,7 +848,7 @@
 <p>详情可参考该 <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/issues/57">Issue</a> 。</p>
 </div>
 </div>
-<p>索引和命中组概念贯穿光追管线和着色器绑定表，将会在后面介绍并用于在运行时选择确认哪些着色器被调用。就目前来说我们整个场景中只会使用一个命中组，所以命中组的索引将一直是 <code class="docutils literal notranslate"><span class="pre">0</span></code> 。最终实体也许会指示剔除选项，比如使用 <code class="docutils literal notranslate"><span class="pre">VkGeometryInstanceFlagsKHR</span> <span class="pre">flags</span></code> 剔除背面。在此例子中我们为了简单和独立输入模型决定禁用剔除。</p>
+<p>索引和命中组（ <code class="docutils literal notranslate"><span class="pre">hit</span> <span class="pre">groups</span></code> ）概念贯穿光追管线和着色器绑定表，将会在后面介绍并用于在运行时选择确认哪些着色器被调用。就目前来说我们整个场景中只会使用一个命中组，所以命中组的索引将一直是 <code class="docutils literal notranslate"><span class="pre">0</span></code> 。最终实体也许会指示剔除选项，比如使用 <code class="docutils literal notranslate"><span class="pre">VkGeometryInstanceFlagsKHR</span> <span class="pre">flags</span></code> 剔除背面。在此例子中我们为了简单和独立输入模型决定禁用剔除。</p>
 <p>一旦所有的实体对象创建完成，我们将会构建顶层加速结构，构建器比较喜欢生成光追性能友好的顶层加速结构（比如加速结构的大小不是首要考虑的）。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">HelloVulkan::createTopLevelAS</span><span class="p">()</span>
 <span class="p">{</span>
@@ -1240,8 +1243,8 @@
 <p>另外还有两个可选着色器类型：</p>
 <ul class="simple">
 <li><p>相交着色器（ <code class="docutils literal notranslate"><span class="pre">intersection</span> <span class="pre">shader</span></code> ），允许与用户与自定义几何体相交。比如为了按需加载几何体而与几何占位符相交，或者与程序化几何体相交而不需要提前进行细分。使用该着色器将会改变加速结构的构建策略，这一部分已经超出了本教程的范围。
-目前我们仅采用该 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 光追扩展内置好的光线-三角相交测试，该测试将会返回 <code class="docutils literal notranslate"><span class="pre">2</span></code> 个浮点类型坐标值，用于表示位于三角形内部相交点的 <code class="docutils literal notranslate"><span class="pre">(u,v)</span></code> 质心坐标（ <code class="docutils literal notranslate"><span class="pre">barycentric</span> <span class="pre">coordinates</span></code> ），对于一个由点 <code class="docutils literal notranslate"><span class="pre">v0</span></code> ， <code class="docutils literal notranslate"><span class="pre">v1</span></code> ， <code class="docutils literal notranslate"><span class="pre">v2</span></code> 构成的三角形，
-质心坐标用于定义该点相对于三角形三个顶点的权重：</p></li>
+目前我们仅采用该 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 光追扩展内置好的光线-三角相交测试，该测试将会返回 <code class="docutils literal notranslate"><span class="pre">2</span></code> 个浮点类型坐标值，用于表示位于三角形表面上相交点的 <code class="docutils literal notranslate"><span class="pre">(u,v)</span></code> 质心坐标（ <code class="docutils literal notranslate"><span class="pre">barycentric</span> <span class="pre">coordinates</span></code> ），对于一个由点 <code class="docutils literal notranslate"><span class="pre">v0</span></code> ， <code class="docutils literal notranslate"><span class="pre">v1</span></code> ， <code class="docutils literal notranslate"><span class="pre">v2</span></code> 构成的三角形，
+质心坐标用于定义该交点相对于三角形三个顶点的权重：</p></li>
 </ul>
 <figure class="align-default">
 <img alt="../_images/barycentric_coordinates_weight.svg" src="../_images/barycentric_coordinates_weight.svg" /></figure>
@@ -1257,11 +1260,17 @@
 </div>
 <ul class="simple">
 <li><p>任意命中着色器（ <code class="docutils literal notranslate"><span class="pre">any</span> <span class="pre">hit</span> <span class="pre">shader</span></code> ），在每一个可能的交点处执行。当查找与光线原点最近的交点的过程中可能会发现几个候选交点。任意命中着色器经常用于高效的透明测试，如果透明测试失败，光线可以继续遍历而不需要再次调用 <code class="docutils literal notranslate"><span class="pre">traceRayEXT()</span></code> ，内置的任意命中着色器
-只是简单的将交点返回给遍历引擎，用于确定哪一个交点是最近的那一个交点。对于本教程，由于我们在构建加速结构时设置了不透明位域（ <code class="docutils literal notranslate"><span class="pre">5.1</span> <span class="pre">底层加速结构</span></code> ），任意命中着色器将永远都不会调用。</p></li>
+只是简单的将交点返回给遍历引擎，用于确定哪一个交点是最近的那一个交点。对于本教程，由于我们在构建加速结构时设置了不透明 <code class="docutils literal notranslate"><span class="pre">VK_GEOMETRY_OPAQUE_BIT_KHR</span></code> 位域（ <a class="reference internal" href="#bottom-level-acceleration-structure"><span class="std std-ref">5.1 底层加速结构</span></a> ），任意命中着色器将永远都不会调用。</p></li>
 </ul>
-<figure class="align-default" id="id23">
+<div class="note admonition">
+<p class="admonition-title">候选交点</p>
+<p>根据 <a class="reference external" href="https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap9.html#shaders-any-hit">Vulkan标准文档 9.19. Any-Hit Shaders</a> 中的说明，在相交着色器返回位于光路长度 [t <sub>min</sub>,t <sub>max</sub>] 之内的交点时将会执行任意命中着色器。换句话就是，当光线穿透几何体时
+有可能会有多个交点。</p>
+<p>任意命中着色器主要用于筛选相交着色器返回的交点的。</p>
+</div>
+<figure class="align-default" id="id25">
 <img alt="../_images/ShaderPipeline.svg" src="../_images/ShaderPipeline.svg" /><figcaption>
-<p><span class="caption-text">光线追踪管线</span><a class="headerlink" href="#id23" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">光线追踪管线</span><a class="headerlink" href="#id25" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <p>我们将从使用三个主要着色器开始：一个光线生成着色器，一个未命中着色器和由一个最近命中着色器构成的一个命中组。这在 <code class="docutils literal notranslate"><span class="pre">GLSL</span></code> 编译成 <code class="docutils literal notranslate"><span class="pre">SPIR-V</span></code> 时已经完成。 <code class="docutils literal notranslate"><span class="pre">SPIR-V</span></code> 的着色器们将会链接成一个能够通过求交计算执行正确的击中着色器的光线追踪管线。</p>
@@ -1365,8 +1374,93 @@
 <span class="n">m_rtShaderGroups</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">group</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>如之前所述，求交是使用 <code class="docutils literal notranslate"><span class="pre">3</span></code> 个着色器管理：求交着色器</p>
+<p>如之前所述，求交是使用 <code class="docutils literal notranslate"><span class="pre">3</span></code> 个着色器配合完成：相交着色器用于计算光线与几何体的相交，之后任意命中着色器在每个候选的相交点上执行，并且最近命中着色器将会在光路上最近的相交点上执行。
+这 <code class="docutils literal notranslate"><span class="pre">3</span></code> 个着色器将会合并到一个击中组中。在本示例中我们的几何体是使用三角形构成的，所以 <code class="docutils literal notranslate"><span class="pre">VkRayTracingShaderGroupCreateInfoKHR</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">type</span></code> 参数设置的是 <code class="docutils literal notranslate"><span class="pre">VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR</span></code> 。
+我们一开始将 <code class="docutils literal notranslate"><span class="pre">generalShader</span></code> 设置成 <code class="docutils literal notranslate"><span class="pre">VK_SHADER_UNUSED_KHR</span></code>。之后我们将 <code class="docutils literal notranslate"><span class="pre">intersectionShader</span></code> 成员设置成 <code class="docutils literal notranslate"><span class="pre">VK_SHADER_UNUSED_KHR</span></code> 是应为我能使用硬件设备内置的光追算法代替相交着色器。我们不使用任意命中着色器，这样系统将会使用内置的交点筛选策略，所以
+将 <code class="docutils literal notranslate"><span class="pre">anyHitShader</span></code> 设置成 <code class="docutils literal notranslate"><span class="pre">VK_SHADER_UNUSED_KHR</span></code> 。接下来我们使用的着色器就是最近命中着色器，通过将 <code class="docutils literal notranslate"><span class="pre">closestHitShader</span></code> 成员设置成索引值 <code class="docutils literal notranslate"><span class="pre">2</span></code> （ 最近命中着色器的索引 ），此时 <code class="docutils literal notranslate"><span class="pre">stages</span></code> 数组中已经包含光线生成着色器和未命中着色器。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 最近命中着色器</span>
+<span class="n">group</span><span class="p">.</span><span class="n">type</span><span class="w">             </span><span class="o">=</span><span class="w"> </span><span class="n">VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR</span><span class="p">;</span>
+<span class="n">group</span><span class="p">.</span><span class="n">generalShader</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">VK_SHADER_UNUSED_KHR</span><span class="p">;</span>
+<span class="n">group</span><span class="p">.</span><span class="n">closestHitShader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">eClosestHit</span><span class="p">;</span>
+<span class="n">m_rtShaderGroups</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">group</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>如果几何数据不是三角形，我们需要将 <code class="docutils literal notranslate"><span class="pre">type</span></code> 设置成 <code class="docutils literal notranslate"><span class="pre">VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR</span></code> ，并且需要自定义一个相交着色器。</p>
+</div>
+<p>在创建着色器组之后，我们需要通过管线布局（ <code class="docutils literal notranslate"><span class="pre">pipeline</span> <span class="pre">layout</span></code> ）来描述管线如何与外部数据交互：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkPipelineLayoutCreateInfo</span><span class="w"> </span><span class="n">pipelineLayoutCreateInfo</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>首先在布局中增加用于光线追踪着色器的全局数据常量推送：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 常量推送: 我们希望能够更新着色器使用的常量</span>
+<span class="n">VkPushConstantRange</span><span class="w"> </span><span class="n">pushConstant</span><span class="p">{</span><span class="n">VK_SHADER_STAGE_RAYGEN_BIT_KHR</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_MISS_BIT_KHR</span><span class="p">,</span>
+<span class="w">                                 </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">PushConstantRay</span><span class="p">)};</span>
+
+
+<span class="n">VkPipelineLayoutCreateInfo</span><span class="w"> </span><span class="n">pipelineLayoutCreateInfo</span><span class="p">{</span><span class="n">VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO</span><span class="p">};</span>
+<span class="n">pipelineLayoutCreateInfo</span><span class="p">.</span><span class="n">pushConstantRangeCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="n">pipelineLayoutCreateInfo</span><span class="p">.</span><span class="n">pPushConstantRanges</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">pushConstant</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>如前述所言，管线使用两个描述符集： <code class="docutils literal notranslate"><span class="pre">set=0</span></code> 用于光追管线（ 顶层加速结构和输出图片 ）， <code class="docutils literal notranslate"><span class="pre">set=1</span></code> 用于与光栅化分享数据（场景数据）。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 描述符集: 一个用于光追, 另一个与光栅化管线分享数据</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">VkDescriptorSetLayout</span><span class="o">&gt;</span><span class="w"> </span><span class="n">rtDescSetLayouts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">m_rtDescSetLayout</span><span class="p">,</span><span class="w"> </span><span class="n">m_descSetLayout</span><span class="p">};</span>
+<span class="n">pipelineLayoutCreateInfo</span><span class="p">.</span><span class="n">setLayoutCount</span><span class="w">             </span><span class="o">=</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">rtDescSetLayouts</span><span class="p">.</span><span class="n">size</span><span class="p">());</span>
+<span class="n">pipelineLayoutCreateInfo</span><span class="p">.</span><span class="n">pSetLayouts</span><span class="w">                </span><span class="o">=</span><span class="w"> </span><span class="n">rtDescSetLayouts</span><span class="p">.</span><span class="n">data</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>现在管线布局信息已经完成，之后就可以创建布局本身了。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">vkCreatePipelineLayout</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">pipelineLayoutCreateInfo</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">m_rtPipelineLayout</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>光追管线的创建是不同于经典的（光栅化）图形管线的。在图形管线中我们仅需要简单的将几个可编程阶段（顶点着色器，片元着色器等）塞入管线中即可。而在光追管线中根据场景中激活的着色器数量，光追管线可以包含任意数量的
+着色器。</p>
+<p>首先我们需要提供所有要使用的着色器：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 将着色器和递归深度信息存储到光追管线中</span>
+<span class="n">VkRayTracingPipelineCreateInfoKHR</span><span class="w"> </span><span class="n">rayPipelineInfo</span><span class="p">{</span><span class="n">VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_KHR</span><span class="p">};</span>
+<span class="n">rayPipelineInfo</span><span class="p">.</span><span class="n">stageCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">stages</span><span class="p">.</span><span class="n">size</span><span class="p">());</span><span class="w">  </span><span class="c1">// Stages are shaders</span>
+<span class="n">rayPipelineInfo</span><span class="p">.</span><span class="n">pStages</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">stages</span><span class="p">.</span><span class="n">data</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>之后，我们指引驱动如何将着色器装配成组。一个光线生成着色器或未命中着色器可以自身成组，但是命中组可以由相交着色器、任意命中着色器和最近命中着色器这 <code class="docutils literal notranslate"><span class="pre">3</span></code> 种着色器组成。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 当前示例下， m_rtShaderGroups.size() == 3: 我们有一个光线生成着色器组，</span>
+<span class="c1">// 一个未命中着色器组，和一个最近命中着色器组。</span>
+<span class="n">rayPipelineInfo</span><span class="p">.</span><span class="n">groupCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">m_rtShaderGroups</span><span class="p">.</span><span class="n">size</span><span class="p">());</span>
+<span class="n">rayPipelineInfo</span><span class="p">.</span><span class="n">pGroups</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">m_rtShaderGroups</span><span class="p">.</span><span class="n">data</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>光线生成着色器和最近命中着色器可以进行光线追踪，使光线追踪成为一个潜在的递归过程。为了底层的 <code class="docutils literal notranslate"><span class="pre">RTX</span></code> 层能够优化管线我们设置了着色器中最大的递归深度。我们当前的着色器都非常的简单，我们设置递归深度为 <code class="docutils literal notranslate"><span class="pre">1</span></code> ，意味着
+我们不会进行光追递归（ 即最近命中着色器调用 <code class="docutils literal notranslate"><span class="pre">TraceRayEXT()</span></code> 函数 ）。注意，请尽量保持递归深度为最小深度，代之以一个循环函数。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">rayPipelineInfo</span><span class="p">.</span><span class="n">maxPipelineRayRecursionDepth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">  </span><span class="c1">// Ray depth</span>
+<span class="n">rayPipelineInfo</span><span class="p">.</span><span class="n">layout</span><span class="w">                       </span><span class="o">=</span><span class="w"> </span><span class="n">m_rtPipelineLayout</span><span class="p">;</span>
+
+<span class="n">vkCreateRayTracingPipelinesKHR</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="p">{},</span><span class="w"> </span><span class="p">{},</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">rayPipelineInfo</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">m_rtPipeline</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>一旦管线创建完成，我们就可以销毁支持创建的着色器句柄了：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">for</span><span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">stages</span><span class="p">)</span>
+<span class="w">    </span><span class="n">vkDestroyShaderModule</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="k">module</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>对于管线布局和管线本身将会在程序关闭时销毁回收，因此增加如下代码到 <code class="docutils literal notranslate"><span class="pre">destroyResources</span></code> 函数中：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">vkDestroyPipeline</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">m_rtPipeline</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+<span class="n">vkDestroyPipelineLayout</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">m_rtPipelineLayout</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+</pre></div>
+</div>
 </section>
+<section id="id20">
+<h3>7.2 main<a class="headerlink" href="#id20" title="此标题的永久链接">#</a></h3>
+<p>在 <code class="docutils literal notranslate"><span class="pre">main</span></code> 函数中，在其他光追函数调用完成之后我们调用管线创建函数：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">helloVk</span><span class="p">.</span><span class="n">createRtPipeline</span><span class="p">();</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id21">
+<h2>8 着色器绑定表<a class="headerlink" href="#id21" title="此标题的永久链接">#</a></h2>
 </section>
 </section>
 
@@ -1445,7 +1539,7 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#id8">5 加速结构</a><ul>
-<li><a class="reference internal" href="#id9">5.1 底层加速结构</a><ul>
+<li><a class="reference internal" href="#bottom-level-acceleration-structure">5.1 底层加速结构</a><ul>
 <li><a class="reference internal" href="#raytracingbuilder-buildblas">5.1.1 帮助类细节：RaytracingBuilder::buildBlas()</a><ul>
 <li><a class="reference internal" href="#cmdcreateblas">5.1.1.1 cmdCreateBlas</a></li>
 <li><a class="reference internal" href="#cmdcompactblas">5.1.1.2 cmdCompactBlas</a></li>
@@ -1468,8 +1562,10 @@
 </li>
 <li><a class="reference internal" href="#id18">7 光线追踪管线</a><ul>
 <li><a class="reference internal" href="#id19">7.1 增加着色器</a></li>
+<li><a class="reference internal" href="#id20">7.2 main</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#id21">8 着色器绑定表</a></li>
 </ul>
 </li>
 </ul>

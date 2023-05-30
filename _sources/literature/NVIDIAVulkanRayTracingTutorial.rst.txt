@@ -42,6 +42,9 @@ NVIDIA Vulkan 光线追踪教程
     * 2023/5/28 更新 ``7 光线追踪管线`` 章节
     * 2023/5/28 增加 ``7.1 增加着色器`` 章节
     * 2023/5/29 更新 ``7.1 增加着色器`` 章节
+    * 2023/5/30 更新 ``7 光线追踪管线`` 章节，增加任意命中着色器中 ``候选交点`` 说明
+    * 2023/5/30 更新 ``7.1 增加着色器`` 章节
+    * 2023/5/30 增加 ``8 着色器绑定表`` 章节
 
 `文献源`_
 
@@ -242,6 +245,8 @@ NVIDIA Vulkan 光线追踪教程
     该光追帮助类使用 `nvvk/resourceallocator_vk.hpp <https://github.com/nvpro-samples/nvpro_core/blob/master/nvvk/resourceallocator_vk.hpp>`_ 避免去管理 ``Vulkan`` 内存。其内部提供 ``nvvk::AccelKHR`` 类型，该类型包含 ``VkAccelerationStructureKHR`` 用于缓存创建和备份所需要的信息。
     该资源可以使用不同的内存分配策略进行分配。在该教程中我们使用我们自己的 `DMA <https://github.com/nvpro-samples/nvpro_core/blob/master/nvvk/memallocator_dma_vk.hpp>`_ 。其他的内存分配器也是可以使用的，
     比如 `Vulkan Memory Allocator（VMA） <https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator>`_ 或是专用内存分配器（比如一个 ``VkDeviceMemory`` 对应一个对象的策略，这种分配策略对于教学目的最容易理解，但是并不能用于产品开发）。
+
+.. _Bottom-Level Acceleration Structure:
 
 5.1 底层加速结构
 ********************
@@ -700,7 +705,7 @@ NVIDIA Vulkan 光线追踪教程
 
         详情可参考该 `Issue <https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/issues/57>`_ 。
 
-索引和命中组概念贯穿光追管线和着色器绑定表，将会在后面介绍并用于在运行时选择确认哪些着色器被调用。就目前来说我们整个场景中只会使用一个命中组，所以命中组的索引将一直是 ``0`` 。最终实体也许会指示剔除选项，比如使用 ``VkGeometryInstanceFlagsKHR flags`` 剔除背面。在此例子中我们为了简单和独立输入模型决定禁用剔除。
+索引和命中组（ ``hit groups`` ）概念贯穿光追管线和着色器绑定表，将会在后面介绍并用于在运行时选择确认哪些着色器被调用。就目前来说我们整个场景中只会使用一个命中组，所以命中组的索引将一直是 ``0`` 。最终实体也许会指示剔除选项，比如使用 ``VkGeometryInstanceFlagsKHR flags`` 剔除背面。在此例子中我们为了简单和独立输入模型决定禁用剔除。
 
 一旦所有的实体对象创建完成，我们将会构建顶层加速结构，构建器比较喜欢生成光追性能友好的顶层加速结构（比如加速结构的大小不是首要考虑的）。
 
@@ -1150,8 +1155,8 @@ NVIDIA Vulkan 光线追踪教程
 另外还有两个可选着色器类型：
 
 * 相交着色器（ ``intersection shader`` ），允许与用户与自定义几何体相交。比如为了按需加载几何体而与几何占位符相交，或者与程序化几何体相交而不需要提前进行细分。使用该着色器将会改变加速结构的构建策略，这一部分已经超出了本教程的范围。
-  目前我们仅采用该 ``Vulkan`` 光追扩展内置好的光线-三角相交测试，该测试将会返回 ``2`` 个浮点类型坐标值，用于表示位于三角形内部相交点的 ``(u,v)`` 质心坐标（ ``barycentric coordinates`` ），对于一个由点 ``v0`` ， ``v1`` ， ``v2`` 构成的三角形，
-  质心坐标用于定义该点相对于三角形三个顶点的权重：
+  目前我们仅采用该 ``Vulkan`` 光追扩展内置好的光线-三角相交测试，该测试将会返回 ``2`` 个浮点类型坐标值，用于表示位于三角形表面上相交点的 ``(u,v)`` 质心坐标（ ``barycentric coordinates`` ），对于一个由点 ``v0`` ， ``v1`` ， ``v2`` 构成的三角形，
+  质心坐标用于定义该交点相对于三角形三个顶点的权重：
 
 .. figure:: ../_static/barycentric_coordinates_weight.svg
 
@@ -1168,7 +1173,15 @@ NVIDIA Vulkan 光线追踪教程
         const vec3 pos = v0.pos * barycentrics.x + v1.pos * barycentrics.y + v2.pos * barycentrics.z; // 计算交点坐标
 
 * 任意命中着色器（ ``any hit shader`` ），在每一个可能的交点处执行。当查找与光线原点最近的交点的过程中可能会发现几个候选交点。任意命中着色器经常用于高效的透明测试，如果透明测试失败，光线可以继续遍历而不需要再次调用 ``traceRayEXT()`` ，内置的任意命中着色器
-  只是简单的将交点返回给遍历引擎，用于确定哪一个交点是最近的那一个交点。对于本教程，由于我们在构建加速结构时设置了不透明位域（ ``5.1 底层加速结构`` ），任意命中着色器将永远都不会调用。
+  只是简单的将交点返回给遍历引擎，用于确定哪一个交点是最近的那一个交点。对于本教程，由于我们在构建加速结构时设置了不透明 ``VK_GEOMETRY_OPAQUE_BIT_KHR`` 位域（ :ref:`Bottom-Level Acceleration Structure` ），任意命中着色器将永远都不会调用。
+
+.. admonition:: 候选交点
+    :class: note
+
+    根据 `Vulkan标准文档 9.19. Any-Hit Shaders <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap9.html#shaders-any-hit>`_ 中的说明，在相交着色器返回位于光路长度 [t :sub:`min`,t :sub:`max`] 之内的交点时将会执行任意命中着色器。换句话就是，当光线穿透几何体时
+    有可能会有多个交点。
+
+    任意命中着色器主要用于筛选相交着色器返回的交点的。
 
 .. figure:: ../_static/ShaderPipeline.svg
 
@@ -1292,4 +1305,111 @@ NVIDIA Vulkan 光线追踪教程
     group.generalShader = eMiss;
     m_rtShaderGroups.push_back(group);
 
-如之前所述，求交是使用 ``3`` 个着色器管理：求交着色器
+如之前所述，求交是使用 ``3`` 个着色器配合完成：相交着色器用于计算光线与几何体的相交，之后任意命中着色器在每个候选的相交点上执行，并且最近命中着色器将会在光路上最近的相交点上执行。
+这 ``3`` 个着色器将会合并到一个击中组中。在本示例中我们的几何体是使用三角形构成的，所以 ``VkRayTracingShaderGroupCreateInfoKHR`` 中的 ``type`` 参数设置的是 ``VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR`` 。
+我们一开始将 ``generalShader`` 设置成 ``VK_SHADER_UNUSED_KHR``。之后我们将 ``intersectionShader`` 成员设置成 ``VK_SHADER_UNUSED_KHR`` 是应为我能使用硬件设备内置的光追算法代替相交着色器。我们不使用任意命中着色器，这样系统将会使用内置的交点筛选策略，所以
+将 ``anyHitShader`` 设置成 ``VK_SHADER_UNUSED_KHR`` 。接下来我们使用的着色器就是最近命中着色器，通过将 ``closestHitShader`` 成员设置成索引值 ``2`` （ 最近命中着色器的索引 ），此时 ``stages`` 数组中已经包含光线生成着色器和未命中着色器。
+
+.. code:: c++
+
+    // 最近命中着色器
+    group.type             = VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR;
+    group.generalShader    = VK_SHADER_UNUSED_KHR;
+    group.closestHitShader = eClosestHit;
+    m_rtShaderGroups.push_back(group);
+
+.. note::
+
+    如果几何数据不是三角形，我们需要将 ``type`` 设置成 ``VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR`` ，并且需要自定义一个相交着色器。
+
+在创建着色器组之后，我们需要通过管线布局（ ``pipeline layout`` ）来描述管线如何与外部数据交互：
+
+.. code:: c++
+
+    VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo;
+
+首先在布局中增加用于光线追踪着色器的全局数据常量推送：
+
+.. code:: c++
+
+    // 常量推送: 我们希望能够更新着色器使用的常量
+    VkPushConstantRange pushConstant{VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_MISS_BIT_KHR,
+                                     0, sizeof(PushConstantRay)};
+
+
+    VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo{VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO};
+    pipelineLayoutCreateInfo.pushConstantRangeCount = 1;
+    pipelineLayoutCreateInfo.pPushConstantRanges    = &pushConstant;
+
+如前述所言，管线使用两个描述符集： ``set=0`` 用于光追管线（ 顶层加速结构和输出图片 ）， ``set=1`` 用于与光栅化分享数据（场景数据）。
+
+.. code:: c++
+
+    // 描述符集: 一个用于光追, 另一个与光栅化管线分享数据
+    std::vector<VkDescriptorSetLayout> rtDescSetLayouts = {m_rtDescSetLayout, m_descSetLayout};
+    pipelineLayoutCreateInfo.setLayoutCount             = static_cast<uint32_t>(rtDescSetLayouts.size());
+    pipelineLayoutCreateInfo.pSetLayouts                = rtDescSetLayouts.data();
+
+现在管线布局信息已经完成，之后就可以创建布局本身了。
+
+.. code:: c++
+
+    vkCreatePipelineLayout(m_device, &pipelineLayoutCreateInfo, nullptr, &m_rtPipelineLayout);
+
+光追管线的创建是不同于经典的（光栅化）图形管线的。在图形管线中我们仅需要简单的将几个可编程阶段（顶点着色器，片元着色器等）塞入管线中即可。而在光追管线中根据场景中激活的着色器数量，光追管线可以包含任意数量的
+着色器。
+
+首先我们需要提供所有要使用的着色器：
+
+.. code:: c++
+
+    // 将着色器和递归深度信息存储到光追管线中
+    VkRayTracingPipelineCreateInfoKHR rayPipelineInfo{VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_KHR};
+    rayPipelineInfo.stageCount = static_cast<uint32_t>(stages.size());  // Stages are shaders
+    rayPipelineInfo.pStages    = stages.data();
+
+之后，我们指引驱动如何将着色器装配成组。一个光线生成着色器或未命中着色器可以自身成组，但是命中组可以由相交着色器、任意命中着色器和最近命中着色器这 ``3`` 种着色器组成。
+
+.. code:: c++
+
+    // 当前示例下， m_rtShaderGroups.size() == 3: 我们有一个光线生成着色器组，
+    // 一个未命中着色器组，和一个最近命中着色器组。
+    rayPipelineInfo.groupCount = static_cast<uint32_t>(m_rtShaderGroups.size());
+    rayPipelineInfo.pGroups    = m_rtShaderGroups.data();
+
+光线生成着色器和最近命中着色器可以进行光线追踪，使光线追踪成为一个潜在的递归过程。为了底层的 ``RTX`` 层能够优化管线我们设置了着色器中最大的递归深度。我们当前的着色器都非常的简单，我们设置递归深度为 ``1`` ，意味着
+我们不会进行光追递归（ 即最近命中着色器调用 ``TraceRayEXT()`` 函数 ）。注意，请尽量保持递归深度为最小深度，代之以一个循环函数。
+
+.. code:: c++
+
+    rayPipelineInfo.maxPipelineRayRecursionDepth = 1;  // Ray depth
+    rayPipelineInfo.layout                       = m_rtPipelineLayout;
+
+    vkCreateRayTracingPipelinesKHR(m_device, {}, {}, 1, &rayPipelineInfo, nullptr, &m_rtPipeline);
+
+一旦管线创建完成，我们就可以销毁支持创建的着色器句柄了：
+
+.. code:: c++
+
+    for(auto& s : stages)
+        vkDestroyShaderModule(m_device, s.module, nullptr);
+    }
+
+对于管线布局和管线本身将会在程序关闭时销毁回收，因此增加如下代码到 ``destroyResources`` 函数中：
+
+.. code:: c++
+
+    vkDestroyPipeline(m_device, m_rtPipeline, nullptr);
+    vkDestroyPipelineLayout(m_device, m_rtPipelineLayout, nullptr);
+
+7.2 main
+***********************
+
+在 ``main`` 函数中，在其他光追函数调用完成之后我们调用管线创建函数：
+
+.. code:: c++
+
+    helloVk.createRtPipeline();
+
+8 着色器绑定表
+####################
