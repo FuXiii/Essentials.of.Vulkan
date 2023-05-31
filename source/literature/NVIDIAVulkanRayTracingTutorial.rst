@@ -45,6 +45,8 @@ NVIDIA Vulkan 光线追踪教程
     * 2023/5/30 更新 ``7 光线追踪管线`` 章节，增加任意命中着色器中 ``候选交点`` 说明
     * 2023/5/30 更新 ``7.1 增加着色器`` 章节
     * 2023/5/30 增加 ``8 着色器绑定表`` 章节
+    * 2023/5/31 更新 ``8 着色器绑定表`` 章节
+    * 2023/5/31 增加 ``8.1 句柄`` 章节
 
 `文献源`_
 
@@ -1284,7 +1286,7 @@ NVIDIA Vulkan 光线追踪教程
 
 对应的索引标识将会使用 ``VkRayTracingShaderGroupCreateInfoKHR`` 结构体存储。该结构体第一个参数 ``type`` 用于表示本结构体中所代表的的着色器组的类型。光线
 生成着色器和未命中着色器属于 ``general`` 着色器，对应的类型就是 ``VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR`` ，并且之后仅设置该结构体的 ``generalShader`` 成员变量，其他成员
-都设置成 ``VK_SHADER_UNUSED_KHR`` 。这中设置同样适用于可调用着色器（ ``callable shaders`` ），但是本教程并没有使用。在我们的布局下光线生成着色器在第一个（ ``0`` ），之后是未命中着色器（ ``1`` ）。
+都设置成 ``VK_SHADER_UNUSED_KHR`` 。这种设置同样适用于可调用着色器（ ``callable shaders`` ），但是本教程并没有使用。在我们的布局下光线生成着色器在第一个（ ``0`` ），之后是未命中着色器（ ``1`` ）。
 
 .. code:: c++
 
@@ -1413,3 +1415,29 @@ NVIDIA Vulkan 光线追踪教程
 
 8 着色器绑定表
 ####################
+
+在经典的光栅化渲染中，着色器和相应的资源是在绘制具体物体之前就已经绑定好了，之后，其他物体渲染绑定其他着色器和资源，如此这般。但是光线追踪在任意时刻都会与场景中的任意表面相交，此时需要所有的着色器时时刻刻保持有效可用。
+
+着色器绑定表（ ``Shader Binding Table`` ）就是光追的“蓝图”。其允许我们选择哪一个光线生成着色器作为入口，选择哪一个未命中着色器在未发生相交时执行，选择哪一个命中着色器组可在每一个实体上执行。这涉及到当创建几何体时创建的实体和着色器组：
+对于每一个顶层加速结构中的每一个实体所对应的 ``hitGroupId`` ，该值用于计算命中组中实体相对应着色器绑定表的索引。这需要每一个条目跨度计算基于：
+
+* ``PhysicalDeviceRayTracingPipelinePropertiesKHR::shaderGroupHandleSize``
+* ``PhysicalDeviceRayTracingPipelinePropertiesKHR::shaderGroupBaseAlignment``
+* ``shaderRecordEXT`` 数据的大小，如果用户有提供。（目前示例中不需要）
+
+8.1 句柄
+***********************
+
+着色器绑定表是最多四个数组的集合，用于存储光线追踪管线着色器组句柄，分别对应：管线生成着色器组，未命中着色器组，最近命中着色器组合和可调用着色器组。在本示例中我们将创建一个缓存用于存储前三组数组。就目前，每个着色器类型我们只有一个着色器，所以每个数组中只有一个句柄组成着色器组。
+
+缓存的结构如下所示，之后将会在调用 ``vkCmdTraceRaysKHR`` 时使用。
+
+.. image:: ../_static/sbt_0.png
+   :align: center
+
+我们需要确保所有组的开头地址都与 ``shaderGroupBaseAlignment`` 进行内存对齐，并且组内的每一个元素与 ``shaderGroupHandleAlignment`` 进行内存对其。所有组的元素都与 ``shaderGroupHandleAlignment`` 进行对其。
+
+.. admonition:: 内存大小和对齐
+    :class: warning
+
+    特别注意对齐大小和句柄或组大小相对应的。
