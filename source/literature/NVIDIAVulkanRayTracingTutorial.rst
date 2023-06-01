@@ -47,6 +47,8 @@ NVIDIA Vulkan 光线追踪教程
     * 2023/5/30 增加 ``8 着色器绑定表`` 章节
     * 2023/5/31 更新 ``8 着色器绑定表`` 章节
     * 2023/5/31 增加 ``8.1 句柄`` 章节
+    * 2023/6/1 更新 ``5.1.1 帮助类细节：RaytracingBuilder::buildBlas()`` 章节，修改 ``我们将底层加速结构分割并使用多个大约 256MB 的内存块创建``
+    * 2023/6/1 更新 ``8.1 句柄`` 章节
 
 `文献源`_
 
@@ -476,7 +478,7 @@ NVIDIA Vulkan 光线追踪教程
 
     为了使用压缩，底层加速结构的 ``flags`` 必须包含 ``VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_COMPACTION_BIT_KHR`` 位域。
 
-``Vulkan`` 允许使用一个命令缓存（ ``command buffer`` ）创建所有的底层加速结构，但是这可能会导致管线的停顿和潜在的创建问题。为了避免这些问题，我们将底层加速结构分割并使用多个大约 ``256MB`` 的内存块创建。如果我们有压缩的需求，我们将立即执行，从而限制所需的内存分配。
+``Vulkan`` 允许使用一个命令缓存（ ``command buffer`` ）创建所有的底层加速结构，但是这可能会导致管线的停顿和潜在的创建问题。为了避免这些问题，我们将底层加速结构按照大约 ``256MB`` 为一批进行创建。如果我们有压缩的需求，我们将立即执行，从而限制所需的内存分配。
 
 如下即为将底层加速结构分割创建，对于 ``cmdCreateBlas`` 和 ``cmdCompactBlas`` 函数将会一会儿细说。
 
@@ -1038,7 +1040,7 @@ NVIDIA Vulkan 光线追踪教程
 .. code:: c++
 
     VkBufferUsageFlags flag   = VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
-    VkBufferUsageFlags rayTracingFlags = // 同样也用于构建加速结构 
+    VkBufferUsageFlags rayTracingFlags = // 同样也用于构建加速结构
         flag | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
     model.vertexBuffer   = m_alloc.createBuffer(cmdBuf, loader.m_vertices, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | rayTracingFlags);
     model.indexBuffer    = m_alloc.createBuffer(cmdBuf, loader.m_indices, VK_BUFFER_USAGE_INDEX_BUFFER_BIT | rayTracingFlags);
@@ -1202,7 +1204,7 @@ NVIDIA Vulkan 光线追踪教程
     将着色器下载下来并且解压到 ``src/shaders`` 。之后返回 ``CMake`` 中再次发布工程，相应的着色器文件将会增加到工程中。
 
     .. admonition:: 着色器下载
-        :class: hint 
+        :class: hint
 
         在 :ref:`Environment Setup` 章节中，通过 ``git clone --recursive`` 指令克隆的项目里已经自带着色器文件，不需要再另外单独下载。
 
@@ -1264,7 +1266,7 @@ NVIDIA Vulkan 光线追踪教程
         eRaygen,
         eMiss,
         eClosestHit,
-        eShaderGroupCount 
+        eShaderGroupCount
       };
 
       // 所有的着色器
@@ -1418,7 +1420,7 @@ NVIDIA Vulkan 光线追踪教程
 
 在经典的光栅化渲染中，着色器和相应的资源是在绘制具体物体之前就已经绑定好了，之后，其他物体渲染绑定其他着色器和资源，如此这般。但是光线追踪在任意时刻都会与场景中的任意表面相交，此时需要所有的着色器时时刻刻保持有效可用。
 
-着色器绑定表（ ``Shader Binding Table`` ）就是光追的“蓝图”。其允许我们选择哪一个光线生成着色器作为入口，选择哪一个未命中着色器在未发生相交时执行，选择哪一个命中着色器组可在每一个实体上执行。这涉及到当创建几何体时创建的实体和着色器组：
+着色器绑定表（ ``Shader Binding Table`` ，简称 ``SBT`` ）就是光追的“蓝图”。其允许我们选择哪一个光线生成着色器作为入口，选择哪一个未命中着色器在未发生相交时执行，选择哪一个命中着色器组可在每一个实体上执行。这涉及到当创建几何体时创建的实体和着色器组：
 对于每一个顶层加速结构中的每一个实体所对应的 ``hitGroupId`` ，该值用于计算命中组中实体相对应着色器绑定表的索引。这需要每一个条目跨度计算基于：
 
 * ``PhysicalDeviceRayTracingPipelinePropertiesKHR::shaderGroupHandleSize``
@@ -1440,4 +1442,118 @@ NVIDIA Vulkan 光线追踪教程
 .. admonition:: 内存大小和对齐
     :class: warning
 
-    特别注意对齐大小和句柄或组大小相对应的。
+    特别注意对齐大小和句柄或组大小相对应的。句柄或组大小相应的对齐并不保证一定正确，所以需要向上取整。使用 ``groupHandleSize`` 作为内存跨度也许碰巧能够在您的设备上工作，其他设备就不一定了。在一些设备上句柄大小小于对齐大小时，当没有设置相关的内存使用策略将会导致着色器存储（ ``shaderRecordEXT `` ）的数据重叠错位。
+
+    向上取整获取下一个对齐位置使用如下算法：
+
+    :math:`alignedSize = [size + (alignment - 1)]\ \texttt{&}\ \texttt{~}(alignment - 1)`.
+
+.. admonition:: 特例
+    :class: note
+
+    光线生成着色器组（ ``RayGen`` ）的大小和跨度需要相等。
+
+首先我们在 ``HelloVulkan`` 类中增加对于着色器绑定表的创建的函数和缓存的相关声明：
+
+.. code:: c++
+
+    void           createRtShaderBindingTable();
+
+    nvvk::Buffer                    m_rtSBTBuffer;
+    VkStridedDeviceAddressRegionKHR m_rgenRegion{};
+    VkStridedDeviceAddressRegionKHR m_missRegion{};
+    VkStridedDeviceAddressRegionKHR m_hitRegion{};
+    VkStridedDeviceAddressRegionKHR m_callRegion{};
+
+在 ``createRtShaderBindingTable()`` 一开始我们收集组相关的信息。对于光线生成着色器总是 ``1`` 个也只能是 ``1`` 个，所以我们加了一个常数 ``1`` 。
+
+.. code:: c++
+
+    //--------------------------------------------------------------------------------------------------
+    // 着色器绑定表 (SBT)
+    // - 获取所有的着色器句柄并将其写入着色器绑定表缓存中
+    // - 除了例外，你总可以像如下代码所示使用。
+    //
+    void HelloVulkan::createRtShaderBindingTable()
+    {
+      uint32_t missCount{1};
+      uint32_t hitCount{1};
+      auto     handleCount = 1 + missCount + hitCount;
+      uint32_t handleSize  = m_rtProperties.shaderGroupHandleSize;
+
+之后设置每个组的跨度和大小。除了光线生成组，跨度大小是句柄与 ``shaderGroupHandleAlignment`` 对齐的大小。每一个组的大小是元素数量与 ``shaderGroupBaseAlignment`` 对齐的结果。
+
+.. code:: c++
+
+    // 着色器绑定表 (缓存) 需要开头的组已经完成对齐并且组中的句柄也已经对齐完成。
+    uint32_t handleSizeAligned = nvh::align_up(handleSize, m_rtProperties.shaderGroupHandleAlignment);
+
+    m_rgenRegion.stride = nvh::align_up(handleSizeAligned, m_rtProperties.shaderGroupBaseAlignment);
+    m_rgenRegion.size   = m_rgenRegion.stride;  // pRayGenShaderBindingTable的size成员大小必须与stride（跨度）成员大小相等
+    m_missRegion.stride = handleSizeAligned;
+    m_missRegion.size   = nvh::align_up(missCount * handleSizeAligned, m_rtProperties.shaderGroupBaseAlignment);
+    m_hitRegion.stride  = handleSizeAligned;
+    m_hitRegion.size    = nvh::align_up(hitCount * handleSizeAligned, m_rtProperties.shaderGroupBaseAlignment);
+
+.. admonition:: pRayGenShaderBindingTable
+    :class: note
+
+    指的是 ``vkCmdTraceRaysKHR`` 函数中的 ``const VkStridedDeviceAddressRegionKHR* pRaygenShaderBindingTable`` 成员：
+
+    .. code:: c++
+
+        // 由VK_KHR_ray_tracing_pipeline提供
+        void vkCmdTraceRaysKHR(
+            VkCommandBuffer                             commandBuffer,
+            const VkStridedDeviceAddressRegionKHR*      pRaygenShaderBindingTable,
+            const VkStridedDeviceAddressRegionKHR*      pMissShaderBindingTable,
+            const VkStridedDeviceAddressRegionKHR*      pHitShaderBindingTable,
+            const VkStridedDeviceAddressRegionKHR*      pCallableShaderBindingTable,
+            uint32_t                                    width,
+            uint32_t                                    height,
+            uint32_t                                    depth);
+
+之后获取光追管线中的着色器组句柄。
+
+.. code:: c++
+
+    // 获取着色器组的句柄
+    uint32_t             dataSize = handleCount * handleSize;
+    std::vector<uint8_t> handles(dataSize);
+    auto result = vkGetRayTracingShaderGroupHandlesKHR(m_device, m_rtPipeline, 0, handleCount, dataSize, handles.data());
+    assert(result == VK_SUCCESS);
+
+之后分配一个缓存用于存储句柄数据。注意，创建着色器绑定表缓存需要 ``VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR`` 位域。为了追踪光线我们需要着色器绑定表的地址，这需要 ``VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT`` 位域。
+目前我们没有使用可调用着色器，其值应该为 ``0`` 。
+
+.. admonition:: 其值应该为 ``0``
+    :class: note
+
+    指的是如下代码中 ``m_callRegion.size`` 的值为 ``0`` 。
+
+.. code:: c++
+
+    // 分配用于存储着色器绑定表的缓存.
+    VkDeviceSize sbtSize = m_rgenRegion.size + m_missRegion.size + m_hitRegion.size + m_callRegion.size;
+    m_rtSBTBuffer        = m_alloc.createBuffer(sbtSize,
+                                         VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
+                                             | VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR,
+                                         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    m_debug.setObjectName(m_rtSBTBuffer.buffer, std::string("SBT"));  // NSight中设置一个调试名称
+
+.. admonition:: NSight
+    :class: note
+
+    是 ``NVIDIA`` 推出的一款 ``GPU`` 图形计算调试分析工具。和 ``RenderDoc`` 属于同级别工具。
+
+接下来，我们获取每一个着色器组的设备地址并存储。
+
+.. code:: c++
+
+    // 获取每组的着色器绑定表
+    VkBufferDeviceAddressInfo info{VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO, nullptr, m_rtSBTBuffer.buffer};
+    VkDeviceAddress           sbtAddress = vkGetBufferDeviceAddress(m_device, &info);
+    m_rgenRegion.deviceAddress           = sbtAddress;
+    m_missRegion.deviceAddress           = sbtAddress + m_rgenRegion.size;
+    m_hitRegion.deviceAddress            = sbtAddress + m_rgenRegion.size + m_missRegion.size;
+
