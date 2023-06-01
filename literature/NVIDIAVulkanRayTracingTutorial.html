@@ -282,15 +282,17 @@
 <li><p class="sd-card-text">2023/5/30 增加 <code class="docutils literal notranslate"><span class="pre">8</span> <span class="pre">着色器绑定表</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/5/31 更新 <code class="docutils literal notranslate"><span class="pre">8</span> <span class="pre">着色器绑定表</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/5/31 增加 <code class="docutils literal notranslate"><span class="pre">8.1</span> <span class="pre">句柄</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/1 更新 <code class="docutils literal notranslate"><span class="pre">5.1.1</span> <span class="pre">帮助类细节：RaytracingBuilder::buildBlas()</span></code> 章节，修改 <code class="docutils literal notranslate"><span class="pre">我们将底层加速结构分割并使用多个大约</span> <span class="pre">256MB</span> <span class="pre">的内存块创建</span></code></p></li>
+<li><p class="sd-card-text">2023/6/1 更新 <code class="docutils literal notranslate"><span class="pre">8.1</span> <span class="pre">句柄</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p><a class="reference external" href="https://nvpro-samples.github.io/vk_raytracing_tutorial_KHR/">文献源</a></p>
 <p>本文所提供的的代码和文档聚焦于使用 <a class="reference external" href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/vkspec.html#VK_KHR_ray_tracing_pipeline">VK_KHR_ray_tracing_pipeline</a> 扩展展示一个基础光追示例。
 该教程从一个基于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 开发的基础程序开始，并且提供一步步的介绍去修改和增加函数和功能。</p>
-<figure class="align-default" id="id23">
+<figure class="align-default" id="id25">
 <img alt="../_images/resultRaytraceShadowMedieval.png" src="../_images/resultRaytraceShadowMedieval.png" />
 <figcaption>
-<p><span class="caption-text">最终结果</span><a class="headerlink" href="#id23" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">最终结果</span><a class="headerlink" href="#id25" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <div class="note admonition">
@@ -347,10 +349,10 @@
 <p>打开位于 <code class="docutils literal notranslate"><span class="pre">build</span></code> 目录下的解决方案，之后编译并运行 <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing__before">vk_ray_tracing__before_KHR</a> 。</p>
 <p>该示例将会是此教程的示例起点。这是一个用于加载 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 文件并使用 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 光栅化渲染他们的小框架。您可以通过阅读 <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/blob/master/ray_tracing__before/README.md#nvidia-vulkan-ray-tracing-tutorial">Base Overview</a> 来纵观该示例是如何实现的。
 我们将使用这个框架加载几何体并且渲染场景来实现光线追踪。</p>
-<figure class="align-default" id="id24">
+<figure class="align-default" id="id26">
 <img alt="../_images/resultRasterCube.png" src="../_images/resultRasterCube.png" />
 <figcaption>
-<p><span class="caption-text">首次执行</span><a class="headerlink" href="#id24" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">首次执行</span><a class="headerlink" href="#id26" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <p>接下来的步骤将是修改 <code class="docutils literal notranslate"><span class="pre">vk_ray_tracing__before_KHR</span></code> 使其支持光线追踪。该教程修改后的最终结果将是同 <code class="docutils literal notranslate"><span class="pre">vk_ray_tracing__simple_KHR</span></code> 一样。如果开发过程发生错误
@@ -421,9 +423,9 @@
 据经验来说，底层加速结构越少越好。</p>
 </div>
 <p>顶层加速结构可以包含多个物体的实体（ <code class="docutils literal notranslate"><span class="pre">instance</span></code> ），每一个实体都会有自己的变换矩阵并且引用一个具体的底层加速结构。我们将会从一个底层加速结构和一个单位矩阵的顶层加速结构实例开始实现。</p>
-<figure class="align-default" id="id25">
+<figure class="align-default" id="id27">
 <img alt="../_images/AccelerationStructure.svg" src="../_images/AccelerationStructure.svg" /><figcaption>
-<p><span class="caption-text">加速结构</span><a class="headerlink" href="#id25" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">加速结构</span><a class="headerlink" href="#id27" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <p>该教程将会加载一个 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 文件，并将其索引、顶点和材质数据存储到 <code class="docutils literal notranslate"><span class="pre">ObjModel</span></code> 数据结构中。该模型同时引用一个 <code class="docutils literal notranslate"><span class="pre">ObjInstance</span></code> 数据结构，其中包含用于特定实体的变换矩阵。对于光线追踪， <code class="docutils literal notranslate"><span class="pre">ObjModel</span></code> 和一系列的 <code class="docutils literal notranslate"><span class="pre">ObjInstances</span></code> 将在之后分别用于构建底层加速结构和顶层加速结构。</p>
@@ -644,7 +646,7 @@
 <p class="admonition-title">压缩</p>
 <p>为了使用压缩，底层加速结构的 <code class="docutils literal notranslate"><span class="pre">flags</span></code> 必须包含 <code class="docutils literal notranslate"><span class="pre">VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_COMPACTION_BIT_KHR</span></code> 位域。</p>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 允许使用一个命令缓存（ <code class="docutils literal notranslate"><span class="pre">command</span> <span class="pre">buffer</span></code> ）创建所有的底层加速结构，但是这可能会导致管线的停顿和潜在的创建问题。为了避免这些问题，我们将底层加速结构分割并使用多个大约 <code class="docutils literal notranslate"><span class="pre">256MB</span></code> 的内存块创建。如果我们有压缩的需求，我们将立即执行，从而限制所需的内存分配。</p>
+<p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 允许使用一个命令缓存（ <code class="docutils literal notranslate"><span class="pre">command</span> <span class="pre">buffer</span></code> ）创建所有的底层加速结构，但是这可能会导致管线的停顿和潜在的创建问题。为了避免这些问题，我们将底层加速结构按照大约 <code class="docutils literal notranslate"><span class="pre">256MB</span></code> 为一批进行创建。如果我们有压缩的需求，我们将立即执行，从而限制所需的内存分配。</p>
 <p>如下即为将底层加速结构分割创建，对于 <code class="docutils literal notranslate"><span class="pre">cmdCreateBlas</span></code> 和 <code class="docutils literal notranslate"><span class="pre">cmdCompactBlas</span></code> 函数将会一会儿细说。</p>
 <div class="attention admonition">
 <p class="admonition-title">256MB</p>
@@ -1270,9 +1272,9 @@
 有可能会有多个交点。</p>
 <p>任意命中着色器主要用于筛选相交着色器返回的交点的。</p>
 </div>
-<figure class="align-default" id="id26">
+<figure class="align-default" id="id28">
 <img alt="../_images/ShaderPipeline.svg" src="../_images/ShaderPipeline.svg" /><figcaption>
-<p><span class="caption-text">光线追踪管线</span><a class="headerlink" href="#id26" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">光线追踪管线</span><a class="headerlink" href="#id28" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <p>我们将从使用三个主要着色器开始：一个光线生成着色器，一个未命中着色器和由一个最近命中着色器构成的一个命中组。这在 <code class="docutils literal notranslate"><span class="pre">GLSL</span></code> 编译成 <code class="docutils literal notranslate"><span class="pre">SPIR-V</span></code> 时已经完成。 <code class="docutils literal notranslate"><span class="pre">SPIR-V</span></code> 的着色器们将会链接成一个能够通过求交计算执行正确的击中着色器的光线追踪管线。</p>
@@ -1464,7 +1466,7 @@
 <section id="id21">
 <h2>8 着色器绑定表<a class="headerlink" href="#id21" title="此标题的永久链接">#</a></h2>
 <p>在经典的光栅化渲染中，着色器和相应的资源是在绘制具体物体之前就已经绑定好了，之后，其他物体渲染绑定其他着色器和资源，如此这般。但是光线追踪在任意时刻都会与场景中的任意表面相交，此时需要所有的着色器时时刻刻保持有效可用。</p>
-<p>着色器绑定表（ <code class="docutils literal notranslate"><span class="pre">Shader</span> <span class="pre">Binding</span> <span class="pre">Table</span></code> ）就是光追的“蓝图”。其允许我们选择哪一个光线生成着色器作为入口，选择哪一个未命中着色器在未发生相交时执行，选择哪一个命中着色器组可在每一个实体上执行。这涉及到当创建几何体时创建的实体和着色器组：
+<p>着色器绑定表（ <code class="docutils literal notranslate"><span class="pre">Shader</span> <span class="pre">Binding</span> <span class="pre">Table</span></code> ，简称 <code class="docutils literal notranslate"><span class="pre">SBT</span></code> ）就是光追的“蓝图”。其允许我们选择哪一个光线生成着色器作为入口，选择哪一个未命中着色器在未发生相交时执行，选择哪一个命中着色器组可在每一个实体上执行。这涉及到当创建几何体时创建的实体和着色器组：
 对于每一个顶层加速结构中的每一个实体所对应的 <code class="docutils literal notranslate"><span class="pre">hitGroupId</span></code> ，该值用于计算命中组中实体相对应着色器绑定表的索引。这需要每一个条目跨度计算基于：</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">PhysicalDeviceRayTracingPipelinePropertiesKHR::shaderGroupHandleSize</span></code></p></li>
@@ -1479,7 +1481,101 @@
 <p>我们需要确保所有组的开头地址都与 <code class="docutils literal notranslate"><span class="pre">shaderGroupBaseAlignment</span></code> 进行内存对齐，并且组内的每一个元素与 <code class="docutils literal notranslate"><span class="pre">shaderGroupHandleAlignment</span></code> 进行内存对其。所有组的元素都与 <code class="docutils literal notranslate"><span class="pre">shaderGroupHandleAlignment</span></code> 进行对其。</p>
 <div class="warning admonition">
 <p class="admonition-title">内存大小和对齐</p>
-<p>特别注意对齐大小和句柄或组大小相对应的。</p>
+<p>特别注意对齐大小和句柄或组大小相对应的。句柄或组大小相应的对齐并不保证一定正确，所以需要向上取整。使用 <code class="docutils literal notranslate"><span class="pre">groupHandleSize</span></code> 作为内存跨度也许碰巧能够在您的设备上工作，其他设备就不一定了。在一些设备上句柄大小小于对齐大小时，当没有设置相关的内存使用策略将会导致着色器存储（ <a href="#id23"><span class="problematic" id="id24">``</span></a>shaderRecordEXT `` ）的数据重叠错位。</p>
+<p>向上取整获取下一个对齐位置使用如下算法：</p>
+<p><span class="math notranslate nohighlight">\(alignedSize = [size + (alignment - 1)]\ \texttt{&amp;}\ \texttt{~}(alignment - 1)\)</span>.</p>
+</div>
+<div class="note admonition">
+<p class="admonition-title">特例</p>
+<p>光线生成着色器组（ <code class="docutils literal notranslate"><span class="pre">RayGen</span></code> ）的大小和跨度需要相等。</p>
+</div>
+<p>首先我们在 <code class="docutils literal notranslate"><span class="pre">HelloVulkan</span></code> 类中增加对于着色器绑定表的创建的函数和缓存的相关声明：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w">           </span><span class="nf">createRtShaderBindingTable</span><span class="p">();</span>
+
+<span class="n">nvvk</span><span class="o">::</span><span class="n">Buffer</span><span class="w">                    </span><span class="n">m_rtSBTBuffer</span><span class="p">;</span>
+<span class="n">VkStridedDeviceAddressRegionKHR</span><span class="w"> </span><span class="n">m_rgenRegion</span><span class="p">{};</span>
+<span class="n">VkStridedDeviceAddressRegionKHR</span><span class="w"> </span><span class="n">m_missRegion</span><span class="p">{};</span>
+<span class="n">VkStridedDeviceAddressRegionKHR</span><span class="w"> </span><span class="n">m_hitRegion</span><span class="p">{};</span>
+<span class="n">VkStridedDeviceAddressRegionKHR</span><span class="w"> </span><span class="n">m_callRegion</span><span class="p">{};</span>
+</pre></div>
+</div>
+<p>在 <code class="docutils literal notranslate"><span class="pre">createRtShaderBindingTable()</span></code> 一开始我们收集组相关的信息。对于光线生成着色器总是 <code class="docutils literal notranslate"><span class="pre">1</span></code> 个也只能是 <code class="docutils literal notranslate"><span class="pre">1</span></code> 个，所以我们加了一个常数 <code class="docutils literal notranslate"><span class="pre">1</span></code> 。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">//--------------------------------------------------------------------------------------------------</span>
+<span class="c1">// 着色器绑定表 (SBT)</span>
+<span class="c1">// - 获取所有的着色器句柄并将其写入着色器绑定表缓存中</span>
+<span class="c1">// - 除了例外，你总可以像如下代码所示使用。</span>
+<span class="c1">//</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">HelloVulkan::createRtShaderBindingTable</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">missCount</span><span class="p">{</span><span class="mi">1</span><span class="p">};</span>
+<span class="w">  </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">hitCount</span><span class="p">{</span><span class="mi">1</span><span class="p">};</span>
+<span class="w">  </span><span class="k">auto</span><span class="w">     </span><span class="n">handleCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">missCount</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">hitCount</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">handleSize</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">m_rtProperties</span><span class="p">.</span><span class="n">shaderGroupHandleSize</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>之后设置每个组的跨度和大小。除了光线生成组，跨度大小是句柄与 <code class="docutils literal notranslate"><span class="pre">shaderGroupHandleAlignment</span></code> 对齐的大小。每一个组的大小是元素数量与 <code class="docutils literal notranslate"><span class="pre">shaderGroupBaseAlignment</span></code> 对齐的结果。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 着色器绑定表 (缓存) 需要开头的组已经完成对齐并且组中的句柄也已经对齐完成。</span>
+<span class="kt">uint32_t</span><span class="w"> </span><span class="n">handleSizeAligned</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nvh</span><span class="o">::</span><span class="n">align_up</span><span class="p">(</span><span class="n">handleSize</span><span class="p">,</span><span class="w"> </span><span class="n">m_rtProperties</span><span class="p">.</span><span class="n">shaderGroupHandleAlignment</span><span class="p">);</span>
+
+<span class="n">m_rgenRegion</span><span class="p">.</span><span class="n">stride</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nvh</span><span class="o">::</span><span class="n">align_up</span><span class="p">(</span><span class="n">handleSizeAligned</span><span class="p">,</span><span class="w"> </span><span class="n">m_rtProperties</span><span class="p">.</span><span class="n">shaderGroupBaseAlignment</span><span class="p">);</span>
+<span class="n">m_rgenRegion</span><span class="p">.</span><span class="n">size</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="n">m_rgenRegion</span><span class="p">.</span><span class="n">stride</span><span class="p">;</span><span class="w">  </span><span class="c1">// pRayGenShaderBindingTable的size成员大小必须与stride（跨度）成员大小相等</span>
+<span class="n">m_missRegion</span><span class="p">.</span><span class="n">stride</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">handleSizeAligned</span><span class="p">;</span>
+<span class="n">m_missRegion</span><span class="p">.</span><span class="n">size</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="n">nvh</span><span class="o">::</span><span class="n">align_up</span><span class="p">(</span><span class="n">missCount</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">handleSizeAligned</span><span class="p">,</span><span class="w"> </span><span class="n">m_rtProperties</span><span class="p">.</span><span class="n">shaderGroupBaseAlignment</span><span class="p">);</span>
+<span class="n">m_hitRegion</span><span class="p">.</span><span class="n">stride</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">handleSizeAligned</span><span class="p">;</span>
+<span class="n">m_hitRegion</span><span class="p">.</span><span class="n">size</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">nvh</span><span class="o">::</span><span class="n">align_up</span><span class="p">(</span><span class="n">hitCount</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">handleSizeAligned</span><span class="p">,</span><span class="w"> </span><span class="n">m_rtProperties</span><span class="p">.</span><span class="n">shaderGroupBaseAlignment</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="note admonition">
+<p class="admonition-title">pRayGenShaderBindingTable</p>
+<p>指的是 <code class="docutils literal notranslate"><span class="pre">vkCmdTraceRaysKHR</span></code> 函数中的 <code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">VkStridedDeviceAddressRegionKHR*</span> <span class="pre">pRaygenShaderBindingTable</span></code> 成员：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由VK_KHR_ray_tracing_pipeline提供</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">vkCmdTraceRaysKHR</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkCommandBuffer</span><span class="w">                             </span><span class="n">commandBuffer</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkStridedDeviceAddressRegionKHR</span><span class="o">*</span><span class="w">      </span><span class="n">pRaygenShaderBindingTable</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkStridedDeviceAddressRegionKHR</span><span class="o">*</span><span class="w">      </span><span class="n">pMissShaderBindingTable</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkStridedDeviceAddressRegionKHR</span><span class="o">*</span><span class="w">      </span><span class="n">pHitShaderBindingTable</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkStridedDeviceAddressRegionKHR</span><span class="o">*</span><span class="w">      </span><span class="n">pCallableShaderBindingTable</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                                    </span><span class="n">width</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                                    </span><span class="n">height</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                                    </span><span class="n">depth</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<p>之后获取光追管线中的着色器组句柄。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 获取着色器组的句柄</span>
+<span class="kt">uint32_t</span><span class="w">             </span><span class="n">dataSize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">handleCount</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">handleSize</span><span class="p">;</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">uint8_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">handles</span><span class="p">(</span><span class="n">dataSize</span><span class="p">);</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vkGetRayTracingShaderGroupHandlesKHR</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">m_rtPipeline</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">handleCount</span><span class="p">,</span><span class="w"> </span><span class="n">dataSize</span><span class="p">,</span><span class="w"> </span><span class="n">handles</span><span class="p">.</span><span class="n">data</span><span class="p">());</span>
+<span class="n">assert</span><span class="p">(</span><span class="n">result</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">VK_SUCCESS</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>之后分配一个缓存用于存储句柄数据。注意，创建着色器绑定表缓存需要 <code class="docutils literal notranslate"><span class="pre">VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR</span></code> 位域。为了追踪光线我们需要着色器绑定表的地址，这需要 <code class="docutils literal notranslate"><span class="pre">VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT</span></code> 位域。
+目前我们没有使用可调用着色器，其值应该为 <code class="docutils literal notranslate"><span class="pre">0</span></code> 。</p>
+<div class="note admonition">
+<p class="admonition-title">其值应该为 <code class="docutils literal notranslate"><span class="pre">0</span></code></p>
+<p>指的是如下代码中 <code class="docutils literal notranslate"><span class="pre">m_callRegion.size</span></code> 的值为 <code class="docutils literal notranslate"><span class="pre">0</span></code> 。</p>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 分配用于存储着色器绑定表的缓存.</span>
+<span class="n">VkDeviceSize</span><span class="w"> </span><span class="n">sbtSize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_rgenRegion</span><span class="p">.</span><span class="n">size</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">m_missRegion</span><span class="p">.</span><span class="n">size</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">m_hitRegion</span><span class="p">.</span><span class="n">size</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">m_callRegion</span><span class="p">.</span><span class="n">size</span><span class="p">;</span>
+<span class="n">m_rtSBTBuffer</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="n">m_alloc</span><span class="p">.</span><span class="n">createBuffer</span><span class="p">(</span><span class="n">sbtSize</span><span class="p">,</span>
+<span class="w">                                     </span><span class="n">VK_BUFFER_USAGE_TRANSFER_SRC_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT</span>
+<span class="w">                                         </span><span class="o">|</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR</span><span class="p">,</span>
+<span class="w">                                     </span><span class="n">VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_MEMORY_PROPERTY_HOST_COHERENT_BIT</span><span class="p">);</span>
+<span class="n">m_debug</span><span class="p">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="n">m_rtSBTBuffer</span><span class="p">.</span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="s">&quot;SBT&quot;</span><span class="p">));</span><span class="w">  </span><span class="c1">// NSight中设置一个调试名称</span>
+</pre></div>
+</div>
+<div class="note admonition">
+<p class="admonition-title">NSight</p>
+<p>是 <code class="docutils literal notranslate"><span class="pre">NVIDIA</span></code> 推出的一款 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 图形计算调试分析工具。和 <code class="docutils literal notranslate"><span class="pre">RenderDoc</span></code> 属于同级别工具。</p>
+</div>
+<p>接下来，我们获取每一个着色器组的设备地址并存储。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 获取每组的着色器绑定表</span>
+<span class="n">VkBufferDeviceAddressInfo</span><span class="w"> </span><span class="n">info</span><span class="p">{</span><span class="n">VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="n">m_rtSBTBuffer</span><span class="p">.</span><span class="n">buffer</span><span class="p">};</span>
+<span class="n">VkDeviceAddress</span><span class="w">           </span><span class="n">sbtAddress</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vkGetBufferDeviceAddress</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">info</span><span class="p">);</span>
+<span class="n">m_rgenRegion</span><span class="p">.</span><span class="n">deviceAddress</span><span class="w">           </span><span class="o">=</span><span class="w"> </span><span class="n">sbtAddress</span><span class="p">;</span>
+<span class="n">m_missRegion</span><span class="p">.</span><span class="n">deviceAddress</span><span class="w">           </span><span class="o">=</span><span class="w"> </span><span class="n">sbtAddress</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">m_rgenRegion</span><span class="p">.</span><span class="n">size</span><span class="p">;</span>
+<span class="n">m_hitRegion</span><span class="p">.</span><span class="n">deviceAddress</span><span class="w">            </span><span class="o">=</span><span class="w"> </span><span class="n">sbtAddress</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">m_rgenRegion</span><span class="p">.</span><span class="n">size</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">m_missRegion</span><span class="p">.</span><span class="n">size</span><span class="p">;</span>
+</pre></div>
 </div>
 </section>
 </section>
@@ -1611,5 +1707,7 @@
     <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
     <script src="../_static/translations.js"></script>
     <script src="../_static/design-tabs.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>
