@@ -284,15 +284,18 @@
 <li><p class="sd-card-text">2023/5/31 增加 <code class="docutils literal notranslate"><span class="pre">8.1</span> <span class="pre">句柄</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/6/1 更新 <code class="docutils literal notranslate"><span class="pre">5.1.1</span> <span class="pre">帮助类细节：RaytracingBuilder::buildBlas()</span></code> 章节，修改 <code class="docutils literal notranslate"><span class="pre">我们将底层加速结构分割并使用多个大约</span> <span class="pre">256MB</span> <span class="pre">的内存块创建</span></code></p></li>
 <li><p class="sd-card-text">2023/6/1 更新 <code class="docutils literal notranslate"><span class="pre">8.1</span> <span class="pre">句柄</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/2 更新 <code class="docutils literal notranslate"><span class="pre">8.1</span> <span class="pre">句柄</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/2 增加 <code class="docutils literal notranslate"><span class="pre">8.2</span> <span class="pre">main</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/2 增加 <code class="docutils literal notranslate"><span class="pre">9</span> <span class="pre">光线追踪</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p><a class="reference external" href="https://nvpro-samples.github.io/vk_raytracing_tutorial_KHR/">文献源</a></p>
 <p>本文所提供的的代码和文档聚焦于使用 <a class="reference external" href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/vkspec.html#VK_KHR_ray_tracing_pipeline">VK_KHR_ray_tracing_pipeline</a> 扩展展示一个基础光追示例。
 该教程从一个基于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 开发的基础程序开始，并且提供一步步的介绍去修改和增加函数和功能。</p>
-<figure class="align-default" id="id25">
+<figure class="align-default" id="id27">
 <img alt="../_images/resultRaytraceShadowMedieval.png" src="../_images/resultRaytraceShadowMedieval.png" />
 <figcaption>
-<p><span class="caption-text">最终结果</span><a class="headerlink" href="#id25" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">最终结果</span><a class="headerlink" href="#id27" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <div class="note admonition">
@@ -349,10 +352,10 @@
 <p>打开位于 <code class="docutils literal notranslate"><span class="pre">build</span></code> 目录下的解决方案，之后编译并运行 <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing__before">vk_ray_tracing__before_KHR</a> 。</p>
 <p>该示例将会是此教程的示例起点。这是一个用于加载 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 文件并使用 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 光栅化渲染他们的小框架。您可以通过阅读 <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/blob/master/ray_tracing__before/README.md#nvidia-vulkan-ray-tracing-tutorial">Base Overview</a> 来纵观该示例是如何实现的。
 我们将使用这个框架加载几何体并且渲染场景来实现光线追踪。</p>
-<figure class="align-default" id="id26">
+<figure class="align-default" id="id28">
 <img alt="../_images/resultRasterCube.png" src="../_images/resultRasterCube.png" />
 <figcaption>
-<p><span class="caption-text">首次执行</span><a class="headerlink" href="#id26" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">首次执行</span><a class="headerlink" href="#id28" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <p>接下来的步骤将是修改 <code class="docutils literal notranslate"><span class="pre">vk_ray_tracing__before_KHR</span></code> 使其支持光线追踪。该教程修改后的最终结果将是同 <code class="docutils literal notranslate"><span class="pre">vk_ray_tracing__simple_KHR</span></code> 一样。如果开发过程发生错误
@@ -423,9 +426,9 @@
 据经验来说，底层加速结构越少越好。</p>
 </div>
 <p>顶层加速结构可以包含多个物体的实体（ <code class="docutils literal notranslate"><span class="pre">instance</span></code> ），每一个实体都会有自己的变换矩阵并且引用一个具体的底层加速结构。我们将会从一个底层加速结构和一个单位矩阵的顶层加速结构实例开始实现。</p>
-<figure class="align-default" id="id27">
+<figure class="align-default" id="id29">
 <img alt="../_images/AccelerationStructure.svg" src="../_images/AccelerationStructure.svg" /><figcaption>
-<p><span class="caption-text">加速结构</span><a class="headerlink" href="#id27" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">加速结构</span><a class="headerlink" href="#id29" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <p>该教程将会加载一个 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 文件，并将其索引、顶点和材质数据存储到 <code class="docutils literal notranslate"><span class="pre">ObjModel</span></code> 数据结构中。该模型同时引用一个 <code class="docutils literal notranslate"><span class="pre">ObjInstance</span></code> 数据结构，其中包含用于特定实体的变换矩阵。对于光线追踪， <code class="docutils literal notranslate"><span class="pre">ObjModel</span></code> 和一系列的 <code class="docutils literal notranslate"><span class="pre">ObjInstances</span></code> 将在之后分别用于构建底层加速结构和顶层加速结构。</p>
@@ -1272,9 +1275,9 @@
 有可能会有多个交点。</p>
 <p>任意命中着色器主要用于筛选相交着色器返回的交点的。</p>
 </div>
-<figure class="align-default" id="id28">
+<figure class="align-default" id="id30">
 <img alt="../_images/ShaderPipeline.svg" src="../_images/ShaderPipeline.svg" /><figcaption>
-<p><span class="caption-text">光线追踪管线</span><a class="headerlink" href="#id28" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">光线追踪管线</span><a class="headerlink" href="#id30" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <p>我们将从使用三个主要着色器开始：一个光线生成着色器，一个未命中着色器和由一个最近命中着色器构成的一个命中组。这在 <code class="docutils literal notranslate"><span class="pre">GLSL</span></code> 编译成 <code class="docutils literal notranslate"><span class="pre">SPIR-V</span></code> 时已经完成。 <code class="docutils literal notranslate"><span class="pre">SPIR-V</span></code> 的着色器们将会链接成一个能够通过求交计算执行正确的击中着色器的光线追踪管线。</p>
@@ -1577,7 +1580,79 @@
 <span class="n">m_hitRegion</span><span class="p">.</span><span class="n">deviceAddress</span><span class="w">            </span><span class="o">=</span><span class="w"> </span><span class="n">sbtAddress</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">m_rgenRegion</span><span class="p">.</span><span class="n">size</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">m_missRegion</span><span class="p">.</span><span class="n">size</span><span class="p">;</span>
 </pre></div>
 </div>
+<p>如下 <code class="docutils literal notranslate"><span class="pre">lambda</span></code> 表达式将会返回之前获取到的句柄指针。该函数在将句柄数据拷贝至着色器绑定表中使用。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 用于帮助获取句柄数据</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">getHandle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="p">]</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">handles</span><span class="p">.</span><span class="n">data</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">handleSize</span><span class="p">;</span><span class="w"> </span><span class="p">};</span>
+</pre></div>
+</div>
+<p>由于我们的着色器绑定表缓存在 <code class="docutils literal notranslate"><span class="pre">host</span></code> 端是可访问的，我们将其内存映射出来用于数据拷贝。</p>
+<div class="note admonition">
+<p class="admonition-title">在 <code class="docutils literal notranslate"><span class="pre">host</span></code> 端是可访问</p>
+<p>在创建 <code class="docutils literal notranslate"><span class="pre">m_rtSBTBuffer</span></code> 着色器绑定表缓存时指定了创建支持 <code class="docutils literal notranslate"><span class="pre">VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT</span></code> 功能的内存。这样该缓存在 <code class="docutils literal notranslate"><span class="pre">host</span></code> 端（一般指 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 端）可以进行读写访问。访问的途径是通过内存映射进行（ <code class="docutils literal notranslate"><span class="pre">m_alloc.map()</span></code> 其内部最终会调用 <code class="docutils literal notranslate"><span class="pre">vkMapMemory()</span></code> 内存映射函数）。</p>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 将着色器绑定表缓存映射出来并写入句柄数据</span>
+<span class="k">auto</span><span class="o">*</span><span class="w">    </span><span class="n">pSBTBuffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="kt">uint8_t</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">m_alloc</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">m_rtSBTBuffer</span><span class="p">));</span>
+<span class="kt">uint8_t</span><span class="o">*</span><span class="w"> </span><span class="n">pData</span><span class="p">{</span><span class="k">nullptr</span><span class="p">};</span>
+<span class="kt">uint32_t</span><span class="w"> </span><span class="n">handleIdx</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+</pre></div>
+</div>
+<p>拷贝光线着色器句柄。即使数据跨度和大小都比较大，我们也只拷贝句柄数据。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 光线着色器句柄</span>
+<span class="n">pData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pSBTBuffer</span><span class="p">;</span>
+<span class="n">memcpy</span><span class="p">(</span><span class="n">pData</span><span class="p">,</span><span class="w"> </span><span class="n">getHandle</span><span class="p">(</span><span class="n">handleIdx</span><span class="o">++</span><span class="p">),</span><span class="w"> </span><span class="n">handleSize</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>将拷贝起始位置定位到未命中着色器组的开头并拷贝所有的未命中着色器句柄，我们目前只有一个，但此时的循环可以支持我们增加多个未命中着色器。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 未命中着色器</span>
+<span class="n">pData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pSBTBuffer</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">m_rgenRegion</span><span class="p">.</span><span class="n">size</span><span class="p">;</span>
+<span class="k">for</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">missCount</span><span class="p">;</span><span class="w"> </span><span class="n">c</span><span class="o">++</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">memcpy</span><span class="p">(</span><span class="n">pData</span><span class="p">,</span><span class="w"> </span><span class="n">getHandle</span><span class="p">(</span><span class="n">handleIdx</span><span class="o">++</span><span class="p">),</span><span class="w"> </span><span class="n">handleSize</span><span class="p">);</span>
+<span class="w">  </span><span class="n">pData</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">m_missRegion</span><span class="p">.</span><span class="n">stride</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>同样的方式，拷贝最近命中着色器组中的句柄。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 最近命中着色器</span>
+<span class="n">pData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pSBTBuffer</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">m_rgenRegion</span><span class="p">.</span><span class="n">size</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">m_missRegion</span><span class="p">.</span><span class="n">size</span><span class="p">;</span>
+<span class="k">for</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">hitCount</span><span class="p">;</span><span class="w"> </span><span class="n">c</span><span class="o">++</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">memcpy</span><span class="p">(</span><span class="n">pData</span><span class="p">,</span><span class="w"> </span><span class="n">getHandle</span><span class="p">(</span><span class="n">handleIdx</span><span class="o">++</span><span class="p">),</span><span class="w"> </span><span class="n">handleSize</span><span class="p">);</span>
+<span class="w">  </span><span class="n">pData</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">m_hitRegion</span><span class="p">.</span><span class="n">stride</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>最后回收内存和释放临时资源。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="n">m_alloc</span><span class="p">.</span><span class="n">unmap</span><span class="p">(</span><span class="n">m_rtSBTBuffer</span><span class="p">);</span>
+<span class="w">  </span><span class="n">m_alloc</span><span class="p">.</span><span class="n">finalizeAndReleaseStaging</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>和其他资源销毁一样，我们在 <code class="docutils literal notranslate"><span class="pre">destroyResources</span></code> 增加对取着色器绑定表资源的销毁：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">m_alloc</span><span class="p">.</span><span class="n">destroy</span><span class="p">(</span><span class="n">m_rtSBTBuffer</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="tip admonition">
+<p class="admonition-title">着色器顺序</p>
+<p>没有要求说着色器必须以光线生成着色器、未命中着色器和最近命中着色器的顺序。就目前而言我们也没有必要非要改变顺序，我们构建的着色器绑定表中对应的 <code class="docutils literal notranslate"><span class="pre">0</span></code> 号元素、 <code class="docutils literal notranslate"><span class="pre">1</span></code> 号元素和 <code class="docutils literal notranslate"><span class="pre">2</span></code> 号元素与构建管线时设置的
+<code class="docutils literal notranslate"><span class="pre">VkPipelineShaderStageCreateInfo</span></code> 数组中的的 <code class="docutils literal notranslate"><span class="pre">0</span></code> 号元素、 <code class="docutils literal notranslate"><span class="pre">1</span></code> 号元素和 <code class="docutils literal notranslate"><span class="pre">2</span></code> 号元素相对应。一般来说，着色器绑定表中和顺序并不需要与管线中的着色器顺序相对应。</p>
+</div>
+<div class="tip admonition">
+<p class="admonition-title">着色器绑定表的封装</p>
+<p>每个组中的元素都可以通过 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceRayTracingPipelinePropertiesKHR</span></code> 中的数据获得，使用这个结构体中的数据获取信息的好处就是我们不再需要按照指定的顺序获取。其原因已超出本教程的范围，但是我们提供了一个封装类用于将之前的流程自动化。
+可以到 <a class="reference external" href="https://github.com/nvpro-samples/nvpro_core/tree/master/nvvk#sbtwrapper_vkhpp">nnvk::SBTWrapper</a> 中找到实现。一些额外的示例将会使用该类。</p>
+</div>
 </section>
+<section id="id25">
+<h3>8.2 main<a class="headerlink" href="#id25" title="此标题的永久链接">#</a></h3>
+<p>在 <code class="docutils literal notranslate"><span class="pre">main</span></code> 函数中，现在增加着色器绑定表的构建函数调用。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">helloVk</span><span class="p">.</span><span class="n">createRtShaderBindingTable</span><span class="p">();</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id26">
+<h2>9 光线追踪<a class="headerlink" href="#id26" title="此标题的永久链接">#</a></h2>
 </section>
 </section>
 
@@ -1684,8 +1759,10 @@
 </li>
 <li><a class="reference internal" href="#id21">8 着色器绑定表</a><ul>
 <li><a class="reference internal" href="#id22">8.1 句柄</a></li>
+<li><a class="reference internal" href="#id25">8.2 main</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#id26">9 光线追踪</a></li>
 </ul>
 </li>
 </ul>

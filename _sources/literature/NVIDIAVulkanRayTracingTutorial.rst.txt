@@ -49,6 +49,9 @@ NVIDIA Vulkan 光线追踪教程
     * 2023/5/31 增加 ``8.1 句柄`` 章节
     * 2023/6/1 更新 ``5.1.1 帮助类细节：RaytracingBuilder::buildBlas()`` 章节，修改 ``我们将底层加速结构分割并使用多个大约 256MB 的内存块创建``
     * 2023/6/1 更新 ``8.1 句柄`` 章节
+    * 2023/6/2 更新 ``8.1 句柄`` 章节
+    * 2023/6/2 增加 ``8.2 main`` 章节
+    * 2023/6/2 增加 ``9 光线追踪`` 章节
 
 `文献源`_
 
@@ -1557,3 +1560,93 @@ NVIDIA Vulkan 光线追踪教程
     m_missRegion.deviceAddress           = sbtAddress + m_rgenRegion.size;
     m_hitRegion.deviceAddress            = sbtAddress + m_rgenRegion.size + m_missRegion.size;
 
+如下 ``lambda`` 表达式将会返回之前获取到的句柄指针。该函数在将句柄数据拷贝至着色器绑定表中使用。
+
+.. code:: c++
+
+    // 用于帮助获取句柄数据
+    auto getHandle = [&] (int i) { return handles.data() + i * handleSize; };
+
+由于我们的着色器绑定表缓存在 ``host`` 端是可访问的，我们将其内存映射出来用于数据拷贝。
+
+.. admonition:: 在 ``host`` 端是可访问
+    :class: note
+
+    在创建 ``m_rtSBTBuffer`` 着色器绑定表缓存时指定了创建支持 ``VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT`` 功能的内存。这样该缓存在 ``host`` 端（一般指 ``CPU`` 端）可以进行读写访问。访问的途径是通过内存映射进行（ ``m_alloc.map()`` 其内部最终会调用 ``vkMapMemory()`` 内存映射函数）。
+
+.. code:: c++
+
+    // 将着色器绑定表缓存映射出来并写入句柄数据
+    auto*    pSBTBuffer = reinterpret_cast<uint8_t*>(m_alloc.map(m_rtSBTBuffer));
+    uint8_t* pData{nullptr};
+    uint32_t handleIdx{0};
+
+拷贝光线着色器句柄。即使数据跨度和大小都比较大，我们也只拷贝句柄数据。
+
+.. code:: c++
+
+    // 光线着色器句柄
+    pData = pSBTBuffer;
+    memcpy(pData, getHandle(handleIdx++), handleSize);
+
+将拷贝起始位置定位到未命中着色器组的开头并拷贝所有的未命中着色器句柄，我们目前只有一个，但此时的循环可以支持我们增加多个未命中着色器。
+
+.. code:: c++
+
+    // 未命中着色器
+    pData = pSBTBuffer + m_rgenRegion.size;
+    for(uint32_t c = 0; c < missCount; c++)
+    {
+      memcpy(pData, getHandle(handleIdx++), handleSize);
+      pData += m_missRegion.stride;
+    }
+
+同样的方式，拷贝最近命中着色器组中的句柄。
+
+.. code:: c++
+
+    // 最近命中着色器
+    pData = pSBTBuffer + m_rgenRegion.size + m_missRegion.size;
+    for(uint32_t c = 0; c < hitCount; c++)
+    {
+      memcpy(pData, getHandle(handleIdx++), handleSize);
+      pData += m_hitRegion.stride;
+    }
+
+最后回收内存和释放临时资源。
+
+.. code:: c++
+
+      m_alloc.unmap(m_rtSBTBuffer);
+      m_alloc.finalizeAndReleaseStaging();
+    }
+
+和其他资源销毁一样，我们在 ``destroyResources`` 增加对取着色器绑定表资源的销毁：
+
+.. code:: c++
+
+    m_alloc.destroy(m_rtSBTBuffer);
+
+.. admonition:: 着色器顺序
+    :class: tip
+
+    没有要求说着色器必须以光线生成着色器、未命中着色器和最近命中着色器的顺序。就目前而言我们也没有必要非要改变顺序，我们构建的着色器绑定表中对应的 ``0`` 号元素、 ``1`` 号元素和 ``2`` 号元素与构建管线时设置的
+    ``VkPipelineShaderStageCreateInfo`` 数组中的的 ``0`` 号元素、 ``1`` 号元素和 ``2`` 号元素相对应。一般来说，着色器绑定表中和顺序并不需要与管线中的着色器顺序相对应。
+
+.. admonition:: 着色器绑定表的封装
+    :class: tip
+
+    每个组中的元素都可以通过 ``VkPhysicalDeviceRayTracingPipelinePropertiesKHR`` 中的数据获得，使用这个结构体中的数据获取信息的好处就是我们不再需要按照指定的顺序获取。其原因已超出本教程的范围，但是我们提供了一个封装类用于将之前的流程自动化。
+    可以到 `nnvk::SBTWrapper <https://github.com/nvpro-samples/nvpro_core/tree/master/nvvk#sbtwrapper_vkhpp>`_ 中找到实现。一些额外的示例将会使用该类。
+
+8.2 main
+***********************
+
+在 ``main`` 函数中，现在增加着色器绑定表的构建函数调用。
+
+.. code:: c++
+
+    helloVk.createRtShaderBindingTable();
+
+9 光线追踪
+####################
