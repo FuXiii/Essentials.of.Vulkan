@@ -287,15 +287,17 @@
 <li><p class="sd-card-text">2023/6/2 更新 <code class="docutils literal notranslate"><span class="pre">8.1</span> <span class="pre">句柄</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/6/2 增加 <code class="docutils literal notranslate"><span class="pre">8.2</span> <span class="pre">main</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/6/2 增加 <code class="docutils literal notranslate"><span class="pre">9</span> <span class="pre">光线追踪</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/2 增加 <code class="docutils literal notranslate"><span class="pre">10</span> <span class="pre">开始追踪</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/2 增加 <code class="docutils literal notranslate"><span class="pre">10.1</span> <span class="pre">main</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p><a class="reference external" href="https://nvpro-samples.github.io/vk_raytracing_tutorial_KHR/">文献源</a></p>
 <p>本文所提供的的代码和文档聚焦于使用 <a class="reference external" href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/vkspec.html#VK_KHR_ray_tracing_pipeline">VK_KHR_ray_tracing_pipeline</a> 扩展展示一个基础光追示例。
 该教程从一个基于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 开发的基础程序开始，并且提供一步步的介绍去修改和增加函数和功能。</p>
-<figure class="align-default" id="id27">
+<figure class="align-default" id="id29">
 <img alt="../_images/resultRaytraceShadowMedieval.png" src="../_images/resultRaytraceShadowMedieval.png" />
 <figcaption>
-<p><span class="caption-text">最终结果</span><a class="headerlink" href="#id27" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">最终结果</span><a class="headerlink" href="#id29" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <div class="note admonition">
@@ -352,10 +354,10 @@
 <p>打开位于 <code class="docutils literal notranslate"><span class="pre">build</span></code> 目录下的解决方案，之后编译并运行 <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing__before">vk_ray_tracing__before_KHR</a> 。</p>
 <p>该示例将会是此教程的示例起点。这是一个用于加载 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 文件并使用 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 光栅化渲染他们的小框架。您可以通过阅读 <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/blob/master/ray_tracing__before/README.md#nvidia-vulkan-ray-tracing-tutorial">Base Overview</a> 来纵观该示例是如何实现的。
 我们将使用这个框架加载几何体并且渲染场景来实现光线追踪。</p>
-<figure class="align-default" id="id28">
+<figure class="align-default" id="id30">
 <img alt="../_images/resultRasterCube.png" src="../_images/resultRasterCube.png" />
 <figcaption>
-<p><span class="caption-text">首次执行</span><a class="headerlink" href="#id28" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">首次执行</span><a class="headerlink" href="#id30" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <p>接下来的步骤将是修改 <code class="docutils literal notranslate"><span class="pre">vk_ray_tracing__before_KHR</span></code> 使其支持光线追踪。该教程修改后的最终结果将是同 <code class="docutils literal notranslate"><span class="pre">vk_ray_tracing__simple_KHR</span></code> 一样。如果开发过程发生错误
@@ -426,9 +428,9 @@
 据经验来说，底层加速结构越少越好。</p>
 </div>
 <p>顶层加速结构可以包含多个物体的实体（ <code class="docutils literal notranslate"><span class="pre">instance</span></code> ），每一个实体都会有自己的变换矩阵并且引用一个具体的底层加速结构。我们将会从一个底层加速结构和一个单位矩阵的顶层加速结构实例开始实现。</p>
-<figure class="align-default" id="id29">
+<figure class="align-default" id="id31">
 <img alt="../_images/AccelerationStructure.svg" src="../_images/AccelerationStructure.svg" /><figcaption>
-<p><span class="caption-text">加速结构</span><a class="headerlink" href="#id29" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">加速结构</span><a class="headerlink" href="#id31" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <p>该教程将会加载一个 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 文件，并将其索引、顶点和材质数据存储到 <code class="docutils literal notranslate"><span class="pre">ObjModel</span></code> 数据结构中。该模型同时引用一个 <code class="docutils literal notranslate"><span class="pre">ObjInstance</span></code> 数据结构，其中包含用于特定实体的变换矩阵。对于光线追踪， <code class="docutils literal notranslate"><span class="pre">ObjModel</span></code> 和一系列的 <code class="docutils literal notranslate"><span class="pre">ObjInstances</span></code> 将在之后分别用于构建底层加速结构和顶层加速结构。</p>
@@ -1275,9 +1277,9 @@
 有可能会有多个交点。</p>
 <p>任意命中着色器主要用于筛选相交着色器返回的交点的。</p>
 </div>
-<figure class="align-default" id="id30">
+<figure class="align-default" id="id32">
 <img alt="../_images/ShaderPipeline.svg" src="../_images/ShaderPipeline.svg" /><figcaption>
-<p><span class="caption-text">光线追踪管线</span><a class="headerlink" href="#id30" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">光线追踪管线</span><a class="headerlink" href="#id32" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <p>我们将从使用三个主要着色器开始：一个光线生成着色器，一个未命中着色器和由一个最近命中着色器构成的一个命中组。这在 <code class="docutils literal notranslate"><span class="pre">GLSL</span></code> 编译成 <code class="docutils literal notranslate"><span class="pre">SPIR-V</span></code> 时已经完成。 <code class="docutils literal notranslate"><span class="pre">SPIR-V</span></code> 的着色器们将会链接成一个能够通过求交计算执行正确的击中着色器的光线追踪管线。</p>
@@ -1327,7 +1329,7 @@
 <span class="n">PushConstantRay</span><span class="w"> </span><span class="n">m_pcRay</span><span class="p">{};</span>
 </pre></div>
 </div>
-<p>我们实现光线追踪管线是先从光线生成主色器和未命中着色器开始，然后是最近命中着色器。注意，这个着色器顺序是我们自己定的，该 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 光追扩展其实在创建管线时设置的着色器顺序可以是随意的。光追着色器的概念是对光栅化管线着色器的延续，在光线追踪中也有类似光栅化着色器的执行顺序和彼此着色器间的数据流通。</p>
+<p>我们实现光线追踪管线是先从光线生成着色器和未命中着色器开始，然后是最近命中着色器。注意，这个着色器顺序是我们自己定的，该 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 光追扩展其实在创建管线时设置的着色器顺序可以是随意的。光追着色器的概念是对光栅化管线着色器的延续，在光线追踪中也有类似光栅化着色器的执行顺序和彼此着色器间的数据流通。</p>
 <p>所有的着色器都使用 <code class="docutils literal notranslate"><span class="pre">VkPipelineShaderStageCreateInfo</span></code> 类型组成的 <code class="docutils literal notranslate"><span class="pre">std::vector</span></code> 数组存储。如前所属，此时，该着色器数组中的索引值将作为着色器的唯一标识。这三个着色器都会使用同样的 <code class="docutils literal notranslate"><span class="pre">main</span></code> 函数作为入口函数。之后使用 <code class="docutils literal notranslate"><span class="pre">vkCreateShaderModule</span></code> 从已经编译好着色器代码创建着色器句柄 <code class="docutils literal notranslate"><span class="pre">VkShaderModule</span></code> 并定义相关着色器阶段。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">//--------------------------------------------------------------------------------------------------</span>
 <span class="c1">// 光线追踪管线: 所有着色器, 光线生成着色器, 最近命中着色器, 未命中着色器</span>
@@ -1653,6 +1655,103 @@
 </section>
 <section id="id26">
 <h2>9 光线追踪<a class="headerlink" href="#id26" title="此标题的永久链接">#</a></h2>
+<p>创建一个记录调用光追着色器的指令函数。首先，头文件中增加如下声明：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">raytrace</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">VkCommandBuffer</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">nvmath</span><span class="o">::</span><span class="n">vec4f</span><span class="o">&amp;</span><span class="w"> </span><span class="n">clearColor</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>我们首先绑定管线和相应的管线布局，设置常量推送：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">//--------------------------------------------------------------------------------------------------</span>
+<span class="c1">// 对场景进行光线追踪</span>
+<span class="c1">//</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">HelloVulkan::raytrace</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">VkCommandBuffer</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">nvmath</span><span class="o">::</span><span class="n">vec4f</span><span class="o">&amp;</span><span class="w"> </span><span class="n">clearColor</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">m_debug</span><span class="p">.</span><span class="n">beginLabel</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Ray trace&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">// 初始化常量推送数据</span>
+<span class="w">  </span><span class="n">m_pcRay</span><span class="p">.</span><span class="n">clearColor</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="n">clearColor</span><span class="p">;</span>
+<span class="w">  </span><span class="n">m_pcRay</span><span class="p">.</span><span class="n">lightPosition</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">m_pcRaster</span><span class="p">.</span><span class="n">lightPosition</span><span class="p">;</span>
+<span class="w">  </span><span class="n">m_pcRay</span><span class="p">.</span><span class="n">lightIntensity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_pcRaster</span><span class="p">.</span><span class="n">lightIntensity</span><span class="p">;</span>
+<span class="w">  </span><span class="n">m_pcRay</span><span class="p">.</span><span class="n">lightType</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="n">m_pcRaster</span><span class="p">.</span><span class="n">lightType</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">VkDescriptorSet</span><span class="o">&gt;</span><span class="w"> </span><span class="n">descSets</span><span class="p">{</span><span class="n">m_rtDescSet</span><span class="p">,</span><span class="w"> </span><span class="n">m_descSet</span><span class="p">};</span>
+<span class="w">  </span><span class="n">vkCmdBindPipeline</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="n">VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR</span><span class="p">,</span><span class="w"> </span><span class="n">m_rtPipeline</span><span class="p">);</span>
+<span class="w">  </span><span class="n">vkCmdBindDescriptorSets</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="n">VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR</span><span class="p">,</span><span class="w"> </span><span class="n">m_rtPipelineLayout</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">                          </span><span class="p">(</span><span class="kt">uint32_t</span><span class="p">)</span><span class="n">descSets</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span><span class="w"> </span><span class="n">descSets</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+<span class="w">  </span><span class="n">vkCmdPushConstants</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="n">m_rtPipelineLayout</span><span class="p">,</span>
+<span class="w">                     </span><span class="n">VK_SHADER_STAGE_RAYGEN_BIT_KHR</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_MISS_BIT_KHR</span><span class="p">,</span>
+<span class="w">                     </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">PushConstantRay</span><span class="p">),</span><span class="w"> </span><span class="o">&amp;</span><span class="n">m_pcRay</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>幸好，所有与 <code class="docutils literal notranslate"><span class="pre">VkStridedDeviceAddressRegionKHR</span></code> 有关的数据都已在 <code class="docutils literal notranslate"><span class="pre">createRtShaderBindingTable()</span></code> 中创建完成了。</p>
+<p>我们终于可以在指令缓存中增加 <code class="docutils literal notranslate"><span class="pre">vkCmdTraceRaysKHR</span></code> 指令用于激发光线追踪。注意着色器绑定表缓存的地址已经多次提及。这是因为可以将一个着色器绑定表分开存放到多个缓存中，每种类型对应一个缓存：光线生成着色器，未命中着色器，最近命中着色器和可调用着色器（如何拆分已然超出了本教程的范围）。最后面的三个参数等效于激发计算管线的纬度大小，并表示线程的总数。我们希望每一个像素追踪一根射线，激发纬度设置了输出图片的的宽、高和深度值 <code class="docutils literal notranslate"><span class="pre">1</span></code> 。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="n">vkCmdTraceRaysKHR</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">m_rgenRegion</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">m_missRegion</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">m_hitRegion</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">m_callRegion</span><span class="p">,</span><span class="w"> </span><span class="n">m_size</span><span class="p">.</span><span class="n">width</span><span class="p">,</span><span class="w"> </span><span class="n">m_size</span><span class="p">.</span><span class="n">height</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="w">  </span><span class="n">m_debug</span><span class="p">.</span><span class="n">endLabel</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="tip admonition">
+<p class="admonition-title">选择光线生成着色器</p>
+<p>如果你构建的管线中有多个光线生成着色器，则可通过改变设备地址来选择具体的光线生成着色器。</p>
+</div>
+<div class="tip admonition">
+<p class="admonition-title">SBTWrapper</p>
+<p>如果使用 <code class="docutils literal notranslate"><span class="pre">SBTWrapper</span></code> 的话，上面得代码可以替换如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">regions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_stbWrapper</span><span class="p">.</span><span class="n">getRegions</span><span class="p">();</span>
+<span class="n">vkCmdTraceRaysKHR</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">regions</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="o">&amp;</span><span class="n">regions</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="o">&amp;</span><span class="n">regions</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="w"> </span><span class="o">&amp;</span><span class="n">regions</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span><span class="w"> </span><span class="n">size</span><span class="p">.</span><span class="n">width</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">.</span><span class="n">height</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="id27">
+<h2>10 开始追踪<a class="headerlink" href="#id27" title="此标题的永久链接">#</a></h2>
+<p>现在我们已经完成了光线追踪的所有前置设置和构建：加速结构，描述符集，光追管线和着色器绑定表。现在尝试生成渲染图片吧。</p>
+<section id="id28">
+<h3>10.1 main<a class="headerlink" href="#id28" title="此标题的永久链接">#</a></h3>
+<p>在 <code class="docutils literal notranslate"><span class="pre">main</span></code> 函数中，我们将定义一个用于在光栅化和光线追踪之间切换的本地变量。在光线追踪初始化之后增加如下代码：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="n">useRaytracer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>在同一函数中，在界面上增加一个复选框，用于运行时进行切换。在 <code class="docutils literal notranslate"><span class="pre">ImGui::ColorEdit3()</span></code> 之后我们增加：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">ImGui</span><span class="o">::</span><span class="n">Checkbox</span><span class="p">(</span><span class="s">&quot;Ray Tracer mode&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">useRaytracer</span><span class="p">);</span><span class="w"> </span><span class="c1">// 光栅化和光线追踪之间进行切换</span>
+</pre></div>
+</div>
+<p>代码往下找，你可以找到一个包含 <code class="docutils literal notranslate"><span class="pre">helloVk.rasterize()</span></code> 调用的代码块。我们的应用将支持两种渲染模式，所以将代码块替换成如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 渲染场景</span>
+<span class="k">if</span><span class="p">(</span><span class="n">useRaytracer</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">helloVk</span><span class="p">.</span><span class="n">raytrace</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="n">clearColor</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="k">else</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">vkCmdBeginRenderPass</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">offscreenRenderPassBeginInfo</span><span class="p">,</span><span class="w"> </span><span class="n">VK_SUBPASS_CONTENTS_INLINE</span><span class="p">);</span>
+<span class="w">  </span><span class="n">helloVk</span><span class="p">.</span><span class="n">rasterize</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">);</span>
+<span class="w">  </span><span class="n">vkCmdEndRenderPass</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>光线追踪的行为相较于传统的图形渲染任务更像是个基于计算着色器的计算管线，并且不依赖渲染通道（ <code class="docutils literal notranslate"><span class="pre">render</span> <span class="pre">pass</span></code> ）。</p>
+</div>
+<p>我们现在可以在光栅化和光线追踪之间切换了。然后现在光线追踪的渲染结果仅仅渲染一个灰色图片：最简单的光线生成着色器现在还没有追踪任何光线，所以仅仅返回一个固定颜色。</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>光栅化</p></th>
+<th class="head"></th>
+<th class="head"><p>光线追踪</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><img alt="../_images/resultRasterCube.png" src="../_images/resultRasterCube.png" />
+</td>
+<td><p>↔</p></td>
+<td><img alt="../_images/resultRaytraceEmptyCube.png" src="../_images/resultRaytraceEmptyCube.png" />
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 </section>
 </section>
 
@@ -1763,6 +1862,10 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#id26">9 光线追踪</a></li>
+<li><a class="reference internal" href="#id27">10 开始追踪</a><ul>
+<li><a class="reference internal" href="#id28">10.1 main</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

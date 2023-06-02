@@ -52,6 +52,8 @@ NVIDIA Vulkan 光线追踪教程
     * 2023/6/2 更新 ``8.1 句柄`` 章节
     * 2023/6/2 增加 ``8.2 main`` 章节
     * 2023/6/2 增加 ``9 光线追踪`` 章节
+    * 2023/6/2 增加 ``10 开始追踪`` 章节
+    * 2023/6/2 增加 ``10.1 main`` 章节
 
 `文献源`_
 
@@ -1253,7 +1255,7 @@ NVIDIA Vulkan 光线追踪教程
     // 用于光线追踪的常量推送
     PushConstantRay m_pcRay{};
 
-我们实现光线追踪管线是先从光线生成主色器和未命中着色器开始，然后是最近命中着色器。注意，这个着色器顺序是我们自己定的，该 ``Vulkan`` 光追扩展其实在创建管线时设置的着色器顺序可以是随意的。光追着色器的概念是对光栅化管线着色器的延续，在光线追踪中也有类似光栅化着色器的执行顺序和彼此着色器间的数据流通。
+我们实现光线追踪管线是先从光线生成着色器和未命中着色器开始，然后是最近命中着色器。注意，这个着色器顺序是我们自己定的，该 ``Vulkan`` 光追扩展其实在创建管线时设置的着色器顺序可以是随意的。光追着色器的概念是对光栅化管线着色器的延续，在光线追踪中也有类似光栅化着色器的执行顺序和彼此着色器间的数据流通。
 
 所有的着色器都使用 ``VkPipelineShaderStageCreateInfo`` 类型组成的 ``std::vector`` 数组存储。如前所属，此时，该着色器数组中的索引值将作为着色器的唯一标识。这三个着色器都会使用同样的 ``main`` 函数作为入口函数。之后使用 ``vkCreateShaderModule`` 从已经编译好着色器代码创建着色器句柄 ``VkShaderModule`` 并定义相关着色器阶段。
 
@@ -1650,3 +1652,106 @@ NVIDIA Vulkan 光线追踪教程
 
 9 光线追踪
 ####################
+
+创建一个记录调用光追着色器的指令函数。首先，头文件中增加如下声明：
+
+.. code:: c++
+
+    void raytrace(const VkCommandBuffer& cmdBuf, const nvmath::vec4f& clearColor);
+
+我们首先绑定管线和相应的管线布局，设置常量推送：
+
+.. code:: c++
+
+    //--------------------------------------------------------------------------------------------------
+    // 对场景进行光线追踪
+    //
+    void HelloVulkan::raytrace(const VkCommandBuffer& cmdBuf, const nvmath::vec4f& clearColor)
+    {
+      m_debug.beginLabel(cmdBuf, "Ray trace");
+      // 初始化常量推送数据
+      m_pcRay.clearColor     = clearColor;
+      m_pcRay.lightPosition  = m_pcRaster.lightPosition;
+      m_pcRay.lightIntensity = m_pcRaster.lightIntensity;
+      m_pcRay.lightType      = m_pcRaster.lightType;
+
+      std::vector<VkDescriptorSet> descSets{m_rtDescSet, m_descSet};
+      vkCmdBindPipeline(cmdBuf, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, m_rtPipeline);
+      vkCmdBindDescriptorSets(cmdBuf, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, m_rtPipelineLayout, 0,
+                              (uint32_t)descSets.size(), descSets.data(), 0, nullptr);
+      vkCmdPushConstants(cmdBuf, m_rtPipelineLayout,
+                         VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_MISS_BIT_KHR,
+                         0, sizeof(PushConstantRay), &m_pcRay);
+
+幸好，所有与 ``VkStridedDeviceAddressRegionKHR`` 有关的数据都已在 ``createRtShaderBindingTable()`` 中创建完成了。
+
+我们终于可以在指令缓存中增加 ``vkCmdTraceRaysKHR`` 指令用于激发光线追踪。注意着色器绑定表缓存的地址已经多次提及。这是因为可以将一个着色器绑定表分开存放到多个缓存中，每种类型对应一个缓存：光线生成着色器，未命中着色器，最近命中着色器和可调用着色器（如何拆分已然超出了本教程的范围）。最后面的三个参数等效于激发计算管线的纬度大小，并表示线程的总数。我们希望每一个像素追踪一根射线，激发纬度设置了输出图片的的宽、高和深度值 ``1`` 。
+
+.. code:: c++
+
+      vkCmdTraceRaysKHR(cmdBuf, &m_rgenRegion, &m_missRegion, &m_hitRegion, &m_callRegion, m_size.width, m_size.height, 1);
+      m_debug.endLabel(cmdBuf);
+    }
+
+.. admonition:: 选择光线生成着色器
+    :class: tip
+
+    如果你构建的管线中有多个光线生成着色器，则可通过改变设备地址来选择具体的光线生成着色器。
+
+.. admonition:: SBTWrapper
+    :class: tip
+
+    如果使用 ``SBTWrapper`` 的话，上面得代码可以替换如下：
+
+    .. code:: c++
+
+        auto& regions = m_stbWrapper.getRegions();
+        vkCmdTraceRaysKHR(cmdBuf, &regions[0], &regions[1], &regions[2], &regions[3], size.width, size.height, 1);
+
+10 开始追踪
+####################
+
+现在我们已经完成了光线追踪的所有前置设置和构建：加速结构，描述符集，光追管线和着色器绑定表。现在尝试生成渲染图片吧。
+
+10.1 main
+***********************
+
+在 ``main`` 函数中，我们将定义一个用于在光栅化和光线追踪之间切换的本地变量。在光线追踪初始化之后增加如下代码：
+
+.. code:: c++
+
+    bool useRaytracer = true;
+
+在同一函数中，在界面上增加一个复选框，用于运行时进行切换。在 ``ImGui::ColorEdit3()`` 之后我们增加：
+
+.. code:: c++
+
+    ImGui::Checkbox("Ray Tracer mode", &useRaytracer); // 光栅化和光线追踪之间进行切换
+
+代码往下找，你可以找到一个包含 ``helloVk.rasterize()`` 调用的代码块。我们的应用将支持两种渲染模式，所以将代码块替换成如下：
+
+.. code:: c++
+
+    // 渲染场景
+    if(useRaytracer)
+    {
+      helloVk.raytrace(cmdBuf, clearColor);
+    }
+    else
+    {
+      vkCmdBeginRenderPass(cmdBuf, &offscreenRenderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+      helloVk.rasterize(cmdBuf);
+      vkCmdEndRenderPass(cmdBuf);
+    }
+
+.. note::
+
+    光线追踪的行为相较于传统的图形渲染任务更像是个基于计算着色器的计算管线，并且不依赖渲染通道（ ``render pass`` ）。
+
+我们现在可以在光栅化和光线追踪之间切换了。然后现在光线追踪的渲染结果仅仅渲染一个灰色图片：最简单的光线生成着色器现在还没有追踪任何光线，所以仅仅返回一个固定颜色。
+
++--------------------------------------------+-----+---------------------------------------------------+
+| 光栅化                                     |     | 光线追踪                                          |
++============================================+=====+===================================================+
+| .. image:: ../_static/resultRasterCube.png |  ↔  | .. image:: ../_static/resultRaytraceEmptyCube.png |
++--------------------------------------------+-----+---------------------------------------------------+
