@@ -56,6 +56,8 @@ NVIDIA Vulkan 光线追踪教程
     * 2023/6/2 增加 ``10.1 main`` 章节
     * 2023/6/3 增加 ``11 相机矩阵`` 章节
     * 2023/6/3 增加 ``11.1 光线生成（raytrace.rgen）`` 章节
+    * 2023/6/3 增加 ``11.2 未命中着色器（raytrace.miss）`` 章节
+    * 2023/6/3 增加 ``12 简单光照`` 章节
 
 `文献源`_
 
@@ -1915,7 +1917,57 @@ NVIDIA Vulkan 光线追踪教程
 | .. image:: ../_static/resultRasterCube.png |  ↔  | .. image:: ../_static/resultRaytraceFlatCube.png  |
 +--------------------------------------------+-----+---------------------------------------------------+
 
-.. admonition:: rayPayloadEXT 位置
+.. admonition:: rayPayloadEXT 的 locations
     :class: note
 
-    ``location`` 用于给予 ``traceRayEXT`` 负载一个唯一识别号。由于某些原因你不能仅通过负载名称将其传递给 ``traceRayEXT`` （这被认为是 ``un-GLSL-y`` ）。
+    ``location`` 用于给予 ``traceRayEXT`` 负载一个唯一识别号。由于某些原因，你不能仅通过负载名称将其传递给 ``traceRayEXT`` （这被认为是 ``un-GLSL-y`` ）。
+
+    ``location`` 的范围为一个着色器一次调用。因此，
+
+    * 如果两个不同的着色器链接进入了同一个光追管线，如果这两个着色器的负载使用同一个 ``location`` 号声明，这两个负载不会互相干扰。
+    * 如果着色器被递归调用，即使他们的 ``location`` 号都是一样的，每一次的调用各自的负载都是独立的。这就是为什么光追着色器需要 ``GPU`` 的栈，这对于计算机图形学来说是一个非常新颖的概念。
+
+    .. note::
+
+        负载的 ``location`` 和描述符集中的 ``set`` 和 ``binding`` 还有与顶点属性的 ``location`` 是不一样的，后者的作用域范围为全局的。
+
+.. admonition:: rayPayloadInEXT 的 locations
+    :class: note
+
+    ``rayPayloadInEXT`` 声明的变量同样有一个 ``location`` ，因此其也可以作为 ``traceRayEXT`` 的负载进行传递。在本示例中，传入调用着色器的负载背身将会成为被调用着色器传入的负载。
+
+    .. note::
+
+        对于被调用者的负载和调用者的负载之前并没有要求 ``location`` 需要匹配！这与用于连接顶点着色器和片元着色器之间的 ``in/out`` 变量有很大的不同。
+
+11.2 未命中着色器（raytrace.miss）
+******************************************
+
+为了共享与光线追踪光栅化清屏颜色，我们将会使用常量推送来改变未命中着色器的返回值。常量推送的 ``PushConstantRay`` 结构包含很多成员数据，这里我们声明使用该结构体的第一个成员变量 ``clearColor`` 。对于其他成员目前还未声明。
+
+.. code:: GLSL
+
+    #extension GL_GOOGLE_include_directive : enable
+    #extension GL_EXT_shader_explicit_arithmetic_types_int64 : require
+
+    #include "raycommon.glsl"
+    #include "wavefront.glsl"
+
+    layout(location = 0) rayPayloadInEXT hitPayload prd;
+
+    layout(push_constant) uniform _PushConstantRay
+    {
+      PushConstantRay pcRay;
+    };
+
+    void main()
+    {
+      prd.hitValue = pcRay.clearColor.xyz * 0.8;
+    }
+
+.. note::
+
+    为了区分光栅化和光追渲染结果，返回的背景颜色较深。
+
+12 简单光照
+####################
