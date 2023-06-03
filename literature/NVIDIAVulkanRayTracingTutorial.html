@@ -292,15 +292,17 @@
 <li><p class="sd-card-text">2023/6/2 增加 <code class="docutils literal notranslate"><span class="pre">10.1</span> <span class="pre">main</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/6/3 增加 <code class="docutils literal notranslate"><span class="pre">11</span> <span class="pre">相机矩阵</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/6/3 增加 <code class="docutils literal notranslate"><span class="pre">11.1</span> <span class="pre">光线生成（raytrace.rgen）</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/3 增加 <code class="docutils literal notranslate"><span class="pre">11.2</span> <span class="pre">未命中着色器（raytrace.miss）</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/3 增加 <code class="docutils literal notranslate"><span class="pre">12</span> <span class="pre">简单光照</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p><a class="reference external" href="https://nvpro-samples.github.io/vk_raytracing_tutorial_KHR/">文献源</a></p>
 <p>本文所提供的的代码和文档聚焦于使用 <a class="reference external" href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/vkspec.html#VK_KHR_ray_tracing_pipeline">VK_KHR_ray_tracing_pipeline</a> 扩展展示一个基础光追示例。
 该教程从一个基于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 开发的基础程序开始，并且提供一步步的介绍去修改和增加函数和功能。</p>
-<figure class="align-default" id="id30">
+<figure class="align-default" id="id31">
 <img alt="../_images/resultRaytraceShadowMedieval.png" src="../_images/resultRaytraceShadowMedieval.png" />
 <figcaption>
-<p><span class="caption-text">最终结果</span><a class="headerlink" href="#id30" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">最终结果</span><a class="headerlink" href="#id31" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <div class="note admonition">
@@ -357,10 +359,10 @@
 <p>打开位于 <code class="docutils literal notranslate"><span class="pre">build</span></code> 目录下的解决方案，之后编译并运行 <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing__before">vk_ray_tracing__before_KHR</a> 。</p>
 <p>该示例将会是此教程的示例起点。这是一个用于加载 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 文件并使用 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 光栅化渲染他们的小框架。您可以通过阅读 <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/blob/master/ray_tracing__before/README.md#nvidia-vulkan-ray-tracing-tutorial">Base Overview</a> 来纵观该示例是如何实现的。
 我们将使用这个框架加载几何体并且渲染场景来实现光线追踪。</p>
-<figure class="align-default" id="id31">
+<figure class="align-default" id="id32">
 <img alt="../_images/resultRasterCube.png" src="../_images/resultRasterCube.png" />
 <figcaption>
-<p><span class="caption-text">首次执行</span><a class="headerlink" href="#id31" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">首次执行</span><a class="headerlink" href="#id32" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <p>接下来的步骤将是修改 <code class="docutils literal notranslate"><span class="pre">vk_ray_tracing__before_KHR</span></code> 使其支持光线追踪。该教程修改后的最终结果将是同 <code class="docutils literal notranslate"><span class="pre">vk_ray_tracing__simple_KHR</span></code> 一样。如果开发过程发生错误
@@ -431,9 +433,9 @@
 据经验来说，底层加速结构越少越好。</p>
 </div>
 <p>顶层加速结构可以包含多个物体的实体（ <code class="docutils literal notranslate"><span class="pre">instance</span></code> ），每一个实体都会有自己的变换矩阵并且引用一个具体的底层加速结构。我们将会从一个底层加速结构和一个单位矩阵的顶层加速结构实例开始实现。</p>
-<figure class="align-default" id="id32">
+<figure class="align-default" id="id33">
 <img alt="../_images/AccelerationStructure.svg" src="../_images/AccelerationStructure.svg" /><figcaption>
-<p><span class="caption-text">加速结构</span><a class="headerlink" href="#id32" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">加速结构</span><a class="headerlink" href="#id33" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <p>该教程将会加载一个 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 文件，并将其索引、顶点和材质数据存储到 <code class="docutils literal notranslate"><span class="pre">ObjModel</span></code> 数据结构中。该模型同时引用一个 <code class="docutils literal notranslate"><span class="pre">ObjInstance</span></code> 数据结构，其中包含用于特定实体的变换矩阵。对于光线追踪， <code class="docutils literal notranslate"><span class="pre">ObjModel</span></code> 和一系列的 <code class="docutils literal notranslate"><span class="pre">ObjInstances</span></code> 将在之后分别用于构建底层加速结构和顶层加速结构。</p>
@@ -1280,9 +1282,9 @@
 有可能会有多个交点。</p>
 <p>任意命中着色器主要用于筛选相交着色器返回的交点的。</p>
 </div>
-<figure class="align-default" id="id33">
+<figure class="align-default" id="id34">
 <img alt="../_images/ShaderPipeline.svg" src="../_images/ShaderPipeline.svg" /><figcaption>
-<p><span class="caption-text">光线追踪管线</span><a class="headerlink" href="#id33" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">光线追踪管线</span><a class="headerlink" href="#id34" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <p>我们将从使用三个主要着色器开始：一个光线生成着色器，一个未命中着色器和由一个最近命中着色器构成的一个命中组。这在 <code class="docutils literal notranslate"><span class="pre">GLSL</span></code> 编译成 <code class="docutils literal notranslate"><span class="pre">SPIR-V</span></code> 时已经完成。 <code class="docutils literal notranslate"><span class="pre">SPIR-V</span></code> 的着色器们将会链接成一个能够通过求交计算执行正确的击中着色器的光线追踪管线。</p>
@@ -1898,10 +1900,57 @@
 </table>
 </div>
 <div class="note admonition">
-<p class="admonition-title">rayPayloadEXT 位置</p>
-<p><code class="docutils literal notranslate"><span class="pre">location</span></code> 用于给予 <code class="docutils literal notranslate"><span class="pre">traceRayEXT</span></code> 负载一个唯一识别号。由于某些原因你不能仅通过负载名称将其传递给 <code class="docutils literal notranslate"><span class="pre">traceRayEXT</span></code> （这被认为是 <code class="docutils literal notranslate"><span class="pre">un-GLSL-y</span></code> ）。</p>
+<p class="admonition-title">rayPayloadEXT 的 locations</p>
+<p><code class="docutils literal notranslate"><span class="pre">location</span></code> 用于给予 <code class="docutils literal notranslate"><span class="pre">traceRayEXT</span></code> 负载一个唯一识别号。由于某些原因，你不能仅通过负载名称将其传递给 <code class="docutils literal notranslate"><span class="pre">traceRayEXT</span></code> （这被认为是 <code class="docutils literal notranslate"><span class="pre">un-GLSL-y</span></code> ）。</p>
+<p><code class="docutils literal notranslate"><span class="pre">location</span></code> 的范围为一个着色器一次调用。因此，</p>
+<ul class="simple">
+<li><p>如果两个不同的着色器链接进入了同一个光追管线，如果这两个着色器的负载使用同一个 <code class="docutils literal notranslate"><span class="pre">location</span></code> 号声明，这两个负载不会互相干扰。</p></li>
+<li><p>如果着色器被递归调用，即使他们的 <code class="docutils literal notranslate"><span class="pre">location</span></code> 号都是一样的，每一次的调用各自的负载都是独立的。这就是为什么光追着色器需要 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 的栈，这对于计算机图形学来说是一个非常新颖的概念。</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>负载的 <code class="docutils literal notranslate"><span class="pre">location</span></code> 和描述符集中的 <code class="docutils literal notranslate"><span class="pre">set</span></code> 和 <code class="docutils literal notranslate"><span class="pre">binding</span></code> 还有与顶点属性的 <code class="docutils literal notranslate"><span class="pre">location</span></code> 是不一样的，后者的作用域范围为全局的。</p>
+</div>
+</div>
+<div class="note admonition">
+<p class="admonition-title">rayPayloadInEXT 的 locations</p>
+<p><code class="docutils literal notranslate"><span class="pre">rayPayloadInEXT</span></code> 声明的变量同样有一个 <code class="docutils literal notranslate"><span class="pre">location</span></code> ，因此其也可以作为 <code class="docutils literal notranslate"><span class="pre">traceRayEXT</span></code> 的负载进行传递。在本示例中，传入调用着色器的负载背身将会成为被调用着色器传入的负载。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>对于被调用者的负载和调用者的负载之前并没有要求 <code class="docutils literal notranslate"><span class="pre">location</span></code> 需要匹配！这与用于连接顶点着色器和片元着色器之间的 <code class="docutils literal notranslate"><span class="pre">in/out</span></code> 变量有很大的不同。</p>
+</div>
 </div>
 </section>
+<section id="raytrace-miss">
+<h3>11.2 未命中着色器（raytrace.miss）<a class="headerlink" href="#raytrace-miss" title="此标题的永久链接">#</a></h3>
+<p>为了共享与光线追踪光栅化清屏颜色，我们将会使用常量推送来改变未命中着色器的返回值。常量推送的 <code class="docutils literal notranslate"><span class="pre">PushConstantRay</span></code> 结构包含很多成员数据，这里我们声明使用该结构体的第一个成员变量 <code class="docutils literal notranslate"><span class="pre">clearColor</span></code> 。对于其他成员目前还未声明。</p>
+<div class="highlight-GLSL notranslate"><div class="highlight"><pre><span></span><span class="cp">#extension GL_GOOGLE_include_directive : enable</span>
+<span class="cp">#extension GL_EXT_shader_explicit_arithmetic_types_int64 : require</span>
+
+<span class="cp">#include &quot;raycommon.glsl&quot;</span>
+<span class="cp">#include &quot;wavefront.glsl&quot;</span>
+
+<span class="k">layout</span><span class="p">(</span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mo">0</span><span class="p">)</span><span class="w"> </span><span class="n">rayPayloadInEXT</span><span class="w"> </span><span class="n">hitPayload</span><span class="w"> </span><span class="n">prd</span><span class="p">;</span>
+
+<span class="k">layout</span><span class="p">(</span><span class="n">push_constant</span><span class="p">)</span><span class="w"> </span><span class="k">uniform</span><span class="w"> </span><span class="n">_PushConstantRay</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">PushConstantRay</span><span class="w"> </span><span class="n">pcRay</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">prd</span><span class="p">.</span><span class="n">hitValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pcRay</span><span class="p">.</span><span class="n">clearColor</span><span class="p">.</span><span class="n">xyz</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">0.8</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>为了区分光栅化和光追渲染结果，返回的背景颜色较深。</p>
+</div>
+</section>
+</section>
+<section id="id30">
+<h2>12 简单光照<a class="headerlink" href="#id30" title="此标题的永久链接">#</a></h2>
 </section>
 </section>
 
@@ -2018,8 +2067,10 @@
 </li>
 <li><a class="reference internal" href="#id29">11 相机矩阵</a><ul>
 <li><a class="reference internal" href="#raytrace-rgen">11.1 光线生成（ <code class="docutils literal notranslate"><span class="pre">raytrace.rgen</span></code> ）</a></li>
+<li><a class="reference internal" href="#raytrace-miss">11.2 未命中着色器（raytrace.miss）</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#id30">12 简单光照</a></li>
 </ul>
 </li>
 </ul>
