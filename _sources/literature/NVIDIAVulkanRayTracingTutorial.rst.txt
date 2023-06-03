@@ -54,6 +54,8 @@ NVIDIA Vulkan 光线追踪教程
     * 2023/6/2 增加 ``9 光线追踪`` 章节
     * 2023/6/2 增加 ``10 开始追踪`` 章节
     * 2023/6/2 增加 ``10.1 main`` 章节
+    * 2023/6/3 增加 ``11 相机矩阵`` 章节
+    * 2023/6/3 增加 ``11.1 光线生成（raytrace.rgen）`` 章节
 
 `文献源`_
 
@@ -1755,3 +1757,165 @@ NVIDIA Vulkan 光线追踪教程
 +============================================+=====+===================================================+
 | .. image:: ../_static/resultRasterCube.png |  ↔  | .. image:: ../_static/resultRaytraceEmptyCube.png |
 +--------------------------------------------+-----+---------------------------------------------------+
+
+11 相机矩阵
+####################
+
+相机矩阵存储在一个 ``uniform`` 缓存中并使用 ``updateUniformBuffer`` 更新。光线追踪同样会使用该矩阵，所有我们需要将该缓存适配到光追着色器中。
+
+.. code:: c++
+
+    auto uboUsageStages = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT | VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR;
+
+11.1 光线生成（ ``raytrace.rgen`` ）
+******************************************
+
+在着色器中我们需要引入外部头文件，所有需要支持 ``#include`` 指令的 ``GLSL`` 扩展，在着色器中增加如下：
+
+.. code:: GLSL
+
+    #extension GL_GOOGLE_include_directive : enable
+
+现在是时候丰富光线生成着色器使其可以追踪光线。我们首先在着色器中增加一个 ``binding`` 资源绑定声明，这样着色器就可以访问相机矩阵了。
+
+.. code:: GLSL
+
+    #include "host_device.h"
+
+    layout(set = 1, binding = eGlobals) uniform _GlobalUniforms { GlobalUniforms uni; };
+
+.. admonition:: Binding
+    :class: note
+
+    相机缓存之所以绑定在 ``binding = eGlobals`` 的位置是与 ``host_device.h`` 中声明的绑定位置相对应，其中 ``eGlobals`` 为 ``0`` ，对于 ``set = 1`` 是因为在 ``HelloVulkan::createRtPipeline()`` 中为第二个 ``pipelineLayoutCreateInfo.pSetLayouts`` 描述符集（用于光追资源绑定），对应的索引值为 ``1`` 。
+
+    .. code:: GLSL
+
+        // host_device.h 中
+        #define START_BINDING(a) enum a {
+        #define END_BINDING() }
+
+        START_BINDING(SceneBindings)
+          eGlobals  = 0,  // 全局uniform包含相机矩阵
+          eObjDescs = 1,  // 访问物体描述
+          eTextures = 2   // 访问纹理
+        END_BINDING();
+
+        // 用于每一帧的uniform缓存
+        struct GlobalUniforms
+        {
+          mat4 viewProj;     // 相机 view * projection
+          mat4 viewInverse;  // 相机view矩阵的逆矩阵
+          mat4 projInverse;  // 相机projection矩阵的逆矩阵
+        };
+
+        // raytrace.rgen 中
+        layout(set = 1, binding = eGlobals) uniform _GlobalUniforms { GlobalUniforms uni; };
+        
+当追踪一条光线时，最近命中着色器或未命中着色器需要返回一些信息给着色器程序用于对一条新的光线激发光线追踪。这是用过使用 ``rayPayloadEXT`` 关键字声明光追负载实现的。
+
+由于该负载会被很多着色器使用，我们创建一个通用着色器文件 ``raycommon.glsl`` 用于声明通用数据。
+
+该文件仅仅包括一个负载定义：
+
+.. code:: GLSL
+
+    struct hitPayload
+    {
+      vec3 hitValue;
+    };
+
+我们现在修改 ``raytrace.rgen`` ，在其中包含 ``raycommon.glsl``。
+
+.. code:: GLSL
+
+    #include "raycommon.glsl"
+
+该负载就是使用 ``rayPayloadEXT`` 声明的 ``hitPayload`` 结构体。
+
+.. code:: GLSL
+
+    layout(location = 0) rayPayloadEXT hitPayload prd;
+
+着色器的主函数 ``main`` 从计算像素的浮点数坐标开始，该坐标被归一化到 :math:`[0,1]` 之间。 ``gl_LaunchIDEXT`` 包含被渲染像素的整数坐标位置，并且 ``gl_LaunchSizeEXT`` 包含了当执行 ``vkCmdTraceRaysKHR`` 指令时指定的渲染图片维度。
+
+.. code:: GLSL
+
+    void main()
+    {
+        const vec2 pixelCenter = vec2(gl_LaunchIDEXT.xy) + vec2(0.5);
+        const vec2 inUV = pixelCenter/vec2(gl_LaunchSizeEXT.xy);
+        vec2 d = inUV * 2.0 - 1.0;
+
+获取该像素的坐标系之后，我们可以使用 ``view`` 和 ``projection`` 变换的逆矩阵得到光线的起点和方向。
+
+.. code:: GLSL
+
+    vec4 origin    = uni.viewInverse * vec4(0, 0, 0, 1);
+    vec4 target    = uni.projInverse * vec4(d.x, d.y, 1, 1);
+    vec4 direction = uni.viewInverse * vec4(normalize(target.xyz), 0);
+
+此外，我们为光线提供一些位域和设置：首先，一个位域用于指示所有的几何体都按照不透明物体对待，就像我们创建加速结构时指定不透明那样。同样我们也设定一条光线的潜在相交的最小和最大距离。这个距离在光线超出该范围后提前退出减少光追消耗，一个经典的用例就是计算环境遮罩（ ``ambient occlusion`` ）。
+
+.. code:: GLSL
+
+    uint  rayFlags = gl_RayFlagsOpaqueEXT;
+    float tMin     = 0.001;
+    float tMax     = 10000.0;
+
+现在我们通过调用 ``traceRayEXT`` 函数进行追踪光线。对应的参数为：
+
+.. code:: GLSL
+
+    void traceRayEXT(accelerationStructureEXT topLevel,
+                   uint rayFlags,
+                   uint cullMask,
+                   uint sbtRecordOffset,
+                   uint sbtRecordStride,
+                   uint missIndex,
+                   vec3 origin,
+                   float Tmin,
+                   vec3 direction,
+                   float Tmax,
+                   int payload);
+
+* 顶级加速结构用于相交查询
+* ``rayFlags`` 控制光线追踪的位域
+* ``8`` 比特的剔除遮罩 ``culling mask`` ，加速结构的每一个实体都会有一个 ``8`` 比特的遮罩。这个实体遮罩将会与该遮罩值按位与，如果结果为 ``0`` 将会忽略该交点。我们没有利用该特性，所以这里我们给 ``0xFF`` 遮罩值，并且帮助类会设置每一个实体的遮罩为 ``0xFF`` 。
+* ``sbtRecordOffset`` 和 ``sbtRecordStride`` 用于控制每一个实体的 ``hitGroupId`` （ ``VkAccelerationStructureInstanceKHR::instanceShaderBindingTableRecordOffset`` ）是如何从底层加速结构命中组数组中获取命中组的。由于我们目前只有一个命中组，所以两个都设置成 ``0`` 。其中的细节相当复杂，可以通过阅读 `Will Usher's article <https://www.willusher.io/graphics/2019/11/20/the-sbt-three-ways>`_ 了解更多。
+* ``missIndex`` 表示底层加速结构的未命中着色器组的索引，当没有与任何实体相交时将会调用该索引对应的未命中着色器。
+* 光线的起点，最小范围，方向和对打范围。
+* 该着色器中声明的负载位置，本例中 ``location = 0`` 。这个编译期间的常数建立了 ``rayPayloadInEXT`` 的调用者和被调用关系，使得允许我们可以选择着色器在哪输出。作为 ``traceRayEXT`` 直接的结果执行着色器（被调用者），其中的 ``rayPayloadInEXT`` 参数将会成为 ``traceRayEXT`` 调用者规定的 ``rayPayloadEXT`` 位置别名（ ``alias`` ）。为了能够更好的运行，两个参数都应该是相同的结构体。这允许我们运行时决定着色器的输出往哪里写，这对于逆向光线追踪非常有用处。
+
+.. code:: GLSL
+
+    traceRayEXT(topLevelAS, // acceleration structure
+            rayFlags,       // rayFlags
+            0xFF,           // cullMask
+            0,              // sbtRecordOffset
+            0,              // sbtRecordStride
+            0,              // missIndex
+            origin.xyz,     // ray origin
+            tMin,           // ray min range
+            direction.xyz,  // ray direction
+            tMax,           // ray max range
+            0               // payload (location = 0)
+    );
+    
+最后，我们将负载结果写入图片。
+
+.. code:: GLSL
+
+        imageStore(image, ivec2(gl_LaunchIDEXT.xy), vec4(prd.hitValue, 1.0));
+    }
+
++--------------------------------------------+-----+---------------------------------------------------+
+| 光栅化                                     |     | 光线追踪                                          |
++============================================+=====+===================================================+
+| .. image:: ../_static/resultRasterCube.png |  ↔  | .. image:: ../_static/resultRaytraceFlatCube.png  |
++--------------------------------------------+-----+---------------------------------------------------+
+
+.. admonition:: rayPayloadEXT 位置
+    :class: note
+
+    ``location`` 用于给予 ``traceRayEXT`` 负载一个唯一识别号。由于某些原因你不能仅通过负载名称将其传递给 ``traceRayEXT`` （这被认为是 ``un-GLSL-y`` ）。

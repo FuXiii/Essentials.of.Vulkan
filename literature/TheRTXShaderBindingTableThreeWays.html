@@ -3,11 +3,11 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="搜索" href="../search.html" /><link rel="next" title="Vulkan 光线追踪最终标准发布" href="VulkanRayTracingFinalSpecificationRelease.html" /><link rel="prev" title="纵览" href="../Overview.html" />
-        <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/literature/index.html" />
+<link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="搜索" href="../search.html" /><link rel="next" title="Test" href="../test.html" /><link rel="prev" title="Vulkan迷你路径追踪" href="vk_mini_path_tracer.html" />
+        <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/literature/TheRTXShaderBindingTableThreeWays.html" />
 
     <link rel="shortcut icon" href="../_static/VulkanLogo.png"/><!-- Generated with Sphinx 6.2.1 and Furo 2023.05.20 -->
-        <title>文献 - Vulkan入门精要</title>
+        <title>RTX 着色器绑定表的三种方式 - Vulkan入门精要</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=e6660623a769aa55fea372102b9bf3151b292993" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
@@ -169,12 +169,12 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">文献翻译</span></p>
 <ul class="current">
-<li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">文献</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of 文献</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">文献</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of 文献</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="VulkanRayTracingFinalSpecificationRelease.html">Vulkan 光线追踪最终标准发布</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Vulkan-GuideRayTracing.html">光线追踪</a></li>
 <li class="toctree-l2"><a class="reference internal" href="NVIDIAVulkanRayTracingTutorial.html">NVIDIA Vulkan 光线追踪教程</a></li>
 <li class="toctree-l2"><a class="reference internal" href="vk_mini_path_tracer.html">Vulkan迷你路径追踪</a></li>
-<li class="toctree-l2"><a class="reference internal" href="TheRTXShaderBindingTableThreeWays.html">RTX 着色器绑定表的三种方式</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">RTX 着色器绑定表的三种方式</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../test.html">Test</a></li>
@@ -209,7 +209,7 @@
         </a>
         <div class="content-icon-container">
           <div class="edit-this-page">
-  <a class="muted-link" href="https://github.com/FuXiii/Essentials.of.Vulkan/edit/main/source/literature/index.rst" title="Edit this page">
+  <a class="muted-link" href="https://github.com/FuXiii/Essentials.of.Vulkan/edit/main/source/literature/TheRTXShaderBindingTableThreeWays.rst" title="Edit this page">
     <svg aria-hidden="true" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
@@ -231,8 +231,8 @@
           </label>
         </div>
         <article role="main">
-          <section id="id1">
-<h1>文献<a class="headerlink" href="#id1" title="此标题的永久链接">#</a></h1>
+          <section id="rtx">
+<h1>RTX 着色器绑定表的三种方式<a class="headerlink" href="#rtx" title="此标题的永久链接">#</a></h1>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header sd-bg-muted sd-bg-text-muted">
 <span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-history" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M1.643 3.143L.427 1.927A.25.25 0 000 2.104V5.75c0 .138.112.25.25.25h3.646a.25.25 0 00.177-.427L2.715 4.215a6.5 6.5 0 11-1.18 4.458.75.75 0 10-1.493.154 8.001 8.001 0 101.6-5.684zM7.75 4a.75.75 0 01.75.75v2.992l2.028.812a.75.75 0 01-.557 1.392l-2.5-1A.75.75 0 017 8.25v-3.5A.75.75 0 017.75 4z"></path></svg></span>更新记录<div class="sd-summary-down docutils">
@@ -241,54 +241,10 @@
 <svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
 </summary><div class="sd-summary-content sd-card-body docutils">
 <ul class="simple">
-<li><p class="sd-card-text">2023/5/11 增加 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">光线追踪最终标准发布</span></code> 文章</p></li>
-<li><p class="sd-card-text">2023/5/12 增加 <code class="docutils literal notranslate"><span class="pre">光线追踪</span></code> 文章</p></li>
-<li><p class="sd-card-text">2023/5/12 增加 <code class="docutils literal notranslate"><span class="pre">NVIDIA</span> <span class="pre">Vulkan</span> <span class="pre">光线追踪教程</span></code> 文章</p></li>
-<li><p class="sd-card-text">2023/5/12 增加 <code class="docutils literal notranslate"><span class="pre">Vulkan迷你路径追踪</span></code> 文章</p></li>
-<li><p class="sd-card-text">2023/6/3 增加 <code class="docutils literal notranslate"><span class="pre">RTX</span> <span class="pre">着色器绑定表的三种方式</span></code> 文章</p></li>
+<li><p class="sd-card-text">2023/6/3 创建本文</p></li>
 </ul>
 </div>
-</details><div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="VulkanRayTracingFinalSpecificationRelease.html">Vulkan 光线追踪最终标准发布</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="VulkanRayTracingFinalSpecificationRelease.html#id1">历史回顾</a></li>
-<li class="toctree-l2"><a class="reference internal" href="VulkanRayTracingFinalSpecificationRelease.html#id2">光追标准</a></li>
-<li class="toctree-l2"><a class="reference internal" href="VulkanRayTracingFinalSpecificationRelease.html#id3">扩展结构</a></li>
-<li class="toctree-l2"><a class="reference internal" href="VulkanRayTracingFinalSpecificationRelease.html#acceleration-structures">加速结构（Acceleration Structures）</a></li>
-<li class="toctree-l2"><a class="reference internal" href="VulkanRayTracingFinalSpecificationRelease.html#host-deferred-host-operations">Host端的延迟操作（Deferred Host Operations）</a></li>
-<li class="toctree-l2"><a class="reference internal" href="VulkanRayTracingFinalSpecificationRelease.html#id4">光追管线</a></li>
-<li class="toctree-l2"><a class="reference internal" href="VulkanRayTracingFinalSpecificationRelease.html#id5">光线查询</a></li>
-<li class="toctree-l2"><a class="reference internal" href="VulkanRayTracingFinalSpecificationRelease.html#id6">正路在此</a></li>
-<li class="toctree-l2"><a class="reference internal" href="VulkanRayTracingFinalSpecificationRelease.html#id9">结论和资源</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Vulkan-GuideRayTracing.html">光线追踪</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Vulkan-GuideRayTracing.html#id3">VK_KHR_acceleration_structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Vulkan-GuideRayTracing.html#id4">VK_KHR_ray_tracing_pipeline</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Vulkan-GuideRayTracing.html#id5">VK_KHR_ray_query</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Vulkan-GuideRayTracing.html#id6">VK_KHR_pipeline_library</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Vulkan-GuideRayTracing.html#id8">VK_KHR_deferred_host_operations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Vulkan-GuideRayTracing.html#id9">光追最佳实践</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="NVIDIAVulkanRayTracingTutorial.html">NVIDIA Vulkan 光线追踪教程</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="NVIDIAVulkanRayTracingTutorial.html#id2">1 介绍</a></li>
-<li class="toctree-l2"><a class="reference internal" href="NVIDIAVulkanRayTracingTutorial.html#environment-setup">2 配置环境</a></li>
-<li class="toctree-l2"><a class="reference internal" href="NVIDIAVulkanRayTracingTutorial.html#id6">3 编译和运行</a></li>
-<li class="toctree-l2"><a class="reference internal" href="NVIDIAVulkanRayTracingTutorial.html#id7">4 开始步入光线追踪</a></li>
-<li class="toctree-l2"><a class="reference internal" href="NVIDIAVulkanRayTracingTutorial.html#id8">5 加速结构</a></li>
-<li class="toctree-l2"><a class="reference internal" href="NVIDIAVulkanRayTracingTutorial.html#descriptor-set">6 光线追踪描述符集（Descriptor Set）</a></li>
-<li class="toctree-l2"><a class="reference internal" href="NVIDIAVulkanRayTracingTutorial.html#id18">7 光线追踪管线</a></li>
-<li class="toctree-l2"><a class="reference internal" href="NVIDIAVulkanRayTracingTutorial.html#id21">8 着色器绑定表</a></li>
-<li class="toctree-l2"><a class="reference internal" href="NVIDIAVulkanRayTracingTutorial.html#id26">9 光线追踪</a></li>
-<li class="toctree-l2"><a class="reference internal" href="NVIDIAVulkanRayTracingTutorial.html#id27">10 开始追踪</a></li>
-<li class="toctree-l2"><a class="reference internal" href="NVIDIAVulkanRayTracingTutorial.html#id29">11 相机矩阵</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="vk_mini_path_tracer.html">Vulkan迷你路径追踪</a></li>
-<li class="toctree-l1"><a class="reference internal" href="TheRTXShaderBindingTableThreeWays.html">RTX 着色器绑定表的三种方式</a></li>
-</ul>
-</div>
+</details><p><a class="reference external" href="https://www.willusher.io/graphics/2019/11/20/the-sbt-three-ways">文献源</a></p>
 </section>
 
         </article>
@@ -296,23 +252,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="VulkanRayTracingFinalSpecificationRelease.html">
+          <a class="next-page" href="../test.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Vulkan 光线追踪最终标准发布</div>
+                <div class="title">Test</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="../Overview.html">
+          <a class="prev-page" href="vk_mini_path_tracer.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">纵览</div>
+                <div class="title">Vulkan迷你路径追踪</div>
                 
               </div>
             </a>
