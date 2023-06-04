@@ -58,6 +58,14 @@ NVIDIA Vulkan 光线追踪教程
     * 2023/6/3 增加 ``11.1 光线生成（raytrace.rgen）`` 章节
     * 2023/6/3 增加 ``11.2 未命中着色器（raytrace.miss）`` 章节
     * 2023/6/3 增加 ``12 简单光照`` 章节
+    * 2023/6/4 更新 ``12 简单光照`` 章节
+    * 2023/6/4 增加 ``12.1 最近命中着色器（raytrace.rchit）`` 章节
+    * 2023/6/4 增加 ``13 简单材质`` 章节
+    * 2023/6/4 增加 ``13.1 raytrace.rchit`` 章节
+    * 2023/6/4 增加 ``13.2 main`` 章节
+    * 2023/6/4 增加 ``14 阴影`` 章节
+    * 2023/6/4 增加 ``14.1 createRaytracingPipeline`` 章节
+    * 2023/6/4 增加 ``14.2 createRtShaderBindingTable`` 章节
 
 `文献源`_
 
@@ -701,7 +709,7 @@ NVIDIA Vulkan 光线追踪教程
 .. admonition:: gl_InstanceID
     :class: warning
 
-    不要将 ``gl_InstanceID`` 和 ``gl_InstanceCustomIndex`` 搞混。 ``gl_InstanceID`` 仅仅用于表示在顶级加速结构内实体集中被击中的实体索引。
+    不要将 ``gl_InstanceID`` 和 ``gl_InstanceCustomIndex`` 搞混。 ``gl_InstanceID`` 仅仅用于表示在顶层加速结构内实体集中被击中的实体索引。
 
     在本教程中，我们可以暂时忽略自定义索引（ ``gl_InstanceCustomIndex`` ），因为其值将会与 ``gl_InstanceID`` 相等（ ``gl_InstanceID`` 用于表示与当前光线相交的实体索引，目前该索引值与 ``i`` 值相同）。在之后的例子中该值将会不同。
 
@@ -934,7 +942,7 @@ NVIDIA Vulkan 光线追踪教程
     VkDeviceAddress           scratchAddress = vkGetBufferDeviceAddress(m_device, &bufferInfo);
     NAME_VK(scratchBuffer.buffer);
 
-最后我们就可以构建该顶级加速结构了。
+最后我们就可以构建该顶层加速结构了。
 
 .. code:: c++
 
@@ -1024,6 +1032,8 @@ NVIDIA Vulkan 光线追踪教程
       writes.emplace_back(m_rtDescSetLayoutBind.makeWrite(m_rtDescSet, RtxBindings::eOutImage, &imageInfo));
       vkUpdateDescriptorSets(m_device, static_cast<uint32_t>(writes.size()), writes.data(), 0, nullptr);
     }
+
+.. _Additions to the Scene Descriptor Set:
 
 6.1 增加场景的描述符集
 ***********************
@@ -1881,7 +1891,7 @@ NVIDIA Vulkan 光线追踪教程
                    float Tmax,
                    int payload);
 
-* 顶级加速结构用于相交查询
+* 顶层加速结构用于相交查询
 * ``rayFlags`` 控制光线追踪的位域
 * ``8`` 比特的剔除遮罩 ``culling mask`` ，加速结构的每一个实体都会有一个 ``8`` 比特的遮罩。这个实体遮罩将会与该遮罩值按位与，如果结果为 ``0`` 将会忽略该交点。我们没有利用该特性，所以这里我们给 ``0xFF`` 遮罩值，并且帮助类会设置每一个实体的遮罩为 ``0xFF`` 。
 * ``sbtRecordOffset`` 和 ``sbtRecordStride`` 用于控制每一个实体的 ``hitGroupId`` （ ``VkAccelerationStructureInstanceKHR::instanceShaderBindingTableRecordOffset`` ）是如何从底层加速结构命中组数组中获取命中组的。由于我们目前只有一个命中组，所以两个都设置成 ``0`` 。其中的细节相当复杂，可以通过阅读 `Will Usher's article <https://www.willusher.io/graphics/2019/11/20/the-sbt-three-ways>`_ 了解更多。
@@ -1971,3 +1981,316 @@ NVIDIA Vulkan 光线追踪教程
 
 12 简单光照
 ####################
+
+当前最近命中着色器仅返回一个固定单色。为了增加一些光照，我们需要介绍一下表面法线这个概念。然而，光追命中点处只能获取到质心坐标，为了得到交点处的法线和其他顶点属性，我们需要在顶点缓存中找到他们，之后使用质心坐标计算相关属性值。这就是为什么我们在创建光追描述符集时将顶点缓存和索引缓存的可访问范围扩展至最近命中着色器。
+
+.. admonition:: 可访问范围扩展至最近命中着色器
+    :class: note
+
+    指的是 :ref:`Additions to the Scene Descriptor Set` 中的如下代码：
+
+    .. code:: c++
+
+        m_descSetLayoutBind.addBinding(SceneBindings::eObjDescs, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1,
+                               VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR);
+
+12.1 最近命中着色器（raytrace.rchit）
+******************************************
+
+当我们创建光追描述符集的时候，其中已经包含了几何数据的定义。因此我们可以直接在最近命中着色器中通过 ``binding = 2`` 访问顶点缓存和索引缓存。
+
+我们首先在着色器中包含负载定义和 ``OBJ-Wavefront`` 数据结构的头文件
+
+.. code:: GLSL
+
+    #extension GL_EXT_scalar_block_layout : enable
+    #extension GL_GOOGLE_include_directive : enable
+    #extension GL_EXT_shader_explicit_arithmetic_types_int64 : require
+    #extension GL_EXT_buffer_reference2 : require
+    #include "raycommon.glsl"
+    #include "wavefront.glsl"
+
+之后按照描述符集布局声明对应的资源
+
+.. code:: GLSL
+
+    layout(location = 0) rayPayloadInEXT hitPayload prd;
+
+    layout(buffer_reference, scalar) buffer Vertices {Vertex v[]; }; // 物体的位置
+    layout(buffer_reference, scalar) buffer Indices {ivec3 i[]; }; // 三角形的索引
+    layout(buffer_reference, scalar) buffer Materials {WaveFrontMaterial m[]; }; // 一个物体最终所有的材质
+    layout(buffer_reference, scalar) buffer MatIndices {int i[]; }; // 每个三角形对应的材质ID
+    layout(set = 1, binding = eObjDescs, scalar) buffer ObjDesc_ { ObjDesc i[]; } objDesc;
+
+    layout(push_constant) uniform _PushConstantRay { PushConstantRay pcRay; };
+
+在 ``main`` 函数中， ``gl_InstanceCustomIndexEXT`` 用于告诉我们光线和哪一个物体相交了，并且使用 ``gl_PrimitiveID`` 可以找到被击中三角形的顶点信息。
+
+.. code:: GLSL
+
+    void main()
+    {
+        // Object data
+        ObjDesc    objResource = objDesc.i[gl_InstanceCustomIndexEXT];
+        MatIndices matIndices  = MatIndices(objResource.materialIndexAddress);
+        Materials  materials   = Materials(objResource.materialAddress);
+        Indices    indices     = Indices(objResource.indexAddress);
+        Vertices   vertices    = Vertices(objResource.vertexAddress);
+    
+        // Indices of the triangle
+        ivec3 ind = indices.i[gl_PrimitiveID];
+    
+        // Vertex of the triangle
+        Vertex v0 = vertices.v[ind.x];
+        Vertex v1 = vertices.v[ind.y];
+        Vertex v2 = vertices.v[ind.z];
+
+根据如下算法计算质心坐标。
+
+.. code:: GLSL
+
+    const vec3 barycentrics = vec3(1.0 - attribs.x - attribs.y, attribs.x, attribs.y);
+
+世界空间下的坐标可以通过两种方式计算出来，第一种是使用来自最近命中着色器获得的信息获取，如果交点非常非常远的话，这会有一个精度问题。
+
+.. code:: GLSL
+
+    vec3 worldPos = gl_WorldRayOriginEXT + gl_WorldRayDirectionEXT * gl_HitTEXT;
+
+另一种更加精确的方式是：通过插值计算位置。我们使用当前击中点上所处的矩阵进行计算，这个矩阵是通过使用顶层加速结构和底层加速结构提供的信息计算出来的。
+
+.. note::
+
+    目前我们所有的底层加速结构都没有提供任何矩阵变换，只有顶层加速结构的实体提供了相应的变换矩阵。
+
+.. code:: GLSL
+
+    // 计算命中点的坐标
+    const vec3 pos      = v0.pos * barycentrics.x + v1.pos * barycentrics.y + v2.pos * barycentrics.z;
+    const vec3 worldPos = vec3(gl_ObjectToWorldEXT * vec4(pos, 1.0));  // 将坐标变换到世界空间下
+
+相同的算法也可以应用到法线上。
+
+.. code:: GLSL
+
+    // 在命中点位置计算法线
+    const vec3 nrm      = v0.nrm * barycentrics.x + v1.nrm * barycentrics.y + v2.nrm * barycentrics.z;
+    const vec3 worldNrm = normalize(vec3(nrm * gl_WorldToObjectEXT));  // 将法线变换到世界空间下
+
+光源目前以一个常量数据呈现，之后可以将法线与光源方向进行点乘得到一个不一样的简单光照效果。
+
+.. code:: GLSL
+
+    // 光源方向的向量
+    vec3  L;
+    float lightIntensity = pcRay.lightIntensity;
+    float lightDistance  = 100000.0;
+    // 点光源
+    if(pcRay.lightType == 0)
+    {
+      vec3 lDir      = pcRay.lightPosition - worldPos;
+      lightDistance  = length(lDir);
+      lightIntensity = pcRay.lightIntensity / (lightDistance * lightDistance);
+      L              = normalize(lDir);
+    }
+    else  // 平行光
+    {
+      L = normalize(pcRay.lightPosition);
+    }
+
+.. figure:: ../_static/resultRaytraceLightGreyCube.png
+
+13 简单材质
+##############
+
+基于上面的渲染，我们可以通过增加材质来呈现更有趣的渲染效果。加载进来的 ``OBJ`` 对象提供了一个简单的 ``Alias Wavefront`` 材质。
+
+.. admonition:: Alias Wavefront
+    :class: note
+
+    估计是指 ``Alias`` （原 ``Alias|Wavefront`` ）是著名的3D软件公司，旗下作品 ``Maya`` 、 ``StudioTools`` 、等。后来被 ``Autodesk`` 公司收购。
+
+    ``Alias Wavefront`` 应该是 ``OBJ`` 模型文件内部的材质数据格式。本人没具体研究过。
+
+13.1 raytrace.rchit
+******************************************
+
+该材质使用简单的颜色系数定义基础反射属性，并同时支持纹理。包含该材质的缓存已经在光栅化渲染时创建完成，并且同时也被光追描述符集使用。如下在最近命中着色器中绑定要采样的纹理：
+
+.. code:: GLSL
+
+    layout(set = 1, binding = eTextures) uniform sampler2D textureSamplers[];
+
+声明的该材质和在光栅化渲染时使用的是一样的，被定义在 ``wavefront.glsl`` 中。
+
+.. admonition:: 定义在 ``wavefront.glsl`` 中
+    :class: note
+
+    ``wavefront.glsl`` 会去包含 ``host_device.h`` 头文件，材质结构体的定义位于 ``host_device.h`` 中。
+
+    .. code:: GLSL
+
+        struct WaveFrontMaterial
+        {
+          vec3  ambient;
+          vec3  diffuse;
+          vec3  specular;
+          vec3  transmittance;
+          vec3  emission;
+          float shininess;
+          float ior;       // 反射的索引
+          float dissolve;  // 1 == 不透明; 0 == 完全透明
+          int   illum;     // 光照模式 (请阅读 http://www.fileformat.info/format/material/)
+          int   textureId;
+        };
+
+``Vertex`` 结构体中包括材质的索引，我们将使用该索引去对应的缓存中获取相应的材质。
+
+我们首先将 ``main`` 函数的结尾处移除如下代码：
+
+.. code:: GLSL
+
+    float dotNL = max(dot(normal, L), 0.2);
+    prd.hitValue = vec3(dotNL);
+
+更换成获取材质定义代码：
+
+.. code:: GLSL
+
+    // 对象的材质
+    int               matIdx = matIndices.i[gl_PrimitiveID];
+    WaveFrontMaterial mat    = materials.m[matIdx];
+
+.. note::
+
+    本示例中每一个对象一个材质，并且可通过索引分别获取到每一个材质。并且每一个三角形都有一个材质索引。
+
+基于此材质定义，我们使用漫反射和高光反射来计算关照。代码同样也支持使用纹理来设置表面反照率。
+
+.. code:: GLSL
+
+    // 漫反射
+    vec3 diffuse = computeDiffuse(mat, L, normal);
+    if(mat.textureId >= 0)
+    {
+      uint txtId = mat.textureId + scnDesc.i[gl_InstanceCustomIndexEXT].txtOffset;
+      vec2 texCoord =
+          v0.texCoord * barycentrics.x + v1.texCoord * barycentrics.y + v2.texCoord * barycentrics.z;
+      diffuse *= texture(textureSamplers[nonuniformEXT(txtId)], texCoord).xyz;
+    }
+    
+    // 高光反射
+    vec3 specular = computeSpecular(mat, gl_WorldRayDirectionEXT, L, normal);
+
+最终的光照计算如下：
+
+.. code:: GLSL
+
+    prd.hitValue = vec3(lightIntensity * (diffuse + specular));
+
+.. figure:: ../_static/resultRaytraceLightMatCube.png
+
+13.2 main
+******************************************
+
+``OBJ`` 的模型是在 ``main.cpp`` 中通过调用 ``helloVk.loadModel`` 加载的。相比于加载一个方盒子，让我们加载一些更有趣的模型：
+
+.. code:: c++
+
+    helloVk.loadModel(nvh::findFile("media/scenes/Medieval_building.obj", defaultSearchPaths, true));
+    helloVk.loadModel(nvh::findFile("media/scenes/plane.obj", defaultSearchPaths, true));
+
+由于该模型较大，我们可以将 ``CameraManip.setLookat`` 设置成：
+
+.. code:: c++
+
+    CameraManip.setLookat(nvmath::vec3f(4, 4, 4), nvmath::vec3f(0, 1, 0), nvmath::vec3f(0, 1, 0));
+
+.. figure:: ../_static/resultRaytraceLightMatMedieval.png
+
+14 阴影
+##########
+
+如上光追渲染能得到一个应用了一些光照的场景，但是目前还没有阴影。在本示例的结尾，我们将会增加一个新的光线类型，并且从最近命中着色器中发射该光线，该新增加的光线类型需要增加一个新的未命中着色器。
+
+14.1 createRaytracingPipeline
+******************************************
+
+对于简单的阴影光线我们只需要计算出该光线是否与几何体相交即可。我们可以使用一个布尔（ ``Boolean`` ）负载来指示是否发生了相交，并且使用当新增加的未命中着色器将负载设置成未命中状态。
+
+.. admonition:: `Download Shadow Shader <https://nvpro-samples.github.io/vk_raytracing_tutorial_KHR/files/shadowShaders.zip>`_
+    :class: warning
+
+    下载并增加着色器文件
+
+    .. note::
+        
+        如果按照 :ref:`Environment Setup` 中的步骤，用于阴影的未命中着色器会一并包含下载。
+
+该压缩文件中只有一个文件 ``raytraceShadow.rmiss`` 。将该着色器文件解压并加到 ``src/shaders`` 目录下，之后执行 ``CMake`` 即可。该着色器文件将会被编译，并且编译的 ``SPIR-V`` 目标文件将会和其他 ``GLSL`` 文件一道存放到 ``shaders`` 文件夹中。
+
+在 ``createRtPipeline`` 函数体中，我们需要在之前的未命中着色器之后增加对于新未命中着色器的定义。
+
+.. code:: c++
+
+    enum StageIndices
+    {
+      eRaygen,
+      eMiss,
+      eMiss2, // 新增未命中着色器
+      eClosestHit,
+      eShaderGroupCount 
+    };
+
+并且创建相应的着色器句柄：
+
+.. code:: c++
+
+    // 当阴影光线没有和任何几何体相交的话将会调用第二个未命中着色器。其只是表示未发生遮挡。
+    stage.module =
+        nvvk::createShaderModule(m_device, nvh::loadFile("spv/raytraceShadow.rmiss.spv", true, defaultSearchPaths, true));
+    stage.stage   = VK_SHADER_STAGE_MISS_BIT_KHR;
+    stages[eMiss2] = stage;
+
+之后使用该着色器句柄并将其添加到相应的着色器组中：
+
+.. code:: c++
+
+    // 阴影的未命中着色器
+    group.type          = VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR;
+    group.generalShader = eMiss2;
+    m_rtShaderGroups.push_back(group);
+
+现在光追管线可以允许从最近命中着色器发生光线，其中需要将光线追踪的递归次数增加到 ``2`` 级。
+
+.. code:: c++
+
+    // 光线追踪可以从相机发射光线，并且阴影光线可以从命中的相交点处发射光线，因此递归级别是2。
+    // 为了性能考虑这个递归层级越小越好。
+    // 为了防止过深的递归，在生成光线时光线追踪递归会展成一个循环。
+    rayPipelineInfo.maxPipelineRayRecursionDepth = 2;  // 光线递归深度
+
+.. admonition:: 资源限制
+    :class: warning
+
+    ``Vulkan`` 规范在运行时并不保证进行递归检查。如果在设置光追管线构造信息时设置了超过物理设备支持的递归深度，其结果是未定义的。
+
+    ``KHR`` 的光追规范中将原本 ``NV`` 规范中的最小递归深度 ``31`` 降低到了 ``1`` （比如不进行递归）。由于我们现在需要将递归限制在 ``2`` ，我们
+    需要检查一下设备是否支持该递归深度：
+
+    .. code:: c++
+
+        // Spec only guarantees 1 level of "recursion". Check for that sad possibility here.
+        if (m_rtProperties.maxRayRecursionDepth <= 1) {
+            throw std::runtime_error("Device fails to support ray recursion (m_rtProperties.maxRayRecursionDepth <= 1)");
+        }
+
+    ``m_rtProperties`` 将会在 ``HelloVulkan::initRayTracing`` 中进行获取赋值。
+
+14.2 createRtShaderBindingTable
+******************************************
+
+
+
+
+

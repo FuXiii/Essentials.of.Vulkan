@@ -294,15 +294,23 @@
 <li><p class="sd-card-text">2023/6/3 增加 <code class="docutils literal notranslate"><span class="pre">11.1</span> <span class="pre">光线生成（raytrace.rgen）</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/6/3 增加 <code class="docutils literal notranslate"><span class="pre">11.2</span> <span class="pre">未命中着色器（raytrace.miss）</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/6/3 增加 <code class="docutils literal notranslate"><span class="pre">12</span> <span class="pre">简单光照</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/4 更新 <code class="docutils literal notranslate"><span class="pre">12</span> <span class="pre">简单光照</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/4 增加 <code class="docutils literal notranslate"><span class="pre">12.1</span> <span class="pre">最近命中着色器（raytrace.rchit）</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/4 增加 <code class="docutils literal notranslate"><span class="pre">13</span> <span class="pre">简单材质</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/4 增加 <code class="docutils literal notranslate"><span class="pre">13.1</span> <span class="pre">raytrace.rchit</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/4 增加 <code class="docutils literal notranslate"><span class="pre">13.2</span> <span class="pre">main</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/4 增加 <code class="docutils literal notranslate"><span class="pre">14</span> <span class="pre">阴影</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/4 增加 <code class="docutils literal notranslate"><span class="pre">14.1</span> <span class="pre">createRaytracingPipeline</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/4 增加 <code class="docutils literal notranslate"><span class="pre">14.2</span> <span class="pre">createRtShaderBindingTable</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p><a class="reference external" href="https://nvpro-samples.github.io/vk_raytracing_tutorial_KHR/">文献源</a></p>
 <p>本文所提供的的代码和文档聚焦于使用 <a class="reference external" href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/vkspec.html#VK_KHR_ray_tracing_pipeline">VK_KHR_ray_tracing_pipeline</a> 扩展展示一个基础光追示例。
 该教程从一个基于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 开发的基础程序开始，并且提供一步步的介绍去修改和增加函数和功能。</p>
-<figure class="align-default" id="id31">
+<figure class="align-default" id="id35">
 <img alt="../_images/resultRaytraceShadowMedieval.png" src="../_images/resultRaytraceShadowMedieval.png" />
 <figcaption>
-<p><span class="caption-text">最终结果</span><a class="headerlink" href="#id31" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">最终结果</span><a class="headerlink" href="#id35" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <div class="note admonition">
@@ -359,10 +367,10 @@
 <p>打开位于 <code class="docutils literal notranslate"><span class="pre">build</span></code> 目录下的解决方案，之后编译并运行 <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing__before">vk_ray_tracing__before_KHR</a> 。</p>
 <p>该示例将会是此教程的示例起点。这是一个用于加载 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 文件并使用 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 光栅化渲染他们的小框架。您可以通过阅读 <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/blob/master/ray_tracing__before/README.md#nvidia-vulkan-ray-tracing-tutorial">Base Overview</a> 来纵观该示例是如何实现的。
 我们将使用这个框架加载几何体并且渲染场景来实现光线追踪。</p>
-<figure class="align-default" id="id32">
+<figure class="align-default" id="id36">
 <img alt="../_images/resultRasterCube.png" src="../_images/resultRasterCube.png" />
 <figcaption>
-<p><span class="caption-text">首次执行</span><a class="headerlink" href="#id32" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">首次执行</span><a class="headerlink" href="#id36" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <p>接下来的步骤将是修改 <code class="docutils literal notranslate"><span class="pre">vk_ray_tracing__before_KHR</span></code> 使其支持光线追踪。该教程修改后的最终结果将是同 <code class="docutils literal notranslate"><span class="pre">vk_ray_tracing__simple_KHR</span></code> 一样。如果开发过程发生错误
@@ -433,9 +441,9 @@
 据经验来说，底层加速结构越少越好。</p>
 </div>
 <p>顶层加速结构可以包含多个物体的实体（ <code class="docutils literal notranslate"><span class="pre">instance</span></code> ），每一个实体都会有自己的变换矩阵并且引用一个具体的底层加速结构。我们将会从一个底层加速结构和一个单位矩阵的顶层加速结构实例开始实现。</p>
-<figure class="align-default" id="id33">
+<figure class="align-default" id="id37">
 <img alt="../_images/AccelerationStructure.svg" src="../_images/AccelerationStructure.svg" /><figcaption>
-<p><span class="caption-text">加速结构</span><a class="headerlink" href="#id33" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">加速结构</span><a class="headerlink" href="#id37" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <p>该教程将会加载一个 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 文件，并将其索引、顶点和材质数据存储到 <code class="docutils literal notranslate"><span class="pre">ObjModel</span></code> 数据结构中。该模型同时引用一个 <code class="docutils literal notranslate"><span class="pre">ObjInstance</span></code> 数据结构，其中包含用于特定实体的变换矩阵。对于光线追踪， <code class="docutils literal notranslate"><span class="pre">ObjModel</span></code> 和一系列的 <code class="docutils literal notranslate"><span class="pre">ObjInstances</span></code> 将在之后分别用于构建底层加速结构和顶层加速结构。</p>
@@ -844,7 +852,7 @@
 <p>我们使用 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureInstanceKHR</span></code> 代表一个实体，其内部有用于与 <code class="docutils literal notranslate"><span class="pre">buildBlas</span></code> 中创建的底层加速结构相关联的变换矩阵（ <code class="docutils literal notranslate"><span class="pre">transform</span></code> ），并且还包括一个实体 <code class="docutils literal notranslate"><span class="pre">ID</span></code> 号，可以在着色器中通过 <code class="docutils literal notranslate"><span class="pre">gl_InstanceCustomIndex</span></code> 获取到，用于表示着色器中调用被击中对象组中的索引（ <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureInstanceKHR::instanceShaderBindingTableRecordOffset</span></code> 在帮助类中也叫 <code class="docutils literal notranslate"><span class="pre">hitGroupId</span></code> ）。</p>
 <div class="warning admonition">
 <p class="admonition-title">gl_InstanceID</p>
-<p>不要将 <code class="docutils literal notranslate"><span class="pre">gl_InstanceID</span></code> 和 <code class="docutils literal notranslate"><span class="pre">gl_InstanceCustomIndex</span></code> 搞混。 <code class="docutils literal notranslate"><span class="pre">gl_InstanceID</span></code> 仅仅用于表示在顶级加速结构内实体集中被击中的实体索引。</p>
+<p>不要将 <code class="docutils literal notranslate"><span class="pre">gl_InstanceID</span></code> 和 <code class="docutils literal notranslate"><span class="pre">gl_InstanceCustomIndex</span></code> 搞混。 <code class="docutils literal notranslate"><span class="pre">gl_InstanceID</span></code> 仅仅用于表示在顶层加速结构内实体集中被击中的实体索引。</p>
 <p>在本教程中，我们可以暂时忽略自定义索引（ <code class="docutils literal notranslate"><span class="pre">gl_InstanceCustomIndex</span></code> ），因为其值将会与 <code class="docutils literal notranslate"><span class="pre">gl_InstanceID</span></code> 相等（ <code class="docutils literal notranslate"><span class="pre">gl_InstanceID</span></code> 用于表示与当前光线相交的实体索引，目前该索引值与 <code class="docutils literal notranslate"><span class="pre">i</span></code> 值相同）。在之后的例子中该值将会不同。</p>
 <div class="admonition note">
 <p class="admonition-title">备注</p>
@@ -1053,7 +1061,7 @@
 <span class="n">NAME_VK</span><span class="p">(</span><span class="n">scratchBuffer</span><span class="p">.</span><span class="n">buffer</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>最后我们就可以构建该顶级加速结构了。</p>
+<p>最后我们就可以构建该顶层加速结构了。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="c1">// 更新构建信息</span>
 <span class="w">  </span><span class="n">buildInfo</span><span class="p">.</span><span class="n">srcAccelerationStructure</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">VK_NULL_HANDLE</span><span class="p">;</span>
 <span class="w">  </span><span class="n">buildInfo</span><span class="p">.</span><span class="n">dstAccelerationStructure</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">m_tlas</span><span class="p">.</span><span class="n">accel</span><span class="p">;</span>
@@ -1134,8 +1142,8 @@
 <span class="p">}</span>
 </pre></div>
 </div>
-<section id="id15">
-<h3>6.1 增加场景的描述符集<a class="headerlink" href="#id15" title="此标题的永久链接">#</a></h3>
+<section id="additions-to-the-scene-descriptor-set">
+<span id="id15"></span><h3>6.1 增加场景的描述符集<a class="headerlink" href="#additions-to-the-scene-descriptor-set" title="此标题的永久链接">#</a></h3>
 <p>光线追踪同样也需要访问场景描述信息，我们需要通过修改 <code class="docutils literal notranslate"><span class="pre">createDescriptorSetLayout()</span></code> 函数将原先这些数据在支持光栅化着色器访问的同时支持光追着色器。光线生成着色器需要访问相机矩阵用于计算光线方向，最近命中着色器需要访问材质，场景的实体，纹理，顶点缓存和索引缓存。尽管顶点和索引缓存目前仅会被光追着色器使用，我们在原本光栅化着色器的基础上增加光追着色器也是符合标准的。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 相机矩阵</span>
 <span class="n">m_descSetLayoutBind</span><span class="p">.</span><span class="n">addBinding</span><span class="p">(</span><span class="n">SceneBindings</span><span class="o">::</span><span class="n">eGlobals</span><span class="p">,</span><span class="w"> </span><span class="n">VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
@@ -1282,9 +1290,9 @@
 有可能会有多个交点。</p>
 <p>任意命中着色器主要用于筛选相交着色器返回的交点的。</p>
 </div>
-<figure class="align-default" id="id34">
+<figure class="align-default" id="id38">
 <img alt="../_images/ShaderPipeline.svg" src="../_images/ShaderPipeline.svg" /><figcaption>
-<p><span class="caption-text">光线追踪管线</span><a class="headerlink" href="#id34" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">光线追踪管线</span><a class="headerlink" href="#id38" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <p>我们将从使用三个主要着色器开始：一个光线生成着色器，一个未命中着色器和由一个最近命中着色器构成的一个命中组。这在 <code class="docutils literal notranslate"><span class="pre">GLSL</span></code> 编译成 <code class="docutils literal notranslate"><span class="pre">SPIR-V</span></code> 时已经完成。 <code class="docutils literal notranslate"><span class="pre">SPIR-V</span></code> 的着色器们将会链接成一个能够通过求交计算执行正确的击中着色器的光线追踪管线。</p>
@@ -1854,7 +1862,7 @@
 </pre></div>
 </div>
 <ul class="simple">
-<li><p>顶级加速结构用于相交查询</p></li>
+<li><p>顶层加速结构用于相交查询</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">rayFlags</span></code> 控制光线追踪的位域</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">8</span></code> 比特的剔除遮罩 <code class="docutils literal notranslate"><span class="pre">culling</span> <span class="pre">mask</span></code> ，加速结构的每一个实体都会有一个 <code class="docutils literal notranslate"><span class="pre">8</span></code> 比特的遮罩。这个实体遮罩将会与该遮罩值按位与，如果结果为 <code class="docutils literal notranslate"><span class="pre">0</span></code> 将会忽略该交点。我们没有利用该特性，所以这里我们给 <code class="docutils literal notranslate"><span class="pre">0xFF</span></code> 遮罩值，并且帮助类会设置每一个实体的遮罩为 <code class="docutils literal notranslate"><span class="pre">0xFF</span></code> 。</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">sbtRecordOffset</span></code> 和 <code class="docutils literal notranslate"><span class="pre">sbtRecordStride</span></code> 用于控制每一个实体的 <code class="docutils literal notranslate"><span class="pre">hitGroupId</span></code> （ <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureInstanceKHR::instanceShaderBindingTableRecordOffset</span></code> ）是如何从底层加速结构命中组数组中获取命中组的。由于我们目前只有一个命中组，所以两个都设置成 <code class="docutils literal notranslate"><span class="pre">0</span></code> 。其中的细节相当复杂，可以通过阅读 <a class="reference external" href="https://www.willusher.io/graphics/2019/11/20/the-sbt-three-ways">Will Usher’s article</a> 了解更多。</p></li>
@@ -1951,6 +1959,260 @@
 </section>
 <section id="id30">
 <h2>12 简单光照<a class="headerlink" href="#id30" title="此标题的永久链接">#</a></h2>
+<p>当前最近命中着色器仅返回一个固定单色。为了增加一些光照，我们需要介绍一下表面法线这个概念。然而，光追命中点处只能获取到质心坐标，为了得到交点处的法线和其他顶点属性，我们需要在顶点缓存中找到他们，之后使用质心坐标计算相关属性值。这就是为什么我们在创建光追描述符集时将顶点缓存和索引缓存的可访问范围扩展至最近命中着色器。</p>
+<div class="note admonition">
+<p class="admonition-title">可访问范围扩展至最近命中着色器</p>
+<p>指的是 <a class="reference internal" href="#additions-to-the-scene-descriptor-set"><span class="std std-ref">6.1 增加场景的描述符集</span></a> 中的如下代码：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">m_descSetLayoutBind</span><span class="p">.</span><span class="n">addBinding</span><span class="p">(</span><span class="n">SceneBindings</span><span class="o">::</span><span class="n">eObjDescs</span><span class="p">,</span><span class="w"> </span><span class="n">VK_DESCRIPTOR_TYPE_STORAGE_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">                       </span><span class="n">VK_SHADER_STAGE_VERTEX_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_FRAGMENT_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<section id="raytrace-rchit">
+<h3>12.1 最近命中着色器（raytrace.rchit）<a class="headerlink" href="#raytrace-rchit" title="此标题的永久链接">#</a></h3>
+<p>当我们创建光追描述符集的时候，其中已经包含了几何数据的定义。因此我们可以直接在最近命中着色器中通过 <code class="docutils literal notranslate"><span class="pre">binding</span> <span class="pre">=</span> <span class="pre">2</span></code> 访问顶点缓存和索引缓存。</p>
+<p>我们首先在着色器中包含负载定义和 <code class="docutils literal notranslate"><span class="pre">OBJ-Wavefront</span></code> 数据结构的头文件</p>
+<div class="highlight-GLSL notranslate"><div class="highlight"><pre><span></span><span class="cp">#extension GL_EXT_scalar_block_layout : enable</span>
+<span class="cp">#extension GL_GOOGLE_include_directive : enable</span>
+<span class="cp">#extension GL_EXT_shader_explicit_arithmetic_types_int64 : require</span>
+<span class="cp">#extension GL_EXT_buffer_reference2 : require</span>
+<span class="cp">#include &quot;raycommon.glsl&quot;</span>
+<span class="cp">#include &quot;wavefront.glsl&quot;</span>
+</pre></div>
+</div>
+<p>之后按照描述符集布局声明对应的资源</p>
+<div class="highlight-GLSL notranslate"><div class="highlight"><pre><span></span><span class="k">layout</span><span class="p">(</span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mo">0</span><span class="p">)</span><span class="w"> </span><span class="n">rayPayloadInEXT</span><span class="w"> </span><span class="n">hitPayload</span><span class="w"> </span><span class="n">prd</span><span class="p">;</span>
+
+<span class="k">layout</span><span class="p">(</span><span class="n">buffer_reference</span><span class="p">,</span><span class="w"> </span><span class="n">scalar</span><span class="p">)</span><span class="w"> </span><span class="k">buffer</span><span class="w"> </span><span class="n">Vertices</span><span class="w"> </span><span class="p">{</span><span class="n">Vertex</span><span class="w"> </span><span class="n">v</span><span class="p">[];</span><span class="w"> </span><span class="p">};</span><span class="w"> </span><span class="c1">// 物体的位置</span>
+<span class="k">layout</span><span class="p">(</span><span class="n">buffer_reference</span><span class="p">,</span><span class="w"> </span><span class="n">scalar</span><span class="p">)</span><span class="w"> </span><span class="k">buffer</span><span class="w"> </span><span class="n">Indices</span><span class="w"> </span><span class="p">{</span><span class="kt">ivec3</span><span class="w"> </span><span class="n">i</span><span class="p">[];</span><span class="w"> </span><span class="p">};</span><span class="w"> </span><span class="c1">// 三角形的索引</span>
+<span class="k">layout</span><span class="p">(</span><span class="n">buffer_reference</span><span class="p">,</span><span class="w"> </span><span class="n">scalar</span><span class="p">)</span><span class="w"> </span><span class="k">buffer</span><span class="w"> </span><span class="n">Materials</span><span class="w"> </span><span class="p">{</span><span class="n">WaveFrontMaterial</span><span class="w"> </span><span class="n">m</span><span class="p">[];</span><span class="w"> </span><span class="p">};</span><span class="w"> </span><span class="c1">// 一个物体最终所有的材质</span>
+<span class="k">layout</span><span class="p">(</span><span class="n">buffer_reference</span><span class="p">,</span><span class="w"> </span><span class="n">scalar</span><span class="p">)</span><span class="w"> </span><span class="k">buffer</span><span class="w"> </span><span class="n">MatIndices</span><span class="w"> </span><span class="p">{</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">[];</span><span class="w"> </span><span class="p">};</span><span class="w"> </span><span class="c1">// 每个三角形对应的材质ID</span>
+<span class="k">layout</span><span class="p">(</span><span class="n">set</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">binding</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">eObjDescs</span><span class="p">,</span><span class="w"> </span><span class="n">scalar</span><span class="p">)</span><span class="w"> </span><span class="k">buffer</span><span class="w"> </span><span class="n">ObjDesc_</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">ObjDesc</span><span class="w"> </span><span class="n">i</span><span class="p">[];</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="n">objDesc</span><span class="p">;</span>
+
+<span class="k">layout</span><span class="p">(</span><span class="n">push_constant</span><span class="p">)</span><span class="w"> </span><span class="k">uniform</span><span class="w"> </span><span class="n">_PushConstantRay</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">PushConstantRay</span><span class="w"> </span><span class="n">pcRay</span><span class="p">;</span><span class="w"> </span><span class="p">};</span>
+</pre></div>
+</div>
+<p>在 <code class="docutils literal notranslate"><span class="pre">main</span></code> 函数中， <code class="docutils literal notranslate"><span class="pre">gl_InstanceCustomIndexEXT</span></code> 用于告诉我们光线和哪一个物体相交了，并且使用 <code class="docutils literal notranslate"><span class="pre">gl_PrimitiveID</span></code> 可以找到被击中三角形的顶点信息。</p>
+<div class="highlight-GLSL notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">// Object data</span>
+<span class="w">    </span><span class="n">ObjDesc</span><span class="w">    </span><span class="n">objResource</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">objDesc</span><span class="p">.</span><span class="n">i</span><span class="p">[</span><span class="nb">gl_InstanceCustomIndexEXT</span><span class="p">];</span>
+<span class="w">    </span><span class="n">MatIndices</span><span class="w"> </span><span class="n">matIndices</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">MatIndices</span><span class="p">(</span><span class="n">objResource</span><span class="p">.</span><span class="n">materialIndexAddress</span><span class="p">);</span>
+<span class="w">    </span><span class="n">Materials</span><span class="w">  </span><span class="n">materials</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="n">Materials</span><span class="p">(</span><span class="n">objResource</span><span class="p">.</span><span class="n">materialAddress</span><span class="p">);</span>
+<span class="w">    </span><span class="n">Indices</span><span class="w">    </span><span class="n">indices</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="n">Indices</span><span class="p">(</span><span class="n">objResource</span><span class="p">.</span><span class="n">indexAddress</span><span class="p">);</span>
+<span class="w">    </span><span class="n">Vertices</span><span class="w">   </span><span class="n">vertices</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">Vertices</span><span class="p">(</span><span class="n">objResource</span><span class="p">.</span><span class="n">vertexAddress</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Indices of the triangle</span>
+<span class="w">    </span><span class="kt">ivec3</span><span class="w"> </span><span class="n">ind</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">indices</span><span class="p">.</span><span class="n">i</span><span class="p">[</span><span class="nb">gl_PrimitiveID</span><span class="p">];</span>
+
+<span class="w">    </span><span class="c1">// Vertex of the triangle</span>
+<span class="w">    </span><span class="n">Vertex</span><span class="w"> </span><span class="n">v0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vertices</span><span class="p">.</span><span class="n">v</span><span class="p">[</span><span class="n">ind</span><span class="p">.</span><span class="n">x</span><span class="p">];</span>
+<span class="w">    </span><span class="n">Vertex</span><span class="w"> </span><span class="n">v1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vertices</span><span class="p">.</span><span class="n">v</span><span class="p">[</span><span class="n">ind</span><span class="p">.</span><span class="n">y</span><span class="p">];</span>
+<span class="w">    </span><span class="n">Vertex</span><span class="w"> </span><span class="n">v2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vertices</span><span class="p">.</span><span class="n">v</span><span class="p">[</span><span class="n">ind</span><span class="p">.</span><span class="n">z</span><span class="p">];</span>
+</pre></div>
+</div>
+<p>根据如下算法计算质心坐标。</p>
+<div class="highlight-GLSL notranslate"><div class="highlight"><pre><span></span><span class="k">const</span><span class="w"> </span><span class="kt">vec3</span><span class="w"> </span><span class="n">barycentrics</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">vec3</span><span class="p">(</span><span class="mf">1.0</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">attribs</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">attribs</span><span class="p">.</span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">attribs</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">attribs</span><span class="p">.</span><span class="n">y</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>世界空间下的坐标可以通过两种方式计算出来，第一种是使用来自最近命中着色器获得的信息获取，如果交点非常非常远的话，这会有一个精度问题。</p>
+<div class="highlight-GLSL notranslate"><div class="highlight"><pre><span></span><span class="kt">vec3</span><span class="w"> </span><span class="n">worldPos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">gl_WorldRayOriginEXT</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">gl_WorldRayDirectionEXT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">gl_HitTEXT</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>另一种更加精确的方式是：通过插值计算位置。我们使用当前击中点上所处的矩阵进行计算，这个矩阵是通过使用顶层加速结构和底层加速结构提供的信息计算出来的。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>目前我们所有的底层加速结构都没有提供任何矩阵变换，只有顶层加速结构的实体提供了相应的变换矩阵。</p>
+</div>
+<div class="highlight-GLSL notranslate"><div class="highlight"><pre><span></span><span class="c1">// 计算命中点的坐标</span>
+<span class="k">const</span><span class="w"> </span><span class="kt">vec3</span><span class="w"> </span><span class="n">pos</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="n">v0</span><span class="p">.</span><span class="n">pos</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">barycentrics</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">v1</span><span class="p">.</span><span class="n">pos</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">barycentrics</span><span class="p">.</span><span class="n">y</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">v2</span><span class="p">.</span><span class="n">pos</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">barycentrics</span><span class="p">.</span><span class="n">z</span><span class="p">;</span>
+<span class="k">const</span><span class="w"> </span><span class="kt">vec3</span><span class="w"> </span><span class="n">worldPos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">vec3</span><span class="p">(</span><span class="nb">gl_ObjectToWorldEXT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="kt">vec4</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">));</span><span class="w">  </span><span class="c1">// 将坐标变换到世界空间下</span>
+</pre></div>
+</div>
+<p>相同的算法也可以应用到法线上。</p>
+<div class="highlight-GLSL notranslate"><div class="highlight"><pre><span></span><span class="c1">// 在命中点位置计算法线</span>
+<span class="k">const</span><span class="w"> </span><span class="kt">vec3</span><span class="w"> </span><span class="n">nrm</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="n">v0</span><span class="p">.</span><span class="n">nrm</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">barycentrics</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">v1</span><span class="p">.</span><span class="n">nrm</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">barycentrics</span><span class="p">.</span><span class="n">y</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">v2</span><span class="p">.</span><span class="n">nrm</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">barycentrics</span><span class="p">.</span><span class="n">z</span><span class="p">;</span>
+<span class="k">const</span><span class="w"> </span><span class="kt">vec3</span><span class="w"> </span><span class="n">worldNrm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">normalize</span><span class="p">(</span><span class="kt">vec3</span><span class="p">(</span><span class="n">nrm</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">gl_WorldToObjectEXT</span><span class="p">));</span><span class="w">  </span><span class="c1">// 将法线变换到世界空间下</span>
+</pre></div>
+</div>
+<p>光源目前以一个常量数据呈现，之后可以将法线与光源方向进行点乘得到一个不一样的简单光照效果。</p>
+<div class="highlight-GLSL notranslate"><div class="highlight"><pre><span></span><span class="c1">// 光源方向的向量</span>
+<span class="kt">vec3</span><span class="w">  </span><span class="n">L</span><span class="p">;</span>
+<span class="kt">float</span><span class="w"> </span><span class="n">lightIntensity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pcRay</span><span class="p">.</span><span class="n">lightIntensity</span><span class="p">;</span>
+<span class="kt">float</span><span class="w"> </span><span class="n">lightDistance</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mf">100000.0</span><span class="p">;</span>
+<span class="c1">// 点光源</span>
+<span class="k">if</span><span class="p">(</span><span class="n">pcRay</span><span class="p">.</span><span class="n">lightType</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mo">0</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">vec3</span><span class="w"> </span><span class="n">lDir</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="n">pcRay</span><span class="p">.</span><span class="n">lightPosition</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">worldPos</span><span class="p">;</span>
+<span class="w">  </span><span class="n">lightDistance</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">length</span><span class="p">(</span><span class="n">lDir</span><span class="p">);</span>
+<span class="w">  </span><span class="n">lightIntensity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pcRay</span><span class="p">.</span><span class="n">lightIntensity</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">lightDistance</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">lightDistance</span><span class="p">);</span>
+<span class="w">  </span><span class="n">L</span><span class="w">              </span><span class="o">=</span><span class="w"> </span><span class="n">normalize</span><span class="p">(</span><span class="n">lDir</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="k">else</span><span class="w">  </span><span class="c1">// 平行光</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">L</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">normalize</span><span class="p">(</span><span class="n">pcRay</span><span class="p">.</span><span class="n">lightPosition</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<figure class="align-default">
+<img alt="../_images/resultRaytraceLightGreyCube.png" src="../_images/resultRaytraceLightGreyCube.png" />
+</figure>
+</section>
+</section>
+<section id="id31">
+<h2>13 简单材质<a class="headerlink" href="#id31" title="此标题的永久链接">#</a></h2>
+<p>基于上面的渲染，我们可以通过增加材质来呈现更有趣的渲染效果。加载进来的 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 对象提供了一个简单的 <code class="docutils literal notranslate"><span class="pre">Alias</span> <span class="pre">Wavefront</span></code> 材质。</p>
+<div class="note admonition">
+<p class="admonition-title">Alias Wavefront</p>
+<p>估计是指 <code class="docutils literal notranslate"><span class="pre">Alias</span></code> （原 <code class="docutils literal notranslate"><span class="pre">Alias|Wavefront</span></code> ）是著名的3D软件公司，旗下作品 <code class="docutils literal notranslate"><span class="pre">Maya</span></code> 、 <code class="docutils literal notranslate"><span class="pre">StudioTools</span></code> 、等。后来被 <code class="docutils literal notranslate"><span class="pre">Autodesk</span></code> 公司收购。</p>
+<p><code class="docutils literal notranslate"><span class="pre">Alias</span> <span class="pre">Wavefront</span></code> 应该是 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 模型文件内部的材质数据格式。本人没具体研究过。</p>
+</div>
+<section id="id32">
+<h3>13.1 raytrace.rchit<a class="headerlink" href="#id32" title="此标题的永久链接">#</a></h3>
+<p>该材质使用简单的颜色系数定义基础反射属性，并同时支持纹理。包含该材质的缓存已经在光栅化渲染时创建完成，并且同时也被光追描述符集使用。如下在最近命中着色器中绑定要采样的纹理：</p>
+<div class="highlight-GLSL notranslate"><div class="highlight"><pre><span></span><span class="k">layout</span><span class="p">(</span><span class="n">set</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">binding</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">eTextures</span><span class="p">)</span><span class="w"> </span><span class="k">uniform</span><span class="w"> </span><span class="kt">sampler2D</span><span class="w"> </span><span class="n">textureSamplers</span><span class="p">[];</span>
+</pre></div>
+</div>
+<p>声明的该材质和在光栅化渲染时使用的是一样的，被定义在 <code class="docutils literal notranslate"><span class="pre">wavefront.glsl</span></code> 中。</p>
+<div class="note admonition">
+<p class="admonition-title">定义在 <code class="docutils literal notranslate"><span class="pre">wavefront.glsl</span></code> 中</p>
+<p><code class="docutils literal notranslate"><span class="pre">wavefront.glsl</span></code> 会去包含 <code class="docutils literal notranslate"><span class="pre">host_device.h</span></code> 头文件，材质结构体的定义位于 <code class="docutils literal notranslate"><span class="pre">host_device.h</span></code> 中。</p>
+<div class="highlight-GLSL notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="n">WaveFrontMaterial</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">vec3</span><span class="w">  </span><span class="n">ambient</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">vec3</span><span class="w">  </span><span class="n">diffuse</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">vec3</span><span class="w">  </span><span class="n">specular</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">vec3</span><span class="w">  </span><span class="n">transmittance</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">vec3</span><span class="w">  </span><span class="n">emission</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">shininess</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">ior</span><span class="p">;</span><span class="w">       </span><span class="c1">// 反射的索引</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">dissolve</span><span class="p">;</span><span class="w">  </span><span class="c1">// 1 == 不透明; 0 == 完全透明</span>
+<span class="w">  </span><span class="kt">int</span><span class="w">   </span><span class="n">illum</span><span class="p">;</span><span class="w">     </span><span class="c1">// 光照模式 (请阅读 http://www.fileformat.info/format/material/)</span>
+<span class="w">  </span><span class="kt">int</span><span class="w">   </span><span class="n">textureId</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Vertex</span></code> 结构体中包括材质的索引，我们将使用该索引去对应的缓存中获取相应的材质。</p>
+<p>我们首先将 <code class="docutils literal notranslate"><span class="pre">main</span></code> 函数的结尾处移除如下代码：</p>
+<div class="highlight-GLSL notranslate"><div class="highlight"><pre><span></span><span class="kt">float</span><span class="w"> </span><span class="n">dotNL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">max</span><span class="p">(</span><span class="n">dot</span><span class="p">(</span><span class="n">normal</span><span class="p">,</span><span class="w"> </span><span class="n">L</span><span class="p">),</span><span class="w"> </span><span class="mf">0.2</span><span class="p">);</span>
+<span class="n">prd</span><span class="p">.</span><span class="n">hitValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">vec3</span><span class="p">(</span><span class="n">dotNL</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>更换成获取材质定义代码：</p>
+<div class="highlight-GLSL notranslate"><div class="highlight"><pre><span></span><span class="c1">// 对象的材质</span>
+<span class="kt">int</span><span class="w">               </span><span class="n">matIdx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">matIndices</span><span class="p">.</span><span class="n">i</span><span class="p">[</span><span class="nb">gl_PrimitiveID</span><span class="p">];</span>
+<span class="n">WaveFrontMaterial</span><span class="w"> </span><span class="n">mat</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">materials</span><span class="p">.</span><span class="n">m</span><span class="p">[</span><span class="n">matIdx</span><span class="p">];</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>本示例中每一个对象一个材质，并且可通过索引分别获取到每一个材质。并且每一个三角形都有一个材质索引。</p>
+</div>
+<p>基于此材质定义，我们使用漫反射和高光反射来计算关照。代码同样也支持使用纹理来设置表面反照率。</p>
+<div class="highlight-GLSL notranslate"><div class="highlight"><pre><span></span><span class="c1">// 漫反射</span>
+<span class="kt">vec3</span><span class="w"> </span><span class="n">diffuse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">computeDiffuse</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span><span class="w"> </span><span class="n">L</span><span class="p">,</span><span class="w"> </span><span class="n">normal</span><span class="p">);</span>
+<span class="k">if</span><span class="p">(</span><span class="n">mat</span><span class="p">.</span><span class="n">textureId</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mo">0</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">uint</span><span class="w"> </span><span class="n">txtId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mat</span><span class="p">.</span><span class="n">textureId</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">scnDesc</span><span class="p">.</span><span class="n">i</span><span class="p">[</span><span class="nb">gl_InstanceCustomIndexEXT</span><span class="p">].</span><span class="n">txtOffset</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">vec2</span><span class="w"> </span><span class="n">texCoord</span><span class="w"> </span><span class="o">=</span>
+<span class="w">      </span><span class="n">v0</span><span class="p">.</span><span class="n">texCoord</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">barycentrics</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">v1</span><span class="p">.</span><span class="n">texCoord</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">barycentrics</span><span class="p">.</span><span class="n">y</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">v2</span><span class="p">.</span><span class="n">texCoord</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">barycentrics</span><span class="p">.</span><span class="n">z</span><span class="p">;</span>
+<span class="w">  </span><span class="n">diffuse</span><span class="w"> </span><span class="o">*=</span><span class="w"> </span><span class="n">texture</span><span class="p">(</span><span class="n">textureSamplers</span><span class="p">[</span><span class="n">nonuniformEXT</span><span class="p">(</span><span class="n">txtId</span><span class="p">)],</span><span class="w"> </span><span class="n">texCoord</span><span class="p">).</span><span class="n">xyz</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// 高光反射</span>
+<span class="kt">vec3</span><span class="w"> </span><span class="n">specular</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">computeSpecular</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span><span class="w"> </span><span class="nb">gl_WorldRayDirectionEXT</span><span class="p">,</span><span class="w"> </span><span class="n">L</span><span class="p">,</span><span class="w"> </span><span class="n">normal</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>最终的光照计算如下：</p>
+<div class="highlight-GLSL notranslate"><div class="highlight"><pre><span></span><span class="n">prd</span><span class="p">.</span><span class="n">hitValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">vec3</span><span class="p">(</span><span class="n">lightIntensity</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">diffuse</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">specular</span><span class="p">));</span>
+</pre></div>
+</div>
+<figure class="align-default">
+<img alt="../_images/resultRaytraceLightMatCube.png" src="../_images/resultRaytraceLightMatCube.png" />
+</figure>
+</section>
+<section id="id33">
+<h3>13.2 main<a class="headerlink" href="#id33" title="此标题的永久链接">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 的模型是在 <code class="docutils literal notranslate"><span class="pre">main.cpp</span></code> 中通过调用 <code class="docutils literal notranslate"><span class="pre">helloVk.loadModel</span></code> 加载的。相比于加载一个方盒子，让我们加载一些更有趣的模型：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">helloVk</span><span class="p">.</span><span class="n">loadModel</span><span class="p">(</span><span class="n">nvh</span><span class="o">::</span><span class="n">findFile</span><span class="p">(</span><span class="s">&quot;media/scenes/Medieval_building.obj&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">defaultSearchPaths</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">));</span>
+<span class="n">helloVk</span><span class="p">.</span><span class="n">loadModel</span><span class="p">(</span><span class="n">nvh</span><span class="o">::</span><span class="n">findFile</span><span class="p">(</span><span class="s">&quot;media/scenes/plane.obj&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">defaultSearchPaths</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">));</span>
+</pre></div>
+</div>
+<p>由于该模型较大，我们可以将 <code class="docutils literal notranslate"><span class="pre">CameraManip.setLookat</span></code> 设置成：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">CameraManip</span><span class="p">.</span><span class="n">setLookat</span><span class="p">(</span><span class="n">nvmath</span><span class="o">::</span><span class="n">vec3f</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">),</span><span class="w"> </span><span class="n">nvmath</span><span class="o">::</span><span class="n">vec3f</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span><span class="w"> </span><span class="n">nvmath</span><span class="o">::</span><span class="n">vec3f</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">));</span>
+</pre></div>
+</div>
+<figure class="align-default">
+<img alt="../_images/resultRaytraceLightMatMedieval.png" src="../_images/resultRaytraceLightMatMedieval.png" />
+</figure>
+</section>
+</section>
+<section id="id34">
+<h2>14 阴影<a class="headerlink" href="#id34" title="此标题的永久链接">#</a></h2>
+<p>如上光追渲染能得到一个应用了一些光照的场景，但是目前还没有阴影。在本示例的结尾，我们将会增加一个新的光线类型，并且从最近命中着色器中发射该光线，该新增加的光线类型需要增加一个新的未命中着色器。</p>
+<section id="createraytracingpipeline">
+<h3>14.1 createRaytracingPipeline<a class="headerlink" href="#createraytracingpipeline" title="此标题的永久链接">#</a></h3>
+<p>对于简单的阴影光线我们只需要计算出该光线是否与几何体相交即可。我们可以使用一个布尔（ <code class="docutils literal notranslate"><span class="pre">Boolean</span></code> ）负载来指示是否发生了相交，并且使用当新增加的未命中着色器将负载设置成未命中状态。</p>
+<div class="warning admonition">
+<p class="admonition-title"><a class="reference external" href="https://nvpro-samples.github.io/vk_raytracing_tutorial_KHR/files/shadowShaders.zip">Download Shadow Shader</a></p>
+<p>下载并增加着色器文件</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>如果按照 <a class="reference internal" href="#environment-setup"><span class="std std-ref">2 配置环境</span></a> 中的步骤，用于阴影的未命中着色器会一并包含下载。</p>
+</div>
+</div>
+<p>该压缩文件中只有一个文件 <code class="docutils literal notranslate"><span class="pre">raytraceShadow.rmiss</span></code> 。将该着色器文件解压并加到 <code class="docutils literal notranslate"><span class="pre">src/shaders</span></code> 目录下，之后执行 <code class="docutils literal notranslate"><span class="pre">CMake</span></code> 即可。该着色器文件将会被编译，并且编译的 <code class="docutils literal notranslate"><span class="pre">SPIR-V</span></code> 目标文件将会和其他 <code class="docutils literal notranslate"><span class="pre">GLSL</span></code> 文件一道存放到 <code class="docutils literal notranslate"><span class="pre">shaders</span></code> 文件夹中。</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">createRtPipeline</span></code> 函数体中，我们需要在之前的未命中着色器之后增加对于新未命中着色器的定义。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">enum</span><span class="w"> </span><span class="nc">StageIndices</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">eRaygen</span><span class="p">,</span>
+<span class="w">  </span><span class="n">eMiss</span><span class="p">,</span>
+<span class="w">  </span><span class="n">eMiss2</span><span class="p">,</span><span class="w"> </span><span class="c1">// 新增未命中着色器</span>
+<span class="w">  </span><span class="n">eClosestHit</span><span class="p">,</span>
+<span class="w">  </span><span class="n">eShaderGroupCount</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>并且创建相应的着色器句柄：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 当阴影光线没有和任何几何体相交的话将会调用第二个未命中着色器。其只是表示未发生遮挡。</span>
+<span class="n">stage</span><span class="p">.</span><span class="k">module</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">nvvk</span><span class="o">::</span><span class="n">createShaderModule</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">nvh</span><span class="o">::</span><span class="n">loadFile</span><span class="p">(</span><span class="s">&quot;spv/raytraceShadow.rmiss.spv&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="n">defaultSearchPaths</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">));</span>
+<span class="n">stage</span><span class="p">.</span><span class="n">stage</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_MISS_BIT_KHR</span><span class="p">;</span>
+<span class="n">stages</span><span class="p">[</span><span class="n">eMiss2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stage</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>之后使用该着色器句柄并将其添加到相应的着色器组中：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 阴影的未命中着色器</span>
+<span class="n">group</span><span class="p">.</span><span class="n">type</span><span class="w">          </span><span class="o">=</span><span class="w"> </span><span class="n">VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR</span><span class="p">;</span>
+<span class="n">group</span><span class="p">.</span><span class="n">generalShader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">eMiss2</span><span class="p">;</span>
+<span class="n">m_rtShaderGroups</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">group</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>现在光追管线可以允许从最近命中着色器发生光线，其中需要将光线追踪的递归次数增加到 <code class="docutils literal notranslate"><span class="pre">2</span></code> 级。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 光线追踪可以从相机发射光线，并且阴影光线可以从命中的相交点处发射光线，因此递归级别是2。</span>
+<span class="c1">// 为了性能考虑这个递归层级越小越好。</span>
+<span class="c1">// 为了防止过深的递归，在生成光线时光线追踪递归会展成一个循环。</span>
+<span class="n">rayPipelineInfo</span><span class="p">.</span><span class="n">maxPipelineRayRecursionDepth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w">  </span><span class="c1">// 光线递归深度</span>
+</pre></div>
+</div>
+<div class="warning admonition">
+<p class="admonition-title">资源限制</p>
+<p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 规范在运行时并不保证进行递归检查。如果在设置光追管线构造信息时设置了超过物理设备支持的递归深度，其结果是未定义的。</p>
+<p><code class="docutils literal notranslate"><span class="pre">KHR</span></code> 的光追规范中将原本 <code class="docutils literal notranslate"><span class="pre">NV</span></code> 规范中的最小递归深度 <code class="docutils literal notranslate"><span class="pre">31</span></code> 降低到了 <code class="docutils literal notranslate"><span class="pre">1</span></code> （比如不进行递归）。由于我们现在需要将递归限制在 <code class="docutils literal notranslate"><span class="pre">2</span></code> ，我们
+需要检查一下设备是否支持该递归深度：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// Spec only guarantees 1 level of &quot;recursion&quot;. Check for that sad possibility here.</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">m_rtProperties</span><span class="p">.</span><span class="n">maxRayRecursionDepth</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="s">&quot;Device fails to support ray recursion (m_rtProperties.maxRayRecursionDepth &lt;= 1)&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">m_rtProperties</span></code> 将会在 <code class="docutils literal notranslate"><span class="pre">HelloVulkan::initRayTracing</span></code> 中进行获取赋值。</p>
+</div>
+</section>
+<section id="creatertshaderbindingtable">
+<h3>14.2 createRtShaderBindingTable<a class="headerlink" href="#creatertshaderbindingtable" title="此标题的永久链接">#</a></h3>
+</section>
 </section>
 </section>
 
@@ -2045,7 +2307,7 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#descriptor-set">6 光线追踪描述符集（Descriptor Set）</a><ul>
-<li><a class="reference internal" href="#id15">6.1 增加场景的描述符集</a></li>
+<li><a class="reference internal" href="#additions-to-the-scene-descriptor-set">6.1 增加场景的描述符集</a></li>
 <li><a class="reference internal" href="#id16">6.2 描述符更新</a></li>
 <li><a class="reference internal" href="#id17">6.3 main</a></li>
 </ul>
@@ -2070,7 +2332,20 @@
 <li><a class="reference internal" href="#raytrace-miss">11.2 未命中着色器（raytrace.miss）</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id30">12 简单光照</a></li>
+<li><a class="reference internal" href="#id30">12 简单光照</a><ul>
+<li><a class="reference internal" href="#raytrace-rchit">12.1 最近命中着色器（raytrace.rchit）</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id31">13 简单材质</a><ul>
+<li><a class="reference internal" href="#id32">13.1 raytrace.rchit</a></li>
+<li><a class="reference internal" href="#id33">13.2 main</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id34">14 阴影</a><ul>
+<li><a class="reference internal" href="#createraytracingpipeline">14.1 createRaytracingPipeline</a></li>
+<li><a class="reference internal" href="#creatertshaderbindingtable">14.2 createRtShaderBindingTable</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
