@@ -2251,7 +2251,7 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">gl_RayFlagsTerminateOnFirstHitKHR</span></code> ：使用第一个交点就好</p></li>
 </ul>
 <p>由于我们略过了阴影命中着色器组，当击中物体表面时没有代码会执行。所以我们将 <code class="docutils literal notranslate"><span class="pre">isShadowed</span></code> 负载初始化为 <code class="docutils literal notranslate"><span class="pre">true</span></code> ，并且将会依靠未命中着色器将该负载设置成 <code class="docutils literal notranslate"><span class="pre">false</span></code> 来表示没有碰到任何表面。同样我们设置的光追位域来优化光线追踪：因为此阴影光线只需要简单返回是否与表面相交，所以我们可以在获得了第一个交点时就告诉光追引擎停止继续遍历，这避免了执行最近命中着色器。</p>
-<p>阴影光线只有在光源位于表面前方时才纳入考量，并且如果我们处在阴影中就不需要计算光照的高光部分（因为对于此渲染点光源是不可见的）。现在基于之前的高光计算部分与阴影相结合：</p>
+<p>阴影光线只有在光源位于表面前方时才纳入考量，并且如果我们处在阴影中就不需要计算光照的高光部分（因为光源对于此渲染点是不可见的）。现在基于之前的高光计算部分与阴影相结合：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">vec3</span><span class="w">  </span><span class="n">specular</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">vec3</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
 <span class="kt">float</span><span class="w"> </span><span class="n">attenuation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
 
