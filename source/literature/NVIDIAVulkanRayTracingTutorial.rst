@@ -66,6 +66,10 @@ NVIDIA Vulkan 光线追踪教程
     * 2023/6/4 增加 ``14 阴影`` 章节
     * 2023/6/4 增加 ``14.1 createRaytracingPipeline`` 章节
     * 2023/6/4 增加 ``14.2 createRtShaderBindingTable`` 章节
+    * 2023/6/4 增加 ``14.3 createRtDescriptorSet`` 章节
+    * 2023/6/4 增加 ``14.4 raytrace.rchit`` 章节
+    * 2023/6/4 增加 ``15 拓展延伸`` 章节
+    * 2023/6/4 初步翻译完成
 
 `文献源`_
 
@@ -2290,7 +2294,103 @@ NVIDIA Vulkan 光线追踪教程
 14.2 createRtShaderBindingTable
 ******************************************
 
+新加入的未命中着色器组改变了我们着色器绑定表的结构，现在其结构如下：
+
+.. figure:: ../_static/sbt_1.png
+
+因此我们需要修改 ``HelloVulkan::createRtShaderBindingTable`` 函数，指定我们有两个未命中着色器，其中的一个是我们新加入的，另一个是原来的。
+
+.. code:: c++
+
+    uint32_t missCount{2};
+
+14.3 createRtDescriptorSet
+******************************************
+
+对于描述符集中的每一个资源，我们需要设置那些着色器阶段可以访问这些资源。由于阴影光线将会从最近命中着色器开始追踪，我们需要增加绑定的加速结构在 ``VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR`` 的最近命中着色器阶段可以被访问：
+
+.. code:: c++
+
+    // 顶层加速结构, 被光线生成着色器和最近命中着色器使用（用于向外发射光线）
+    m_rtDescSetLayoutBind.addBinding(RtxBindings::eTlas, VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR, 1,
+                                     VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR);  // TLAS
 
 
+14.4 raytrace.rchit
+******************************************
 
+现在最近命中着色器需要访问加速结构用于发射光线：
 
+.. code:: GLSL
+
+    layout(set = 0, binding = eTlas) uniform accelerationStructureEXT topLevelAS;
+
+这些光线同样需要携带负载，其需要定义在与当前射线负载不同的位置上。在本示例中，该负载是一个简单的布尔值，用于指示是否发生了遮挡：
+
+.. code:: GLSL
+
+    layout(location = 1) rayPayloadEXT bool isShadowed;
+
+在着色器的 ``main`` 函数中，移除之前简单将负载设置成 ``prd.hitValue = c;`` ，此时我们将会发射新的光线。为了选择阴影用的未命中着色器，我们将传递给 ``traceRayEXT()`` 的 ``missIndex`` 设置成 ``1`` 而不是 ``0`` 。负载的位置将会与 ``layout(location = 1)`` 声明的进行匹配。注意，当我们调用 ``traceRayEXT()`` 时我们设置的光追位域如下：
+
+* ``gl_RayFlagsSkipClosestHitShaderKHR`` ：将不会调用最近命中着色器，只会调用未命中着色器
+* ``gl_RayFlagsOpaqueKHR`` ：将不会调用任意命中着色器，所以所有的对象都是不透明的
+* ``gl_RayFlagsTerminateOnFirstHitKHR`` ：使用第一个交点就好
+
+由于我们略过了阴影命中着色器组，当击中物体表面时没有代码会执行。所以我们将 ``isShadowed`` 负载初始化为 ``true`` ，并且将会依靠未命中着色器将该负载设置成 ``false`` 来表示没有碰到任何表面。同样我们设置的光追位域来优化光线追踪：因为此阴影光线只需要简单返回是否与表面相交，所以我们可以在获得了第一个交点时就告诉光追引擎停止继续遍历，这避免了执行最近命中着色器。
+
+阴影光线只有在光源位于表面前方时才纳入考量，并且如果我们处在阴影中就不需要计算光照的高光部分（因为对于此渲染点光源是不可见的）。现在基于之前的高光计算部分与阴影相结合：
+
+.. code:: c++
+
+    vec3  specular    = vec3(0);
+    float attenuation = 1;
+
+    // 只有表面可见时才进行阴影光线的追踪
+    if(dot(normal, L) > 0)
+    {
+      float tMin   = 0.001;
+      float tMax   = lightDistance;
+      vec3  origin = gl_WorldRayOriginEXT + gl_WorldRayDirectionEXT * gl_HitTEXT;
+      vec3  rayDir = L;
+      uint  flags =
+          gl_RayFlagsTerminateOnFirstHitEXT | gl_RayFlagsOpaqueEXT | gl_RayFlagsSkipClosestHitShaderEXT;
+      isShadowed = true;
+      traceRayEXT(topLevelAS,  // acceleration structure
+              flags,       // rayFlags
+              0xFF,        // cullMask
+              0,           // sbtRecordOffset
+              0,           // sbtRecordStride
+              1,           // missIndex
+              origin,      // ray origin
+              tMin,        // ray min range
+              rayDir,      // ray direction
+              tMax,        // ray max range
+              1            // payload (location = 1)
+      );
+
+      if(isShadowed)
+      {
+        attenuation = 0.3;
+      }
+      else
+      {
+        // 高光
+        specular = computeSpecular(mat, gl_WorldRayDirectionEXT, L, normal);
+      }
+    }
+
+最终的负载可以按照阴影光线的结果进行调整：
+
+.. code:: GLSL
+
+    prd.hitValue = vec3(lightIntensity * attenuation * (diffuse + specular));
+
+.. figure:: ../_static/resultRaytraceShadowMedieval.png
+
+最终的工程可以在 `ay_tracing__simple <https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing__simple>`_ 文件夹下找到。
+
+15 拓展延伸
+################
+
+从此时起，您可以继续创建自己的光线类型和着色器，并尝试更高级的光线跟踪算法。
