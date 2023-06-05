@@ -77,7 +77,7 @@
    :caption: 随笔
    :maxdepth: 2
 
-   InformalEssay/index.rst 
+   InformalEssay/index.rst
 
 .. toctree::
    :caption: 工程应用
