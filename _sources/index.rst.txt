@@ -71,19 +71,19 @@
    :caption: 文献翻译
    :maxdepth: 2
 
-   Literature/index.rst
+   literature/index.rst
 
 .. toctree::
    :caption: 随笔
    :maxdepth: 2
 
-   InformalEssay/index.rst
+   informalEssay/index.rst
 
 .. toctree::
    :caption: 工程应用
    :maxdepth: 2
 
-   Application/index.rst
+   application/index.rst
 
 .. toctree::
    :caption: 更新日志
