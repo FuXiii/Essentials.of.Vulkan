@@ -12,6 +12,7 @@
    * 2023/5/16 增加 ``开始于 Vulkan SDK`` 目录
    * 2023/5/19 增加 ``工程应用`` 目录
    * 2023/5/22 增加 ``更新日志`` 目录
+   * 2023/6/5 增加 ``随笔`` 目录
 
 .. image:: https://img.shields.io/badge/QQ%20Group-128656761-deepgreen?logo=tencentqq
    :target: https://jq.qq.com/?_wv=1027&k=rZGd2LHr
@@ -71,7 +72,12 @@
    :maxdepth: 2
 
    Literature/index.rst
-   test.rst
+
+.. toctree::
+   :caption: 随笔
+   :maxdepth: 2
+
+   InformalEssay/index.rst
 
 .. toctree::
    :caption: 工程应用
