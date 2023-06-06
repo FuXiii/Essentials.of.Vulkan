@@ -2388,7 +2388,7 @@ NVIDIA Vulkan 光线追踪教程
 
 .. figure:: ../_static/resultRaytraceShadowMedieval.png
 
-最终的工程可以在 `ay_tracing__simple <https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing__simple>`_ 文件夹下找到。
+最终的工程可以在 `ray_tracing__simple <https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing__simple>`_ 文件夹下找到。
 
 15 拓展延伸
 ################
