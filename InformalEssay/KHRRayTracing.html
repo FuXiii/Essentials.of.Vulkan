@@ -252,6 +252,8 @@
 <li><p class="sd-card-text">2023/6/5 增加 <code class="docutils literal notranslate"><span class="pre">查看是否支持加速结构特性</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/6/5 增加 <code class="docutils literal notranslate"><span class="pre">激活加速结构特性</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/6/5 增加 <code class="docutils literal notranslate"><span class="pre">创建加速结构</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/6 更新 <code class="docutils literal notranslate"><span class="pre">激活加速结构特性</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/6 更新 <code class="docutils literal notranslate"><span class="pre">创建加速结构</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">API</span></code> 中有5个与光追相关的扩展</p>
@@ -376,7 +378,7 @@
 <p class="admonition-title">备注</p>
 <p>需要开启 <code class="docutils literal notranslate"><span class="pre">VK_KHR_get_physical_device_properties2</span></code> 扩展</p>
 </div>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkPhysicalDevice</span><span class="w"> </span><span class="n">vk_physical_device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">some_vk_physical_device</span><span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkPhysicalDevice</span><span class="w"> </span><span class="n">vk_physical_device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="cm">/*某个精挑细选的物理设备*/</span><span class="p">;</span>
 
 <span class="n">VkPhysicalDeviceAccelerationStructureFeaturesKHR</span><span class="w"> </span><span class="n">vk_physical_device_acceleration_structure_features_khr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
 <span class="n">vk_physical_device_acceleration_structure_features_khr</span><span class="p">.</span><span class="n">sType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VkStructureType</span><span class="o">::</span><span class="n">VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR</span><span class="p">;</span>
@@ -399,9 +401,29 @@
 </section>
 <section id="id7">
 <h3>激活加速结构特性<a class="headerlink" href="#id7" title="此标题的永久链接">#</a></h3>
-</section>
+<p>在创建 <code class="docutils literal notranslate"><span class="pre">VkDevice</span></code> 时需要将要开启的特性加入到 <code class="docutils literal notranslate"><span class="pre">VkDeviceCreateInfo::pNext</span></code> 指针链中。</p>
 <section id="id8">
-<h3>创建加速结构<a class="headerlink" href="#id8" title="此标题的永久链接">#</a></h3>
+<h4>例程<a class="headerlink" href="#id8" title="此标题的永久链接">#</a></h4>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkPhysicalDevice</span><span class="w"> </span><span class="n">vk_physical_device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="cm">/*某个精挑细选的物理设备*/</span><span class="p">;</span>
+<span class="n">VkPhysicalDeviceAccelerationStructureFeaturesKHR</span><span class="w"> </span><span class="n">vk_physical_device_acceleration_structure_features_khr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="cm">/*之前通过vkGetPhysicalDeviceFeatures2KHR获取到的加速结构特性信息*/</span><span class="p">;</span>
+
+<span class="n">VkDeviceCreateInfo</span><span class="w"> </span><span class="n">vk_device_create_info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
+<span class="n">vk_device_create_info</span><span class="p">.</span><span class="n">sType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VkStructureType</span><span class="o">::</span><span class="n">VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO</span><span class="p">;</span>
+<span class="n">vk_device_create_info</span><span class="p">.</span><span class="n">pNext</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">vk_physical_device_acceleration_structure_features_khr</span><span class="p">;</span>
+<span class="n">vk_device_create_info</span><span class="p">.</span><span class="w"> </span><span class="p">...</span>
+
+<span class="n">VkDevice</span><span class="w"> </span><span class="n">vk_device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_NULL_HANDLE</span><span class="p">;</span>
+<span class="n">VkResult</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vkCreateDevice</span><span class="p">(</span><span class="n">vk_physical_device</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">vk_device_create_info</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">vk_device</span><span class="p">);</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">result</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">VK_SUCCESS</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="cm">/*创建失败*/</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id9">
+<h3>创建加速结构<a class="headerlink" href="#id9" title="此标题的永久链接">#</a></h3>
 <p>通过调用 <code class="docutils literal notranslate"><span class="pre">vkCreateAccelerationStructureKHR</span></code> 创建加速结构</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_acceleration_structure 提供</span>
 <span class="n">VkResult</span><span class="w"> </span><span class="nf">vkCreateAccelerationStructureKHR</span><span class="p">(</span>
@@ -421,9 +443,54 @@
 <p>之后往加速结构内部填入数据和绑定内存是通过调用 <code class="docutils literal notranslate"><span class="pre">vkCmdBuildAccelerationStructuresKHR</span></code> 、 <code class="docutils literal notranslate"><span class="pre">vkBuildAccelerationStructuresKHR</span></code> 、 <code class="docutils literal notranslate"><span class="pre">vkCmdCopyAccelerationStructureKHR</span></code> 和 <code class="docutils literal notranslate"><span class="pre">vkCopyAccelerationStructureKHR</span></code> 函数实现的。</p>
 <p>在将缓存输入构建加速结构指令构建加速结构时，如何构建加速结构是设备自己内部实现。</p>
 <div class="note admonition">
-<p class="admonition-title">前提条件</p>
-<p>sa</p>
+<p class="admonition-title">正确用法</p>
+<ul class="simple">
+<li><p>必须激活 <code class="docutils literal notranslate"><span class="pre">accelerationStructure</span></code> 特性。</p></li>
+<li><p>如果 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureCreateInfoKHR::deviceAddress</span></code> 不是 <code class="docutils literal notranslate"><span class="pre">0</span></code> 的话，需要激活 <code class="docutils literal notranslate"><span class="pre">accelerationStructureCaptureReplay</span></code> 特性。</p></li>
+<li><p>如果 <code class="docutils literal notranslate"><span class="pre">device</span></code> 是从多个物理设备建立的话，需要激活 <code class="docutils literal notranslate"><span class="pre">bufferDeviceAddressMultiDevice</span></code> 特性。</p></li>
+</ul>
 </div>
+<p>对应调用 <code class="docutils literal notranslate"><span class="pre">vkCreateAccelerationStructureKHR</span></code> 时，需要设置对应的 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureCreateInfoKHR</span></code> 创建信息。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_acceleration_structure 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkAccelerationStructureCreateInfoKHR</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VkStructureType</span><span class="w">                          </span><span class="n">sType</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w">                              </span><span class="n">pNext</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkAccelerationStructureCreateFlagsKHR</span><span class="w">    </span><span class="n">createFlags</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkBuffer</span><span class="w">                                 </span><span class="n">buffer</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkDeviceSize</span><span class="w">                             </span><span class="n">offset</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkDeviceSize</span><span class="w">                             </span><span class="n">size</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkAccelerationStructureTypeKHR</span><span class="w">           </span><span class="n">type</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkDeviceAddress</span><span class="w">                          </span><span class="n">deviceAddress</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkAccelerationStructureCreateInfoKHR</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 必须是 <code class="docutils literal notranslate"><span class="pre">VkStructureType::VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR</span></code></p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pNext</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureMotionInfoNV</span></code> 或 <code class="docutils literal notranslate"><span class="pre">VkOpaqueCaptureDescriptorDataCreateInfoEXT</span></code></p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">createFlags</span> 是 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureCreateFlagBitsKHR</span></code> 的位域，用于创建加速结构时指定附加参数</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">buffer</span> 加速结构将会存储的目标缓存</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">offset</span> 对于目标缓存的起始地址的比特偏移，在目标缓存的此偏移位置之后存储加速结构。偏移值必须是 <code class="docutils literal notranslate"><span class="pre">256</span></code> 的倍数。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">size</span> 加速结构需要的大小</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">type</span> <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureTypeKHR</span></code> 枚举值，用于创建的加速结构类型。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">deviceAddress</span> 如果使用 <code class="docutils literal notranslate"><span class="pre">accelerationStructureCaptureReplay</span></code> 特性，需要该加速结构请求的设备地址。</p></li>
+</ul>
+<p>如果 <code class="docutils literal notranslate"><span class="pre">deviceAddress</span></code> 为 <code class="docutils literal notranslate"><span class="pre">0</span></code> 的话，表示没有指定请求地址。</p>
+<p>如果 <code class="docutils literal notranslate"><span class="pre">deviceAddress</span></code> 不为 <code class="docutils literal notranslate"><span class="pre">0</span></code> 的话，其地址需要与 <code class="docutils literal notranslate"><span class="pre">buffer</span></code> 相对应。</p>
+<p>应用应该避免在同一进程中使用应用提供的地址和设备实现提供的地址，这是为了减少 <code class="docutils literal notranslate"><span class="pre">VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS_KHR</span></code> 错误出现的可能性。</p>
+<div class="note admonition">
+<p class="admonition-title">备注</p>
+<p>一个预期的用法是将追踪捕获、回放工具，在使用 <code class="docutils literal notranslate"><span class="pre">VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT</span></code> 位域创建的所有缓存上添加 <code class="docutils literal notranslate"><span class="pre">VK_BUFFER_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT</span></code> 位域，并且在那些 <code class="docutils literal notranslate"><span class="pre">deviceAddress</span></code> 不是 <code class="docutils literal notranslate"><span class="pre">0</span></code> 的
+加速结构所对应的所有用于存储的缓存上增加 <code class="docutils literal notranslate"><span class="pre">VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT</span></code> 位域。这也就意味着在应用还没有需要增加 <code class="docutils literal notranslate"><span class="pre">VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT</span></code> 位域时，工具需要对于内存分配增加 <code class="docutils literal notranslate"><span class="pre">VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT</span></code> 位域。
+在捕获期间，工具将会保存捕获追踪到的设备地址。在回放期间，缓存将会根据原始地址创建，所以任何在追踪数据中存储的地址值将会一直处于有效状态。</p>
+<p>驱动实现比较喜欢将这些缓存在 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 地址空间上进行分解，所以正常的内存分配将不会使用这些分解内存。为了避免地址空间分配冲突，应用或工具需要避免在 <code class="docutils literal notranslate"><span class="pre">VK_BUFFER_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT</span></code> 缓存上混合使用应用和驱动提供的地址。</p>
+</div>
+<p>应用应该使用除了 <code class="docutils literal notranslate"><span class="pre">VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHR</span></code> 之外的 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureTypeKHR</span></code> 类型来创建加速结构</p>
+<div class="note admonition">
+<p class="admonition-title">备注</p>
+<p><code class="docutils literal notranslate"><span class="pre">VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHR</span></code> 本意是给 <code class="docutils literal notranslate"><span class="pre">API</span></code> 转换层（ <code class="docutils literal notranslate"><span class="pre">API</span> <span class="pre">translation</span> <span class="pre">layers</span></code> ）使用的。 该类型可以在你创建加速结构时不清楚创建的是顶层加速结构还是底层加速结构时使用。在构建时真正的加速结构类型必须指定为 <code class="docutils literal notranslate"><span class="pre">VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR</span></code> 或 <code class="docutils literal notranslate"><span class="pre">VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR</span></code> 。</p>
+</div>
+<p>如果加速结构将作为构建的目标，加速结构需要的大小可以通过 <code class="docutils literal notranslate"><span class="pre">vkGetAccelerationStructureBuildSizesKHR</span></code> 获取。如果加速结构用于压缩拷贝的话， <code class="docutils literal notranslate"><span class="pre">vkCmdWriteAccelerationStructuresPropertiesKHR</span></code> 或 <code class="docutils literal notranslate"><span class="pre">vkWriteAccelerationStructuresPropertiesKHR</span></code> 可以用于获取需要的压缩大小。</p>
+<p>如果加速结构用于构建 <code class="docutils literal notranslate"><span class="pre">VK_BUILD_ACCELERATION_STRUCTURE_MOTION_BIT_NV</span></code> 的话，其 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureCreateInfoKHR::createFlags</span></code> 必须包含 <code class="docutils literal notranslate"><span class="pre">VK_ACCELERATION_STRUCTURE_CREATE_MOTION_BIT_NV</span></code> ，并且 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureCreateInfoKHR::pNext</span></code> 中增加 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureMotionInfoNV</span></code> 作为构建对象的原始数据。</p>
 </section>
 </section>
 </section>
@@ -496,8 +563,11 @@
 <li><a class="reference internal" href="#id6">例程</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id7">激活加速结构特性</a></li>
-<li><a class="reference internal" href="#id8">创建加速结构</a></li>
+<li><a class="reference internal" href="#id7">激活加速结构特性</a><ul>
+<li><a class="reference internal" href="#id8">例程</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id9">创建加速结构</a></li>
 </ul>
 </li>
 </ul>
