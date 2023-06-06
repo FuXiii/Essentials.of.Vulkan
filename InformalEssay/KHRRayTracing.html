@@ -491,6 +491,10 @@
 </div>
 <p>如果加速结构将作为构建的目标，加速结构需要的大小可以通过 <code class="docutils literal notranslate"><span class="pre">vkGetAccelerationStructureBuildSizesKHR</span></code> 获取。如果加速结构用于压缩拷贝的话， <code class="docutils literal notranslate"><span class="pre">vkCmdWriteAccelerationStructuresPropertiesKHR</span></code> 或 <code class="docutils literal notranslate"><span class="pre">vkWriteAccelerationStructuresPropertiesKHR</span></code> 可以用于获取需要的压缩大小。</p>
 <p>如果加速结构用于构建 <code class="docutils literal notranslate"><span class="pre">VK_BUILD_ACCELERATION_STRUCTURE_MOTION_BIT_NV</span></code> 的话，其 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureCreateInfoKHR::createFlags</span></code> 必须包含 <code class="docutils literal notranslate"><span class="pre">VK_ACCELERATION_STRUCTURE_CREATE_MOTION_BIT_NV</span></code> ，并且 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureCreateInfoKHR::pNext</span></code> 中增加 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureMotionInfoNV</span></code> 作为构建对象的原始数据。</p>
+<div class="tip admonition">
+<p class="admonition-title">VkAccelerationStructureMotionInfoNV 和 VK_BUILD_ACCELERATION_STRUCTURE_MOTION_BIT_NV</p>
+<p>这两个属于 <code class="docutils literal notranslate"><span class="pre">VK_NV_ray_tracing_motion_blur</span></code> ，是 <code class="docutils literal notranslate"><span class="pre">NVIDIA</span></code> 的扩展，并不是 <code class="docutils literal notranslate"><span class="pre">KHR</span></code> 扩展，目前先忽略。</p>
+</div>
 </section>
 </section>
 </section>
