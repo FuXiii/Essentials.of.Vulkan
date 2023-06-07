@@ -12,6 +12,9 @@ Vulkan KHR 光线追踪标准
    * 2023/6/5 增加 ``创建加速结构`` 章节
    * 2023/6/6 更新 ``激活加速结构特性`` 章节
    * 2023/6/6 更新 ``创建加速结构`` 章节
+   * 2023/6/7 增加 ``获取加速结构的构建大小`` 章节
+   * 2023/6/7 更新 ``VK_KHR_acceleration_structure`` 章节，增加 ``加速结构的创建和构建`` 注意项
+   * 2023/6/7 增加 ``销毁加速结构`` 章节
 
 在 ``Vulkan API`` 中有5个与光追相关的扩展
 
@@ -25,6 +28,11 @@ Vulkan KHR 光线追踪标准
 
 VK_KHR_acceleration_structure
 ###################################
+
+.. admonition:: 加速结构的创建和构建
+    :class: important
+
+    加速结构中经常能看到 ``创建`` 和 ``构建`` 的字样，这是两个不同的概念。加速结构的创建指的是创建加速结构句柄 ``VkAccelerationStructureKHR`` ，在创建时可以不指定其内部的具体数据，可以先创建。对于加速结构的构建指的是构建加速结构内部真正的数据和结构，具体内部结构是什么形式的是驱动内部自定义的（一种可能的结构为 ``BVH`` ）。
 
 该扩展属于 :bdg-info:`设备扩展`。
 
@@ -110,7 +118,7 @@ VK_KHR_acceleration_structure
         VkBool32           descriptorBindingAccelerationStructureUpdateAfterBind;
     } VkPhysicalDeviceAccelerationStructureFeaturesKHR;
 
-* :bdg-secondary:`accelerationStructure` 描述设备是否支持加速结构特性
+* :bdg-secondary:`accelerationStructure` 描述设备是否支持加速结构特性。
 * :bdg-secondary:`accelerationStructureCaptureReplay` 描述设备是否支持保存和重复使用加速结构的设备地址。比如用于追踪捕获和回放。
 * :bdg-secondary:`accelerationStructureIndirectBuild` 描述设备是否支持间接加速结构构建指令。比如 ``vkCmdBuildAccelerationStructuresIndirectKHR`` 。
 * :bdg-secondary:`accelerationStructureHostCommands` 描述设备是否支持 ``Host`` 端（ ``CPU`` ）的加速结构相关指令函数。比如 ``vkBuildAccelerationStructuresKHR`` ， ``vkCopyAccelerationStructureKHR`` ， ``vkCopyAccelerationStructureToMemoryKHR`` ， ``vkCopyMemoryToAccelerationStructureKHR`` ， ``vkWriteAccelerationStructuresPropertiesKHR`` 。
@@ -180,10 +188,10 @@ VK_KHR_acceleration_structure
         const VkAllocationCallbacks*                pAllocator,
         VkAccelerationStructureKHR*                 pAccelerationStructure);
 
-* :bdg-secondary:`device` 用于创建加速结构的逻辑设备句柄
-* :bdg-secondary:`pCreateInfo` 加速结构的构建信息
-* :bdg-secondary:`pAllocator` 分配器
-* :bdg-secondary:`pAccelerationStructure` 创建的目标加速结构句柄
+* :bdg-secondary:`device` 用于创建加速结构的逻辑设备句柄。
+* :bdg-secondary:`pCreateInfo` 加速结构的构建信息。
+* :bdg-secondary:`pAllocator` 分配器。
+* :bdg-secondary:`pAccelerationStructure` 创建的目标加速结构句柄。
 
 加速结构仅仅用于创建一个具有特定形状的物体。可以构建进入加速结构的几何数量和类型是通过 ``VkAccelerationStructureCreateInfoKHR`` 来指定。
 
@@ -214,12 +222,12 @@ VK_KHR_acceleration_structure
         VkDeviceAddress                          deviceAddress;
     } VkAccelerationStructureCreateInfoKHR;
 
-* :bdg-secondary:`sType` 必须是 ``VkStructureType::VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR``
-* :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向 ``VkAccelerationStructureMotionInfoNV`` 或 ``VkOpaqueCaptureDescriptorDataCreateInfoEXT``
-* :bdg-secondary:`createFlags` 是 ``VkAccelerationStructureCreateFlagBitsKHR`` 的位域，用于创建加速结构时指定附加参数
-* :bdg-secondary:`buffer` 加速结构将会存储的目标缓存
+* :bdg-secondary:`sType` 必须是 ``VkStructureType::VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR`` 。
+* :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向 ``VkAccelerationStructureMotionInfoNV`` 或 ``VkOpaqueCaptureDescriptorDataCreateInfoEXT`` 。
+* :bdg-secondary:`createFlags` 是 ``VkAccelerationStructureCreateFlagBitsKHR`` 的位域，用于创建加速结构时指定附加参数。
+* :bdg-secondary:`buffer` 加速结构将会存储的目标缓存。
 * :bdg-secondary:`offset` 对于目标缓存的起始地址的比特偏移，在目标缓存的此偏移位置之后存储加速结构。偏移值必须是 ``256`` 的倍数。
-* :bdg-secondary:`size` 加速结构需要的大小
+* :bdg-secondary:`size` 加速结构需要的大小。
 * :bdg-secondary:`type` ``VkAccelerationStructureTypeKHR`` 枚举值，用于创建的加速结构类型。
 * :bdg-secondary:`deviceAddress` 如果使用 ``accelerationStructureCaptureReplay`` 特性，需要该加速结构请求的设备地址。
 
@@ -253,4 +261,138 @@ VK_KHR_acceleration_structure
     :class: tip
 
     这两个属于 ``VK_NV_ray_tracing_motion_blur`` ，是 ``NVIDIA`` 的扩展，并不是 ``KHR`` 扩展，目前先忽略。
+
+获取加速结构的构建大小
+**********************
+
+为了获取加速结构构建的大小，调用：
+
+.. code:: c++
+
+    // 由 VK_KHR_acceleration_structure 提供
+    void vkGetAccelerationStructureBuildSizesKHR(
+        VkDevice                                    device,
+        VkAccelerationStructureBuildTypeKHR         buildType,
+        const VkAccelerationStructureBuildGeometryInfoKHR* pBuildInfo,
+        const uint32_t*                             pMaxPrimitiveCounts,
+        VkAccelerationStructureBuildSizesInfoKHR*   pSizeInfo);
+
+* :bdg-secondary:`device` 用于创建加速结构的逻辑设备句柄。
+* :bdg-secondary:`buildType` 指定是使用 ``host`` 端还是 ``device`` 端（或是两者兼得）上构建加速结构。
+* :bdg-secondary:`pBuildInfo` 描述构建的参数。
+* :bdg-secondary:`pMaxPrimitiveCounts` 是指向类型为 ``uint32_t`` 长度为 ``pBuildInfo->geometryCount`` 的数组指针。用于定义有多少图元构建进入每个几何体中。
+* :bdg-secondary:`pSizeInfo` 返回构建加速结构时需要的大小、暂付缓存的大小。
+
+.. admonition:: ``host`` 端还是 ``device`` 端
+    :class: note
+
+    ``host`` 端一般指 ``CPU`` 。 ``device`` 端一般指 ``GPU`` 。
+
+.. admonition:: 暂付缓存
+    :class: note
+
+    暂付缓存（ ``scratch buffer`` ），是 ``Vulkan`` 对于内部缓存的优化。原本的内部缓存应由 ``Vulkan`` 驱动内部自身分配和管理，但是有些内部内存会经常性的更新，为了优化这一部分缓存， ``Vulkan`` 将这一部分
+    缓存交由用户分配管理，优化了内存使用和读写。 ``scratch`` 原本是抓挠之意，由于这部分内存时不时的要更新一下，像猫抓一样，所以叫 ``抓挠`` 缓存，实则是暂时交付给 ``Vulkan`` 驱动内部。
+
+在调用该函数时 ``pBuildInfo`` 的 ``srcAccelerationStructure`` 、 ``dstAccelerationStructure`` 和 ``mode`` 成员数据会被忽略。 ``pBuildInfo`` 中 ``VkDeviceOrHostAddressKHR scratchData`` 也将会被忽略，除非 ``VkAccelerationStructureGeometryTrianglesDataKHR::transformData`` 中的 ``hostAddress`` 成员是 ``NULL`` 。
+
+使用该函数中的 ``VkAccelerationStructureBuildSizesInfoKHR`` 返回的 ``accelerationStructureSize`` 的大小创建加速结构，为了支持使用 ``VkAccelerationStructureBuildGeometryInfoKHR`` 和 ``VkAccelerationStructureBuildRangeInfoKHR`` 数组进行任意的构建和更新，构建和更新时需要依照如下规范：
+
+* 构建指令是 ``host`` 端， ``buildType`` 需要是 ``VK_ACCELERATION_STRUCTURE_BUILD_TYPE_HOST_KHR`` 或者 ``VK_ACCELERATION_STRUCTURE_BUILD_TYPE_HOST_OR_DEVICE_KHR`` 。
+* 构建指令是 ``device`` 端， ``buildType`` 需要是 ``VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR`` 或者 ``VK_ACCELERATION_STRUCTURE_BUILD_TYPE_HOST_OR_DEVICE_KHR`` 。
+* 对于 ``VkAccelerationStructureBuildGeometryInfoKHR`` ：
+    * 其 ``type`` 和 ``flags`` 成员需要分别与 ``pBuildInfo->type`` 和 ``pBuildInfo->flags`` 对应相等。
+    * ``geometryCount`` 需要小于等与 ``pBuildInfo->geometryCount`` 。
+    * 对于 ``pGeometries`` 或 ``ppGeometries`` 数组中的每一个元素，其 ``geometryType`` 成员需要与 ``pBuildInfo->geometryType`` 相等。
+    * 对于 ``pGeometries`` 或 ``ppGeometries`` 数组中的每一个元素，其 ``flags`` 成员需要与 ``pBuildInfo->flags`` 相等。
+    * 对于 ``pGeometries`` 或 ``ppGeometries`` 数组中的每一个元素，当其 ``geometryType`` 成员等于 ``VK_GEOMETRY_TYPE_TRIANGLES_KHR`` 时， ``geometry.triangles`` 的 ``vertexFormat`` 和 ``indexType`` 成员需要与 ``pBuildInfo`` 中的对应成员相等。
+    * 对于 ``pGeometries`` 或 ``ppGeometries`` 数组中的每一个元素，当其 ``geometryType`` 成员等于 ``VK_GEOMETRY_TYPE_TRIANGLES_KHR`` 时， ``geometry.triangles`` 的 ``maxVertex`` 成员需要与 ``pBuildInfo`` 中的对应成员相等。
+    * 对于 ``pGeometries`` 或 ``ppGeometries`` 数组中的每一个元素，当其 ``geometryType`` 成员等于 ``VK_GEOMETRY_TYPE_TRIANGLES_KHR`` 时， ``geometry.triangles`` 的 ``transformData `` 成员不是 ``NULL`` ， ``pBuildInfo`` 对应的 ``transformData.hostAddress`` 也不能是 ``NULL`` 。
+* 对于每一个与 ``VkAccelerationStructureBuildGeometryInfoKHR`` 对应的 ``VkAccelerationStructureBuildRangeInfoKHR`` ：
+    * 其 ``VkAccelerationStructureBuildGeometryInfoKHR`` 的 ``primitiveCount`` 成员需要小于等于对应 ``pMaxPrimitiveCounts`` 的元素。
+
+与之相似的 ``updateScratchSize`` 在如上规范下使用 ``VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR`` 的 ``mode`` 的话将支持任意构建指令，并且 ``buildScratchSize`` 值在如上规范下使用 ``VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR `` 的 ``mode`` 的话将支持任意构建指令。
+
+.. admonition:: 正确用法
+    :class: note
+
+    * 必须激活 ``rayTracingPipeline`` 或 ``rayQuery`` 特性。
+    * 如果 ``device`` 使用多物理设备创建的，则一定不能激活 ``bufferDeviceAddressMultiDevice`` 特性。
+    * 如果 ``pBuildInfo->geometryCount`` 不是 ``0`` 的话， ``pMaxPrimitiveCounts`` 必须指向一个有效的类型为 ``uint32_t`` 长度为 ``pBuildInfo->geometryCount`` 的数组指针。
+    * 如果 ``pBuildInfo->pGeometries`` 或 ``pBuildInfo->ppGeometries`` 有一个 ``VK_GEOMETRY_TYPE_INSTANCES_KHR`` 类型的 ``geometryType`` 的话，每一个 ``pMaxPrimitiveCounts[i]`` 必须小于等于 ``VkPhysicalDeviceAccelerationStructurePropertiesKHR::maxInstanceCount`` 。
+
+``VkAccelerationStructureBuildSizesInfoKHR`` 结构体描述了加速结构构建需求大小和暂付缓存的大小：
+
+.. code:: c++
+
+    // 由 VK_KHR_acceleration_structure 提供
+    typedef struct VkAccelerationStructureBuildSizesInfoKHR {
+        VkStructureType    sType;
+        const void*        pNext;
+        VkDeviceSize       accelerationStructureSize;
+        VkDeviceSize       updateScratchSize;
+        VkDeviceSize       buildScratchSize;
+    } VkAccelerationStructureBuildSizesInfoKHR;
+
+* :bdg-secondary:`sType` 该结构体的类型。
+* :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
+* :bdg-secondary:`accelerationStructureSize` 为 ``VkAccelerationStructureKHR`` 在构建和更新时需要的比特大小。
+* :bdg-secondary:`updateScratchSize` 在更新时需要暂付缓存的比特大小。
+* :bdg-secondary:`buildScratchSize` 在构建时需要暂付缓存的比特大小。
+
+获取64位加速结构设备地址
+*************************
+
+获取 ``64`` 位的加速结构设备地址，通过调用：
+
+.. code:: c++
+
+    // 由 VK_KHR_acceleration_structure 提供
+    VkDeviceAddress vkGetAccelerationStructureDeviceAddressKHR(
+        VkDevice                                    device,
+        const VkAccelerationStructureDeviceAddressInfoKHR* pInfo);
+
+* :bdg-secondary:`device` 用于之前创建加速结构的逻辑设备句柄。
+* :bdg-secondary:`pInfo` 指向用于设定获取目标加速结构地址的 ``VkAccelerationStructureDeviceAddressInfoKHR`` 结构体。
+
+该函数返回的 ``64`` 位的加速结构地址，可以用于与加速结构相关的设备和着色器操作，比如光线遍历和绑定加速结构。
+
+如果加速结构在创建时 ``VkAccelerationStructureCreateInfoKHR::deviceAddress`` 给的是有效设备地址，该函数将返回与之相同的设备地址。
+
+如果加速结构在创建时 ``type`` 是 ``VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHR`` 时，该函数返回的地址在使用相同的 ``VkBuffer`` 分配的 ``VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHR`` 的类型加速结构必须与其他加速度结构的相对偏移量一致。
+
+返回的地址必须以 ``256`` 比特对齐。
+
+相应的 ``VkAccelerationStructureDeviceAddressInfoKHR`` 定义为：
+
+.. code:: c++
+
+    // Provided by VK_KHR_acceleration_structure
+    typedef struct VkAccelerationStructureDeviceAddressInfoKHR {
+        VkStructureType               sType;
+        const void*                   pNext;
+        VkAccelerationStructureKHR    accelerationStructure;
+    } VkAccelerationStructureDeviceAddressInfoKHR;
+
+* :bdg-secondary:`sType` 该结构体的类型。
+* :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
+* :bdg-secondary:`accelerationStructure` 设定要获取设备地址的目标加速结构。
+
+销毁加速结构
+**********************
+
+销毁一个加速结构，通过调用：
+
+.. code:: c++
+
+    // 由 VK_KHR_acceleration_structure 提供
+    void vkDestroyAccelerationStructureKHR(
+        VkDevice                                    device,
+        VkAccelerationStructureKHR                  accelerationStructure,
+        const VkAllocationCallbacks*                pAllocator);
+
+* :bdg-secondary:`device` 用于销毁加速结构的逻辑设备句柄。
+* :bdg-secondary:`accelerationStructure` 要销毁的加速结构句柄。
+* :bdg-secondary:`pAllocator` 指定使用 ``host`` 端的内存分配器。
+
 
