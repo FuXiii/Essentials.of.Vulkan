@@ -15,6 +15,21 @@ Vulkan KHR 光线追踪标准
    * 2023/6/7 增加 ``获取加速结构的构建大小`` 章节
    * 2023/6/7 更新 ``VK_KHR_acceleration_structure`` 章节，增加 ``加速结构的创建和构建`` 注意项
    * 2023/6/7 增加 ``销毁加速结构`` 章节
+   * 2023/6/8 增加 ``有关本文档结构`` 的说明
+   * 2023/6/8 增加 ``有关本文档结构`` 的说明
+   * 2023/6/8 将 ``获取加速结构的构建大小`` 章节插入到 ``创建加速结构`` 之前
+   * 2023/6/8 更新 ``获取加速结构的构建大小`` 章节
+   * 2023/6/8 增加 ``加速结构`` 章节
+   * 2023/6/8 增加 ``几何体`` 章节
+   * 2023/6/8 增加 ``顶层加速结构`` 章节
+   * 2023/6/8 增加 ``底层加速结构`` 章节
+   * 2023/6/8 增加 ``无效的图元和实体`` 章节
+   * 2023/6/8 增加 ``构建加速结构`` 章节
+
+.. admonition:: 有关本文档结构
+    :class: warning
+
+    本文档基本提炼于 ``Vulkan`` 标准文档，由于 ``Vulkan`` 标准文档中有时并没有按照开发者的学习逻辑角度布局其文档的前后关系，所以该文档在书写过程中章节会随时按照开发的前后逻辑关系随时调整。
 
 在 ``Vulkan API`` 中有5个与光追相关的扩展
 
@@ -174,6 +189,178 @@ VK_KHR_acceleration_structure
         /*创建失败*/
     }
 
+加速结构
+****************
+
+加速结构是设备驱动用于光线遍历并管理场景几何体的数据结构。应用的职责是管理加速结构，包括创建、销毁、构建和更新，并在光线查询期间同步资源。
+
+加速结构有两种：
+
+* 顶层加速结构（ ``top level acceleration structures`` ）
+* 底层加速结构（ ``bottom level acceleration structures`` ）
+
+一个加速结构被构建的标志是对于一个目标加速结构执行了加速结构构建指令或拷贝指令。
+
+.. figure:: ../_static/VulkanDocAccelerationStructure.svg
+
+    加速结构
+
+如图为顶层加速结构和底层加速结构的关系图。
+
+几何体
+****************
+
+几何体指的是三角形或轴对齐包围盒。
+
+.. admonition:: 轴对齐包围盒
+    :class: note
+
+    也叫 ``AABB`` （ ``Axis Aligned Bounding Box`` ）包围盒。
+
+顶层加速结构
+****************
+
+代表实体（ ``instances`` ）的集合。描述符或设备地址将顶层加速结构作为遍历的起点。
+
+顶层加速结构通过实体可以引用任意的底层加速结构。当顶层加速结构访问底层加速结构时底层加速结构必须保持有效。
+
+底层加速结构
+****************
+
+用于表示几何体集合
+
+加速结构的更新规则
+*****************************
+
+``Vulkan API``  提供两种方式从几何体中生成加速结构：
+
+* :bdg-secondary:`构建操作` 用于构建一个加速结构
+* :bdg-secondary:`更新操作` 用于修改一个已经存在的加速结构
+
+更新操作为了执行的更快更有效率在输入方面施加了一些限制。在进行更新时，应用需要提供对于加速结构完整的描述，除了实体的定义、变换矩阵、顶点和 ``AABB`` 的位置可以改变，其他的禁止发生改变并与之前的构建描述相匹配。
+
+更明确的说，应用禁止在更新时做如下操作：
+
+* 将图元或实体从有效转成无效，反之亦然。
+* 更改三角形几何体的索引和顶点格式
+* 将三角形几何体的变换指针从空变成非空，反之亦然。
+* 改变加速结构中几何体或实体的数量。
+* 改变加速结构中几何体的标志位域（ ``flags`` ）。
+* 改变加速结构中几何体的顶点数量或图元数量。
+
+无效的图元和实体
+**********************
+
+加速结构允许使用一个特定的输入值表示无效的图元或实体。
+
+当三角形的每个顶点的第一个（ ``X`` ）分量为 ``NaN`` 时即为一个无效三角形。如果顶点的其他分量为 ``NaN`` 但是第一个分量不为 ``NaN`` 时其行为是未定义的。如果顶点格式中不存在 ``NaN`` 的话，则所有的三角形都认为是有效的。
+
+当一个实体引用的加速结构为 ``0`` 时被认为是无效。
+
+当 ``AABB`` 的最小 ``X`` 坐标为 ``NaN`` 时被认为是无效，如果其他的部分为 ``NaN`` 而第一个不是 ``NaN`` 的话其行为是未定义的。
+
+在如上定义中 ``NaN`` 可以是任意类型的 ``NaN`` ，比如有符号的。无符号的、安静的、吵闹的或是其他种种。
+
+.. admonition:: 安静的、吵闹的
+    :class: note
+
+    安静的 ``NaN`` ，大概率是指 ``IEEE 754-2008`` 标准中定义的 ``Quiet NaN`` 。是指尾数最高位为 ``1`` 的 ``NaN`` 值。
+    吵闹的 ``NaN`` ，大概率是指 ``IEEE 754-2008`` 标准中定义的 ``Signaling NaN`` 。是指尾数最高位为 ``0`` ，其余低位不全为 ``0`` 的 ``NaN`` 值。
+
+一个无效对象对于所有的光线都被认为是不可见的，并且不应该出现在加速结构中。驱动应确保无效对象的存在不会严重降低遍历性能。
+
+无效对象使用一个自然增涨的索引值计数，在 ``SPIR-V`` 是通过 ``InstanceId`` 和 ``PrimitiveId`` 体现出来。这允许场景中的对象在有效与无效之间自由的变换。不影响使用 ``ID`` 值进行索引的任何数组的布局。
+
+对于任何有效与无效状态的转换都需要进行一个完整的加速结构重构建。如果拷贝源加速结构中有效的对象在目标加速结构中变成无效对象，反之亦然，则应用不能执行加速结构的更新。
+
+构建加速结构
+********************
+
+:bdg-danger:`未完待续`
+
+获取加速结构的构建大小
+**********************
+
+为了获取加速结构构建的大小，调用：
+
+.. code:: c++
+
+    // 由 VK_KHR_acceleration_structure 提供
+    void vkGetAccelerationStructureBuildSizesKHR(
+        VkDevice                                    device,
+        VkAccelerationStructureBuildTypeKHR         buildType,
+        const VkAccelerationStructureBuildGeometryInfoKHR* pBuildInfo,
+        const uint32_t*                             pMaxPrimitiveCounts,
+        VkAccelerationStructureBuildSizesInfoKHR*   pSizeInfo);
+
+* :bdg-secondary:`device` 用于创建加速结构的逻辑设备句柄。
+* :bdg-secondary:`buildType` 指定是使用 ``host`` 端还是 ``device`` 端（或是两者兼得）上构建加速结构。
+* :bdg-secondary:`pBuildInfo` 描述构建的参数。
+* :bdg-secondary:`pMaxPrimitiveCounts` 是指向类型为 ``uint32_t`` 长度为 ``pBuildInfo->geometryCount`` 的数组指针。用于定义有多少图元构建进入每个几何体中。
+* :bdg-secondary:`pSizeInfo` 返回构建加速结构时需要的大小、暂付缓存的大小。
+
+.. admonition:: ``host`` 端还是 ``device`` 端
+    :class: note
+
+    ``host`` 端一般指 ``CPU`` 。 ``device`` 端一般指 ``GPU`` 。
+
+.. admonition:: 暂付缓存
+    :class: note
+
+    暂付缓存（ ``scratch buffer`` ），是 ``Vulkan`` 对于内部缓存的优化。原本的内部缓存应由 ``Vulkan`` 驱动内部自身分配和管理，但是有些内部内存会经常性的更新，为了优化这一部分缓存， ``Vulkan`` 将这一部分
+    缓存交由用户分配管理，优化了内存使用和读写。 ``scratch`` 原本是抓挠之意，由于这部分内存时不时的要更新一下，像猫抓一样，所以叫 ``抓挠`` 缓存，实则是暂时交付给 ``Vulkan`` 驱动内部。
+
+.. admonition:: 获取加速结构的构建大小
+    :class: note
+
+    在获取加速结构要构建的大小时，主要是通过 ``VkAccelerationStructureBuildGeometryInfoKHR`` 描述加速结构，而不像 ``VkImage`` 和 ``VkBuffer`` 这类先创建资源句柄再获取资源要分配的大小。换而言之，加速结构在获取大小时不需要先创建完加速结构资源句柄后再获取大小。
+
+在调用该函数时 ``pBuildInfo`` 的 ``srcAccelerationStructure`` 、 ``dstAccelerationStructure`` 和 ``mode`` 成员数据会被忽略。 ``pBuildInfo`` 中 ``VkDeviceOrHostAddressKHR scratchData`` 也将会被忽略，除非 ``VkAccelerationStructureGeometryTrianglesDataKHR::transformData`` 中的 ``hostAddress`` 成员是 ``NULL`` 。
+
+使用该函数中的 ``VkAccelerationStructureBuildSizesInfoKHR`` 返回的 ``accelerationStructureSize`` 的大小创建加速结构，为了支持使用 ``VkAccelerationStructureBuildGeometryInfoKHR`` 和 ``VkAccelerationStructureBuildRangeInfoKHR`` 数组进行任意的构建和更新，构建和更新时需要依照如下规范：
+
+* 构建指令是 ``host`` 端， ``buildType`` 需要是 ``VK_ACCELERATION_STRUCTURE_BUILD_TYPE_HOST_KHR`` 或者 ``VK_ACCELERATION_STRUCTURE_BUILD_TYPE_HOST_OR_DEVICE_KHR`` 。
+* 构建指令是 ``device`` 端， ``buildType`` 需要是 ``VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR`` 或者 ``VK_ACCELERATION_STRUCTURE_BUILD_TYPE_HOST_OR_DEVICE_KHR`` 。
+* 对于 ``VkAccelerationStructureBuildGeometryInfoKHR`` ：
+    * 其 ``type`` 和 ``flags`` 成员需要分别与 ``pBuildInfo->type`` 和 ``pBuildInfo->flags`` 对应相等。
+    * ``geometryCount`` 需要小于等与 ``pBuildInfo->geometryCount`` 。
+    * 对于 ``pGeometries`` 或 ``ppGeometries`` 数组中的每一个元素，其 ``geometryType`` 成员需要与 ``pBuildInfo->geometryType`` 相等。
+    * 对于 ``pGeometries`` 或 ``ppGeometries`` 数组中的每一个元素，其 ``flags`` 成员需要与 ``pBuildInfo->flags`` 相等。
+    * 对于 ``pGeometries`` 或 ``ppGeometries`` 数组中的每一个元素，当其 ``geometryType`` 成员等于 ``VK_GEOMETRY_TYPE_TRIANGLES_KHR`` 时， ``geometry.triangles`` 的 ``vertexFormat`` 和 ``indexType`` 成员需要与 ``pBuildInfo`` 中的对应成员相等。
+    * 对于 ``pGeometries`` 或 ``ppGeometries`` 数组中的每一个元素，当其 ``geometryType`` 成员等于 ``VK_GEOMETRY_TYPE_TRIANGLES_KHR`` 时， ``geometry.triangles`` 的 ``maxVertex`` 成员需要与 ``pBuildInfo`` 中的对应成员相等。
+    * 对于 ``pGeometries`` 或 ``ppGeometries`` 数组中的每一个元素，当其 ``geometryType`` 成员等于 ``VK_GEOMETRY_TYPE_TRIANGLES_KHR`` 时， ``geometry.triangles`` 的 ``transformData `` 成员不是 ``NULL`` ， ``pBuildInfo`` 对应的 ``transformData.hostAddress`` 也不能是 ``NULL`` 。
+* 对于每一个与 ``VkAccelerationStructureBuildGeometryInfoKHR`` 对应的 ``VkAccelerationStructureBuildRangeInfoKHR`` ：
+    * 其 ``VkAccelerationStructureBuildGeometryInfoKHR`` 的 ``primitiveCount`` 成员需要小于等于对应 ``pMaxPrimitiveCounts`` 的元素。
+
+与之相似的 ``updateScratchSize`` 在如上规范下使用 ``VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR`` 的 ``mode`` 的话将支持任意构建指令，并且 ``buildScratchSize`` 值在如上规范下使用 ``VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR `` 的 ``mode`` 的话将支持任意构建指令。
+
+.. admonition:: 正确用法
+    :class: note
+
+    * 必须激活 ``rayTracingPipeline`` 或 ``rayQuery`` 特性。
+    * 如果 ``device`` 使用多物理设备创建的，则一定不能激活 ``bufferDeviceAddressMultiDevice`` 特性。
+    * 如果 ``pBuildInfo->geometryCount`` 不是 ``0`` 的话， ``pMaxPrimitiveCounts`` 必须指向一个有效的类型为 ``uint32_t`` 长度为 ``pBuildInfo->geometryCount`` 的数组指针。
+    * 如果 ``pBuildInfo->pGeometries`` 或 ``pBuildInfo->ppGeometries`` 有一个 ``VK_GEOMETRY_TYPE_INSTANCES_KHR`` 类型的 ``geometryType`` 的话，每一个 ``pMaxPrimitiveCounts[i]`` 必须小于等于 ``VkPhysicalDeviceAccelerationStructurePropertiesKHR::maxInstanceCount`` 。
+
+``VkAccelerationStructureBuildSizesInfoKHR`` 结构体描述了加速结构构建需求大小和暂付缓存的大小：
+
+.. code:: c++
+
+    // 由 VK_KHR_acceleration_structure 提供
+    typedef struct VkAccelerationStructureBuildSizesInfoKHR {
+        VkStructureType    sType;
+        const void*        pNext;
+        VkDeviceSize       accelerationStructureSize;
+        VkDeviceSize       updateScratchSize;
+        VkDeviceSize       buildScratchSize;
+    } VkAccelerationStructureBuildSizesInfoKHR;
+
+* :bdg-secondary:`sType` 该结构体的类型。
+* :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
+* :bdg-secondary:`accelerationStructureSize` 为 ``VkAccelerationStructureKHR`` 在构建和更新时需要的比特大小。
+* :bdg-secondary:`updateScratchSize` 在更新时需要暂付缓存的比特大小。
+* :bdg-secondary:`buildScratchSize` 在构建时需要暂付缓存的比特大小。
+
 创建加速结构
 **********************
 
@@ -261,84 +448,6 @@ VK_KHR_acceleration_structure
     :class: tip
 
     这两个属于 ``VK_NV_ray_tracing_motion_blur`` ，是 ``NVIDIA`` 的扩展，并不是 ``KHR`` 扩展，目前先忽略。
-
-获取加速结构的构建大小
-**********************
-
-为了获取加速结构构建的大小，调用：
-
-.. code:: c++
-
-    // 由 VK_KHR_acceleration_structure 提供
-    void vkGetAccelerationStructureBuildSizesKHR(
-        VkDevice                                    device,
-        VkAccelerationStructureBuildTypeKHR         buildType,
-        const VkAccelerationStructureBuildGeometryInfoKHR* pBuildInfo,
-        const uint32_t*                             pMaxPrimitiveCounts,
-        VkAccelerationStructureBuildSizesInfoKHR*   pSizeInfo);
-
-* :bdg-secondary:`device` 用于创建加速结构的逻辑设备句柄。
-* :bdg-secondary:`buildType` 指定是使用 ``host`` 端还是 ``device`` 端（或是两者兼得）上构建加速结构。
-* :bdg-secondary:`pBuildInfo` 描述构建的参数。
-* :bdg-secondary:`pMaxPrimitiveCounts` 是指向类型为 ``uint32_t`` 长度为 ``pBuildInfo->geometryCount`` 的数组指针。用于定义有多少图元构建进入每个几何体中。
-* :bdg-secondary:`pSizeInfo` 返回构建加速结构时需要的大小、暂付缓存的大小。
-
-.. admonition:: ``host`` 端还是 ``device`` 端
-    :class: note
-
-    ``host`` 端一般指 ``CPU`` 。 ``device`` 端一般指 ``GPU`` 。
-
-.. admonition:: 暂付缓存
-    :class: note
-
-    暂付缓存（ ``scratch buffer`` ），是 ``Vulkan`` 对于内部缓存的优化。原本的内部缓存应由 ``Vulkan`` 驱动内部自身分配和管理，但是有些内部内存会经常性的更新，为了优化这一部分缓存， ``Vulkan`` 将这一部分
-    缓存交由用户分配管理，优化了内存使用和读写。 ``scratch`` 原本是抓挠之意，由于这部分内存时不时的要更新一下，像猫抓一样，所以叫 ``抓挠`` 缓存，实则是暂时交付给 ``Vulkan`` 驱动内部。
-
-在调用该函数时 ``pBuildInfo`` 的 ``srcAccelerationStructure`` 、 ``dstAccelerationStructure`` 和 ``mode`` 成员数据会被忽略。 ``pBuildInfo`` 中 ``VkDeviceOrHostAddressKHR scratchData`` 也将会被忽略，除非 ``VkAccelerationStructureGeometryTrianglesDataKHR::transformData`` 中的 ``hostAddress`` 成员是 ``NULL`` 。
-
-使用该函数中的 ``VkAccelerationStructureBuildSizesInfoKHR`` 返回的 ``accelerationStructureSize`` 的大小创建加速结构，为了支持使用 ``VkAccelerationStructureBuildGeometryInfoKHR`` 和 ``VkAccelerationStructureBuildRangeInfoKHR`` 数组进行任意的构建和更新，构建和更新时需要依照如下规范：
-
-* 构建指令是 ``host`` 端， ``buildType`` 需要是 ``VK_ACCELERATION_STRUCTURE_BUILD_TYPE_HOST_KHR`` 或者 ``VK_ACCELERATION_STRUCTURE_BUILD_TYPE_HOST_OR_DEVICE_KHR`` 。
-* 构建指令是 ``device`` 端， ``buildType`` 需要是 ``VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR`` 或者 ``VK_ACCELERATION_STRUCTURE_BUILD_TYPE_HOST_OR_DEVICE_KHR`` 。
-* 对于 ``VkAccelerationStructureBuildGeometryInfoKHR`` ：
-    * 其 ``type`` 和 ``flags`` 成员需要分别与 ``pBuildInfo->type`` 和 ``pBuildInfo->flags`` 对应相等。
-    * ``geometryCount`` 需要小于等与 ``pBuildInfo->geometryCount`` 。
-    * 对于 ``pGeometries`` 或 ``ppGeometries`` 数组中的每一个元素，其 ``geometryType`` 成员需要与 ``pBuildInfo->geometryType`` 相等。
-    * 对于 ``pGeometries`` 或 ``ppGeometries`` 数组中的每一个元素，其 ``flags`` 成员需要与 ``pBuildInfo->flags`` 相等。
-    * 对于 ``pGeometries`` 或 ``ppGeometries`` 数组中的每一个元素，当其 ``geometryType`` 成员等于 ``VK_GEOMETRY_TYPE_TRIANGLES_KHR`` 时， ``geometry.triangles`` 的 ``vertexFormat`` 和 ``indexType`` 成员需要与 ``pBuildInfo`` 中的对应成员相等。
-    * 对于 ``pGeometries`` 或 ``ppGeometries`` 数组中的每一个元素，当其 ``geometryType`` 成员等于 ``VK_GEOMETRY_TYPE_TRIANGLES_KHR`` 时， ``geometry.triangles`` 的 ``maxVertex`` 成员需要与 ``pBuildInfo`` 中的对应成员相等。
-    * 对于 ``pGeometries`` 或 ``ppGeometries`` 数组中的每一个元素，当其 ``geometryType`` 成员等于 ``VK_GEOMETRY_TYPE_TRIANGLES_KHR`` 时， ``geometry.triangles`` 的 ``transformData `` 成员不是 ``NULL`` ， ``pBuildInfo`` 对应的 ``transformData.hostAddress`` 也不能是 ``NULL`` 。
-* 对于每一个与 ``VkAccelerationStructureBuildGeometryInfoKHR`` 对应的 ``VkAccelerationStructureBuildRangeInfoKHR`` ：
-    * 其 ``VkAccelerationStructureBuildGeometryInfoKHR`` 的 ``primitiveCount`` 成员需要小于等于对应 ``pMaxPrimitiveCounts`` 的元素。
-
-与之相似的 ``updateScratchSize`` 在如上规范下使用 ``VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR`` 的 ``mode`` 的话将支持任意构建指令，并且 ``buildScratchSize`` 值在如上规范下使用 ``VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR `` 的 ``mode`` 的话将支持任意构建指令。
-
-.. admonition:: 正确用法
-    :class: note
-
-    * 必须激活 ``rayTracingPipeline`` 或 ``rayQuery`` 特性。
-    * 如果 ``device`` 使用多物理设备创建的，则一定不能激活 ``bufferDeviceAddressMultiDevice`` 特性。
-    * 如果 ``pBuildInfo->geometryCount`` 不是 ``0`` 的话， ``pMaxPrimitiveCounts`` 必须指向一个有效的类型为 ``uint32_t`` 长度为 ``pBuildInfo->geometryCount`` 的数组指针。
-    * 如果 ``pBuildInfo->pGeometries`` 或 ``pBuildInfo->ppGeometries`` 有一个 ``VK_GEOMETRY_TYPE_INSTANCES_KHR`` 类型的 ``geometryType`` 的话，每一个 ``pMaxPrimitiveCounts[i]`` 必须小于等于 ``VkPhysicalDeviceAccelerationStructurePropertiesKHR::maxInstanceCount`` 。
-
-``VkAccelerationStructureBuildSizesInfoKHR`` 结构体描述了加速结构构建需求大小和暂付缓存的大小：
-
-.. code:: c++
-
-    // 由 VK_KHR_acceleration_structure 提供
-    typedef struct VkAccelerationStructureBuildSizesInfoKHR {
-        VkStructureType    sType;
-        const void*        pNext;
-        VkDeviceSize       accelerationStructureSize;
-        VkDeviceSize       updateScratchSize;
-        VkDeviceSize       buildScratchSize;
-    } VkAccelerationStructureBuildSizesInfoKHR;
-
-* :bdg-secondary:`sType` 该结构体的类型。
-* :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
-* :bdg-secondary:`accelerationStructureSize` 为 ``VkAccelerationStructureKHR`` 在构建和更新时需要的比特大小。
-* :bdg-secondary:`updateScratchSize` 在更新时需要暂付缓存的比特大小。
-* :bdg-secondary:`buildScratchSize` 在构建时需要暂付缓存的比特大小。
 
 获取64位加速结构设备地址
 *************************
