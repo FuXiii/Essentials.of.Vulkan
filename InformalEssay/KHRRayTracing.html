@@ -267,6 +267,7 @@
 <li><p class="sd-card-text">2023/6/8 增加 <code class="docutils literal notranslate"><span class="pre">底层加速结构</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/6/8 增加 <code class="docutils literal notranslate"><span class="pre">无效的图元和实体</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/6/8 增加 <code class="docutils literal notranslate"><span class="pre">构建加速结构</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/9 更新 <code class="docutils literal notranslate"><span class="pre">构建加速结构</span></code> 章节</p></li>
 </ul>
 </div>
 </details><div class="warning admonition">
@@ -512,7 +513,73 @@
 </section>
 <section id="id15">
 <h3>构建加速结构<a class="headerlink" href="#id15" title="此标题的永久链接">#</a></h3>
-<p><span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">未完待续</span></p>
+<p>构建加速结构调用:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_acceleration_structure 提供</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">vkCmdBuildAccelerationStructuresKHR</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkCommandBuffer</span><span class="w">                             </span><span class="n">commandBuffer</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                                    </span><span class="n">infoCount</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkAccelerationStructureBuildGeometryInfoKHR</span><span class="o">*</span><span class="w"> </span><span class="n">pInfos</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkAccelerationStructureBuildRangeInfoKHR</span><span class="o">*</span><span class="w"> </span><span class="k">const</span><span class="o">*</span><span class="w"> </span><span class="n">ppBuildRangeInfos</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">commandBuffer</span> 指定在哪个指令缓存中记录指令。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">infoCount</span> 只是要构建的加速结构的个数。该个数为 <code class="docutils literal notranslate"><span class="pre">pInfos</span></code> 和 <code class="docutils literal notranslate"><span class="pre">ppBuildRangeInfos</span></code> 需要提供的个数。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pInfos</span> 是类型为 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildGeometryInfoKHR</span></code> 数量为 <code class="docutils literal notranslate"><span class="pre">infoCount</span></code> 的数组，用于定义构建的每一个加速结构中的几何体。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">ppBuildRangeInfos</span> 是类型为 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildRangeInfoKHR</span></code> 数量为 <code class="docutils literal notranslate"><span class="pre">infoCount</span></code> 的数组。每一个 <code class="docutils literal notranslate"><span class="pre">ppBuildRangeInfos[i]</span></code> 都是指向数量为 <code class="docutils literal notranslate"><span class="pre">pInfos[i].geometryCount</span></code> 类型为 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildRangeInfoKHR</span></code> 的数组，用于动态定义 <code class="docutils literal notranslate"><span class="pre">pInfos[i]</span></code> 中对应的几何数据在内存中偏移。</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">vkCmdBuildAccelerationStructuresKHR</span></code> 指令支持一次性构建多个加速结构，然而在每一个加速结构构建之间是没有隐含的顺序或同步的。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>这也就意味着应用不能在构建底层架结构或者实体加速结构（ <code class="docutils literal notranslate"><span class="pre">instance</span> <span class="pre">acceleration</span> <span class="pre">structures</span></code> ）的同一个 <code class="docutils literal notranslate"><span class="pre">vkCmdBuildAccelerationStructuresKHR</span></code> 构建指令中构建顶层加速结构。同时也不能在构建时在加速结构内存或暂付缓存上使用内存混叠。</p>
+</div>
+<div class="hint admonition">
+<p class="admonition-title">实体加速结构</p>
+<p>大概率是指 <code class="docutils literal notranslate"><span class="pre">pInfos</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryKHR*</span> <span class="pre">pGeometries</span></code> 成员中 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryInstancesDataKHR</span> <span class="pre">instances</span></code> 成员，用于构建实体加速结构。但在构建顶层加速结构是也会使用到 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryInstancesDataKHR</span> <span class="pre">instances</span></code> ，此处的实体加速结构是啥并不明确，待后文看看。</p>
+</div>
+<div class="note admonition">
+<p class="admonition-title">暂付缓存</p>
+<p>暂付缓存（ <code class="docutils literal notranslate"><span class="pre">scratch</span> <span class="pre">buffer</span></code> ），是 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 对于内部缓存的优化。原本的内部缓存应由 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 驱动内部自身分配和管理，但是有些内部内存会经常性的更新，为了优化这一部分缓存， <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 将这一部分
+缓存交由用户分配管理，优化了内存使用和读写。 <code class="docutils literal notranslate"><span class="pre">scratch</span></code> 原本是抓挠之意，由于这部分内存时不时的要更新一下，像猫抓一样，所以叫 <code class="docutils literal notranslate"><span class="pre">抓挠</span></code> 缓存，实则是暂时交付给 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 驱动内部。</p>
+</div>
+<div class="note admonition">
+<p class="admonition-title">内存混叠</p>
+<p>内存混叠有点类似于 <code class="docutils literal notranslate"><span class="pre">C++</span></code> 的 <code class="docutils literal notranslate"><span class="pre">union</span></code> 。同一段内存可以被多个资源使用，多见于临时资源的覆盖，使得一段内存可以多次重复使用。</p>
+</div>
+<p>访问 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildGeometryInfoKHR::scratchData</span></code> 对应的暂付缓存的设备地址必须在 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR</span></code> 管线阶段使用 <code class="docutils literal notranslate"><span class="pre">VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR</span> <span class="pre">|</span> <span class="pre">VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR</span></code> 访问类型进行同步。
+访问 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildGeometryInfoKHR::srcAccelerationStructure</span></code> 和 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildGeometryInfoKHR::dstAccelerationStructure</span></code> 时必须在 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR</span></code> 管线阶段使用 <code class="docutils literal notranslate"><span class="pre">VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR</span></code> 或 <code class="docutils literal notranslate"><span class="pre">VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR</span></code> 访问类型进行同步较适当。</p>
+<p>访问其他的 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryTrianglesDataKHR::vertexData</span></code> 、 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryTrianglesDataKHR::indexData</span></code> 、 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryTrianglesDataKHR::transformData</span></code> 、 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryAabbsDataKHR::data</span></code> 和 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryInstancesDataKHR::data</span></code> 的输入缓存
+时必须在 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR</span></code> 管线阶段使用 <code class="docutils literal notranslate"><span class="pre">VK_ACCESS_SHADER_READ_BIT</span></code> 访问类型进行同步。</p>
+<p><code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildGeometryInfoKHR</span></code> 结构体定义如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_acceleration_structure 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkAccelerationStructureBuildGeometryInfoKHR</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VkStructureType</span><span class="w">                                     </span><span class="n">sType</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w">                                         </span><span class="n">pNext</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkAccelerationStructureTypeKHR</span><span class="w">                      </span><span class="n">type</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkBuildAccelerationStructureFlagsKHR</span><span class="w">                </span><span class="n">flags</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkBuildAccelerationStructureModeKHR</span><span class="w">                 </span><span class="n">mode</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkAccelerationStructureKHR</span><span class="w">                          </span><span class="n">srcAccelerationStructure</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkAccelerationStructureKHR</span><span class="w">                          </span><span class="n">dstAccelerationStructure</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                                            </span><span class="n">geometryCount</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkAccelerationStructureGeometryKHR</span><span class="o">*</span><span class="w">           </span><span class="n">pGeometries</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkAccelerationStructureGeometryKHR</span><span class="o">*</span><span class="w"> </span><span class="k">const</span><span class="o">*</span><span class="w">    </span><span class="n">ppGeometries</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkDeviceOrHostAddressKHR</span><span class="w">                            </span><span class="n">scratchData</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkAccelerationStructureBuildGeometryInfoKHR</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 该结构体的类型，必须为 <code class="docutils literal notranslate"><span class="pre">VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pNext</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向其他结构体来扩展该结构体。。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">type</span> 用于设置加速结构的构建类型。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">flags</span> 用于指定的加速结构的额外参数。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">mode</span> 用于设置要进行的操作类型。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">srcAccelerationStructure</span> 是用于当 <code class="docutils literal notranslate"><span class="pre">mode</span></code> 为 <code class="docutils literal notranslate"><span class="pre">VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR</span></code> 时其指向一个已经存在的加速结构，用于更新到 <code class="docutils literal notranslate"><span class="pre">dst</span></code> 加速结构中 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">dstAccelerationStructure</span> 指向一个用于构建的目标加速结构。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">geometryCount</span> 表示要构建进入到 <code class="docutils literal notranslate"><span class="pre">dstAccelerationStructure</span></code> 的几何数量。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pGeometries</span> 指向 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryKHR</span></code> 结构体数组。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">ppGeometries</span> 指向 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryKHR</span></code> 结构体指针数组。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">scratchData</span> 是 <code class="docutils literal notranslate"><span class="pre">device</span></code> 或 <code class="docutils literal notranslate"><span class="pre">host</span></code> 端用于构建时暂付缓存的内存地址。</p></li>
+</ul>
 </section>
 <section id="id16">
 <h3>获取加速结构的构建大小<a class="headerlink" href="#id16" title="此标题的永久链接">#</a></h3>
@@ -536,11 +603,6 @@
 <div class="note admonition">
 <p class="admonition-title"><code class="docutils literal notranslate"><span class="pre">host</span></code> 端还是 <code class="docutils literal notranslate"><span class="pre">device</span></code> 端</p>
 <p><code class="docutils literal notranslate"><span class="pre">host</span></code> 端一般指 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 。 <code class="docutils literal notranslate"><span class="pre">device</span></code> 端一般指 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 。</p>
-</div>
-<div class="note admonition">
-<p class="admonition-title">暂付缓存</p>
-<p>暂付缓存（ <code class="docutils literal notranslate"><span class="pre">scratch</span> <span class="pre">buffer</span></code> ），是 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 对于内部缓存的优化。原本的内部缓存应由 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 驱动内部自身分配和管理，但是有些内部内存会经常性的更新，为了优化这一部分缓存， <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 将这一部分
-缓存交由用户分配管理，优化了内存使用和读写。 <code class="docutils literal notranslate"><span class="pre">scratch</span></code> 原本是抓挠之意，由于这部分内存时不时的要更新一下，像猫抓一样，所以叫 <code class="docutils literal notranslate"><span class="pre">抓挠</span></code> 缓存，实则是暂时交付给 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 驱动内部。</p>
 </div>
 <div class="note admonition">
 <p class="admonition-title">获取加速结构的构建大小</p>
@@ -594,7 +656,7 @@
 </pre></div>
 </div>
 <ul class="simple">
-<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 该结构体的类型。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 该结构体的类型，必须为 <code class="docutils literal notranslate"><span class="pre">VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR</span></code> 。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pNext</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向其他结构体来扩展该结构体。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">accelerationStructureSize</span> 为 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureKHR</span></code> 在构建和更新时需要的比特大小。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">updateScratchSize</span> 在更新时需要暂付缓存的比特大小。</p></li>
@@ -702,7 +764,7 @@
 </pre></div>
 </div>
 <ul class="simple">
-<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 该结构体的类型。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 该结构体的类型，必须为 <code class="docutils literal notranslate"><span class="pre">VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_DEVICE_ADDRESS_INFO_KHR</span></code> 。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pNext</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向其他结构体来扩展该结构体。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">accelerationStructure</span> 设定要获取设备地址的目标加速结构。</p></li>
 </ul>
