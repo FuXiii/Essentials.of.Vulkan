@@ -140,6 +140,11 @@ VK_KHR_acceleration_structure
 * :bdg-secondary:`accelerationStructureHostCommands` 描述设备是否支持 ``Host`` 端（ ``CPU`` ）的加速结构相关指令函数。比如 ``vkBuildAccelerationStructuresKHR`` ， ``vkCopyAccelerationStructureKHR`` ， ``vkCopyAccelerationStructureToMemoryKHR`` ， ``vkCopyMemoryToAccelerationStructureKHR`` ， ``vkWriteAccelerationStructuresPropertiesKHR`` 。
 * :bdg-secondary:`descriptorBindingAccelerationStructureUpdateAfterBind` 描述设备是否支持在描述符集中已经绑定加速结构之后对加速结构进行更新。如果该特性不支持， ``VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT`` 将不能与 ``VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR`` 一起使用。
 
+.. admonition:: ``host`` 端还是 ``device`` 端
+    :class: note
+
+    ``host`` 端一般指 ``CPU`` 。 ``device`` 端一般指 ``GPU`` 。
+
 例程
 --------------------
 
@@ -350,7 +355,7 @@ VK_KHR_acceleration_structure
     } VkAccelerationStructureBuildGeometryInfoKHR;
 
 * :bdg-secondary:`sType` 该结构体的类型，必须为 ``VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR`` 。
-* :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。。
+* :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
 * :bdg-secondary:`type` 用于设置加速结构的构建类型。
 * :bdg-secondary:`flags` 用于指定的加速结构的额外参数。
 * :bdg-secondary:`mode` 用于设置要进行的操作类型。
@@ -381,6 +386,83 @@ VK_KHR_acceleration_structure
    * 如果 ``type`` 是 ``VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR`` ，则 ``pGeometries`` 或 ``ppGeometries`` 数组的 ``geometryType`` 是 ``VK_GEOMETRY_TYPE_TRIANGLES_KHR`` 的话，所有数量的三角形对应的所有几何体必须小于等于 ``VkPhysicalDeviceAccelerationStructurePropertiesKHR::maxPrimitiveCount`` 。
    * 如果 ``flags `` 包含 ``VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR`` 位域 ，就不能再包含 ``VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_BUILD_BIT_KHR`` 位域了。
 
+``VkBuildAccelerationStructureModeKHR`` 枚举定义如下：
+
+.. code:: c++
+
+    // 由 VK_KHR_acceleration_structure 提供
+    typedef enum VkBuildAccelerationStructureModeKHR {
+        VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR = 0,
+        VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR = 1,
+    } VkBuildAccelerationStructureModeKHR;
+
+* :bdg-secondary:`VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR` 表示目标加速结构将会使用用户提供的几何数据构建。
+* :bdg-secondary:`VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR` 表示目标加速结构将会使用用户提供的源加速结构的几何数据进行更新。
+
+``VkBuildAccelerationStructureModeKHR`` 定义的 ``union`` 联合体如下：
+
+.. code:: c++
+
+    // 由 VK_KHR_acceleration_structure 提供
+    typedef union VkDeviceOrHostAddressKHR {
+        VkDeviceAddress    deviceAddress;
+        void*              hostAddress;
+    } VkDeviceOrHostAddressKHR;
+
+.. note:: ``VkDeviceOrHostAddressKHR`` 是联合体 ``union`` 。
+
+* :bdg-secondary:`deviceAddress` 表示通过 ``vkGetBufferDeviceAddressKHR`` 获取到的设备缓存地址。
+* :bdg-secondary:`hostAddress` 表示 ``host`` 端的内存地址。
+
+``VkDeviceOrHostAddressConstKHR`` 定义的 ``union`` 联合体如下：
+
+.. code:: c++
+
+    // 由 VK_KHR_acceleration_structure 提供
+    typedef union VkDeviceOrHostAddressConstKHR {
+        VkDeviceAddress    deviceAddress;
+        const void*        hostAddress;
+    } VkDeviceOrHostAddressConstKHR;
+
+* :bdg-secondary:`deviceAddress` 表示通过 ``vkGetBufferDeviceAddressKHR`` 获取到的设备缓存地址。
+* :bdg-secondary:`hostAddress` 表示 ``host`` 端的内存地址。
+
+.. note:: ``VkDeviceOrHostAddressConstKHR`` 是联合体 ``union`` 。比 ``VkDeviceOrHostAddressKHR`` 在命名上多了个 ``Const`` 。
+
+``VkAccelerationStructureGeometryKHR`` 结构体定义如下：
+
+.. code:: c++
+
+    // 由 VK_KHR_acceleration_structure 提供
+    typedef struct VkAccelerationStructureGeometryKHR {
+        VkStructureType                           sType;
+        const void*                               pNext;
+        VkGeometryTypeKHR                         geometryType;
+        VkAccelerationStructureGeometryDataKHR    geometry;
+        VkGeometryFlagsKHR                        flags;
+    } VkAccelerationStructureGeometryKHR;
+
+* :bdg-secondary:`sType` 该结构体的类型，必须为 ``VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR`` 。
+* :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。。
+* :bdg-secondary:`geometryType` 描述几何类型。
+* :bdg-secondary:`geometry` 为 ``VkAccelerationStructureGeometryDataKHR`` 联合类型，描述 ``geometryType`` 对应的数据。
+* :bdg-secondary:`flags` 是 ``VkGeometryFlagBitsKHR`` 值的位域，用于描述几何体如何构建的额外参数。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 获取加速结构的构建大小
 **********************
 
@@ -401,11 +483,6 @@ VK_KHR_acceleration_structure
 * :bdg-secondary:`pBuildInfo` 描述构建的参数。
 * :bdg-secondary:`pMaxPrimitiveCounts` 是指向类型为 ``uint32_t`` 长度为 ``pBuildInfo->geometryCount`` 的数组指针。用于定义有多少图元构建进入每个几何体中。
 * :bdg-secondary:`pSizeInfo` 返回构建加速结构时需要的大小、暂付缓存的大小。
-
-.. admonition:: ``host`` 端还是 ``device`` 端
-    :class: note
-
-    ``host`` 端一般指 ``CPU`` 。 ``device`` 端一般指 ``GPU`` 。
 
 .. admonition:: 获取加速结构的构建大小
     :class: note
