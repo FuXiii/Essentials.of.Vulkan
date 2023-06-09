@@ -25,6 +25,7 @@ Vulkan KHR 光线追踪标准
    * 2023/6/8 增加 ``底层加速结构`` 章节
    * 2023/6/8 增加 ``无效的图元和实体`` 章节
    * 2023/6/8 增加 ``构建加速结构`` 章节
+   * 2023/6/9 更新 ``构建加速结构`` 章节
 
 .. admonition:: 有关本文档结构
     :class: warning
@@ -276,7 +277,78 @@ VK_KHR_acceleration_structure
 构建加速结构
 ********************
 
-:bdg-danger:`未完待续`
+构建加速结构调用:
+
+.. code:: c++
+
+    // 由 VK_KHR_acceleration_structure 提供
+    void vkCmdBuildAccelerationStructuresKHR(
+        VkCommandBuffer                             commandBuffer,
+        uint32_t                                    infoCount,
+        const VkAccelerationStructureBuildGeometryInfoKHR* pInfos,
+        const VkAccelerationStructureBuildRangeInfoKHR* const* ppBuildRangeInfos);
+
+* :bdg-secondary:`commandBuffer` 指定在哪个指令缓存中记录指令。
+* :bdg-secondary:`infoCount` 只是要构建的加速结构的个数。该个数为 ``pInfos`` 和 ``ppBuildRangeInfos`` 需要提供的个数。
+* :bdg-secondary:`pInfos` 是类型为 ``VkAccelerationStructureBuildGeometryInfoKHR`` 数量为 ``infoCount`` 的数组，用于定义构建的每一个加速结构中的几何体。
+* :bdg-secondary:`ppBuildRangeInfos` 是类型为 ``VkAccelerationStructureBuildRangeInfoKHR`` 数量为 ``infoCount`` 的数组。每一个 ``ppBuildRangeInfos[i]`` 都是指向数量为 ``pInfos[i].geometryCount`` 类型为 ``VkAccelerationStructureBuildRangeInfoKHR`` 的数组，用于动态定义 ``pInfos[i]`` 中对应的几何数据在内存中偏移。
+
+``vkCmdBuildAccelerationStructuresKHR`` 指令支持一次性构建多个加速结构，然而在每一个加速结构构建之间是没有隐含的顺序或同步的。
+
+.. note:: 这也就意味着应用不能在构建底层架结构或者实体加速结构（ ``instance acceleration structures`` ）的同一个 ``vkCmdBuildAccelerationStructuresKHR`` 构建指令中构建顶层加速结构。同时也不能在构建时在加速结构内存或暂付缓存上使用内存混叠。
+
+.. admonition:: 实体加速结构
+    :class: hint
+
+    大概率是指 ``pInfos`` 中的 ``VkAccelerationStructureGeometryKHR* pGeometries`` 成员中 ``VkAccelerationStructureGeometryInstancesDataKHR instances`` 成员，用于构建实体加速结构。但在构建顶层加速结构是也会使用到 ``VkAccelerationStructureGeometryInstancesDataKHR instances`` ，此处的实体加速结构是啥并不明确，待后文看看。
+
+.. admonition:: 暂付缓存
+    :class: note
+
+    暂付缓存（ ``scratch buffer`` ），是 ``Vulkan`` 对于内部缓存的优化。原本的内部缓存应由 ``Vulkan`` 驱动内部自身分配和管理，但是有些内部内存会经常性的更新，为了优化这一部分缓存， ``Vulkan`` 将这一部分
+    缓存交由用户分配管理，优化了内存使用和读写。 ``scratch`` 原本是抓挠之意，由于这部分内存时不时的要更新一下，像猫抓一样，所以叫 ``抓挠`` 缓存，实则是暂时交付给 ``Vulkan`` 驱动内部。
+
+.. admonition:: 内存混叠
+    :class: note
+
+    内存混叠有点类似于 ``C++`` 的 ``union`` 。同一段内存可以被多个资源使用，多见于临时资源的覆盖，使得一段内存可以多次重复使用。
+
+访问 ``VkAccelerationStructureBuildGeometryInfoKHR::scratchData`` 对应的暂付缓存的设备地址必须在 ``VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR`` 管线阶段使用 ``VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR | VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR`` 访问类型进行同步。
+访问 ``VkAccelerationStructureBuildGeometryInfoKHR::srcAccelerationStructure`` 和 ``VkAccelerationStructureBuildGeometryInfoKHR::dstAccelerationStructure`` 时必须在 ``VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR`` 管线阶段使用 ``VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR`` 或 ``VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR`` 访问类型进行同步较适当。
+
+访问其他的 ``VkAccelerationStructureGeometryTrianglesDataKHR::vertexData`` 、 ``VkAccelerationStructureGeometryTrianglesDataKHR::indexData`` 、 ``VkAccelerationStructureGeometryTrianglesDataKHR::transformData`` 、 ``VkAccelerationStructureGeometryAabbsDataKHR::data`` 和 ``VkAccelerationStructureGeometryInstancesDataKHR::data`` 的输入缓存
+时必须在 ``VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR`` 管线阶段使用 ``VK_ACCESS_SHADER_READ_BIT`` 访问类型进行同步。
+
+``VkAccelerationStructureBuildGeometryInfoKHR`` 结构体定义如下：
+
+.. code:: c++
+
+    // 由 VK_KHR_acceleration_structure 提供
+    typedef struct VkAccelerationStructureBuildGeometryInfoKHR {
+        VkStructureType                                     sType;
+        const void*                                         pNext;
+        VkAccelerationStructureTypeKHR                      type;
+        VkBuildAccelerationStructureFlagsKHR                flags;
+        VkBuildAccelerationStructureModeKHR                 mode;
+        VkAccelerationStructureKHR                          srcAccelerationStructure;
+        VkAccelerationStructureKHR                          dstAccelerationStructure;
+        uint32_t                                            geometryCount;
+        const VkAccelerationStructureGeometryKHR*           pGeometries;
+        const VkAccelerationStructureGeometryKHR* const*    ppGeometries;
+        VkDeviceOrHostAddressKHR                            scratchData;
+    } VkAccelerationStructureBuildGeometryInfoKHR;
+
+* :bdg-secondary:`sType` 该结构体的类型，必须为 ``VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR`` 。
+* :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。。
+* :bdg-secondary:`type` 用于设置加速结构的构建类型。
+* :bdg-secondary:`flags` 用于指定的加速结构的额外参数。
+* :bdg-secondary:`mode` 用于设置要进行的操作类型。
+* :bdg-secondary:`srcAccelerationStructure` 是用于当 ``mode`` 为 ``VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR`` 时其指向一个已经存在的加速结构，用于更新到 ``dst`` 加速结构中 。
+* :bdg-secondary:`dstAccelerationStructure` 指向一个用于构建的目标加速结构。
+* :bdg-secondary:`geometryCount` 表示要构建进入到 ``dstAccelerationStructure`` 的几何数量。
+* :bdg-secondary:`pGeometries` 指向 ``VkAccelerationStructureGeometryKHR`` 结构体数组。
+* :bdg-secondary:`ppGeometries` 指向 ``VkAccelerationStructureGeometryKHR`` 结构体指针数组。
+* :bdg-secondary:`scratchData` 是 ``device`` 或 ``host`` 端用于构建时暂付缓存的内存地址。
 
 获取加速结构的构建大小
 **********************
@@ -303,12 +375,6 @@ VK_KHR_acceleration_structure
     :class: note
 
     ``host`` 端一般指 ``CPU`` 。 ``device`` 端一般指 ``GPU`` 。
-
-.. admonition:: 暂付缓存
-    :class: note
-
-    暂付缓存（ ``scratch buffer`` ），是 ``Vulkan`` 对于内部缓存的优化。原本的内部缓存应由 ``Vulkan`` 驱动内部自身分配和管理，但是有些内部内存会经常性的更新，为了优化这一部分缓存， ``Vulkan`` 将这一部分
-    缓存交由用户分配管理，优化了内存使用和读写。 ``scratch`` 原本是抓挠之意，由于这部分内存时不时的要更新一下，像猫抓一样，所以叫 ``抓挠`` 缓存，实则是暂时交付给 ``Vulkan`` 驱动内部。
 
 .. admonition:: 获取加速结构的构建大小
     :class: note
@@ -355,7 +421,7 @@ VK_KHR_acceleration_structure
         VkDeviceSize       buildScratchSize;
     } VkAccelerationStructureBuildSizesInfoKHR;
 
-* :bdg-secondary:`sType` 该结构体的类型。
+* :bdg-secondary:`sType` 该结构体的类型，必须为 ``VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR`` 。
 * :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
 * :bdg-secondary:`accelerationStructureSize` 为 ``VkAccelerationStructureKHR`` 在构建和更新时需要的比特大小。
 * :bdg-secondary:`updateScratchSize` 在更新时需要暂付缓存的比特大小。
@@ -483,7 +549,7 @@ VK_KHR_acceleration_structure
         VkAccelerationStructureKHR    accelerationStructure;
     } VkAccelerationStructureDeviceAddressInfoKHR;
 
-* :bdg-secondary:`sType` 该结构体的类型。
+* :bdg-secondary:`sType` 该结构体的类型，必须为 ``VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_DEVICE_ADDRESS_INFO_KHR`` 。
 * :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
 * :bdg-secondary:`accelerationStructure` 设定要获取设备地址的目标加速结构。
 
