@@ -26,6 +26,7 @@ Vulkan KHR 光线追踪标准
    * 2023/6/8 增加 ``无效的图元和实体`` 章节
    * 2023/6/8 增加 ``构建加速结构`` 章节
    * 2023/6/9 更新 ``构建加速结构`` 章节
+   * 2023/6/10 更新 ``构建加速结构`` 章节
 
 .. admonition:: 有关本文档结构
     :class: warning
@@ -443,10 +444,209 @@ VK_KHR_acceleration_structure
     } VkAccelerationStructureGeometryKHR;
 
 * :bdg-secondary:`sType` 该结构体的类型，必须为 ``VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR`` 。
-* :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。。
+* :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
 * :bdg-secondary:`geometryType` 描述几何类型。
 * :bdg-secondary:`geometry` 为 ``VkAccelerationStructureGeometryDataKHR`` 联合类型，描述 ``geometryType`` 对应的数据。
 * :bdg-secondary:`flags` 是 ``VkGeometryFlagBitsKHR`` 值的位域，用于描述几何体如何构建的额外参数。
+
+.. admonition:: 正确用法
+   :class: note
+
+   * 目前 ``pNext`` 必须为 ``NULL`` 。
+   * 如果 ``geometryType`` 为 ``VK_GEOMETRY_TYPE_TRIANGLES_KHR`` 的话， ``geometry`` 的 ``triangles`` 成员必须是一个有效的 ``VkAccelerationStructureGeometryTrianglesDataKHR`` 结构数据。
+   * 如果 ``geometryType`` 为 ``VK_GEOMETRY_TYPE_AABBS_KHR`` 的话， ``geometry`` 的 ``aabbs`` 成员必须是一个有效的 ``VkAccelerationStructureGeometryAabbsDataKHR`` 结构数据。
+   * 如果 ``geometryType`` 为 ``VK_GEOMETRY_TYPE_INSTANCES_KHR`` 的话， ``geometry`` 的 ``instances`` 成员必须是一个有效的 ``VkAccelerationStructureGeometryInstancesDataKHR`` 结构数据。
+
+``VkAccelerationStructureGeometryDataKHR`` 定义的 ``union`` 联合体如下：
+
+.. code:: c++
+
+    // 由 VK_KHR_acceleration_structure 提供
+    typedef union VkAccelerationStructureGeometryDataKHR {
+      VkAccelerationStructureGeometryTrianglesDataKHR triangles;
+      VkAccelerationStructureGeometryAabbsDataKHR aabbs;
+      VkAccelerationStructureGeometryInstancesDataKHR instances;
+    } VkAccelerationStructureGeometryDataKHR;
+
+* :bdg-secondary:`triangles` 是 ``VkAccelerationStructureGeometryTrianglesDataKHR`` 结构数据。
+* :bdg-secondary:`aabbs` 是 ``VkAccelerationStructureGeometryAabbsDataKHR`` 结构数据。
+* :bdg-secondary:`instances` 是 ``VkAccelerationStructureGeometryInstancesDataKHR`` 结构数据。
+
+.. note:: ``VkAccelerationStructureGeometryDataKHR`` 是联合体 ``union`` 。
+
+``VkAccelerationStructureGeometryTrianglesDataKHR`` 结构体定义如下：
+
+.. code:: c++
+
+    // 由 VK_KHR_acceleration_structure 提供
+    typedef struct VkAccelerationStructureGeometryTrianglesDataKHR {
+      VkStructureType sType;
+      const void* pNext;
+      VkFormat vertexFormat;
+      VkDeviceOrHostAddressConstKHR vertexData;
+      VkDeviceSize vertexStride;
+      uint32_t maxVertex;
+      VkIndexType indexType;
+      VkDeviceOrHostAddressConstKHR indexData;
+      VkDeviceOrHostAddressConstKHR transformData;
+    } VkAccelerationStructureGeometryTrianglesDataKHR;
+
+* :bdg-secondary:`sType` 该结构体的类型，必须为 ``VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_TRIANGLES_DATA_KHR`` 。
+* :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
+* :bdg-secondary:`vertexFormat` 是顶点数据的格式。
+* :bdg-secondary:`vertexData` 是 ``device`` 或 ``host`` 端包含几何顶点数据的内存地址。
+* :bdg-secondary:`maxVertex` 是在使用该结构体构建加速结构时可以寻址的最高顶点数据索引。
+* :bdg-secondary:`vertexStride` 点与点之间的比特跨度。
+* :bdg-secondary:`indexType` 是索引的 ``VkIndexType`` 类型。
+* :bdg-secondary:`indexData` 是包含索引数据的 ``device`` 或 ``host`` 端内存地址。
+* :bdg-secondary:`transformData` 是包含一个用于描述该加速结构中几何体变换数据 ``VkTransformMatrixKHR`` 的 ``device`` 或 ``host`` 端内存地址。该数据的设置是可选的。
+
+.. note:: 与图形管线 ``VkVertexInputBindingDescription`` 的顶端缓存跨度最大不能超过 ``maxVertexInputBindingStride`` 不同，加速结构几何体的 ``vertexStride`` 被限制在32位值中。
+
+.. admonition:: 正确用法
+    :class: note
+
+    * ``vertexStride`` 必须为 ``vertexFormat`` 最小分量比特的倍数 。
+    * ``vertexStride`` 必须小于等于 :math:`2^{32}-1` 。
+    * ``vertexFormat`` 的格式特性必须包括 ``VK_FORMAT_FEATURE_ACCELERATION_STRUCTURE_VERTEX_BUFFER_BIT_KHR`` 特性。
+
+``VkTransformMatrixKHR`` 结构体定义如下：
+
+.. code:: c++
+
+    // 由 VK_KHR_acceleration_structure 提供
+    typedef struct VkTransformMatrixKHR {
+      float matrix[3][4];
+    } VkTransformMatrixKHR;
+
+* :bdg-secondary:`matrix` 是 :math:`3\times4` 行主式仿射变换矩阵 。
+
+..
+    .. admonition:: 仿射变换矩阵
+        :class: note
+
+        可以理解成投影矩阵
+
+.. admonition:: 正确用法
+   :class: note
+
+   * ``matrix`` 内部的 :math:`3\times3` 矩阵必须是可逆矩阵。
+
+``VkAccelerationStructureGeometryAabbsDataKHR`` 结构体定义如下：
+
+.. code:: c++
+
+    // 由 VK_KHR_acceleration_structure 提供
+    typedef struct VkAccelerationStructureGeometryAabbsDataKHR {
+      VkStructureType sType;
+      const void* pNext;
+      VkDeviceOrHostAddressConstKHR data;
+      VkDeviceSize stride;
+    } VkAccelerationStructureGeometryAabbsDataKHR
+
+* :bdg-secondary:`sType` 该结构体的类型，必须为 ``VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_AABBS_DATA_KHR`` 。
+* :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
+* :bdg-secondary:`data` 是 ``device`` 或 ``host`` 端包含位置数据的 ``VkAabbPositionsKHR`` 轴对齐包围盒数据内存地址。
+* :bdg-secondary:`stride` ``data`` 条目之间的比特跨度。并且必须是 ``8`` 的倍数。
+
+.. admonition:: 正确用法
+   :class: note
+
+    * ``stride`` 必须小于等于 :math:`2^{32}-1` 。
+
+``VkAabbPositionsKHR`` 结构体定义如下：
+
+.. code:: c++
+
+    // 由 VK_KHR_acceleration_structure 提供
+    typedef struct VkAabbPositionsKHR {
+      float minX;
+      float minY;
+      float minZ;
+      float maxX;
+      float maxY;
+      float maxZ;
+    } VkAabbPositionsKHR;
+
+* :bdg-secondary:`minX` 包围盒边界框对角的 ``x`` 位置。
+* :bdg-secondary:`minY` 包围盒边界框对角的 ``y`` 位置。
+* :bdg-secondary:`minZ` 包围盒边界框对角的 ``z`` 位置。
+* :bdg-secondary:`maxX` 包围盒边界框另一对角的 ``x`` 位置。
+* :bdg-secondary:`maxY` 包围盒边界框另一对角的 ``y`` 位置。
+* :bdg-secondary:`maxZ` 包围盒边界框另一对角的 ``z`` 位置。
+
+.. admonition:: 正确用法
+   :class: note
+
+    * ``minX`` 必须小于等于 ``maxX`` 。
+    * ``minY`` 必须小于等于 ``maxY`` 。
+    * ``minZ`` 必须小于等于 ``maxZ`` 。
+
+``VkAccelerationStructureGeometryInstancesDataKHR`` 结构体定义如下：
+
+.. code:: c++
+
+    // 由 VK_KHR_acceleration_structure 提供
+    typedef struct VkAccelerationStructureGeometryInstancesDataKHR {
+      VkStructureType sType;
+      const void* pNext;
+      VkBool32 arrayOfPointers;
+      VkDeviceOrHostAddressConstKHR data;
+    } VkAccelerationStructureGeometryInstancesDataKHR;
+
+* :bdg-secondary:`sType` 该结构体的类型，必须为 ``VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_INSTANCES_DATA_KHR`` 。
+* :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
+* :bdg-secondary:`arrayOfPointers` 用于指示 ``data`` 是按照地址数组解析还是就是一个数组解析。
+* :bdg-secondary:`data` 如果 ``arrayOfPointers`` 为 ``VK_TRUE`` ，该 ``data`` 用于单独的 ``VkAccelerationStructureInstanceKHR`` 引用 ``device`` 或 ``host`` 端数组，如果为 ``VK_FALSE`` 的话将会是 ``VkAccelerationStructureInstanceKHR`` 数组地址，并且 ``VkAccelerationStructureInstanceKHR`` 是紧密排布的。
+
+加速结构实体 （ ``instances`` ）可以构建进顶层加速结构中。每一个加速结构实体在包含所有底层加速结构的顶层加速结构中都是一个单独项。多个实体可以指向相同的底层加速结构。
+
+.. admonition:: 加速结构实体
+    :class: note
+
+    指的是 ``VkAccelerationStructureInstanceKHR`` 。一般在 ``Vulkan`` 光追标准中也叫 ``实体`` （ ``instances`` ）。
+
+一个加速结构实体通过 ``VkAccelerationStructureInstanceKHR`` 定义：
+
+.. code:: c++
+
+    // 由 VK_KHR_acceleration_structure 提供
+    typedef struct VkAccelerationStructureInstanceKHR {
+      VkTransformMatrixKHR transform;
+      uint32_t instanceCustomIndex:24;
+      uint32_t mask:8;
+      uint32_t instanceShaderBindingTableRecordOffset:24;
+      VkGeometryInstanceFlagsKHR flags:8;
+      uint64_t accelerationStructureReference;
+    } VkAccelerationStructureInstanceKHR;
+
+* :bdg-secondary:`transform` 用于描述该实体的变换。
+* :bdg-secondary:`instanceCustomIndex` 用户自定义的 ``24`` 比特索引值。该值可通过光追着色器的内置变量 ``InstanceCustomIndexKHR`` 进行访问。
+* :bdg-secondary:`mask` 是一个 ``8`` 比特可见性遮罩值。只有当 ``Cull Mask & instance.mask != 0`` 时实体才会被光线击中。
+* :bdg-secondary:`instanceShaderBindingTableRecordOffset` 是一个 ``24`` 比特偏移值。用于计算命中着色器绑定表索引。
+* :bdg-secondary:`flags` 是一个 ``8`` 比特 ``VkGeometryInstanceFlagBitsKHR`` 遮罩值引用在该实体上。
+* :bdg-secondary:`accelerationStructureReference` 是一下两者之一。
+    * 从 ``vkGetAccelerationStructureDeviceAddressKHR`` 获取到包含数据的 ``device`` 地址。将会被用于加速结构 ``device`` 操作中。
+    * 一个 ``VkAccelerationStructureKHR`` 对象。将会被用于设备加速结构 ``host`` 操作中。
+
+``C`` 语言标准的规范并没有定义位域的顺序，但是一般，对于现有编译器都会提供正确的结构体布局。这默认的位域模板如下：
+
+* ``instanceCustomIndex`` 和 ``mask`` 将会一同占用一个 ``uint32_t`` 。
+      * ``instanceCustomIndex`` 占用开头的 ``24`` 位
+      * ``mask`` 占用之后的 ``8`` 位
+
+* ``instanceShaderBindingTableRecordOffset`` 和 ``flags`` 将会一同占用一个 ``uint32_t`` 。
+    * ``instanceCustomIndex`` 占用开头的 ``24`` 位
+    * ``mask`` 占用之后的 ``8`` 位
+
+如果编译器没有按照此方式进行结构体内存布局，应用需要根据如上模板使用其他方式设置数值。
+
+
+    
+
+
+
+
 
 
 
@@ -502,7 +702,7 @@ VK_KHR_acceleration_structure
     * 对于 ``pGeometries`` 或 ``ppGeometries`` 数组中的每一个元素，其 ``flags`` 成员需要与 ``pBuildInfo->flags`` 相等。
     * 对于 ``pGeometries`` 或 ``ppGeometries`` 数组中的每一个元素，当其 ``geometryType`` 成员等于 ``VK_GEOMETRY_TYPE_TRIANGLES_KHR`` 时， ``geometry.triangles`` 的 ``vertexFormat`` 和 ``indexType`` 成员需要与 ``pBuildInfo`` 中的对应成员相等。
     * 对于 ``pGeometries`` 或 ``ppGeometries`` 数组中的每一个元素，当其 ``geometryType`` 成员等于 ``VK_GEOMETRY_TYPE_TRIANGLES_KHR`` 时， ``geometry.triangles`` 的 ``maxVertex`` 成员需要与 ``pBuildInfo`` 中的对应成员相等。
-    * 对于 ``pGeometries`` 或 ``ppGeometries`` 数组中的每一个元素，当其 ``geometryType`` 成员等于 ``VK_GEOMETRY_TYPE_TRIANGLES_KHR`` 时， ``geometry.triangles`` 的 ``transformData `` 成员不是 ``NULL`` ， ``pBuildInfo`` 对应的 ``transformData.hostAddress`` 也不能是 ``NULL`` 。
+    * 对于 ``pGeometries`` 或 ``ppGeometries`` 数组中的每一个元素，当其 ``geometryType`` 成员等于 ``VK_GEOMETRY_TYPE_TRIANGLES_KHR`` 时， ``geometry.triangles`` 的 ``transformData`` 成员不是 ``NULL`` ， ``pBuildInfo`` 对应的 ``transformData.hostAddress`` 也不能是 ``NULL`` 。
 * 对于每一个与 ``VkAccelerationStructureBuildGeometryInfoKHR`` 对应的 ``VkAccelerationStructureBuildRangeInfoKHR`` ：
     * 其 ``VkAccelerationStructureBuildGeometryInfoKHR`` 的 ``primitiveCount`` 成员需要小于等于对应 ``pMaxPrimitiveCounts`` 的元素。
 
