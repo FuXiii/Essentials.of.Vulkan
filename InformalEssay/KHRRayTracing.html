@@ -268,6 +268,7 @@
 <li><p class="sd-card-text">2023/6/8 增加 <code class="docutils literal notranslate"><span class="pre">无效的图元和实体</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/6/8 增加 <code class="docutils literal notranslate"><span class="pre">构建加速结构</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/6/9 更新 <code class="docutils literal notranslate"><span class="pre">构建加速结构</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/10 更新 <code class="docutils literal notranslate"><span class="pre">构建加速结构</span></code> 章节</p></li>
 </ul>
 </div>
 </details><div class="warning admonition">
@@ -661,11 +662,214 @@
 </div>
 <ul class="simple">
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 该结构体的类型，必须为 <code class="docutils literal notranslate"><span class="pre">VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR</span></code> 。</p></li>
-<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pNext</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向其他结构体来扩展该结构体。。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pNext</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向其他结构体来扩展该结构体。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">geometryType</span> 描述几何类型。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">geometry</span> 为 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryDataKHR</span></code> 联合类型，描述 <code class="docutils literal notranslate"><span class="pre">geometryType</span></code> 对应的数据。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">flags</span> 是 <code class="docutils literal notranslate"><span class="pre">VkGeometryFlagBitsKHR</span></code> 值的位域，用于描述几何体如何构建的额外参数。</p></li>
 </ul>
+<div class="note admonition">
+<p class="admonition-title">正确用法</p>
+<ul class="simple">
+<li><p>目前 <code class="docutils literal notranslate"><span class="pre">pNext</span></code> 必须为 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 。</p></li>
+<li><p>如果 <code class="docutils literal notranslate"><span class="pre">geometryType</span></code> 为 <code class="docutils literal notranslate"><span class="pre">VK_GEOMETRY_TYPE_TRIANGLES_KHR</span></code> 的话， <code class="docutils literal notranslate"><span class="pre">geometry</span></code> 的 <code class="docutils literal notranslate"><span class="pre">triangles</span></code> 成员必须是一个有效的 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryTrianglesDataKHR</span></code> 结构数据。</p></li>
+<li><p>如果 <code class="docutils literal notranslate"><span class="pre">geometryType</span></code> 为 <code class="docutils literal notranslate"><span class="pre">VK_GEOMETRY_TYPE_AABBS_KHR</span></code> 的话， <code class="docutils literal notranslate"><span class="pre">geometry</span></code> 的 <code class="docutils literal notranslate"><span class="pre">aabbs</span></code> 成员必须是一个有效的 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryAabbsDataKHR</span></code> 结构数据。</p></li>
+<li><p>如果 <code class="docutils literal notranslate"><span class="pre">geometryType</span></code> 为 <code class="docutils literal notranslate"><span class="pre">VK_GEOMETRY_TYPE_INSTANCES_KHR</span></code> 的话， <code class="docutils literal notranslate"><span class="pre">geometry</span></code> 的 <code class="docutils literal notranslate"><span class="pre">instances</span></code> 成员必须是一个有效的 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryInstancesDataKHR</span></code> 结构数据。</p></li>
+</ul>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryDataKHR</span></code> 定义的 <code class="docutils literal notranslate"><span class="pre">union</span></code> 联合体如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_acceleration_structure 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">union</span><span class="w"> </span><span class="nc">VkAccelerationStructureGeometryDataKHR</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">VkAccelerationStructureGeometryTrianglesDataKHR</span><span class="w"> </span><span class="n">triangles</span><span class="p">;</span>
+<span class="w">  </span><span class="n">VkAccelerationStructureGeometryAabbsDataKHR</span><span class="w"> </span><span class="n">aabbs</span><span class="p">;</span>
+<span class="w">  </span><span class="n">VkAccelerationStructureGeometryInstancesDataKHR</span><span class="w"> </span><span class="n">instances</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkAccelerationStructureGeometryDataKHR</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">triangles</span> 是 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryTrianglesDataKHR</span></code> 结构数据。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">aabbs</span> 是 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryAabbsDataKHR</span></code> 结构数据。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">instances</span> 是 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryInstancesDataKHR</span></code> 结构数据。</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p><code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryDataKHR</span></code> 是联合体 <code class="docutils literal notranslate"><span class="pre">union</span></code> 。</p>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryTrianglesDataKHR</span></code> 结构体定义如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_acceleration_structure 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkAccelerationStructureGeometryTrianglesDataKHR</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">VkStructureType</span><span class="w"> </span><span class="n">sType</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">pNext</span><span class="p">;</span>
+<span class="w">  </span><span class="n">VkFormat</span><span class="w"> </span><span class="n">vertexFormat</span><span class="p">;</span>
+<span class="w">  </span><span class="n">VkDeviceOrHostAddressConstKHR</span><span class="w"> </span><span class="n">vertexData</span><span class="p">;</span>
+<span class="w">  </span><span class="n">VkDeviceSize</span><span class="w"> </span><span class="n">vertexStride</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">maxVertex</span><span class="p">;</span>
+<span class="w">  </span><span class="n">VkIndexType</span><span class="w"> </span><span class="n">indexType</span><span class="p">;</span>
+<span class="w">  </span><span class="n">VkDeviceOrHostAddressConstKHR</span><span class="w"> </span><span class="n">indexData</span><span class="p">;</span>
+<span class="w">  </span><span class="n">VkDeviceOrHostAddressConstKHR</span><span class="w"> </span><span class="n">transformData</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkAccelerationStructureGeometryTrianglesDataKHR</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 该结构体的类型，必须为 <code class="docutils literal notranslate"><span class="pre">VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_TRIANGLES_DATA_KHR</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pNext</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向其他结构体来扩展该结构体。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">vertexFormat</span> 是顶点数据的格式。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">vertexData</span> 是 <code class="docutils literal notranslate"><span class="pre">device</span></code> 或 <code class="docutils literal notranslate"><span class="pre">host</span></code> 端包含几何顶点数据的内存地址。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">maxVertex</span> 是在使用该结构体构建加速结构时可以寻址的最高顶点数据索引。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">vertexStride</span> 点与点之间的比特跨度。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">indexType</span> 是索引的 <code class="docutils literal notranslate"><span class="pre">VkIndexType</span></code> 类型。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">indexData</span> 是包含索引数据的 <code class="docutils literal notranslate"><span class="pre">device</span></code> 或 <code class="docutils literal notranslate"><span class="pre">host</span></code> 端内存地址。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">transformData</span> 是包含一个用于描述该加速结构中几何体变换数据 <code class="docutils literal notranslate"><span class="pre">VkTransformMatrixKHR</span></code> 的 <code class="docutils literal notranslate"><span class="pre">device</span></code> 或 <code class="docutils literal notranslate"><span class="pre">host</span></code> 端内存地址。该数据的设置是可选的。</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>与图形管线 <code class="docutils literal notranslate"><span class="pre">VkVertexInputBindingDescription</span></code> 的顶端缓存跨度最大不能超过 <code class="docutils literal notranslate"><span class="pre">maxVertexInputBindingStride</span></code> 不同，加速结构几何体的 <code class="docutils literal notranslate"><span class="pre">vertexStride</span></code> 被限制在32位值中。</p>
+</div>
+<div class="note admonition">
+<p class="admonition-title">正确用法</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">vertexStride</span></code> 必须为 <code class="docutils literal notranslate"><span class="pre">vertexFormat</span></code> 最小分量比特的倍数 。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vertexStride</span></code> 必须小于等于 <span class="math notranslate nohighlight">\(2^{32}-1\)</span> 。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vertexFormat</span></code> 的格式特性必须包括 <code class="docutils literal notranslate"><span class="pre">VK_FORMAT_FEATURE_ACCELERATION_STRUCTURE_VERTEX_BUFFER_BIT_KHR</span></code> 特性。</p></li>
+</ul>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">VkTransformMatrixKHR</span></code> 结构体定义如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_acceleration_structure 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkTransformMatrixKHR</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">matrix</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">4</span><span class="p">];</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkTransformMatrixKHR</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">matrix</span> 是 <span class="math notranslate nohighlight">\(3\times4\)</span> 行主式仿射变换矩阵 。</p></li>
+</ul>
+<div class="note admonition">
+<p class="admonition-title">正确用法</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">matrix</span></code> 内部的 <span class="math notranslate nohighlight">\(3\times3\)</span> 矩阵必须是可逆矩阵。</p></li>
+</ul>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryAabbsDataKHR</span></code> 结构体定义如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_acceleration_structure 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkAccelerationStructureGeometryAabbsDataKHR</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">VkStructureType</span><span class="w"> </span><span class="n">sType</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">pNext</span><span class="p">;</span>
+<span class="w">  </span><span class="n">VkDeviceOrHostAddressConstKHR</span><span class="w"> </span><span class="n">data</span><span class="p">;</span>
+<span class="w">  </span><span class="n">VkDeviceSize</span><span class="w"> </span><span class="n">stride</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkAccelerationStructureGeometryAabbsDataKHR</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 该结构体的类型，必须为 <code class="docutils literal notranslate"><span class="pre">VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_AABBS_DATA_KHR</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pNext</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向其他结构体来扩展该结构体。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">data</span> 是 <code class="docutils literal notranslate"><span class="pre">device</span></code> 或 <code class="docutils literal notranslate"><span class="pre">host</span></code> 端包含位置数据的 <code class="docutils literal notranslate"><span class="pre">VkAabbPositionsKHR</span></code> 轴对齐包围盒数据内存地址。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">stride</span> <code class="docutils literal notranslate"><span class="pre">data</span></code> 条目之间的比特跨度。并且必须是 <code class="docutils literal notranslate"><span class="pre">8</span></code> 的倍数。</p></li>
+</ul>
+<div class="note admonition">
+<p class="admonition-title">正确用法</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">stride</span></code> 必须小于等于 <span class="math notranslate nohighlight">\(2^{32}-1\)</span> 。</p></li>
+</ul>
+</div></blockquote>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">VkAabbPositionsKHR</span></code> 结构体定义如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_acceleration_structure 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkAabbPositionsKHR</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">minX</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">minY</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">minZ</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">maxX</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">maxY</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">maxZ</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkAabbPositionsKHR</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">minX</span> 包围盒边界框对角的 <code class="docutils literal notranslate"><span class="pre">x</span></code> 位置。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">minY</span> 包围盒边界框对角的 <code class="docutils literal notranslate"><span class="pre">y</span></code> 位置。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">minZ</span> 包围盒边界框对角的 <code class="docutils literal notranslate"><span class="pre">z</span></code> 位置。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">maxX</span> 包围盒边界框另一对角的 <code class="docutils literal notranslate"><span class="pre">x</span></code> 位置。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">maxY</span> 包围盒边界框另一对角的 <code class="docutils literal notranslate"><span class="pre">y</span></code> 位置。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">maxZ</span> 包围盒边界框另一对角的 <code class="docutils literal notranslate"><span class="pre">z</span></code> 位置。</p></li>
+</ul>
+<div class="note admonition">
+<p class="admonition-title">正确用法</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">minX</span></code> 必须小于等于 <code class="docutils literal notranslate"><span class="pre">maxX</span></code> 。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">minY</span></code> 必须小于等于 <code class="docutils literal notranslate"><span class="pre">maxY</span></code> 。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">minZ</span></code> 必须小于等于 <code class="docutils literal notranslate"><span class="pre">maxZ</span></code> 。</p></li>
+</ul>
+</div></blockquote>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryInstancesDataKHR</span></code> 结构体定义如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_acceleration_structure 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkAccelerationStructureGeometryInstancesDataKHR</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">VkStructureType</span><span class="w"> </span><span class="n">sType</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">pNext</span><span class="p">;</span>
+<span class="w">  </span><span class="n">VkBool32</span><span class="w"> </span><span class="n">arrayOfPointers</span><span class="p">;</span>
+<span class="w">  </span><span class="n">VkDeviceOrHostAddressConstKHR</span><span class="w"> </span><span class="n">data</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkAccelerationStructureGeometryInstancesDataKHR</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 该结构体的类型，必须为 <code class="docutils literal notranslate"><span class="pre">VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_INSTANCES_DATA_KHR</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pNext</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向其他结构体来扩展该结构体。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">arrayOfPointers</span> 用于指示 <code class="docutils literal notranslate"><span class="pre">data</span></code> 是按照地址数组解析还是就是一个数组解析。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">data</span> 如果 <code class="docutils literal notranslate"><span class="pre">arrayOfPointers</span></code> 为 <code class="docutils literal notranslate"><span class="pre">VK_TRUE</span></code> ，该 <code class="docutils literal notranslate"><span class="pre">data</span></code> 用于单独的 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureInstanceKHR</span></code> 引用 <code class="docutils literal notranslate"><span class="pre">device</span></code> 或 <code class="docutils literal notranslate"><span class="pre">host</span></code> 端数组，如果为 <code class="docutils literal notranslate"><span class="pre">VK_FALSE</span></code> 的话将会是 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureInstanceKHR</span></code> 数组地址，并且 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureInstanceKHR</span></code> 是紧密排布的。</p></li>
+</ul>
+<p>加速结构实体 （ <code class="docutils literal notranslate"><span class="pre">instances</span></code> ）可以构建进顶层加速结构中。每一个加速结构实体在包含所有底层加速结构的顶层加速结构中都是一个单独项。多个实体可以指向相同的底层加速结构。</p>
+<div class="note admonition">
+<p class="admonition-title">加速结构实体</p>
+<p>指的是 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureInstanceKHR</span></code> 。一般在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 光追标准中也叫 <code class="docutils literal notranslate"><span class="pre">实体</span></code> （ <code class="docutils literal notranslate"><span class="pre">instances</span></code> ）。</p>
+</div>
+<p>一个加速结构实体通过 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureInstanceKHR</span></code> 定义：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_acceleration_structure 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkAccelerationStructureInstanceKHR</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">VkTransformMatrixKHR</span><span class="w"> </span><span class="n">transform</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">instanceCustomIndex</span><span class="o">:</span><span class="mi">24</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">mask</span><span class="o">:</span><span class="mi">8</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">instanceShaderBindingTableRecordOffset</span><span class="o">:</span><span class="mi">24</span><span class="p">;</span>
+<span class="w">  </span><span class="n">VkGeometryInstanceFlagsKHR</span><span class="w"> </span><span class="n">flags</span><span class="o">:</span><span class="mi">8</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">accelerationStructureReference</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkAccelerationStructureInstanceKHR</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">transform</span> 用于描述该实体的变换。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">instanceCustomIndex</span> 用户自定义的 <code class="docutils literal notranslate"><span class="pre">24</span></code> 比特索引值。该值可通过光追着色器的内置变量 <code class="docutils literal notranslate"><span class="pre">InstanceCustomIndexKHR</span></code> 进行访问。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">mask</span> 是一个 <code class="docutils literal notranslate"><span class="pre">8</span></code> 比特可见性遮罩值。只有当 <code class="docutils literal notranslate"><span class="pre">Cull</span> <span class="pre">Mask</span> <span class="pre">&amp;</span> <span class="pre">instance.mask</span> <span class="pre">!=</span> <span class="pre">0</span></code> 时实体才会被光线击中。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">instanceShaderBindingTableRecordOffset</span> 是一个 <code class="docutils literal notranslate"><span class="pre">24</span></code> 比特偏移值。用于计算命中着色器绑定表索引。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">flags</span> 是一个 <code class="docutils literal notranslate"><span class="pre">8</span></code> 比特 <code class="docutils literal notranslate"><span class="pre">VkGeometryInstanceFlagBitsKHR</span></code> 遮罩值引用在该实体上。</p></li>
+<li><dl class="simple">
+<dt><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">accelerationStructureReference</span> 是一下两者之一。</dt><dd><ul>
+<li><p>从 <code class="docutils literal notranslate"><span class="pre">vkGetAccelerationStructureDeviceAddressKHR</span></code> 获取到包含数据的 <code class="docutils literal notranslate"><span class="pre">device</span></code> 地址。将会被用于加速结构 <code class="docutils literal notranslate"><span class="pre">device</span></code> 操作中。</p></li>
+<li><p>一个 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureKHR</span></code> 对象。将会被用于设备加速结构 <code class="docutils literal notranslate"><span class="pre">host</span></code> 操作中。</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">C</span></code> 语言标准的规范并没有定义位域的顺序，但是一般，对于现有编译器都会提供正确的结构体布局。这默认的位域模板如下：</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">instanceCustomIndex</span></code> 和 <code class="docutils literal notranslate"><span class="pre">mask</span></code> 将会一同占用一个 <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code> 。</dt><dd><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">instanceCustomIndex</span></code> 占用开头的 <code class="docutils literal notranslate"><span class="pre">24</span></code> 位</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mask</span></code> 占用之后的 <code class="docutils literal notranslate"><span class="pre">8</span></code> 位</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">instanceShaderBindingTableRecordOffset</span></code> 和 <code class="docutils literal notranslate"><span class="pre">flags</span></code> 将会一同占用一个 <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code> 。</dt><dd><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">instanceCustomIndex</span></code> 占用开头的 <code class="docutils literal notranslate"><span class="pre">24</span></code> 位</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mask</span></code> 占用之后的 <code class="docutils literal notranslate"><span class="pre">8</span></code> 位</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>如果编译器没有按照此方式进行结构体内存布局，应用需要根据如上模板使用其他方式设置数值。</p>
 </section>
 <section id="id16">
 <h3>获取加速结构的构建大小<a class="headerlink" href="#id16" title="此标题的永久链接">#</a></h3>
@@ -703,7 +907,7 @@
 <li><p>对于 <code class="docutils literal notranslate"><span class="pre">pGeometries</span></code> 或 <code class="docutils literal notranslate"><span class="pre">ppGeometries</span></code> 数组中的每一个元素，其 <code class="docutils literal notranslate"><span class="pre">flags</span></code> 成员需要与 <code class="docutils literal notranslate"><span class="pre">pBuildInfo-&gt;flags</span></code> 相等。</p></li>
 <li><p>对于 <code class="docutils literal notranslate"><span class="pre">pGeometries</span></code> 或 <code class="docutils literal notranslate"><span class="pre">ppGeometries</span></code> 数组中的每一个元素，当其 <code class="docutils literal notranslate"><span class="pre">geometryType</span></code> 成员等于 <code class="docutils literal notranslate"><span class="pre">VK_GEOMETRY_TYPE_TRIANGLES_KHR</span></code> 时， <code class="docutils literal notranslate"><span class="pre">geometry.triangles</span></code> 的 <code class="docutils literal notranslate"><span class="pre">vertexFormat</span></code> 和 <code class="docutils literal notranslate"><span class="pre">indexType</span></code> 成员需要与 <code class="docutils literal notranslate"><span class="pre">pBuildInfo</span></code> 中的对应成员相等。</p></li>
 <li><p>对于 <code class="docutils literal notranslate"><span class="pre">pGeometries</span></code> 或 <code class="docutils literal notranslate"><span class="pre">ppGeometries</span></code> 数组中的每一个元素，当其 <code class="docutils literal notranslate"><span class="pre">geometryType</span></code> 成员等于 <code class="docutils literal notranslate"><span class="pre">VK_GEOMETRY_TYPE_TRIANGLES_KHR</span></code> 时， <code class="docutils literal notranslate"><span class="pre">geometry.triangles</span></code> 的 <code class="docutils literal notranslate"><span class="pre">maxVertex</span></code> 成员需要与 <code class="docutils literal notranslate"><span class="pre">pBuildInfo</span></code> 中的对应成员相等。</p></li>
-<li><p>对于 <code class="docutils literal notranslate"><span class="pre">pGeometries</span></code> 或 <code class="docutils literal notranslate"><span class="pre">ppGeometries</span></code> 数组中的每一个元素，当其 <code class="docutils literal notranslate"><span class="pre">geometryType</span></code> 成员等于 <code class="docutils literal notranslate"><span class="pre">VK_GEOMETRY_TYPE_TRIANGLES_KHR</span></code> 时， <code class="docutils literal notranslate"><span class="pre">geometry.triangles</span></code> 的 <code class="docutils literal notranslate"><span class="pre">transformData</span> <span class="pre">``</span> <span class="pre">成员不是</span> <span class="pre">``NULL</span></code> ， <code class="docutils literal notranslate"><span class="pre">pBuildInfo</span></code> 对应的 <code class="docutils literal notranslate"><span class="pre">transformData.hostAddress</span></code> 也不能是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 。</p></li>
+<li><p>对于 <code class="docutils literal notranslate"><span class="pre">pGeometries</span></code> 或 <code class="docutils literal notranslate"><span class="pre">ppGeometries</span></code> 数组中的每一个元素，当其 <code class="docutils literal notranslate"><span class="pre">geometryType</span></code> 成员等于 <code class="docutils literal notranslate"><span class="pre">VK_GEOMETRY_TYPE_TRIANGLES_KHR</span></code> 时， <code class="docutils literal notranslate"><span class="pre">geometry.triangles</span></code> 的 <code class="docutils literal notranslate"><span class="pre">transformData</span></code> 成员不是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> ， <code class="docutils literal notranslate"><span class="pre">pBuildInfo</span></code> 对应的 <code class="docutils literal notranslate"><span class="pre">transformData.hostAddress</span></code> 也不能是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 。</p></li>
 </ul>
 </dd>
 </dl>
@@ -976,5 +1180,7 @@
     <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
     <script src="../_static/translations.js"></script>
     <script src="../_static/design-tabs.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>
