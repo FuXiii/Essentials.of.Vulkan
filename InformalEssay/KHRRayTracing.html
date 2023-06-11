@@ -269,6 +269,30 @@
 <li><p class="sd-card-text">2023/6/8 增加 <code class="docutils literal notranslate"><span class="pre">构建加速结构</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/6/9 更新 <code class="docutils literal notranslate"><span class="pre">构建加速结构</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/6/10 更新 <code class="docutils literal notranslate"><span class="pre">构建加速结构</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/11 更新 <code class="docutils literal notranslate"><span class="pre">构建加速结构</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/11 增加 <code class="docutils literal notranslate"><span class="pre">拷贝加速结构</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/11 增加 <code class="docutils literal notranslate"><span class="pre">vkCmdBuildAccelerationStructuresKHR</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/11 增加 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildGeometryInfoKHR</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/11 增加 <code class="docutils literal notranslate"><span class="pre">VkBuildAccelerationStructureModeKHR</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/11 增加 <code class="docutils literal notranslate"><span class="pre">VkDeviceOrHostAddressKHR</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/11 增加 <code class="docutils literal notranslate"><span class="pre">VkDeviceOrHostAddressConstKHR</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/11 增加 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryKHR</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/11 增加 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryDataKHR</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/11 增加 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryTrianglesDataKHR</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/11 增加 <code class="docutils literal notranslate"><span class="pre">VkTransformMatrixKHR</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/11 增加 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryAabbsDataKHR</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/11 增加 <code class="docutils literal notranslate"><span class="pre">VkAabbPositionsKHR</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/11 增加 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryInstancesDataKHR</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/11 增加 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureInstanceKHR</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/11 增加 <code class="docutils literal notranslate"><span class="pre">VkGeometryInstanceFlagBitsKHR</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/11 增加 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildRangeInfoKHR</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/11 增加 <code class="docutils literal notranslate"><span class="pre">vkGetAccelerationStructureBuildSizesKHR</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/11 增加 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildSizesInfoKHR</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/11 增加 <code class="docutils literal notranslate"><span class="pre">vkCreateAccelerationStructureKHR</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/11 增加 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureCreateInfoKHR</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/11 增加 <code class="docutils literal notranslate"><span class="pre">vkGetAccelerationStructureDeviceAddressKHR</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/11 增加 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureDeviceAddressInfoKHR</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/11 增加 <code class="docutils literal notranslate"><span class="pre">vkDestroyAccelerationStructureKHR</span></code> 章节</p></li>
 </ul>
 </div>
 </details><div class="warning admonition">
@@ -458,9 +482,9 @@
 <li><p>底层加速结构（ <code class="docutils literal notranslate"><span class="pre">bottom</span> <span class="pre">level</span> <span class="pre">acceleration</span> <span class="pre">structures</span></code> ）</p></li>
 </ul>
 <p>一个加速结构被构建的标志是对于一个目标加速结构执行了加速结构构建指令或拷贝指令。</p>
-<figure class="align-default" id="id20">
+<figure class="align-default" id="id26">
 <img alt="../_images/VulkanDocAccelerationStructure.svg" src="../_images/VulkanDocAccelerationStructure.svg" /><figcaption>
-<p><span class="caption-text">加速结构</span><a class="headerlink" href="#id20" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">加速结构</span><a class="headerlink" href="#id26" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 <p>如图为顶层加速结构和底层加速结构的关系图。</p>
@@ -518,7 +542,9 @@
 </section>
 <section id="id15">
 <h3>构建加速结构<a class="headerlink" href="#id15" title="此标题的永久链接">#</a></h3>
-<p>构建加速结构调用:</p>
+<section id="id16">
+<h4>vkCmdBuildAccelerationStructuresKHR<a class="headerlink" href="#id16" title="此标题的永久链接">#</a></h4>
+<p>构建加速结构调用  <code class="docutils literal notranslate"><span class="pre">vkCmdBuildAccelerationStructuresKHR</span></code> :</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_acceleration_structure 提供</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">vkCmdBuildAccelerationStructuresKHR</span><span class="p">(</span>
 <span class="w">    </span><span class="n">VkCommandBuffer</span><span class="w">                             </span><span class="n">commandBuffer</span><span class="p">,</span>
@@ -555,6 +581,9 @@
 访问 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildGeometryInfoKHR::srcAccelerationStructure</span></code> 和 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildGeometryInfoKHR::dstAccelerationStructure</span></code> 时必须在 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR</span></code> 管线阶段使用 <code class="docutils literal notranslate"><span class="pre">VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR</span></code> 或 <code class="docutils literal notranslate"><span class="pre">VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR</span></code> 访问类型进行同步较适当。</p>
 <p>访问其他的 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryTrianglesDataKHR::vertexData</span></code> 、 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryTrianglesDataKHR::indexData</span></code> 、 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryTrianglesDataKHR::transformData</span></code> 、 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryAabbsDataKHR::data</span></code> 和 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryInstancesDataKHR::data</span></code> 的输入缓存
 时必须在 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR</span></code> 管线阶段使用 <code class="docutils literal notranslate"><span class="pre">VK_ACCESS_SHADER_READ_BIT</span></code> 访问类型进行同步。</p>
+</section>
+<section id="vkaccelerationstructurebuildgeometryinfokhr">
+<h4>VkAccelerationStructureBuildGeometryInfoKHR<a class="headerlink" href="#vkaccelerationstructurebuildgeometryinfokhr" title="此标题的永久链接">#</a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildGeometryInfoKHR</span></code> 结构体定义如下：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_acceleration_structure 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkAccelerationStructureBuildGeometryInfoKHR</span><span class="w"> </span><span class="p">{</span>
@@ -605,6 +634,9 @@
 <li><p>如果 <code class="docutils literal notranslate"><span class="pre">flags</span> <span class="pre">``</span> <span class="pre">包含</span> <span class="pre">``VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR</span></code> 位域 ，就不能再包含 <code class="docutils literal notranslate"><span class="pre">VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_BUILD_BIT_KHR</span></code> 位域了。</p></li>
 </ul>
 </div>
+</section>
+<section id="vkbuildaccelerationstructuremodekhr">
+<h4>VkBuildAccelerationStructureModeKHR<a class="headerlink" href="#vkbuildaccelerationstructuremodekhr" title="此标题的永久链接">#</a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">VkBuildAccelerationStructureModeKHR</span></code> 枚举定义如下：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_acceleration_structure 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkBuildAccelerationStructureModeKHR</span><span class="w"> </span><span class="p">{</span>
@@ -617,7 +649,10 @@
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR</span> 表示目标加速结构将会使用用户提供的几何数据构建。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR</span> 表示目标加速结构将会使用用户提供的源加速结构的几何数据进行更新。</p></li>
 </ul>
-<p><code class="docutils literal notranslate"><span class="pre">VkBuildAccelerationStructureModeKHR</span></code> 定义的 <code class="docutils literal notranslate"><span class="pre">union</span></code> 联合体如下：</p>
+</section>
+<section id="vkdeviceorhostaddresskhr">
+<h4>VkDeviceOrHostAddressKHR<a class="headerlink" href="#vkdeviceorhostaddresskhr" title="此标题的永久链接">#</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">VkDeviceOrHostAddressKHR</span></code> 定义的 <code class="docutils literal notranslate"><span class="pre">union</span></code> 联合体如下：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_acceleration_structure 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">union</span><span class="w"> </span><span class="nc">VkDeviceOrHostAddressKHR</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">VkDeviceAddress</span><span class="w">    </span><span class="n">deviceAddress</span><span class="p">;</span>
@@ -633,6 +668,9 @@
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">deviceAddress</span> 表示通过 <code class="docutils literal notranslate"><span class="pre">vkGetBufferDeviceAddressKHR</span></code> 获取到的设备缓存地址。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">hostAddress</span> 表示 <code class="docutils literal notranslate"><span class="pre">host</span></code> 端的内存地址。</p></li>
 </ul>
+</section>
+<section id="vkdeviceorhostaddressconstkhr">
+<h4>VkDeviceOrHostAddressConstKHR<a class="headerlink" href="#vkdeviceorhostaddressconstkhr" title="此标题的永久链接">#</a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">VkDeviceOrHostAddressConstKHR</span></code> 定义的 <code class="docutils literal notranslate"><span class="pre">union</span></code> 联合体如下：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_acceleration_structure 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">union</span><span class="w"> </span><span class="nc">VkDeviceOrHostAddressConstKHR</span><span class="w"> </span><span class="p">{</span>
@@ -649,6 +687,9 @@
 <p class="admonition-title">备注</p>
 <p><code class="docutils literal notranslate"><span class="pre">VkDeviceOrHostAddressConstKHR</span></code> 是联合体 <code class="docutils literal notranslate"><span class="pre">union</span></code> 。比 <code class="docutils literal notranslate"><span class="pre">VkDeviceOrHostAddressKHR</span></code> 在命名上多了个 <code class="docutils literal notranslate"><span class="pre">Const</span></code> 。</p>
 </div>
+</section>
+<section id="vkaccelerationstructuregeometrykhr">
+<h4>VkAccelerationStructureGeometryKHR<a class="headerlink" href="#vkaccelerationstructuregeometrykhr" title="此标题的永久链接">#</a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryKHR</span></code> 结构体定义如下：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_acceleration_structure 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkAccelerationStructureGeometryKHR</span><span class="w"> </span><span class="p">{</span>
@@ -676,6 +717,9 @@
 <li><p>如果 <code class="docutils literal notranslate"><span class="pre">geometryType</span></code> 为 <code class="docutils literal notranslate"><span class="pre">VK_GEOMETRY_TYPE_INSTANCES_KHR</span></code> 的话， <code class="docutils literal notranslate"><span class="pre">geometry</span></code> 的 <code class="docutils literal notranslate"><span class="pre">instances</span></code> 成员必须是一个有效的 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryInstancesDataKHR</span></code> 结构数据。</p></li>
 </ul>
 </div>
+</section>
+<section id="vkaccelerationstructuregeometrydatakhr">
+<h4>VkAccelerationStructureGeometryDataKHR<a class="headerlink" href="#vkaccelerationstructuregeometrydatakhr" title="此标题的永久链接">#</a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryDataKHR</span></code> 定义的 <code class="docutils literal notranslate"><span class="pre">union</span></code> 联合体如下：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_acceleration_structure 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">union</span><span class="w"> </span><span class="nc">VkAccelerationStructureGeometryDataKHR</span><span class="w"> </span><span class="p">{</span>
@@ -694,6 +738,9 @@
 <p class="admonition-title">备注</p>
 <p><code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryDataKHR</span></code> 是联合体 <code class="docutils literal notranslate"><span class="pre">union</span></code> 。</p>
 </div>
+</section>
+<section id="vkaccelerationstructuregeometrytrianglesdatakhr">
+<h4>VkAccelerationStructureGeometryTrianglesDataKHR<a class="headerlink" href="#vkaccelerationstructuregeometrytrianglesdatakhr" title="此标题的永久链接">#</a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryTrianglesDataKHR</span></code> 结构体定义如下：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_acceleration_structure 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkAccelerationStructureGeometryTrianglesDataKHR</span><span class="w"> </span><span class="p">{</span>
@@ -732,6 +779,9 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">vertexFormat</span></code> 的格式特性必须包括 <code class="docutils literal notranslate"><span class="pre">VK_FORMAT_FEATURE_ACCELERATION_STRUCTURE_VERTEX_BUFFER_BIT_KHR</span></code> 特性。</p></li>
 </ul>
 </div>
+</section>
+<section id="vktransformmatrixkhr">
+<h4>VkTransformMatrixKHR<a class="headerlink" href="#vktransformmatrixkhr" title="此标题的永久链接">#</a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">VkTransformMatrixKHR</span></code> 结构体定义如下：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_acceleration_structure 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkTransformMatrixKHR</span><span class="w"> </span><span class="p">{</span>
@@ -748,6 +798,9 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">matrix</span></code> 内部的 <span class="math notranslate nohighlight">\(3\times3\)</span> 矩阵必须是可逆矩阵。</p></li>
 </ul>
 </div>
+</section>
+<section id="vkaccelerationstructuregeometryaabbsdatakhr">
+<h4>VkAccelerationStructureGeometryAabbsDataKHR<a class="headerlink" href="#vkaccelerationstructuregeometryaabbsdatakhr" title="此标题的永久链接">#</a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryAabbsDataKHR</span></code> 结构体定义如下：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_acceleration_structure 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkAccelerationStructureGeometryAabbsDataKHR</span><span class="w"> </span><span class="p">{</span>
@@ -772,6 +825,9 @@
 </ul>
 </div></blockquote>
 </div>
+</section>
+<section id="vkaabbpositionskhr">
+<h4>VkAabbPositionsKHR<a class="headerlink" href="#vkaabbpositionskhr" title="此标题的永久链接">#</a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">VkAabbPositionsKHR</span></code> 结构体定义如下：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_acceleration_structure 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkAabbPositionsKHR</span><span class="w"> </span><span class="p">{</span>
@@ -802,6 +858,9 @@
 </ul>
 </div></blockquote>
 </div>
+</section>
+<section id="vkaccelerationstructuregeometryinstancesdatakhr">
+<h4>VkAccelerationStructureGeometryInstancesDataKHR<a class="headerlink" href="#vkaccelerationstructuregeometryinstancesdatakhr" title="此标题的永久链接">#</a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryInstancesDataKHR</span></code> 结构体定义如下：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_acceleration_structure 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkAccelerationStructureGeometryInstancesDataKHR</span><span class="w"> </span><span class="p">{</span>
@@ -823,6 +882,9 @@
 <p class="admonition-title">加速结构实体</p>
 <p>指的是 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureInstanceKHR</span></code> 。一般在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 光追标准中也叫 <code class="docutils literal notranslate"><span class="pre">实体</span></code> （ <code class="docutils literal notranslate"><span class="pre">instances</span></code> ）。</p>
 </div>
+</section>
+<section id="vkaccelerationstructureinstancekhr">
+<h4>VkAccelerationStructureInstanceKHR<a class="headerlink" href="#vkaccelerationstructureinstancekhr" title="此标题的永久链接">#</a></h4>
 <p>一个加速结构实体通过 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureInstanceKHR</span></code> 定义：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_acceleration_structure 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkAccelerationStructureInstanceKHR</span><span class="w"> </span><span class="p">{</span>
@@ -871,8 +933,80 @@
 </ul>
 <p>如果编译器没有按照此方式进行结构体内存布局，应用需要根据如上模板使用其他方式设置数值。</p>
 </section>
-<section id="id16">
-<h3>获取加速结构的构建大小<a class="headerlink" href="#id16" title="此标题的永久链接">#</a></h3>
+<section id="vkgeometryinstanceflagbitskhr">
+<h4>VkGeometryInstanceFlagBitsKHR<a class="headerlink" href="#vkgeometryinstanceflagbitskhr" title="此标题的永久链接">#</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureInstanceKHR::flags</span></code> 用于设置实体的行为位域值如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_acceleration_structure 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkGeometryInstanceFlagBitsKHR</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">VK_GEOMETRY_INSTANCE_TRIANGLE_FACING_CULL_DISABLE_BIT_KHR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000001</span><span class="p">,</span>
+<span class="w">  </span><span class="n">VK_GEOMETRY_INSTANCE_TRIANGLE_FLIP_FACING_BIT_KHR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000002</span><span class="p">,</span>
+<span class="w">  </span><span class="n">VK_GEOMETRY_INSTANCE_FORCE_OPAQUE_BIT_KHR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000004</span><span class="p">,</span>
+<span class="w">  </span><span class="n">VK_GEOMETRY_INSTANCE_FORCE_NO_OPAQUE_BIT_KHR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000008</span><span class="p">,</span>
+<span class="w">  </span><span class="n">VK_GEOMETRY_INSTANCE_TRIANGLE_FRONT_COUNTERCLOCKWISE_BIT_KHR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_GEOMETRY_INSTANCE_TRIANGLE_FLIP_FACING_BIT_KHR</span><span class="p">,</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkGeometryInstanceFlagBitsKHR</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_GEOMETRY_INSTANCE_TRIANGLE_FACING_CULL_DISABLE_BIT_KHR</span> 取消实体的面剔除。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_GEOMETRY_INSTANCE_TRIANGLE_FLIP_FACING_BIT_KHR</span> 表示确认哪一个是正面，与之前的判断策略相反。由于是使用物体空间（ <code class="docutils literal notranslate"><span class="pre">object</span> <span class="pre">space</span></code> ）来判断正反面，在实体上的变换并不会影响判断结构，但是对于几何体的变换会影响判断结果。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_GEOMETRY_INSTANCE_FORCE_OPAQUE_BIT_KHR</span> 表示该实体下的所有几何体都被认为是 <code class="docutils literal notranslate"><span class="pre">VK_GEOMETRY_OPAQUE_BIT_KHR</span></code> ，该行为可通过 <code class="docutils literal notranslate"><span class="pre">SPIR-V</span></code> 的 <code class="docutils literal notranslate"><span class="pre">NoOpaqueKHR</span></code> 光追标志位进行覆盖。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_GEOMETRY_INSTANCE_FORCE_NO_OPAQUE_BIT_KHR</span> 表示该实体下的所有几何体都不被认为是 <code class="docutils literal notranslate"><span class="pre">VK_GEOMETRY_OPAQUE_BIT_KHR</span></code> ，该行为可通过 <code class="docutils literal notranslate"><span class="pre">SPIR-V</span></code> 的 <code class="docutils literal notranslate"><span class="pre">NoOpaqueKHR</span></code> 光追标志位进行覆盖。</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">VK_GEOMETRY_INSTANCE_FORCE_NO_OPAQUE_BIT_KHR</span></code> 和 <code class="docutils literal notranslate"><span class="pre">VK_GEOMETRY_INSTANCE_FORCE_OPAQUE_BIT_KHR</span></code> 这两个标志位域一定不能同时使用。</p>
+</section>
+<section id="vkaccelerationstructurebuildrangeinfokhr">
+<h4>VkAccelerationStructureBuildRangeInfoKHR<a class="headerlink" href="#vkaccelerationstructurebuildrangeinfokhr" title="此标题的永久链接">#</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildRangeInfoKHR</span></code> 定义如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_acceleration_structure 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkAccelerationStructureBuildRangeInfoKHR</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">primitiveCount</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">primitiveOffset</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">firstVertex</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">transformOffset</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkAccelerationStructureBuildRangeInfoKHR</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">primitiveCount</span> 为对应的几何加速结构定义图元数量。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">primitiveOffset</span> 为图元在具体内存中的比特偏移。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">firstVertex</span> 为要构建的三角形几何体的第一个顶点的索引值。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">transformOffset</span> 为变换矩阵在具体内存中的比特偏移。</p></li>
+</ul>
+<p>图元的数量和图元偏移将会根据不同的 <code class="docutils literal notranslate"><span class="pre">VkGeometryTypeKHR</span></code> 有所不同：</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>对于类型为 <code class="docutils literal notranslate"><span class="pre">VK_GEOMETRY_TYPE_TRIANGLES_KHR</span></code> 的几何体， <code class="docutils literal notranslate"><span class="pre">primitiveCount</span></code> 是要构建的三角形数量，每个三角形被认为由三个顶点组成。</dt><dd><ul>
+<li><p>如果几何体使用索引，将会从 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryTrianglesDataKHR::indexData</span></code> 中使用 <code class="docutils literal notranslate"><span class="pre">primitiveCount</span></code> <span class="math notranslate nohighlight">\(\times3\)</span> 数量的索引数据，并从 <code class="docutils literal notranslate"><span class="pre">primitiveOffset</span></code> 偏移开始。获取顶点时，将会在索引值上加上 <code class="docutils literal notranslate"><span class="pre">firstVertex</span></code> 数量值。</p></li>
+<li><p>如果几何体不使用索引，将会从 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryTrianglesDataKHR::vertexData</span></code> 中使用 <code class="docutils literal notranslate"><span class="pre">primitiveCount</span></code> <span class="math notranslate nohighlight">\(\times3\)</span> 数量的顶点数据，并从 <code class="docutils literal notranslate"><span class="pre">primitiveOffset</span></code> <span class="math notranslate nohighlight">\(+\)</span> <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryTrianglesDataKHR::vertexStride</span></code> <span class="math notranslate nohighlight">\(\times\)</span> <code class="docutils literal notranslate"><span class="pre">firstVertex</span></code> 偏移开始。</p></li>
+<li><p>如果 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryTrianglesDataKHR::transformData</span></code> 不是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 的话， 将会从 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryTrianglesDataKHR::transformData</span></code> 中在 <code class="docutils literal notranslate"><span class="pre">transformOffset</span></code> 偏移之后获取一个 <code class="docutils literal notranslate"><span class="pre">VkTransformMatrixKHR</span></code> 结构体数据。</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>对于类型为 <code class="docutils literal notranslate"><span class="pre">VK_GEOMETRY_TYPE_AABBS_KHR</span></code> ， <code class="docutils literal notranslate"><span class="pre">primitiveCount</span></code> 是轴对齐包围盒的个数。将会从 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryAabbsDataKHR::data</span></code> 在 <code class="docutils literal notranslate"><span class="pre">primitiveOffset</span></code> 偏移之后获取 <code class="docutils literal notranslate"><span class="pre">primitiveCount</span></code> 个 <code class="docutils literal notranslate"><span class="pre">VkAabbPositionsKHR</span></code> 结构体数据。</p></li>
+<li><p>对于类型为 <code class="docutils literal notranslate"><span class="pre">VK_GEOMETRY_TYPE_INSTANCES_KHR</span></code> ， <code class="docutils literal notranslate"><span class="pre">primitiveCount</span></code> 是加速结构的个数。将会从 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryInstancesDataKHR::data</span></code> 在 <code class="docutils literal notranslate"><span class="pre">primitiveOffset</span></code> 偏移之后获取 <code class="docutils literal notranslate"><span class="pre">primitiveCount</span></code> 个 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureInstanceKHR</span></code> 结构体数据。</p></li>
+</ul>
+<div class="note admonition">
+<p class="admonition-title">正确用法</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>对于类型为 <code class="docutils literal notranslate"><span class="pre">VK_GEOMETRY_TYPE_TRIANGLES_KHR</span></code> ，如果几何体使用索引， <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryTrianglesDataKHR::indexData</span></code> 必须是 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryTrianglesDataKHR::indexType</span></code> 元素大小的倍数。</p></li>
+<li><p>对于类型为 <code class="docutils literal notranslate"><span class="pre">VK_GEOMETRY_TYPE_TRIANGLES_KHR</span></code> ，如果几何体不使用索引， <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryTrianglesDataKHR::vertexData</span></code> 必须是 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryTrianglesDataKHR::vertexFormat</span></code> 元素大小的倍数。</p></li>
+<li><p>对于类型为 <code class="docutils literal notranslate"><span class="pre">VK_GEOMETRY_TYPE_TRIANGLES_KHR</span></code> ， 对于 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryTrianglesDataKHR::transformData</span></code> 的偏移 <code class="docutils literal notranslate"><span class="pre">transformOffset</span></code> 必须是 <code class="docutils literal notranslate"><span class="pre">16</span></code> 的倍数。</p></li>
+<li><p>对于类型为 <code class="docutils literal notranslate"><span class="pre">VK_GEOMETRY_TYPE_AABBS_KHR</span></code> ， 对于 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryAabbsDataKHR::data</span></code> 的偏移 <code class="docutils literal notranslate"><span class="pre">primitiveOffset</span></code> 必须是 <code class="docutils literal notranslate"><span class="pre">8</span></code> 的倍数。</p></li>
+<li><p>对于类型为 <code class="docutils literal notranslate"><span class="pre">VK_GEOMETRY_TYPE_INSTANCES_KHR</span></code> ， 对于 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryInstancesDataKHR::data</span></code> 的偏移 <code class="docutils literal notranslate"><span class="pre">primitiveOffset</span></code> 必须是 <code class="docutils literal notranslate"><span class="pre">16</span></code> 的倍数。</p></li>
+</ul>
+</div></blockquote>
+</div>
+</section>
+</section>
+<section id="id17">
+<h3>拷贝加速结构<a class="headerlink" href="#id17" title="此标题的永久链接">#</a></h3>
+</section>
+<section id="id18">
+<h3>获取加速结构的构建大小<a class="headerlink" href="#id18" title="此标题的永久链接">#</a></h3>
+<section id="id19">
+<h4>vkGetAccelerationStructureBuildSizesKHR<a class="headerlink" href="#id19" title="此标题的永久链接">#</a></h4>
 <p>为了获取加速结构构建的大小，调用：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_acceleration_structure 提供</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">vkGetAccelerationStructureBuildSizesKHR</span><span class="p">(</span>
@@ -930,6 +1064,9 @@
 <li><p>如果 <code class="docutils literal notranslate"><span class="pre">pBuildInfo-&gt;pGeometries</span></code> 或 <code class="docutils literal notranslate"><span class="pre">pBuildInfo-&gt;ppGeometries</span></code> 有一个 <code class="docutils literal notranslate"><span class="pre">VK_GEOMETRY_TYPE_INSTANCES_KHR</span></code> 类型的 <code class="docutils literal notranslate"><span class="pre">geometryType</span></code> 的话，每一个 <code class="docutils literal notranslate"><span class="pre">pMaxPrimitiveCounts[i]</span></code> 必须小于等于 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceAccelerationStructurePropertiesKHR::maxInstanceCount</span></code> 。</p></li>
 </ul>
 </div>
+</section>
+<section id="vkaccelerationstructurebuildsizesinfokhr">
+<h4>VkAccelerationStructureBuildSizesInfoKHR<a class="headerlink" href="#vkaccelerationstructurebuildsizesinfokhr" title="此标题的永久链接">#</a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildSizesInfoKHR</span></code> 结构体描述了加速结构构建需求大小和暂付缓存的大小：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_acceleration_structure 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkAccelerationStructureBuildSizesInfoKHR</span><span class="w"> </span><span class="p">{</span>
@@ -949,8 +1086,11 @@
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">buildScratchSize</span> 在构建时需要暂付缓存的比特大小。</p></li>
 </ul>
 </section>
-<section id="id17">
-<h3>创建加速结构<a class="headerlink" href="#id17" title="此标题的永久链接">#</a></h3>
+</section>
+<section id="id20">
+<h3>创建加速结构<a class="headerlink" href="#id20" title="此标题的永久链接">#</a></h3>
+<section id="id21">
+<h4>vkCreateAccelerationStructureKHR<a class="headerlink" href="#id21" title="此标题的永久链接">#</a></h4>
 <p>通过调用 <code class="docutils literal notranslate"><span class="pre">vkCreateAccelerationStructureKHR</span></code> 创建加速结构</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_acceleration_structure 提供</span>
 <span class="n">VkResult</span><span class="w"> </span><span class="nf">vkCreateAccelerationStructureKHR</span><span class="p">(</span>
@@ -977,6 +1117,9 @@
 <li><p>如果 <code class="docutils literal notranslate"><span class="pre">device</span></code> 是从多个物理设备建立的话，需要激活 <code class="docutils literal notranslate"><span class="pre">bufferDeviceAddressMultiDevice</span></code> 特性。</p></li>
 </ul>
 </div>
+</section>
+<section id="vkaccelerationstructurecreateinfokhr">
+<h4>VkAccelerationStructureCreateInfoKHR<a class="headerlink" href="#vkaccelerationstructurecreateinfokhr" title="此标题的永久链接">#</a></h4>
 <p>对应调用 <code class="docutils literal notranslate"><span class="pre">vkCreateAccelerationStructureKHR</span></code> 时，需要设置对应的 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureCreateInfoKHR</span></code> 创建信息。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_acceleration_structure 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkAccelerationStructureCreateInfoKHR</span><span class="w"> </span><span class="p">{</span>
@@ -1023,8 +1166,11 @@
 <p>这两个属于 <code class="docutils literal notranslate"><span class="pre">VK_NV_ray_tracing_motion_blur</span></code> ，是 <code class="docutils literal notranslate"><span class="pre">NVIDIA</span></code> 的扩展，并不是 <code class="docutils literal notranslate"><span class="pre">KHR</span></code> 扩展，目前先忽略。</p>
 </div>
 </section>
-<section id="id18">
-<h3>获取64位加速结构设备地址<a class="headerlink" href="#id18" title="此标题的永久链接">#</a></h3>
+</section>
+<section id="id22">
+<h3>获取64位加速结构设备地址<a class="headerlink" href="#id22" title="此标题的永久链接">#</a></h3>
+<section id="id23">
+<h4>vkGetAccelerationStructureDeviceAddressKHR<a class="headerlink" href="#id23" title="此标题的永久链接">#</a></h4>
 <p>获取 <code class="docutils literal notranslate"><span class="pre">64</span></code> 位的加速结构设备地址，通过调用：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_acceleration_structure 提供</span>
 <span class="n">VkDeviceAddress</span><span class="w"> </span><span class="nf">vkGetAccelerationStructureDeviceAddressKHR</span><span class="p">(</span>
@@ -1040,6 +1186,9 @@
 <p>如果加速结构在创建时 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureCreateInfoKHR::deviceAddress</span></code> 给的是有效设备地址，该函数将返回与之相同的设备地址。</p>
 <p>如果加速结构在创建时 <code class="docutils literal notranslate"><span class="pre">type</span></code> 是 <code class="docutils literal notranslate"><span class="pre">VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHR</span></code> 时，该函数返回的地址在使用相同的 <code class="docutils literal notranslate"><span class="pre">VkBuffer</span></code> 分配的 <code class="docutils literal notranslate"><span class="pre">VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHR</span></code> 的类型加速结构必须与其他加速度结构的相对偏移量一致。</p>
 <p>返回的地址必须以 <code class="docutils literal notranslate"><span class="pre">256</span></code> 比特对齐。</p>
+</section>
+<section id="vkaccelerationstructuredeviceaddressinfokhr">
+<h4>VkAccelerationStructureDeviceAddressInfoKHR<a class="headerlink" href="#vkaccelerationstructuredeviceaddressinfokhr" title="此标题的永久链接">#</a></h4>
 <p>相应的 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureDeviceAddressInfoKHR</span></code> 定义为：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// Provided by VK_KHR_acceleration_structure</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkAccelerationStructureDeviceAddressInfoKHR</span><span class="w"> </span><span class="p">{</span>
@@ -1055,8 +1204,11 @@
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">accelerationStructure</span> 设定要获取设备地址的目标加速结构。</p></li>
 </ul>
 </section>
-<section id="id19">
-<h3>销毁加速结构<a class="headerlink" href="#id19" title="此标题的永久链接">#</a></h3>
+</section>
+<section id="id24">
+<h3>销毁加速结构<a class="headerlink" href="#id24" title="此标题的永久链接">#</a></h3>
+<section id="id25">
+<h4>vkDestroyAccelerationStructureKHR<a class="headerlink" href="#id25" title="此标题的永久链接">#</a></h4>
 <p>销毁一个加速结构，通过调用：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_acceleration_structure 提供</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">vkDestroyAccelerationStructureKHR</span><span class="p">(</span>
@@ -1070,6 +1222,7 @@
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">accelerationStructure</span> 要销毁的加速结构句柄。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pAllocator</span> 指定使用 <code class="docutils literal notranslate"><span class="pre">host</span></code> 端的内存分配器。</p></li>
 </ul>
+</section>
 </section>
 </section>
 </section>
@@ -1152,11 +1305,44 @@
 <li><a class="reference internal" href="#id12">底层加速结构</a></li>
 <li><a class="reference internal" href="#id13">加速结构的更新规则</a></li>
 <li><a class="reference internal" href="#id14">无效的图元和实体</a></li>
-<li><a class="reference internal" href="#id15">构建加速结构</a></li>
-<li><a class="reference internal" href="#id16">获取加速结构的构建大小</a></li>
-<li><a class="reference internal" href="#id17">创建加速结构</a></li>
-<li><a class="reference internal" href="#id18">获取64位加速结构设备地址</a></li>
-<li><a class="reference internal" href="#id19">销毁加速结构</a></li>
+<li><a class="reference internal" href="#id15">构建加速结构</a><ul>
+<li><a class="reference internal" href="#id16">vkCmdBuildAccelerationStructuresKHR</a></li>
+<li><a class="reference internal" href="#vkaccelerationstructurebuildgeometryinfokhr">VkAccelerationStructureBuildGeometryInfoKHR</a></li>
+<li><a class="reference internal" href="#vkbuildaccelerationstructuremodekhr">VkBuildAccelerationStructureModeKHR</a></li>
+<li><a class="reference internal" href="#vkdeviceorhostaddresskhr">VkDeviceOrHostAddressKHR</a></li>
+<li><a class="reference internal" href="#vkdeviceorhostaddressconstkhr">VkDeviceOrHostAddressConstKHR</a></li>
+<li><a class="reference internal" href="#vkaccelerationstructuregeometrykhr">VkAccelerationStructureGeometryKHR</a></li>
+<li><a class="reference internal" href="#vkaccelerationstructuregeometrydatakhr">VkAccelerationStructureGeometryDataKHR</a></li>
+<li><a class="reference internal" href="#vkaccelerationstructuregeometrytrianglesdatakhr">VkAccelerationStructureGeometryTrianglesDataKHR</a></li>
+<li><a class="reference internal" href="#vktransformmatrixkhr">VkTransformMatrixKHR</a></li>
+<li><a class="reference internal" href="#vkaccelerationstructuregeometryaabbsdatakhr">VkAccelerationStructureGeometryAabbsDataKHR</a></li>
+<li><a class="reference internal" href="#vkaabbpositionskhr">VkAabbPositionsKHR</a></li>
+<li><a class="reference internal" href="#vkaccelerationstructuregeometryinstancesdatakhr">VkAccelerationStructureGeometryInstancesDataKHR</a></li>
+<li><a class="reference internal" href="#vkaccelerationstructureinstancekhr">VkAccelerationStructureInstanceKHR</a></li>
+<li><a class="reference internal" href="#vkgeometryinstanceflagbitskhr">VkGeometryInstanceFlagBitsKHR</a></li>
+<li><a class="reference internal" href="#vkaccelerationstructurebuildrangeinfokhr">VkAccelerationStructureBuildRangeInfoKHR</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id17">拷贝加速结构</a></li>
+<li><a class="reference internal" href="#id18">获取加速结构的构建大小</a><ul>
+<li><a class="reference internal" href="#id19">vkGetAccelerationStructureBuildSizesKHR</a></li>
+<li><a class="reference internal" href="#vkaccelerationstructurebuildsizesinfokhr">VkAccelerationStructureBuildSizesInfoKHR</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id20">创建加速结构</a><ul>
+<li><a class="reference internal" href="#id21">vkCreateAccelerationStructureKHR</a></li>
+<li><a class="reference internal" href="#vkaccelerationstructurecreateinfokhr">VkAccelerationStructureCreateInfoKHR</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id22">获取64位加速结构设备地址</a><ul>
+<li><a class="reference internal" href="#id23">vkGetAccelerationStructureDeviceAddressKHR</a></li>
+<li><a class="reference internal" href="#vkaccelerationstructuredeviceaddressinfokhr">VkAccelerationStructureDeviceAddressInfoKHR</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id24">销毁加速结构</a><ul>
+<li><a class="reference internal" href="#id25">vkDestroyAccelerationStructureKHR</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
