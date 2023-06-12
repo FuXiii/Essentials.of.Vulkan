@@ -68,6 +68,8 @@ Vulkan KHR 光线追踪标准
         * ``VkAccelerationStructureGeometryInstancesDataKHR``
         * ``VkAccelerationStructureInstanceKHR``
         * ``VkGeometryInstanceFlagBitsKHR``
+   * 2023/6/12 增加 ``VkAccelerationStructureTypeKHR`` 章节
+   * 2023/6/12 增加 ``VkBuildAccelerationStructureFlagBitsKHR`` 章节
 
 .. admonition:: 有关本文档结构
     :class: warning
@@ -92,21 +94,21 @@ VK_KHR_acceleration_structure
 
     加速结构中经常能看到 ``创建`` 和 ``构建`` 的字样，这是两个不同的概念。加速结构的创建指的是创建加速结构句柄 ``VkAccelerationStructureKHR`` ，在创建时可以不指定其内部的具体数据，可以先创建。对于加速结构的构建指的是构建加速结构内部真正的数据和结构，具体内部结构是什么形式的是驱动内部自定义的（一种可能的结构为 ``BVH`` ）。
 
-该扩展属于 :bdg-info:`设备扩展`。
+该扩展属于 :bdg-info:`device扩展`。
 
 :bdg-primary:`依赖如下`
 
 * Vulkan 1.1
-* `VK_EXT_descriptor_indexing <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap54.html#VK_EXT_descriptor_indexing>`_ :bdg-info:`设备扩展` :bdg-warning:`在Vulkan 1.2中被纳入核心` :bdg-primary:`依赖如下`
+* `VK_EXT_descriptor_indexing <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap54.html#VK_EXT_descriptor_indexing>`_ :bdg-info:`device扩展` :bdg-warning:`在Vulkan 1.2中被纳入核心` :bdg-primary:`依赖如下`
         * `VK_KHR_get_physical_device_properties2 <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap54.html#VK_KHR_get_physical_device_properties2>`_ :bdg-info:`instance扩展` :bdg-warning:`在Vulkan 1.1中被纳入核心`
-        * `VK_KHR_maintenance3 <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap54.html#VK_KHR_maintenance3>`_ :bdg-info:`设备扩展` :bdg-warning:`在Vulkan 1.1中被纳入核心` :bdg-primary:`依赖如下`
+        * `VK_KHR_maintenance3 <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap54.html#VK_KHR_maintenance3>`_ :bdg-info:`device扩展` :bdg-warning:`在Vulkan 1.1中被纳入核心` :bdg-primary:`依赖如下`
               * `VK_KHR_get_physical_device_properties2 <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap54.html#VK_KHR_get_physical_device_properties2>`_ :bdg-info:`instance扩展` :bdg-warning:`在Vulkan 1.1中被纳入核心`
 
-* `VK_KHR_buffer_device_address <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap54.html#VK_KHR_buffer_device_address>`_ :bdg-info:`设备扩展` :bdg-warning:`在Vulkan 1.2中被纳入核心` :bdg-primary:`依赖如下`
+* `VK_KHR_buffer_device_address <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap54.html#VK_KHR_buffer_device_address>`_ :bdg-info:`device扩展` :bdg-warning:`在Vulkan 1.2中被纳入核心` :bdg-primary:`依赖如下`
         * `VK_KHR_get_physical_device_properties2 <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap54.html#VK_KHR_get_physical_device_properties2>`_ :bdg-info:`instance扩展` :bdg-warning:`在Vulkan 1.1中被纳入核心`
-        * `VK_KHR_device_group <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap54.html#VK_KHR_device_group>`_ :bdg-info:`设备扩展` :bdg-warning:`在Vulkan 1.1中被纳入核心` :bdg-primary:`依赖如下`
-              * `VK_KHR_device_group_creation <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap54.html#VK_KHR_device_group_creation>`_ :bdg-info:`设备扩展` :bdg-warning:`在Vulkan 1.1中被纳入核心`
-* `VK_KHR_deferred_host_operations <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap54.html#VK_KHR_deferred_host_operations>`_ :bdg-info:`设备扩展`
+        * `VK_KHR_device_group <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap54.html#VK_KHR_device_group>`_ :bdg-info:`device扩展` :bdg-warning:`在Vulkan 1.1中被纳入核心` :bdg-primary:`依赖如下`
+              * `VK_KHR_device_group_creation <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap54.html#VK_KHR_device_group_creation>`_ :bdg-info:`device扩展` :bdg-warning:`在Vulkan 1.1中被纳入核心`
+* `VK_KHR_deferred_host_operations <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap54.html#VK_KHR_deferred_host_operations>`_ :bdg-info:`device扩展`
 
 新添加的对象类型（句柄）：
 
@@ -360,6 +362,12 @@ VkAccelerationStructureBuildGeometryInfoKHR
 * :bdg-secondary:`ppGeometries` 指向数量为 ``geometryCount`` 类型为 ``VkAccelerationStructureGeometryKHR`` 结构体 **指针** 数组。
 * :bdg-secondary:`scratchData` 是 ``device`` 或 ``host`` 端用于构建时暂付缓存的内存地址。
 
+.. admonition:: 暂付缓存
+    :class: note
+
+    暂付缓存（ ``scratch buffer`` ），是 ``Vulkan`` 对于内部缓存的优化。原本的内部缓存应由 ``Vulkan`` 驱动内部自身分配和管理，但是有些内部内存会经常性的更新，为了优化这一部分缓存， ``Vulkan`` 将这一部分
+    缓存交由用户分配管理，优化了内存使用和读写。 ``scratch`` 原本是抓挠之意，由于这部分内存时不时的要更新一下，像猫抓一样，所以叫 ``抓挠`` 缓存，实则是暂时交付给 ``Vulkan`` 驱动内部。
+
 只有 ``pGeometries`` 或者 ``ppGeometries`` 其中之一可以设置有效指针，另外一个必须是 ``NULL`` 。有效指针所对应的数组用于描述构建加速结构的几何数据。
 
  ``pGeometries`` 或者 ``ppGeometries`` 对应的每一个元素的索引将会作为光线遍历的几何索引。该几何索引可在光追着色器中通过内置的 ``RayGeometryIndexKHR`` 访问，并且用于在光线遍历时确定运行哪一个最近命中着色器和相交着色器。
@@ -379,6 +387,55 @@ VkAccelerationStructureBuildGeometryInfoKHR
    * 如果 ``type`` 是 ``VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR`` ，则 ``pGeometries`` 或 ``ppGeometries`` 数组的 ``geometryType`` 是 ``VK_GEOMETRY_TYPE_AABBS_KHR`` 的话，所有数量的 ``AABB`` 对应的所有几何体必须小于等于 ``VkPhysicalDeviceAccelerationStructurePropertiesKHR::maxPrimitiveCount`` 。
    * 如果 ``type`` 是 ``VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR`` ，则 ``pGeometries`` 或 ``ppGeometries`` 数组的 ``geometryType`` 是 ``VK_GEOMETRY_TYPE_TRIANGLES_KHR`` 的话，所有数量的三角形对应的所有几何体必须小于等于 ``VkPhysicalDeviceAccelerationStructurePropertiesKHR::maxPrimitiveCount`` 。
    * 如果 ``flags `` 包含 ``VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR`` 位域 ，就不能再包含 ``VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_BUILD_BIT_KHR`` 位域了。
+
+VkBuildAccelerationStructureFlagBitsKHR
+----------------------------------------------------
+
+``VkAccelerationStructureBuildGeometryInfoKHR::flags`` 可以设置的值如下：
+
+.. code:: c++
+
+    // 由 VK_KHR_acceleration_structure 提供
+    typedef enum VkBuildAccelerationStructureFlagBitsKHR {
+        VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_UPDATE_BIT_KHR = 0x00000001,
+        VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_COMPACTION_BIT_KHR = 0x00000002,
+        VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR = 0x00000004,
+        VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_BUILD_BIT_KHR = 0x00000008,
+        VK_BUILD_ACCELERATION_STRUCTURE_LOW_MEMORY_BIT_KHR = 0x00000010, // 由 VK_KHR_ray_tracing_position_fetch 提供
+        VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_DATA_ACCESS_KHR = 0x00000800,
+    } VkBuildAccelerationStructureFlagBitsKHR;
+
+* :bdg-secondary:`VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_UPDATE_BIT_KHR` 表示可以更新 ``mode`` 为 ``VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR`` 的加速结构。
+* :bdg-secondary:`VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_COMPACTION_BIT_KHR` 表示可以作为 ``mode`` 为 ``VK_COPY_ACCELERATION_STRUCTURE_MODE_COMPACT_KHR`` 加速结构拷贝指令的数据源进行压缩。
+* :bdg-secondary:`VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR` 表示在构建加速结构时优先考虑优化光追性能。
+* :bdg-secondary:`VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_BUILD_BIT_KHR` 表示在构建加速结构时优先考虑优化构建时长。
+* :bdg-secondary:`VK_BUILD_ACCELERATION_STRUCTURE_LOW_MEMORY_BIT_KHR` 表示最小化加速结构的暂付缓存，这背后可能会增加构建时长和光追性能。
+* :bdg-secondary:`VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_DATA_ACCESS_KHR` 表示当光线击中三角形获取顶点位置时可以使用该加速结构。
+
+.. note:: ``VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_UPDATE_BIT_KHR`` 和 ``VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_COMPACTION_BIT_KHR`` 的设置可能会比正常创建花费更多的时间，并且应该在有相应需求时使用这两个特性。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 VkBuildAccelerationStructureModeKHR
 ----------------------------------------------------
@@ -768,6 +825,23 @@ VkAccelerationStructureBuildSizesInfoKHR
 * :bdg-secondary:`updateScratchSize` 在更新时需要暂付缓存的比特大小。
 * :bdg-secondary:`buildScratchSize` 在构建时需要暂付缓存的比特大小。
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 创建加速结构
 **********************
 
@@ -862,6 +936,52 @@ VkAccelerationStructureCreateInfoKHR
 
     这两个属于 ``VK_NV_ray_tracing_motion_blur`` ，是 ``NVIDIA`` 的扩展，并不是 ``KHR`` 扩展，目前先忽略。
 
+VkAccelerationStructureTypeKHR
+----------------------------------------------------
+
+``VkAccelerationStructureCreateInfoKHR::type`` 用于设定加速结构的类型，支持的类型为：
+
+.. code:: c++
+
+    // 由 VK_KHR_acceleration_structure 提供
+    typedef enum VkAccelerationStructureTypeKHR {
+        VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR = 0,
+        VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR = 1,
+        VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHR = 2,
+    } VkAccelerationStructureTypeKHR;
+
+* :bdg-secondary:`VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR` 表示包含实体（引用底层加速结构）的顶层加速结构。
+* :bdg-secondary:`VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR` 表示包含用于求交的 ``AABBs`` 或几何数据的底层加速结构。
+* :bdg-secondary:`VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHR` 表示在加速结构创建时不知道是什么类型的，具体的类型需要在构建时确定，并且构建时必须确定是顶层加速结构还是底层加速结构。
+
+
+VkAccelerationStructureCreateFlagBitsKHR
+----------------------------------------------------
+
+``VkAccelerationStructureCreateInfoKHR::createFlags`` 可以设置的标志位域如下：
+
+.. code:: c++
+
+    // 由 VK_KHR_acceleration_structure 提供
+    typedef enum VkAccelerationStructureCreateFlagBitsKHR {
+        VK_ACCELERATION_STRUCTURE_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT_KHR = 0x00000001,
+    } VkAccelerationStructureCreateFlagBitsKHR;
+
+* :bdg-secondary:`VK_ACCELERATION_STRUCTURE_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT_KHR` 表示加速结构的地址可以被之后的一系列执行存储和重用。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 构建加速结构
 ********************
 
@@ -892,12 +1012,6 @@ vkCmdBuildAccelerationStructuresKHR
     :class: hint
 
     大概率是指 ``pInfos`` 中的 ``VkAccelerationStructureGeometryKHR* pGeometries`` 成员中 ``VkAccelerationStructureGeometryInstancesDataKHR instances`` 成员，用于构建实体加速结构。但在构建顶层加速结构是也会使用到 ``VkAccelerationStructureGeometryInstancesDataKHR instances`` ，此处的实体加速结构是啥并不明确，待后文看看。
-
-.. admonition:: 暂付缓存
-    :class: note
-
-    暂付缓存（ ``scratch buffer`` ），是 ``Vulkan`` 对于内部缓存的优化。原本的内部缓存应由 ``Vulkan`` 驱动内部自身分配和管理，但是有些内部内存会经常性的更新，为了优化这一部分缓存， ``Vulkan`` 将这一部分
-    缓存交由用户分配管理，优化了内存使用和读写。 ``scratch`` 原本是抓挠之意，由于这部分内存时不时的要更新一下，像猫抓一样，所以叫 ``抓挠`` 缓存，实则是暂时交付给 ``Vulkan`` 驱动内部。
 
 .. admonition:: 内存混叠
     :class: note
@@ -997,7 +1111,7 @@ VkAccelerationStructureDeviceAddressInfoKHR
 
 .. code:: c++
 
-    // Provided by VK_KHR_acceleration_structure
+    // 由 VK_KHR_acceleration_structure 提供
     typedef struct VkAccelerationStructureDeviceAddressInfoKHR {
         VkStructureType               sType;
         const void*                   pNext;
