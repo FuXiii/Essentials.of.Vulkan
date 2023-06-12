@@ -51,6 +51,23 @@ Vulkan KHR 光线追踪标准
    * 2023/6/11 增加 ``vkGetAccelerationStructureDeviceAddressKHR`` 章节
    * 2023/6/11 增加 ``VkAccelerationStructureDeviceAddressInfoKHR`` 章节
    * 2023/6/11 增加 ``vkDestroyAccelerationStructureKHR`` 章节
+   * 2023/6/12 更新 ``VkAccelerationStructureBuildGeometryInfoKHR`` 章节
+   * 2023/6/12 调整 ``获取加速结构的构建大小`` 章节顺序
+   * 2023/6/12 调整 ``创建加速结构`` 章节顺序
+   * 2023/6/12 创建 ``加速结构的描述`` 章节，并将如下章节调整到当前章节中：
+        * ``VkAccelerationStructureBuildGeometryInfoKHR``
+        * ``VkBuildAccelerationStructureModeKHR``
+        * ``VkDeviceOrHostAddressKHR``
+        * ``VkDeviceOrHostAddressConstKHR``
+        * ``VkAccelerationStructureGeometryKHR``
+        * ``VkAccelerationStructureGeometryDataKHR``
+        * ``VkAccelerationStructureGeometryTrianglesDataKHR``
+        * ``VkTransformMatrixKHR``
+        * ``VkAccelerationStructureGeometryAabbsDataKHR``
+        * ``VkAabbPositionsKHR``
+        * ``VkAccelerationStructureGeometryInstancesDataKHR``
+        * ``VkAccelerationStructureInstanceKHR``
+        * ``VkGeometryInstanceFlagBitsKHR``
 
 .. admonition:: 有关本文档结构
     :class: warning
@@ -239,7 +256,7 @@ VK_KHR_acceleration_structure
 如图为顶层加速结构和底层加速结构的关系图。
 
 几何体
-****************
+--------------------
 
 几何体指的是三角形或轴对齐包围盒。
 
@@ -249,19 +266,19 @@ VK_KHR_acceleration_structure
     也叫 ``AABB`` （ ``Axis Aligned Bounding Box`` ）包围盒。
 
 顶层加速结构
-****************
+--------------------
 
 代表实体（ ``instances`` ）的集合。描述符或设备地址将顶层加速结构作为遍历的起点。
 
 顶层加速结构通过实体可以引用任意的底层加速结构。当顶层加速结构访问底层加速结构时底层加速结构必须保持有效。
 
 底层加速结构
-****************
+--------------------
 
 用于表示几何体集合
 
 加速结构的更新规则
-*****************************
+--------------------
 
 ``Vulkan API``  提供两种方式从几何体中生成加速结构：
 
@@ -280,7 +297,7 @@ VK_KHR_acceleration_structure
 * 改变加速结构中几何体的顶点数量或图元数量。
 
 无效的图元和实体
-**********************
+--------------------
 
 加速结构允许使用一个特定的输入值表示无效的图元或实体。
 
@@ -304,64 +321,10 @@ VK_KHR_acceleration_structure
 
 对于任何有效与无效状态的转换都需要进行一个完整的加速结构重构建。如果拷贝源加速结构中有效的对象在目标加速结构中变成无效对象，反之亦然，则应用不能执行加速结构的更新。
 
-构建加速结构
-********************
+加速结构的描述
+***********************************
 
-vkCmdBuildAccelerationStructuresKHR
------------------------------------------
-
-构建加速结构调用  ``vkCmdBuildAccelerationStructuresKHR`` :
-
-.. code:: c++
-
-    // 由 VK_KHR_acceleration_structure 提供
-    void vkCmdBuildAccelerationStructuresKHR(
-        VkCommandBuffer                             commandBuffer,
-        uint32_t                                    infoCount,
-        const VkAccelerationStructureBuildGeometryInfoKHR* pInfos,
-        const VkAccelerationStructureBuildRangeInfoKHR* const* ppBuildRangeInfos);
-
-* :bdg-secondary:`commandBuffer` 指定在哪个指令缓存中记录指令。
-* :bdg-secondary:`infoCount` 只是要构建的加速结构的个数。该个数为 ``pInfos`` 和 ``ppBuildRangeInfos`` 需要提供的个数。
-* :bdg-secondary:`pInfos` 是类型为 ``VkAccelerationStructureBuildGeometryInfoKHR`` 数量为 ``infoCount`` 的数组，用于定义构建的每一个加速结构中的几何体。
-* :bdg-secondary:`ppBuildRangeInfos` 是类型为 ``VkAccelerationStructureBuildRangeInfoKHR`` 数量为 ``infoCount`` 的数组。每一个 ``ppBuildRangeInfos[i]`` 都是指向数量为 ``pInfos[i].geometryCount`` 类型为 ``VkAccelerationStructureBuildRangeInfoKHR`` 的数组，用于动态定义 ``pInfos[i]`` 中对应的几何数据在内存中偏移。
-
-``vkCmdBuildAccelerationStructuresKHR`` 指令支持一次性构建多个加速结构，然而在每一个加速结构构建之间是没有隐含的顺序或同步的。
-
-.. note:: 这也就意味着应用不能在构建底层架结构或者实体加速结构（ ``instance acceleration structures`` ）的同一个 ``vkCmdBuildAccelerationStructuresKHR`` 构建指令中构建顶层加速结构。同时也不能在构建时在加速结构内存或暂付缓存上使用内存混叠。
-
-.. admonition:: 实体加速结构
-    :class: hint
-
-    大概率是指 ``pInfos`` 中的 ``VkAccelerationStructureGeometryKHR* pGeometries`` 成员中 ``VkAccelerationStructureGeometryInstancesDataKHR instances`` 成员，用于构建实体加速结构。但在构建顶层加速结构是也会使用到 ``VkAccelerationStructureGeometryInstancesDataKHR instances`` ，此处的实体加速结构是啥并不明确，待后文看看。
-
-.. admonition:: 暂付缓存
-    :class: note
-
-    暂付缓存（ ``scratch buffer`` ），是 ``Vulkan`` 对于内部缓存的优化。原本的内部缓存应由 ``Vulkan`` 驱动内部自身分配和管理，但是有些内部内存会经常性的更新，为了优化这一部分缓存， ``Vulkan`` 将这一部分
-    缓存交由用户分配管理，优化了内存使用和读写。 ``scratch`` 原本是抓挠之意，由于这部分内存时不时的要更新一下，像猫抓一样，所以叫 ``抓挠`` 缓存，实则是暂时交付给 ``Vulkan`` 驱动内部。
-
-.. admonition:: 内存混叠
-    :class: note
-
-    内存混叠有点类似于 ``C++`` 的 ``union`` 。同一段内存可以被多个资源使用，多见于临时资源的覆盖，使得一段内存可以多次重复使用。
-
-访问 ``VkAccelerationStructureBuildGeometryInfoKHR::scratchData`` 对应的暂付缓存的设备地址必须在 ``VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR`` 管线阶段使用 ``VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR | VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR`` 访问类型进行同步。
-访问 ``VkAccelerationStructureBuildGeometryInfoKHR::srcAccelerationStructure`` 和 ``VkAccelerationStructureBuildGeometryInfoKHR::dstAccelerationStructure`` 时必须在 ``VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR`` 管线阶段使用 ``VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR`` 或 ``VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR`` 访问类型进行同步较适当。
-
-访问其他的 ``VkAccelerationStructureGeometryTrianglesDataKHR::vertexData`` 、 ``VkAccelerationStructureGeometryTrianglesDataKHR::indexData`` 、 ``VkAccelerationStructureGeometryTrianglesDataKHR::transformData`` 、 ``VkAccelerationStructureGeometryAabbsDataKHR::data`` 和 ``VkAccelerationStructureGeometryInstancesDataKHR::data`` 的输入缓存
-时必须在 ``VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR`` 管线阶段使用 ``VK_ACCESS_SHADER_READ_BIT`` 访问类型进行同步。
-
-..
-    .. admonition:: 正确用法
-        :class: note
-
-        * 对于 ``pInfos`` 数组中的每一个元素，如果对应的 ``mode`` 是 ``VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR`` ，其对应的 ``srcAccelerationStructure`` 就一定不能为 ``VK_NULL_HANDLE`` 。
-        * 对于 ``pInfos`` 数组中的任意一个 ``srcAccelerationStructure`` 元素和对应的任意一个 ``dstAccelerationStructure`` 不能是相同的加速结构句柄 。
-        * 对于 ``pInfos`` 数组中的任意一个 ``dstAccelerationStructure`` 元素和其他的任意一个 ``dstAccelerationStructure`` 不能是相同的加速结构句柄 。
-        * 对于 ``pInfos`` 数组中的任意一个 ``dstAccelerationStructure`` 必须是有效的 ``VkAccelerationStructureKHR`` 句柄。
-        * 对于 ``pInfos`` 数组中的任意一个元素，如果 ``type`` 是 ``VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR`` 的话，对应的 ``dstAccelerationStructure`` 创建时 ``VkAccelerationStructureCreateInfoKHR::type`` 必须是 ``VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR`` 或 ``VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHR`` 。
-        * 对于 ``pInfos`` 数组中的任意一个元素，如果 ``type`` 是 ``VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR`` 的话，对应的 ``dstAccelerationStructure`` 创建时 ``VkAccelerationStructureCreateInfoKHR::type`` 必须是 ``VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR`` 或 ``VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHR`` 。
+所有的加速结构都通过 ``VkAccelerationStructureBuildGeometryInfoKHR`` 进行描述：
 
 VkAccelerationStructureBuildGeometryInfoKHR
 ----------------------------------------------------
@@ -393,8 +356,8 @@ VkAccelerationStructureBuildGeometryInfoKHR
 * :bdg-secondary:`srcAccelerationStructure` 是用于当 ``mode`` 为 ``VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR`` 时其指向一个已经存在的加速结构，用于更新到 ``dst`` 加速结构中 。
 * :bdg-secondary:`dstAccelerationStructure` 指向一个用于构建的目标加速结构。
 * :bdg-secondary:`geometryCount` 表示要构建进入到 ``dstAccelerationStructure`` 的几何数量。
-* :bdg-secondary:`pGeometries` 指向 ``VkAccelerationStructureGeometryKHR`` 结构体数组。
-* :bdg-secondary:`ppGeometries` 指向 ``VkAccelerationStructureGeometryKHR`` 结构体指针数组。
+* :bdg-secondary:`pGeometries` 指向数量为 ``geometryCount`` 类型为 ``VkAccelerationStructureGeometryKHR`` 结构体数组。
+* :bdg-secondary:`ppGeometries` 指向数量为 ``geometryCount`` 类型为 ``VkAccelerationStructureGeometryKHR`` 结构体 **指针** 数组。
 * :bdg-secondary:`scratchData` 是 ``device`` 或 ``host`` 端用于构建时暂付缓存的内存地址。
 
 只有 ``pGeometries`` 或者 ``ppGeometries`` 其中之一可以设置有效指针，另外一个必须是 ``NULL`` 。有效指针所对应的数组用于描述构建加速结构的几何数据。
@@ -719,63 +682,13 @@ VkGeometryInstanceFlagBitsKHR
       VK_GEOMETRY_INSTANCE_FORCE_NO_OPAQUE_BIT_KHR = 0x00000008,
       VK_GEOMETRY_INSTANCE_TRIANGLE_FRONT_COUNTERCLOCKWISE_BIT_KHR = VK_GEOMETRY_INSTANCE_TRIANGLE_FLIP_FACING_BIT_KHR,
     } VkGeometryInstanceFlagBitsKHR;
-    
+
 * :bdg-secondary:`VK_GEOMETRY_INSTANCE_TRIANGLE_FACING_CULL_DISABLE_BIT_KHR` 取消实体的面剔除。
 * :bdg-secondary:`VK_GEOMETRY_INSTANCE_TRIANGLE_FLIP_FACING_BIT_KHR` 表示确认哪一个是正面，与之前的判断策略相反。由于是使用物体空间（ ``object space`` ）来判断正反面，在实体上的变换并不会影响判断结构，但是对于几何体的变换会影响判断结果。
 * :bdg-secondary:`VK_GEOMETRY_INSTANCE_FORCE_OPAQUE_BIT_KHR` 表示该实体下的所有几何体都被认为是 ``VK_GEOMETRY_OPAQUE_BIT_KHR`` ，该行为可通过 ``SPIR-V`` 的 ``NoOpaqueKHR`` 光追标志位进行覆盖。
 * :bdg-secondary:`VK_GEOMETRY_INSTANCE_FORCE_NO_OPAQUE_BIT_KHR` 表示该实体下的所有几何体都不被认为是 ``VK_GEOMETRY_OPAQUE_BIT_KHR`` ，该行为可通过 ``SPIR-V`` 的 ``NoOpaqueKHR`` 光追标志位进行覆盖。
 
 ``VK_GEOMETRY_INSTANCE_FORCE_NO_OPAQUE_BIT_KHR`` 和 ``VK_GEOMETRY_INSTANCE_FORCE_OPAQUE_BIT_KHR`` 这两个标志位域一定不能同时使用。
-
-VkAccelerationStructureBuildRangeInfoKHR
-----------------------------------------------------
-
-``VkAccelerationStructureBuildRangeInfoKHR`` 定义如下：
-
-.. code:: c++
-
-    // 由 VK_KHR_acceleration_structure 提供
-    typedef struct VkAccelerationStructureBuildRangeInfoKHR {
-      uint32_t primitiveCount;
-      uint32_t primitiveOffset;
-      uint32_t firstVertex;
-      uint32_t transformOffset;
-    } VkAccelerationStructureBuildRangeInfoKHR;
-
-* :bdg-secondary:`primitiveCount` 为对应的几何加速结构定义图元数量。
-* :bdg-secondary:`primitiveOffset` 为图元在具体内存中的比特偏移。
-* :bdg-secondary:`firstVertex` 为要构建的三角形几何体的第一个顶点的索引值。
-* :bdg-secondary:`transformOffset` 为变换矩阵在具体内存中的比特偏移。
-
-图元的数量和图元偏移将会根据不同的 ``VkGeometryTypeKHR`` 有所不同：
-
-* 对于类型为 ``VK_GEOMETRY_TYPE_TRIANGLES_KHR`` 的几何体， ``primitiveCount`` 是要构建的三角形数量，每个三角形被认为由三个顶点组成。
-    * 如果几何体使用索引，将会从 ``VkAccelerationStructureGeometryTrianglesDataKHR::indexData`` 中使用 ``primitiveCount`` :math:`\times3` 数量的索引数据，并从 ``primitiveOffset`` 偏移开始。获取顶点时，将会在索引值上加上 ``firstVertex`` 数量值。
-    * 如果几何体不使用索引，将会从 ``VkAccelerationStructureGeometryTrianglesDataKHR::vertexData`` 中使用 ``primitiveCount`` :math:`\times3` 数量的顶点数据，并从 ``primitiveOffset`` :math:`+` ``VkAccelerationStructureGeometryTrianglesDataKHR::vertexStride`` :math:`\times` ``firstVertex`` 偏移开始。
-    * 如果 ``VkAccelerationStructureGeometryTrianglesDataKHR::transformData`` 不是 ``NULL`` 的话， 将会从 ``VkAccelerationStructureGeometryTrianglesDataKHR::transformData`` 中在 ``transformOffset`` 偏移之后获取一个 ``VkTransformMatrixKHR`` 结构体数据。
-* 对于类型为 ``VK_GEOMETRY_TYPE_AABBS_KHR`` ， ``primitiveCount`` 是轴对齐包围盒的个数。将会从 ``VkAccelerationStructureGeometryAabbsDataKHR::data`` 在 ``primitiveOffset`` 偏移之后获取 ``primitiveCount`` 个 ``VkAabbPositionsKHR`` 结构体数据。
-* 对于类型为 ``VK_GEOMETRY_TYPE_INSTANCES_KHR`` ， ``primitiveCount`` 是加速结构的个数。将会从 ``VkAccelerationStructureGeometryInstancesDataKHR::data`` 在 ``primitiveOffset`` 偏移之后获取 ``primitiveCount`` 个 ``VkAccelerationStructureInstanceKHR`` 结构体数据。
-
-.. admonition:: 正确用法
-   :class: note
-
-    * 对于类型为 ``VK_GEOMETRY_TYPE_TRIANGLES_KHR`` ，如果几何体使用索引， ``VkAccelerationStructureGeometryTrianglesDataKHR::indexData`` 必须是 ``VkAccelerationStructureGeometryTrianglesDataKHR::indexType`` 元素大小的倍数。
-    * 对于类型为 ``VK_GEOMETRY_TYPE_TRIANGLES_KHR`` ，如果几何体不使用索引， ``VkAccelerationStructureGeometryTrianglesDataKHR::vertexData`` 必须是 ``VkAccelerationStructureGeometryTrianglesDataKHR::vertexFormat`` 元素大小的倍数。
-    * 对于类型为 ``VK_GEOMETRY_TYPE_TRIANGLES_KHR`` ， 对于 ``VkAccelerationStructureGeometryTrianglesDataKHR::transformData`` 的偏移 ``transformOffset`` 必须是 ``16`` 的倍数。
-    * 对于类型为 ``VK_GEOMETRY_TYPE_AABBS_KHR`` ， 对于 ``VkAccelerationStructureGeometryAabbsDataKHR::data`` 的偏移 ``primitiveOffset`` 必须是 ``8`` 的倍数。
-    * 对于类型为 ``VK_GEOMETRY_TYPE_INSTANCES_KHR`` ， 对于 ``VkAccelerationStructureGeometryInstancesDataKHR::data`` 的偏移 ``primitiveOffset`` 必须是 ``16`` 的倍数。
-
-拷贝加速结构
-**********************
-
-
-
-
-
-
-
-
-
 
 获取加速结构的构建大小
 **********************
@@ -948,6 +861,108 @@ VkAccelerationStructureCreateInfoKHR
     :class: tip
 
     这两个属于 ``VK_NV_ray_tracing_motion_blur`` ，是 ``NVIDIA`` 的扩展，并不是 ``KHR`` 扩展，目前先忽略。
+
+构建加速结构
+********************
+
+vkCmdBuildAccelerationStructuresKHR
+-----------------------------------------
+
+构建加速结构调用  ``vkCmdBuildAccelerationStructuresKHR`` :
+
+.. code:: c++
+
+    // 由 VK_KHR_acceleration_structure 提供
+    void vkCmdBuildAccelerationStructuresKHR(
+        VkCommandBuffer                             commandBuffer,
+        uint32_t                                    infoCount,
+        const VkAccelerationStructureBuildGeometryInfoKHR* pInfos,
+        const VkAccelerationStructureBuildRangeInfoKHR* const* ppBuildRangeInfos);
+
+* :bdg-secondary:`commandBuffer` 指定在哪个指令缓存中记录指令。
+* :bdg-secondary:`infoCount` 只是要构建的加速结构的个数。该个数为 ``pInfos`` 和 ``ppBuildRangeInfos`` 需要提供的个数。
+* :bdg-secondary:`pInfos` 是类型为 ``VkAccelerationStructureBuildGeometryInfoKHR`` 数量为 ``infoCount`` 的数组，用于定义构建的每一个加速结构中的几何体。
+* :bdg-secondary:`ppBuildRangeInfos` 是类型为 ``VkAccelerationStructureBuildRangeInfoKHR`` 数量为 ``infoCount`` 的数组。每一个 ``ppBuildRangeInfos[i]`` 都是指向数量为 ``pInfos[i].geometryCount`` 类型为 ``VkAccelerationStructureBuildRangeInfoKHR`` 的数组，用于动态定义 ``pInfos[i]`` 中对应的几何数据在内存中偏移。
+
+``vkCmdBuildAccelerationStructuresKHR`` 指令支持一次性构建多个加速结构，然而在每一个加速结构构建之间是没有隐含的顺序或同步的。
+
+.. note:: 这也就意味着应用不能在构建底层架结构或者实体加速结构（ ``instance acceleration structures`` ）的同一个 ``vkCmdBuildAccelerationStructuresKHR`` 构建指令中构建顶层加速结构。同时也不能在构建时在加速结构内存或暂付缓存上使用内存混叠。
+
+.. admonition:: 实体加速结构
+    :class: hint
+
+    大概率是指 ``pInfos`` 中的 ``VkAccelerationStructureGeometryKHR* pGeometries`` 成员中 ``VkAccelerationStructureGeometryInstancesDataKHR instances`` 成员，用于构建实体加速结构。但在构建顶层加速结构是也会使用到 ``VkAccelerationStructureGeometryInstancesDataKHR instances`` ，此处的实体加速结构是啥并不明确，待后文看看。
+
+.. admonition:: 暂付缓存
+    :class: note
+
+    暂付缓存（ ``scratch buffer`` ），是 ``Vulkan`` 对于内部缓存的优化。原本的内部缓存应由 ``Vulkan`` 驱动内部自身分配和管理，但是有些内部内存会经常性的更新，为了优化这一部分缓存， ``Vulkan`` 将这一部分
+    缓存交由用户分配管理，优化了内存使用和读写。 ``scratch`` 原本是抓挠之意，由于这部分内存时不时的要更新一下，像猫抓一样，所以叫 ``抓挠`` 缓存，实则是暂时交付给 ``Vulkan`` 驱动内部。
+
+.. admonition:: 内存混叠
+    :class: note
+
+    内存混叠有点类似于 ``C++`` 的 ``union`` 。同一段内存可以被多个资源使用，多见于临时资源的覆盖，使得一段内存可以多次重复使用。
+
+访问 ``VkAccelerationStructureBuildGeometryInfoKHR::scratchData`` 对应的暂付缓存的设备地址必须在 ``VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR`` 管线阶段使用 ``VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR | VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR`` 访问类型进行同步。
+访问 ``VkAccelerationStructureBuildGeometryInfoKHR::srcAccelerationStructure`` 和 ``VkAccelerationStructureBuildGeometryInfoKHR::dstAccelerationStructure`` 时必须在 ``VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR`` 管线阶段使用 ``VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR`` 或 ``VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR`` 访问类型进行同步较适当。
+
+访问其他的 ``VkAccelerationStructureGeometryTrianglesDataKHR::vertexData`` 、 ``VkAccelerationStructureGeometryTrianglesDataKHR::indexData`` 、 ``VkAccelerationStructureGeometryTrianglesDataKHR::transformData`` 、 ``VkAccelerationStructureGeometryAabbsDataKHR::data`` 和 ``VkAccelerationStructureGeometryInstancesDataKHR::data`` 的输入缓存
+时必须在 ``VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR`` 管线阶段使用 ``VK_ACCESS_SHADER_READ_BIT`` 访问类型进行同步。
+
+..
+    .. admonition:: 正确用法
+        :class: note
+
+        * 对于 ``pInfos`` 数组中的每一个元素，如果对应的 ``mode`` 是 ``VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR`` ，其对应的 ``srcAccelerationStructure`` 就一定不能为 ``VK_NULL_HANDLE`` 。
+        * 对于 ``pInfos`` 数组中的任意一个 ``srcAccelerationStructure`` 元素和对应的任意一个 ``dstAccelerationStructure`` 不能是相同的加速结构句柄 。
+        * 对于 ``pInfos`` 数组中的任意一个 ``dstAccelerationStructure`` 元素和其他的任意一个 ``dstAccelerationStructure`` 不能是相同的加速结构句柄 。
+        * 对于 ``pInfos`` 数组中的任意一个 ``dstAccelerationStructure`` 必须是有效的 ``VkAccelerationStructureKHR`` 句柄。
+        * 对于 ``pInfos`` 数组中的任意一个元素，如果 ``type`` 是 ``VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR`` 的话，对应的 ``dstAccelerationStructure`` 创建时 ``VkAccelerationStructureCreateInfoKHR::type`` 必须是 ``VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR`` 或 ``VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHR`` 。
+        * 对于 ``pInfos`` 数组中的任意一个元素，如果 ``type`` 是 ``VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR`` 的话，对应的 ``dstAccelerationStructure`` 创建时 ``VkAccelerationStructureCreateInfoKHR::type`` 必须是 ``VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR`` 或 ``VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHR`` 。
+
+VkAccelerationStructureBuildRangeInfoKHR
+----------------------------------------------------
+
+``VkAccelerationStructureBuildRangeInfoKHR`` 定义如下：
+
+.. code:: c++
+
+    // 由 VK_KHR_acceleration_structure 提供
+    typedef struct VkAccelerationStructureBuildRangeInfoKHR {
+      uint32_t primitiveCount;
+      uint32_t primitiveOffset;
+      uint32_t firstVertex;
+      uint32_t transformOffset;
+    } VkAccelerationStructureBuildRangeInfoKHR;
+
+* :bdg-secondary:`primitiveCount` 为对应的几何加速结构定义图元数量。
+* :bdg-secondary:`primitiveOffset` 为图元在具体内存中的比特偏移。
+* :bdg-secondary:`firstVertex` 为要构建的三角形几何体的第一个顶点的索引值。
+* :bdg-secondary:`transformOffset` 为变换矩阵在具体内存中的比特偏移。
+
+图元的数量和图元偏移将会根据不同的 ``VkGeometryTypeKHR`` 有所不同：
+
+* 对于类型为 ``VK_GEOMETRY_TYPE_TRIANGLES_KHR`` 的几何体， ``primitiveCount`` 是要构建的三角形数量，每个三角形被认为由三个顶点组成。
+    * 如果几何体使用索引，将会从 ``VkAccelerationStructureGeometryTrianglesDataKHR::indexData`` 中使用 ``primitiveCount`` :math:`\times3` 数量的索引数据，并从 ``primitiveOffset`` 偏移开始。获取顶点时，将会在索引值上加上 ``firstVertex`` 数量值。
+    * 如果几何体不使用索引，将会从 ``VkAccelerationStructureGeometryTrianglesDataKHR::vertexData`` 中使用 ``primitiveCount`` :math:`\times3` 数量的顶点数据，并从 ``primitiveOffset`` :math:`+` ``VkAccelerationStructureGeometryTrianglesDataKHR::vertexStride`` :math:`\times` ``firstVertex`` 偏移开始。
+    * 如果 ``VkAccelerationStructureGeometryTrianglesDataKHR::transformData`` 不是 ``NULL`` 的话， 将会从 ``VkAccelerationStructureGeometryTrianglesDataKHR::transformData`` 中在 ``transformOffset`` 偏移之后获取一个 ``VkTransformMatrixKHR`` 结构体数据。
+* 对于类型为 ``VK_GEOMETRY_TYPE_AABBS_KHR`` ， ``primitiveCount`` 是轴对齐包围盒的个数。将会从 ``VkAccelerationStructureGeometryAabbsDataKHR::data`` 在 ``primitiveOffset`` 偏移之后获取 ``primitiveCount`` 个 ``VkAabbPositionsKHR`` 结构体数据。
+* 对于类型为 ``VK_GEOMETRY_TYPE_INSTANCES_KHR`` ， ``primitiveCount`` 是加速结构的个数。将会从 ``VkAccelerationStructureGeometryInstancesDataKHR::data`` 在 ``primitiveOffset`` 偏移之后获取 ``primitiveCount`` 个 ``VkAccelerationStructureInstanceKHR`` 结构体数据。
+
+.. admonition:: 正确用法
+   :class: note
+
+    * 对于类型为 ``VK_GEOMETRY_TYPE_TRIANGLES_KHR`` ，如果几何体使用索引， ``VkAccelerationStructureGeometryTrianglesDataKHR::indexData`` 必须是 ``VkAccelerationStructureGeometryTrianglesDataKHR::indexType`` 元素大小的倍数。
+    * 对于类型为 ``VK_GEOMETRY_TYPE_TRIANGLES_KHR`` ，如果几何体不使用索引， ``VkAccelerationStructureGeometryTrianglesDataKHR::vertexData`` 必须是 ``VkAccelerationStructureGeometryTrianglesDataKHR::vertexFormat`` 元素大小的倍数。
+    * 对于类型为 ``VK_GEOMETRY_TYPE_TRIANGLES_KHR`` ， 对于 ``VkAccelerationStructureGeometryTrianglesDataKHR::transformData`` 的偏移 ``transformOffset`` 必须是 ``16`` 的倍数。
+    * 对于类型为 ``VK_GEOMETRY_TYPE_AABBS_KHR`` ， 对于 ``VkAccelerationStructureGeometryAabbsDataKHR::data`` 的偏移 ``primitiveOffset`` 必须是 ``8`` 的倍数。
+    * 对于类型为 ``VK_GEOMETRY_TYPE_INSTANCES_KHR`` ， 对于 ``VkAccelerationStructureGeometryInstancesDataKHR::data`` 的偏移 ``primitiveOffset`` 必须是 ``16`` 的倍数。
+
+拷贝加速结构
+**********************
+
+
 
 获取64位加速结构设备地址
 *************************
