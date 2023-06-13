@@ -7,6 +7,8 @@ VK_KHR_acceleration_structure
 
    * 2023/6/13 创建该文档
    * 2023/6/13 将 ``Vulkan KHR 光线追踪标准`` 中的 ``VK_KHR_acceleration_structure`` 内容摘录于此
+   * 2023/6/13 更新 ``拷贝加速结构`` 章节
+   * 2023/6/13 增加 ``vkCmdWriteAccelerationStructuresPropertiesKHR`` 章节
 
 .. admonition:: 加速结构的创建和构建
     :class: important
@@ -1186,6 +1188,63 @@ VkAccelerationStructureBuildRangeInfoKHR
 
 拷贝加速结构
 **********************
+
+还有一个用于拷贝加速结构的命令而不更新其内容。加速结构可以进行压缩来获得更高的性能。在拷贝前，应用必须先查询加速结构的大小。
+
+vkCmdWriteAccelerationStructuresPropertiesKHR
+----------------------------------------------------
+
+查询加速结构的大小调用：
+
+.. code:: c++
+
+    // 由 VK_KHR_acceleration_structure 提供
+    void vkCmdWriteAccelerationStructuresPropertiesKHR(
+        VkCommandBuffer                             commandBuffer,
+        uint32_t                                    accelerationStructureCount,
+        const VkAccelerationStructureKHR*           pAccelerationStructures,
+        VkQueryType                                 queryType,
+        VkQueryPool                                 queryPool,
+        uint32_t                                    firstQuery);
+
+* :bdg-secondary:`commandBuffer` 用于记录该指令的命令缓存。
+* :bdg-secondary:`accelerationStructureCount` 要查询的加速结构的数量。
+* :bdg-secondary:`pAccelerationStructures` 指向构建完成的加速结构数组。
+* :bdg-secondary:`queryType` 其为 ``VkQueryType`` 中的值，用于管理查询池的查询类型。
+* :bdg-secondary:`queryPool` 用于管理查询结果的查询池。
+* :bdg-secondary:`firstQuery` 在查询池中包含 ``accelerationStructureCount`` 数量的查询结果的第一个查询索引。
+
+访问 ``pAccelerationStructures`` 中的任何一个加速结构都需要在 ``VK_PIPELINE_STAGE_2_ACCELERATION_STRUCTURE_COPY_BIT_KHR`` 或 ``VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR`` 管线阶段和 ``VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR`` 访问类型进行同步。
+
+* 如果 ``queryType`` 是 ``VK_QUERY_TYPE_ACCELERATION_STRUCTURE_COMPACTED_SIZE_KHR`` 的话，则返回的查询值就是加速结构压缩之后需要的比特数量。
+* 如果 ``queryType`` 是 ``VK_QUERY_TYPE_ACCELERATION_STRUCTURE_SERIALIZATION_SIZE_KHR`` 的话，则返回的查询值就是加速结构序列化之后需要的比特数量。
+
+.. admonition:: 正确用法
+   :class: note
+
+   * 需要激活 ``VkPhysicalDeviceAccelerationStructureFeaturesKHR::accelerationStructure`` 特性
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
