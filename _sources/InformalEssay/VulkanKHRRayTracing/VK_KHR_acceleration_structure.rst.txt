@@ -1,93 +1,12 @@
-Vulkan KHR 光线追踪标准
-===========================
+VK_KHR_acceleration_structure
+====================================
 
 .. dropdown:: 更新记录
    :color: muted
    :icon: history
 
-   * 2023/6/5 创建该文章
-   * 2023/6/5 增加 ``VK_KHR_acceleration_structure`` 章节
-   * 2023/6/5 增加 ``查看是否支持加速结构特性`` 章节
-   * 2023/6/5 增加 ``激活加速结构特性`` 章节
-   * 2023/6/5 增加 ``创建加速结构`` 章节
-   * 2023/6/6 更新 ``激活加速结构特性`` 章节
-   * 2023/6/6 更新 ``创建加速结构`` 章节
-   * 2023/6/7 增加 ``获取加速结构的构建大小`` 章节
-   * 2023/6/7 更新 ``VK_KHR_acceleration_structure`` 章节，增加 ``加速结构的创建和构建`` 注意项
-   * 2023/6/7 增加 ``销毁加速结构`` 章节
-   * 2023/6/8 增加 ``有关本文档结构`` 的说明
-   * 2023/6/8 增加 ``有关本文档结构`` 的说明
-   * 2023/6/8 将 ``获取加速结构的构建大小`` 章节插入到 ``创建加速结构`` 之前
-   * 2023/6/8 更新 ``获取加速结构的构建大小`` 章节
-   * 2023/6/8 增加 ``加速结构`` 章节
-   * 2023/6/8 增加 ``几何体`` 章节
-   * 2023/6/8 增加 ``顶层加速结构`` 章节
-   * 2023/6/8 增加 ``底层加速结构`` 章节
-   * 2023/6/8 增加 ``无效的图元和实体`` 章节
-   * 2023/6/8 增加 ``构建加速结构`` 章节
-   * 2023/6/9 更新 ``构建加速结构`` 章节
-   * 2023/6/10 更新 ``构建加速结构`` 章节
-   * 2023/6/11 更新 ``构建加速结构`` 章节
-   * 2023/6/11 增加 ``拷贝加速结构`` 章节
-   * 2023/6/11 增加 ``vkCmdBuildAccelerationStructuresKHR`` 章节
-   * 2023/6/11 增加 ``VkAccelerationStructureBuildGeometryInfoKHR`` 章节
-   * 2023/6/11 增加 ``VkBuildAccelerationStructureModeKHR`` 章节
-   * 2023/6/11 增加 ``VkDeviceOrHostAddressKHR`` 章节
-   * 2023/6/11 增加 ``VkDeviceOrHostAddressConstKHR`` 章节
-   * 2023/6/11 增加 ``VkAccelerationStructureGeometryKHR`` 章节
-   * 2023/6/11 增加 ``VkAccelerationStructureGeometryDataKHR`` 章节
-   * 2023/6/11 增加 ``VkAccelerationStructureGeometryTrianglesDataKHR`` 章节
-   * 2023/6/11 增加 ``VkTransformMatrixKHR`` 章节
-   * 2023/6/11 增加 ``VkAccelerationStructureGeometryAabbsDataKHR`` 章节
-   * 2023/6/11 增加 ``VkAabbPositionsKHR`` 章节
-   * 2023/6/11 增加 ``VkAccelerationStructureGeometryInstancesDataKHR`` 章节
-   * 2023/6/11 增加 ``VkAccelerationStructureInstanceKHR`` 章节
-   * 2023/6/11 增加 ``VkGeometryInstanceFlagBitsKHR`` 章节
-   * 2023/6/11 增加 ``VkAccelerationStructureBuildRangeInfoKHR`` 章节
-   * 2023/6/11 增加 ``vkGetAccelerationStructureBuildSizesKHR`` 章节
-   * 2023/6/11 增加 ``VkAccelerationStructureBuildSizesInfoKHR`` 章节
-   * 2023/6/11 增加 ``vkCreateAccelerationStructureKHR`` 章节
-   * 2023/6/11 增加 ``VkAccelerationStructureCreateInfoKHR`` 章节
-   * 2023/6/11 增加 ``vkGetAccelerationStructureDeviceAddressKHR`` 章节
-   * 2023/6/11 增加 ``VkAccelerationStructureDeviceAddressInfoKHR`` 章节
-   * 2023/6/11 增加 ``vkDestroyAccelerationStructureKHR`` 章节
-   * 2023/6/12 更新 ``VkAccelerationStructureBuildGeometryInfoKHR`` 章节
-   * 2023/6/12 调整 ``获取加速结构的构建大小`` 章节顺序
-   * 2023/6/12 调整 ``创建加速结构`` 章节顺序
-   * 2023/6/12 创建 ``加速结构的描述`` 章节，并将如下章节调整到当前章节中：
-        * ``VkAccelerationStructureBuildGeometryInfoKHR``
-        * ``VkBuildAccelerationStructureModeKHR``
-        * ``VkDeviceOrHostAddressKHR``
-        * ``VkDeviceOrHostAddressConstKHR``
-        * ``VkAccelerationStructureGeometryKHR``
-        * ``VkAccelerationStructureGeometryDataKHR``
-        * ``VkAccelerationStructureGeometryTrianglesDataKHR``
-        * ``VkTransformMatrixKHR``
-        * ``VkAccelerationStructureGeometryAabbsDataKHR``
-        * ``VkAabbPositionsKHR``
-        * ``VkAccelerationStructureGeometryInstancesDataKHR``
-        * ``VkAccelerationStructureInstanceKHR``
-        * ``VkGeometryInstanceFlagBitsKHR``
-   * 2023/6/12 增加 ``VkAccelerationStructureTypeKHR`` 章节
-   * 2023/6/12 增加 ``VkBuildAccelerationStructureFlagBitsKHR`` 章节
-
-.. admonition:: 有关本文档结构
-    :class: warning
-
-    本文档基本提炼于 ``Vulkan`` 标准文档，由于 ``Vulkan`` 标准文档中有时并没有按照开发者的学习逻辑角度布局其文档的前后关系，所以该文档在书写过程中章节会随时按照开发的前后逻辑关系随时调整。
-
-在 ``Vulkan API`` 中有5个与光追相关的扩展
-
-* `VK_KHR_acceleration_structure <https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html>`_
-* `VK_KHR_ray_tracing_pipeline <https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VK_KHR_ray_tracing_pipeline.html>`_
-* `VK_KHR_ray_query <https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VK_KHR_ray_query.html>`_
-* `VK_KHR_pipeline_library <https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VK_KHR_pipeline_library.html>`_
-* `VK_KHR_deferred_host_operations <https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VK_KHR_deferred_host_operations.html>`_
-
-按照扩展的顺序研究研究。
-
-VK_KHR_acceleration_structure
-###################################
+   * 2023/6/13 创建该文档
+   * 2023/6/13 将 ``Vulkan KHR 光线追踪标准`` 中的 ``VK_KHR_acceleration_structure`` 内容摘录于此
 
 .. admonition:: 加速结构的创建和构建
     :class: important
@@ -238,6 +157,91 @@ VK_KHR_acceleration_structure
     {
         /*创建失败*/
     }
+
+获取缓存的设备地址
+**********************
+
+vkGetBufferDeviceAddress
+-------------------------------
+
+为了使得着色器可以访问缓存我们需要获取缓存的设备地址，调用如下：
+
+.. code:: c++
+
+    // 由 VK_VERSION_1_2 提供
+    VkDeviceAddress vkGetBufferDeviceAddress(
+        VkDevice                                    device,
+        const VkBufferDeviceAddressInfo*            pInfo);
+
+或者与之相等的函数:
+
+vkGetBufferDeviceAddressKHR
+-------------------------------
+
+.. code:: c++
+
+    // 由 VK_KHR_buffer_device_address 提供
+    VkDeviceAddress vkGetBufferDeviceAddressKHR(
+        VkDevice                                    device,
+        const VkBufferDeviceAddressInfo*            pInfo);
+
+* :bdg-secondary:`device` 创建缓存的逻辑设备。
+* :bdg-secondary:`pInfo` 指向 ``VkBufferDeviceAddressInfo`` 结构体指针，内部指定了要获取的目标缓存。
+
+VkBufferDeviceAddressInfo
+-------------------------------
+
+``VkBufferDeviceAddressInfo`` 定义如下：
+
+.. code:: c++
+
+    // 由 VK_VERSION_1_2 提供
+    typedef struct VkBufferDeviceAddressInfo {
+        VkStructureType    sType;
+        const void*        pNext;
+        VkBuffer           buffer;
+    } VkBufferDeviceAddressInfo;
+
+或者与之相等的声明:
+
+VkBufferDeviceAddressInfoKHR
+------------------------------
+
+.. code:: c++
+
+    // 由 VK_KHR_buffer_device_address 提供
+    typedef VkBufferDeviceAddressInfo VkBufferDeviceAddressInfoKHR;
+
+.. admonition:: 正确用法
+   :class: note
+
+   * ``buffer`` 必须使用 ``VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT`` 创建。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 加速结构
 ****************
@@ -518,6 +522,62 @@ VkAccelerationStructureGeometryKHR
    * 如果 ``geometryType`` 为 ``VK_GEOMETRY_TYPE_TRIANGLES_KHR`` 的话， ``geometry`` 的 ``triangles`` 成员必须是一个有效的 ``VkAccelerationStructureGeometryTrianglesDataKHR`` 结构数据。
    * 如果 ``geometryType`` 为 ``VK_GEOMETRY_TYPE_AABBS_KHR`` 的话， ``geometry`` 的 ``aabbs`` 成员必须是一个有效的 ``VkAccelerationStructureGeometryAabbsDataKHR`` 结构数据。
    * 如果 ``geometryType`` 为 ``VK_GEOMETRY_TYPE_INSTANCES_KHR`` 的话， ``geometry`` 的 ``instances`` 成员必须是一个有效的 ``VkAccelerationStructureGeometryInstancesDataKHR`` 结构数据。
+
+VkGeometryTypeKHR
+----------------------------------------------------
+
+几何类型通过 ``VkGeometryTypeKHR`` 指定，其定义如下：
+
+.. code:: c++
+
+    // 由 VK_KHR_acceleration_structure 提供
+    typedef enum VkGeometryTypeKHR {
+        VK_GEOMETRY_TYPE_TRIANGLES_KHR = 0,
+        VK_GEOMETRY_TYPE_AABBS_KHR = 1,
+        VK_GEOMETRY_TYPE_INSTANCES_KHR = 2,
+    } VkGeometryTypeKHR;
+
+* :bdg-secondary:`VK_GEOMETRY_TYPE_TRIANGLES_KHR` 表示几何类型由三角形组成。
+* :bdg-secondary:`VK_GEOMETRY_TYPE_AABBS_KHR` 表示几何类型由轴对齐包围盒组成。
+* :bdg-secondary:`VK_GEOMETRY_TYPE_INSTANCES_KHR` 表示几何类型由加速结构实体组成。
+
+
+VkGeometryFlagBitsKHR
+----------------------------------------------------
+
+几何体在加速结构构架中额外参数：
+
+.. code:: c++
+
+    // 由 VK_KHR_acceleration_structure 提供
+    typedef enum VkGeometryFlagBitsKHR {
+        VK_GEOMETRY_OPAQUE_BIT_KHR = 0x00000001,
+        VK_GEOMETRY_NO_DUPLICATE_ANY_HIT_INVOCATION_BIT_KHR = 0x00000002,
+    } VkGeometryFlagBitsKHR;
+
+* :bdg-secondary:`VK_GEOMETRY_OPAQUE_BIT_KHR` 表示就算追踪时产生了一个击中组该几何体也不会去调用任意命中着色器。
+* :bdg-secondary:`VK_GEOMETRY_NO_DUPLICATE_ANY_HIT_INVOCATION_BIT_KHR` 表示驱动对于几何体上的每一个图元只会调用一次任意命中着色器。如果该标志位域没有设置，驱动可能会对该结合体调用多次任意命中着色器。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 VkAccelerationStructureGeometryDataKHR
 ----------------------------------------------------
@@ -803,6 +863,55 @@ vkGetAccelerationStructureBuildSizesKHR
     * 如果 ``pBuildInfo->geometryCount`` 不是 ``0`` 的话， ``pMaxPrimitiveCounts`` 必须指向一个有效的类型为 ``uint32_t`` 长度为 ``pBuildInfo->geometryCount`` 的数组指针。
     * 如果 ``pBuildInfo->pGeometries`` 或 ``pBuildInfo->ppGeometries`` 有一个 ``VK_GEOMETRY_TYPE_INSTANCES_KHR`` 类型的 ``geometryType`` 的话，每一个 ``pMaxPrimitiveCounts[i]`` 必须小于等于 ``VkPhysicalDeviceAccelerationStructurePropertiesKHR::maxInstanceCount`` 。
 
+VkAccelerationStructureBuildTypeKHR
+----------------------------------------------------
+
+对于 ``vkGetAccelerationStructureBuildSizesKHR`` 中的 ``buildType`` 可设值为：
+
+.. code:: c++
+
+    // 由 VK_KHR_acceleration_structure 提供
+    typedef enum VkAccelerationStructureBuildTypeKHR {
+        VK_ACCELERATION_STRUCTURE_BUILD_TYPE_HOST_KHR = 0,
+        VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR = 1,
+        VK_ACCELERATION_STRUCTURE_BUILD_TYPE_HOST_OR_DEVICE_KHR = 2,
+    } VkAccelerationStructureBuildTypeKHR;
+
+* :bdg-secondary:`VK_ACCELERATION_STRUCTURE_BUILD_TYPE_HOST_KHR` 请求的内存将会使用 ``host`` 端进行操作。
+* :bdg-secondary:`VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR` 请求的内存将会使用 ``device`` 端进行操作。
+* :bdg-secondary:`VK_ACCELERATION_STRUCTURE_BUILD_TYPE_HOST_OR_DEVICE_KHR` 请求的内存将会同时支持使用  ``host`` 端和 ``device`` 端进行操作。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 VkAccelerationStructureBuildSizesInfoKHR
 ----------------------------------------------------
 
@@ -1034,6 +1143,8 @@ vkCmdBuildAccelerationStructuresKHR
         * 对于 ``pInfos`` 数组中的任意一个 ``dstAccelerationStructure`` 必须是有效的 ``VkAccelerationStructureKHR`` 句柄。
         * 对于 ``pInfos`` 数组中的任意一个元素，如果 ``type`` 是 ``VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR`` 的话，对应的 ``dstAccelerationStructure`` 创建时 ``VkAccelerationStructureCreateInfoKHR::type`` 必须是 ``VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR`` 或 ``VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHR`` 。
         * 对于 ``pInfos`` 数组中的任意一个元素，如果 ``type`` 是 ``VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR`` 的话，对应的 ``dstAccelerationStructure`` 创建时 ``VkAccelerationStructureCreateInfoKHR::type`` 必须是 ``VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR`` 或 ``VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHR`` 。
+        * The buffer from which the buffer device address pInfos[i].scratchData.deviceAddress is queried must have been created with VK_BUFFER_USAGE_STORAGE_BUFFER_BIT usage flag
+        * The buffer from which the buffer device address pInfos[i].scratchData.deviceAddress is queried must have been created with VK_BUFFER_USAGE_STORAGE_BUFFER_BIT usage flag
 
 VkAccelerationStructureBuildRangeInfoKHR
 ----------------------------------------------------
@@ -1141,5 +1252,3 @@ vkDestroyAccelerationStructureKHR
 * :bdg-secondary:`device` 用于销毁加速结构的逻辑设备句柄。
 * :bdg-secondary:`accelerationStructure` 要销毁的加速结构句柄。
 * :bdg-secondary:`pAllocator` 指定使用 ``host`` 端的内存分配器。
-
-
