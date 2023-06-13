@@ -19,7 +19,7 @@ extensions = [
     'myst_parser', 
     'sphinx_copybutton',
     'sphinx_inline_tabs',
-    'sphinx_last_updated_by_git',
+    ##'sphinx_last_updated_by_git',
     'sphinx_design',
     'sphinx_comments'
     ]
@@ -86,3 +86,7 @@ html_theme_options = {
         },
     ],
 }
+
+html_css_files = [
+    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+]
