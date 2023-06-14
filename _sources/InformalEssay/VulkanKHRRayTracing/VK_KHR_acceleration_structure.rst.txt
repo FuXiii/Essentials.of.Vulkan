@@ -9,6 +9,10 @@ VK_KHR_acceleration_structure
    * 2023/6/13 将 ``Vulkan KHR 光线追踪标准`` 中的 ``VK_KHR_acceleration_structure`` 内容摘录于此
    * 2023/6/13 更新 ``拷贝加速结构`` 章节
    * 2023/6/13 增加 ``vkCmdWriteAccelerationStructuresPropertiesKHR`` 章节
+   * 2023/6/14 更新 ``vkCmdWriteAccelerationStructuresPropertiesKHR`` 章节
+   * 2023/6/14 增加 ``vkCmdCopyAccelerationStructureKHR`` 章节
+   * 2023/6/14 增加 ``VkCopyAccelerationStructureInfoKHR`` 章节
+   * 2023/6/14 增加 ``vkCmdCopyAccelerationStructureToMemoryKHR`` 章节
 
 .. admonition:: 加速结构的创建和构建
     :class: important
@@ -1007,7 +1011,7 @@ VkAccelerationStructureCreateInfoKHR
         VkDeviceAddress                          deviceAddress;
     } VkAccelerationStructureCreateInfoKHR;
 
-* :bdg-secondary:`sType` 必须是 ``VkStructureType::VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR`` 。
+* :bdg-secondary:`sType` 该结构体的类型，必须是 ``VkStructureType::VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR`` 。
 * :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向 ``VkAccelerationStructureMotionInfoNV`` 或 ``VkOpaqueCaptureDescriptorDataCreateInfoEXT`` 。
 * :bdg-secondary:`createFlags` 是 ``VkAccelerationStructureCreateFlagBitsKHR`` 的位域，用于创建加速结构时指定附加参数。
 * :bdg-secondary:`buffer` 加速结构将会存储的目标缓存。
@@ -1223,28 +1227,98 @@ vkCmdWriteAccelerationStructuresPropertiesKHR
    :class: note
 
    * 需要激活 ``VkPhysicalDeviceAccelerationStructureFeaturesKHR::accelerationStructure`` 特性
+   * ``queryPool`` 创建时的 ``queryType`` 必须与 ``vkCmdWriteAccelerationStructuresPropertiesKHR::queryType`` 相匹配。
+   * ``pAccelerationStructures`` 中的加速结构在必须通过 ``buffer`` 绑定到了设备内存上。
+   * ``pAccelerationStructures`` 中的加速结构在调用该指令之前必须已经构建完成。
+   * 如果 ``queryType`` 是 ``VK_QUERY_TYPE_ACCELERATION_STRUCTURE_COMPACTED_SIZE_KHR`` 的话， ``pAccelerationStructures`` 中所有的加速结构必须根据 ``VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_COMPACTION_BIT_KHR`` 构建的。
+   * ``queryType`` 必须是 ``VK_QUERY_TYPE_ACCELERATION_STRUCTURE_SIZE_KHR`` 或 ``VK_QUERY_TYPE_ACCELERATION_STRUCTURE_SERIALIZATION_BOTTOM_LEVEL_POINTERS_KHR`` 或 ``VK_QUERY_TYPE_ACCELERATION_STRUCTURE_COMPACTED_SIZE_KHR`` 或 ``VK_QUERY_TYPE_ACCELERATION_STRUCTURE_SERIALIZATION_SIZE_KHR`` 。
 
+vkCmdCopyAccelerationStructureKHR
+----------------------------------------------------
 
+拷贝加速结构调用：
 
+.. code:: c++
 
+    // 由 VK_KHR_acceleration_structure 提供
+    void vkCmdCopyAccelerationStructureKHR(
+        VkCommandBuffer                             commandBuffer,
+        const VkCopyAccelerationStructureInfoKHR*   pInfo);
 
+* :bdg-secondary:`commandBuffer` 用于记录该指令的命令缓存。
+* :bdg-secondary:`pInfo` 指向 ``VkCopyAccelerationStructureInfoKHR`` 结构体，用于定义拷贝操作。
 
+该指令将会根据 ``pInfo->mode`` 中的模式将 ``pInfo->src`` 的加速结构拷贝至 ``pInfo->dst`` 加速结构中。
 
+访问 ``pInfo->src`` 和 ``pInfo->dst`` 必须使用 ``VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR`` 或 ``VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR`` 访问类型，在 ``VK_PIPELINE_STAGE_2_ACCELERATION_STRUCTURE_COPY_BIT_KHR`` 或 ``VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR`` 管线阶段进行同步。
 
+.. admonition:: 正确用法
+   :class: note
 
+   * 需要激活 ``VkPhysicalDeviceAccelerationStructureFeaturesKHR::accelerationStructure`` 特性
+   * ``pInfo->src`` 中的加速结构在必须通过 ``buffer`` 绑定到了设备内存上。
+   * ``pInfo->dst`` 中的加速结构在必须通过 ``buffer`` 绑定到了设备内存上。
 
+VkCopyAccelerationStructureInfoKHR
+----------------------------------------------------
 
+``VkCopyAccelerationStructureInfoKHR`` 定义如下：
 
+.. code:: c++
 
+    // 由 VK_KHR_acceleration_structure 提供
+    typedef struct VkCopyAccelerationStructureInfoKHR {
+        VkStructureType                       sType;
+        const void*                           pNext;
+        VkAccelerationStructureKHR            src;
+        VkAccelerationStructureKHR            dst;
+        VkCopyAccelerationStructureModeKHR    mode;
+    } VkCopyAccelerationStructureInfoKHR;
 
+* :bdg-secondary:`sType` 该结构体的类型，必须是 ``VkStructureType::VK_STRUCTURE_TYPE_COPY_ACCELERATION_STRUCTURE_INFO_KHR`` 。
+* :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
+* :bdg-secondary:`src` 拷贝的源加速结构。
+* :bdg-secondary:`dst` 拷贝的目标加速结构。
+* :bdg-secondary:`mode` 用于在拷贝时增加额外操作。
 
+.. admonition:: 正确用法
+   :class: note
 
+   * ``mode`` 只能是 ``VK_COPY_ACCELERATION_STRUCTURE_MODE_COMPACT_KHR`` 或 ``VK_COPY_ACCELERATION_STRUCTURE_MODE_CLONE_KHR`` 。
+   * ``src`` 的源加速结构在执行该指令前必须构建完成 。
+   * 如果 ``mode`` 是 ``VK_COPY_ACCELERATION_STRUCTURE_MODE_COMPACT_KHR`` 的话， ``src`` 在构建时指定 ``VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_COMPACTION_BIT_KHR`` 。
+   * ``src`` 中的加速结构在必须通过 ``buffer`` 绑定到了设备内存上。
+   * ``dst`` 中的加速结构在必须通过 ``buffer`` 绑定到了设备内存上。
+   * ``dst`` 中的加速结构在必须通过 ``vkBindAccelerationStructureMemoryNV`` 绑定到一个 ``VkDeviceMemory`` 设备内存上。:bdg-danger:`该条存疑`
 
+拷贝时 ``mode`` 可能的值定义如下：
 
+.. code:: c++
 
+    // 由 VK_KHR_acceleration_structure 提供
+    typedef enum VkCopyAccelerationStructureModeKHR {
+        VK_COPY_ACCELERATION_STRUCTURE_MODE_CLONE_KHR = 0,
+        VK_COPY_ACCELERATION_STRUCTURE_MODE_COMPACT_KHR = 1,
+        VK_COPY_ACCELERATION_STRUCTURE_MODE_SERIALIZE_KHR = 2,
+        VK_COPY_ACCELERATION_STRUCTURE_MODE_DESERIALIZE_KHR = 3,
+    } VkCopyAccelerationStructureModeKHR;
 
+* :bdg-secondary:`VK_COPY_ACCELERATION_STRUCTURE_MODE_CLONE_KHR` 将 ``src`` 中的加速结构直接拷贝至 ``dst`` 中，其中 ``dst`` 的创建参数必须和 ``src`` 的创建参数一样。如果 ``src`` 引用了其他加速结构， ``dst`` 也需要进行相应的匹配。
+* :bdg-secondary:`VK_COPY_ACCELERATION_STRUCTURE_MODE_COMPACT_KHR` 将 ``src`` 中的加速结构压缩版本拷贝至 ``dst`` 中，其中 ``dst`` 的加速结构大小最起码需要与 ``src`` 构建之后使用 ``vkCmdWriteAccelerationStructuresPropertiesKHR`` 或 ``vkWriteAccelerationStructuresPropertiesKHR`` 获取到的大小一致。如果 ``src`` 引用了其他加速结构， ``dst`` 也需要进行相应的匹配。
+* :bdg-secondary:`VK_COPY_ACCELERATION_STRUCTURE_MODE_SERIALIZE_KHR` 将加速结构序列化到一个半透明的格式中，可以在兼容实现中加载。
+* :bdg-secondary:`VK_COPY_ACCELERATION_STRUCTURE_MODE_DESERIALIZE_KHR` 将半透明的格式反序列化到中加速结构的缓存中。
 
+vkCmdCopyAccelerationStructureToMemoryKHR
+----------------------------------------------------
 
+将加速结构拷贝至设备内存中调用：
+
+.. code:: c++
+
+    // 由 VK_KHR_acceleration_structure 提供
+    void vkCmdCopyAccelerationStructureToMemoryKHR(
+        VkCommandBuffer                             commandBuffer,
+        const VkCopyAccelerationStructureToMemoryInfoKHR* pInfo);
 
 
 
