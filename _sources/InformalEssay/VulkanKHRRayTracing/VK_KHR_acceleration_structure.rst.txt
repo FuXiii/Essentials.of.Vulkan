@@ -13,6 +13,14 @@ VK_KHR_acceleration_structure
    * 2023/6/14 增加 ``vkCmdCopyAccelerationStructureKHR`` 章节
    * 2023/6/14 增加 ``VkCopyAccelerationStructureInfoKHR`` 章节
    * 2023/6/14 增加 ``vkCmdCopyAccelerationStructureToMemoryKHR`` 章节
+   * 2023/6/15 更新 ``vkCmdCopyAccelerationStructureToMemoryKHR`` 章节
+   * 2023/6/15 修改 ``获取64位加速结构设备地址`` 章节顺序
+   * 2023/6/15 增加 ``VkCopyAccelerationStructureToMemoryInfoKHR`` 章节
+   * 2023/6/15 增加 ``vkGetDeviceAccelerationStructureCompatibilityKHR`` 章节
+   * 2023/6/15 增加 ``VkAccelerationStructureVersionInfoKHR`` 章节
+   * 2023/6/15 增加 ``VkAccelerationStructureCompatibilityKHR`` 章节
+   * 2023/6/15 修改 ``销毁加速结构`` 章节顺序
+   * 2023/6/15 增加 ``加速结构的 Host 端操作`` 章节
 
 .. admonition:: 加速结构的创建和构建
     :class: important
@@ -390,13 +398,13 @@ VkAccelerationStructureBuildGeometryInfoKHR
 
    * 只有 ``pGeometries`` 或者 ``ppGeometries`` 其中之一可以设置有效指针，另外一个必须是 ``NULL`` 。
    * 如果 ``type`` 是 ``VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR`` ，则 ``pGeometries`` 或 ``ppGeometries`` 数组的 ``geometryType`` 必须是 ``VK_GEOMETRY_TYPE_INSTANCES_KHR`` 。
-   * 如果 ``type`` 是 ``VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR`` ，则 ``geometryCount `` 只能是 ``1`` 。
+   * 如果 ``type`` 是 ``VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR`` ，则 ``geometryCount`` 只能是 ``1`` 。
    * 如果 ``type`` 是 ``VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR`` ，则 ``pGeometries`` 或 ``ppGeometries`` 数组的 ``geometryType`` 必须不能是 ``VK_GEOMETRY_TYPE_INSTANCES_KHR`` 。
    * 如果 ``type`` 是 ``VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR`` ，则 ``pGeometries`` 或 ``ppGeometries`` 数组的 ``geometryType`` 必须相同 。
    * 如果 ``type`` 是 ``VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR`` ，则 ``geometryCount`` 必须小于等于 ``VkPhysicalDeviceAccelerationStructurePropertiesKHR::maxGeometryCount`` 。
    * 如果 ``type`` 是 ``VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR`` ，则 ``pGeometries`` 或 ``ppGeometries`` 数组的 ``geometryType`` 是 ``VK_GEOMETRY_TYPE_AABBS_KHR`` 的话，所有数量的 ``AABB`` 对应的所有几何体必须小于等于 ``VkPhysicalDeviceAccelerationStructurePropertiesKHR::maxPrimitiveCount`` 。
    * 如果 ``type`` 是 ``VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR`` ，则 ``pGeometries`` 或 ``ppGeometries`` 数组的 ``geometryType`` 是 ``VK_GEOMETRY_TYPE_TRIANGLES_KHR`` 的话，所有数量的三角形对应的所有几何体必须小于等于 ``VkPhysicalDeviceAccelerationStructurePropertiesKHR::maxPrimitiveCount`` 。
-   * 如果 ``flags `` 包含 ``VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR`` 位域 ，就不能再包含 ``VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_BUILD_BIT_KHR`` 位域了。
+   * 如果 ``flags`` 包含 ``VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR`` 位域 ，就不能再包含 ``VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_BUILD_BIT_KHR`` 位域了。
 
 VkBuildAccelerationStructureFlagBitsKHR
 ----------------------------------------------------
@@ -859,7 +867,7 @@ vkGetAccelerationStructureBuildSizesKHR
 * 对于每一个与 ``VkAccelerationStructureBuildGeometryInfoKHR`` 对应的 ``VkAccelerationStructureBuildRangeInfoKHR`` ：
     * 其 ``VkAccelerationStructureBuildGeometryInfoKHR`` 的 ``primitiveCount`` 成员需要小于等于对应 ``pMaxPrimitiveCounts`` 的元素。
 
-与之相似的 ``updateScratchSize`` 在如上规范下使用 ``VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR`` 的 ``mode`` 的话将支持任意构建指令，并且 ``buildScratchSize`` 值在如上规范下使用 ``VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR `` 的 ``mode`` 的话将支持任意构建指令。
+与之相似的 ``updateScratchSize`` 在如上规范下使用 ``VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR`` 的 ``mode`` 的话将支持任意构建指令，并且 ``buildScratchSize`` 值在如上规范下使用 ``VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR`` 的 ``mode`` 的话将支持任意构建指令。
 
 .. admonition:: 正确用法
     :class: note
@@ -1085,11 +1093,69 @@ VkAccelerationStructureCreateFlagBitsKHR
 * :bdg-secondary:`VK_ACCELERATION_STRUCTURE_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT_KHR` 表示加速结构的地址可以被之后的一系列执行存储和重用。
 
 
+获取64位加速结构设备地址
+*************************
 
+vkGetAccelerationStructureDeviceAddressKHR
+----------------------------------------------------
 
+获取 ``64`` 位的加速结构设备地址，通过调用：
 
+.. code:: c++
 
+    // 由 VK_KHR_acceleration_structure 提供
+    VkDeviceAddress vkGetAccelerationStructureDeviceAddressKHR(
+        VkDevice                                    device,
+        const VkAccelerationStructureDeviceAddressInfoKHR* pInfo);
 
+* :bdg-secondary:`device` 用于之前创建加速结构的逻辑设备句柄。
+* :bdg-secondary:`pInfo` 指向用于设定获取目标加速结构地址的 ``VkAccelerationStructureDeviceAddressInfoKHR`` 结构体。
+
+该函数返回的 ``64`` 位的加速结构地址，可以用于与加速结构相关的设备和着色器操作，比如光线遍历和绑定加速结构。
+
+如果加速结构在创建时 ``VkAccelerationStructureCreateInfoKHR::deviceAddress`` 给的是有效设备地址，该函数将返回与之相同的设备地址。
+
+如果加速结构在创建时 ``type`` 是 ``VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHR`` 时，该函数返回的地址在使用相同的 ``VkBuffer`` 分配的 ``VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHR`` 的类型加速结构必须与其他加速度结构的相对偏移量一致。
+
+返回的地址必须以 ``256`` 比特对齐。
+
+VkAccelerationStructureDeviceAddressInfoKHR
+----------------------------------------------------
+
+相应的 ``VkAccelerationStructureDeviceAddressInfoKHR`` 定义为：
+
+.. code:: c++
+
+    // 由 VK_KHR_acceleration_structure 提供
+    typedef struct VkAccelerationStructureDeviceAddressInfoKHR {
+        VkStructureType               sType;
+        const void*                   pNext;
+        VkAccelerationStructureKHR    accelerationStructure;
+    } VkAccelerationStructureDeviceAddressInfoKHR;
+
+* :bdg-secondary:`sType` 该结构体的类型，必须为 ``VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_DEVICE_ADDRESS_INFO_KHR`` 。
+* :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
+* :bdg-secondary:`accelerationStructure` 设定要获取设备地址的目标加速结构。
+
+销毁加速结构
+**********************
+
+vkDestroyAccelerationStructureKHR
+----------------------------------------------------
+
+销毁一个加速结构，通过调用：
+
+.. code:: c++
+
+    // 由 VK_KHR_acceleration_structure 提供
+    void vkDestroyAccelerationStructureKHR(
+        VkDevice                                    device,
+        VkAccelerationStructureKHR                  accelerationStructure,
+        const VkAllocationCallbacks*                pAllocator);
+
+* :bdg-secondary:`device` 用于销毁加速结构的逻辑设备句柄。
+* :bdg-secondary:`accelerationStructure` 要销毁的加速结构句柄。
+* :bdg-secondary:`pAllocator` 指定使用 ``host`` 端的内存分配器。
 
 
 
@@ -1320,68 +1386,184 @@ vkCmdCopyAccelerationStructureToMemoryKHR
         VkCommandBuffer                             commandBuffer,
         const VkCopyAccelerationStructureToMemoryInfoKHR* pInfo);
 
+* :bdg-secondary:`commandBuffer` 用于记录该指令的命令缓存。
+* :bdg-secondary:`pInfo` 定义拷贝操作。
 
+访问 ``pInfo->src`` 的加速结构时必须在 ``VK_PIPELINE_STAGE_2_ACCELERATION_STRUCTURE_COPY_BIT_KHR`` 或 ``VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR`` 管线阶段使用 ``VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR`` 访问类型进行同步。
+访问 ``pInfo->dst.deviceAddress`` 的加速结构时必须在 ``VK_PIPELINE_STAGE_2_ACCELERATION_STRUCTURE_COPY_BIT_KHR`` 或 ``VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR`` 管线阶段使用 ``VK_ACCESS_TRANSFER_WRITE_BIT`` 访问类型进行同步。
 
-获取64位加速结构设备地址
-*************************
+该指令与 ``vkCopyAccelerationStructureToMemoryKHR`` 函数的结果相似，只不过 ``vkCmdCopyAccelerationStructureToMemoryKHR`` 是写入 ``device`` 地址中，并且在 ``device`` 端执行而不是在 ``host`` 端。这两个指令函数的输出结果不一定每一个比特位都相同，但是在使用上 ``vkCmdCopyMemoryToAccelerationStructureKHR`` 和 ``vkCopyMemoryToAccelerationStructureKHR`` 是一样的。
 
-vkGetAccelerationStructureDeviceAddressKHR
+序列化数据头结构如下：
+
+* ``VK_UUID_SIZE`` 比特数据与 ``VkPhysicalDeviceIDProperties::driverUUID`` 相匹配。
+* ``VK_UUID_SIZE`` 比特数据使用 ``vkGetDeviceAccelerationStructureCompatibilityKHR`` 来进行兼容性对照。
+* 一个 ``64`` 位整型的总大小与 ``VK_QUERY_TYPE_ACCELERATION_STRUCTURE_SERIALIZATION_SIZE_KHR`` 查询到的相匹配。
+* 一个 ``64`` 位整型的反序列化大小最终将会传入 ``VkAccelerationStructureCreateInfoKHR::size`` 。
+* 一个 ``64`` 位整型表示加速结构句柄的数量。该数量与使用 ``VK_QUERY_TYPE_ACCELERATION_STRUCTURE_SERIALIZATION_BOTTOM_LEVEL_POINTERS_KHR`` 查询到的数量相匹配。对于底层加速结构来说是 ``0`` ，但对于顶层加速结构来说是驱动实现相关的。句柄的数量和顺序与我们用于构建时使用的加速结构可能会不匹配。
+
+``vkGetAccelerationStructureDeviceAddressKHR`` 返回相匹配的句柄将会在缓存中根据数量紧凑排布。应用期望在反序列化时将句柄与应用生成的底层加速结构进行映射。将会根据 ``host`` 端的字节序列书序写入或读出缓存的序列化数据。
+
+.. admonition:: 正确用法
+   :class: note
+
+   * 需要激活 ``VkPhysicalDeviceAccelerationStructureFeaturesKHR::accelerationStructure`` 特性。
+   * ``pInfo->dst.deviceAddress`` 必须是一个缓存绑定到设备内内存的有效设备地址。
+   * ``pInfo->dst.deviceAddress`` 必须是 ``256`` 比特对齐。
+   * 如果缓存指向的 ``pInfo->dst.deviceAddress`` 是非稀疏则必须绑定到一个单一的 ``VkDeviceMemory`` 对象上。
+   * ``pInfo->src`` 使用到的 ``buffer`` 必须绑定到一个设备内存中。
+
+VkCopyAccelerationStructureToMemoryInfoKHR
 ----------------------------------------------------
-
-获取 ``64`` 位的加速结构设备地址，通过调用：
 
 .. code:: c++
 
     // 由 VK_KHR_acceleration_structure 提供
-    VkDeviceAddress vkGetAccelerationStructureDeviceAddressKHR(
-        VkDevice                                    device,
-        const VkAccelerationStructureDeviceAddressInfoKHR* pInfo);
+    typedef struct VkCopyAccelerationStructureToMemoryInfoKHR {
+        VkStructureType                       sType;
+        const void*                           pNext;
+        VkAccelerationStructureKHR            src;
+        VkDeviceOrHostAddressKHR              dst;
+        VkCopyAccelerationStructureModeKHR    mode;
+    } VkCopyAccelerationStructureToMemoryInfoKHR;
 
-* :bdg-secondary:`device` 用于之前创建加速结构的逻辑设备句柄。
-* :bdg-secondary:`pInfo` 指向用于设定获取目标加速结构地址的 ``VkAccelerationStructureDeviceAddressInfoKHR`` 结构体。
-
-该函数返回的 ``64`` 位的加速结构地址，可以用于与加速结构相关的设备和着色器操作，比如光线遍历和绑定加速结构。
-
-如果加速结构在创建时 ``VkAccelerationStructureCreateInfoKHR::deviceAddress`` 给的是有效设备地址，该函数将返回与之相同的设备地址。
-
-如果加速结构在创建时 ``type`` 是 ``VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHR`` 时，该函数返回的地址在使用相同的 ``VkBuffer`` 分配的 ``VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHR`` 的类型加速结构必须与其他加速度结构的相对偏移量一致。
-
-返回的地址必须以 ``256`` 比特对齐。
-
-VkAccelerationStructureDeviceAddressInfoKHR
-----------------------------------------------------
-
-相应的 ``VkAccelerationStructureDeviceAddressInfoKHR`` 定义为：
-
-.. code:: c++
-
-    // 由 VK_KHR_acceleration_structure 提供
-    typedef struct VkAccelerationStructureDeviceAddressInfoKHR {
-        VkStructureType               sType;
-        const void*                   pNext;
-        VkAccelerationStructureKHR    accelerationStructure;
-    } VkAccelerationStructureDeviceAddressInfoKHR;
-
-* :bdg-secondary:`sType` 该结构体的类型，必须为 ``VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_DEVICE_ADDRESS_INFO_KHR`` 。
+* :bdg-secondary:`sType` 该结构体的类型，必须是 ``VkStructureType::VK_STRUCTURE_TYPE_COPY_ACCELERATION_STRUCTURE_TO_MEMORY_INFO_KHR`` 。
 * :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
-* :bdg-secondary:`accelerationStructure` 设定要获取设备地址的目标加速结构。
+* :bdg-secondary:`src` 拷贝的源加速结构。
+* :bdg-secondary:`dst` 是拷贝目标 ``host`` 或 ``device`` 内存地址。
+* :bdg-secondary:`mode` 是拷贝时的额外参数。
 
-销毁加速结构
-**********************
+.. admonition:: 正确用法
+   :class: note
 
-vkDestroyAccelerationStructureKHR
+   * ``src`` 的加速结构必须在执行拷贝指令前创建完成。
+   * ``dst`` 的内存大小最起码需要与使用 ``VK_QUERY_TYPE_ACCELERATION_STRUCTURE_SERIALIZATION_SIZE_KHR`` 查询类型调用 ``vkWriteAccelerationStructuresPropertiesKHR`` 或 ``vkCmdWriteAccelerationStructuresPropertiesKHR`` 函数获取到 ``src`` 的序列化大小相同。
+   * ``mode`` 只能是 ``VK_COPY_ACCELERATION_STRUCTURE_MODE_SERIALIZE_KHR`` 。
+
+vkCmdCopyMemoryToAccelerationStructureKHR
 ----------------------------------------------------
 
-销毁一个加速结构，通过调用：
+将设备内存拷贝至加速结构，调用：
 
 .. code:: c++
 
     // 由 VK_KHR_acceleration_structure 提供
-    void vkDestroyAccelerationStructureKHR(
-        VkDevice                                    device,
-        VkAccelerationStructureKHR                  accelerationStructure,
-        const VkAllocationCallbacks*                pAllocator);
+    void vkCmdCopyMemoryToAccelerationStructureKHR(
+        VkCommandBuffer                             commandBuffer,
+        const VkCopyMemoryToAccelerationStructureInfoKHR* pInfo);
 
-* :bdg-secondary:`device` 用于销毁加速结构的逻辑设备句柄。
-* :bdg-secondary:`accelerationStructure` 要销毁的加速结构句柄。
-* :bdg-secondary:`pAllocator` 指定使用 ``host`` 端的内存分配器。
+* :bdg-secondary:`commandBuffer` 用于记录该指令的命令缓存。
+* :bdg-secondary:`pInfo` 定义拷贝操作。
+
+
+访问 ``pInfo->dst`` 的加速结构时必须在 ``VK_PIPELINE_STAGE_2_ACCELERATION_STRUCTURE_COPY_BIT_KHR`` 或 ``VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR`` 管线阶段使用 ``VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR`` 访问类型进行同步。
+访问 ``pInfo->src.deviceAddress`` 的地址时必须在 ``VK_PIPELINE_STAGE_2_ACCELERATION_STRUCTURE_COPY_BIT_KHR`` 或 ``VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR`` 管线阶段使用 ``VK_ACCESS_TRANSFER_READ_BIT`` 访问类型进行同步。
+
+该指令支持使用 ``vkCmdCopyAccelerationStructureToMemoryKHR`` 或 ``vkCopyAccelerationStructureToMemoryKHR`` 拷贝的目标内存地址。
+
+该指令的的反序列化将会作为 ``vkCmdCopyAccelerationStructureToMemoryKHR`` 输入。
+
+.. admonition:: 正确用法
+   :class: note
+
+   * 需要激活 ``VkPhysicalDeviceAccelerationStructureFeaturesKHR::accelerationStructure`` 特性。
+   * ``pInfo->src.deviceAddress`` 必须是已经绑定到设备内存的缓存地址。
+   * ``pInfo->src.deviceAddress`` 必须是 ``256`` 比特对齐。
+   * 如果缓存指向的 ``pInfo->src.deviceAddress`` 是非稀疏则必须绑定到一个单一的 ``VkDeviceMemory`` 对象上。
+   * ``pInfo->dst`` 使用到的 ``buffer`` 必须绑定到一个设备内存中。
+
+VkCopyMemoryToAccelerationStructureInfoKHR
+----------------------------------------------------
+
+``VkCopyMemoryToAccelerationStructureInfoKHR`` 结构体定义如下：
+
+.. code:: c++
+
+    // 由 VK_KHR_acceleration_structure 提供
+    typedef struct VkCopyMemoryToAccelerationStructureInfoKHR {
+        VkStructureType                       sType;
+        const void*                           pNext;
+        VkDeviceOrHostAddressConstKHR         src;
+        VkAccelerationStructureKHR            dst;
+        VkCopyAccelerationStructureModeKHR    mode;
+    } VkCopyMemoryToAccelerationStructureInfoKHR;
+
+* :bdg-secondary:`sType` 该结构体的类型，必须是 ``VkStructureType::VK_STRUCTURE_TYPE_COPY_MEMORY_TO_ACCELERATION_STRUCTURE_INFO_KHR`` 。
+* :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
+* :bdg-secondary:`src` 拷贝的源 ``host`` 或 ``device`` 内存地址。
+* :bdg-secondary:`dst` 是拷贝目标加速结构。
+* :bdg-secondary:`mode` 是拷贝时的额外参数。
+
+.. admonition:: 正确用法
+   :class: note
+
+   * ``src`` 的内存指针必须包含之前使用 ``vkCmdCopyAccelerationStructureToMemoryKHR`` 获取的序列化数据。可以用该函数将加速结构进行数据重定位移动。
+   * ``mode`` 只能是 ``VK_COPY_ACCELERATION_STRUCTURE_MODE_DESERIALIZE_KHR`` 。
+   * ``src`` 中的数据必须与 ``vkGetDeviceAccelerationStructureCompatibilityKHR`` 返回的目标物理设备有兼容的格式。
+   * ``dst`` 创建的大小需要大于等于 ``src`` 序列化的大小。
+
+vkGetDeviceAccelerationStructureCompatibilityKHR
+----------------------------------------------------
+
+为了检查序列化的加速结构是否与当前设备兼容：
+
+.. code:: c++
+
+    // 由 VK_KHR_acceleration_structure 提供
+    void vkGetDeviceAccelerationStructureCompatibilityKHR(
+        VkDevice                                    device,
+        const VkAccelerationStructureVersionInfoKHR* pVersionInfo,
+        VkAccelerationStructureCompatibilityKHR*    pCompatibility);
+
+* :bdg-secondary:`device` 用于检查版本的设备。
+* :bdg-secondary:`pVersionInfo` 用于设置检查版本的信息。
+* :bdg-secondary:`pCompatibility` 用于返回兼容性信息。
+
+.. admonition:: 正确用法
+   :class: note
+
+   * 需要激活 ``VkPhysicalDeviceAccelerationStructureFeaturesKHR::accelerationStructure`` 特性。
+
+VkAccelerationStructureVersionInfoKHR
+----------------------------------------------------
+
+``VkAccelerationStructureVersionInfoKHR`` 结构体定义如下：
+
+.. code:: c++
+
+    // 由 VK_KHR_acceleration_structure 提供
+    typedef struct VkAccelerationStructureVersionInfoKHR {
+        VkStructureType    sType;
+        const void*        pNext;
+        const uint8_t*     pVersionData;
+    } VkAccelerationStructureVersionInfoKHR;
+
+* :bdg-secondary:`sType` 该结构体的类型，必须是 ``VkStructureType::VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_VERSION_INFO_KHR`` 。
+* :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
+* :bdg-secondary:`pVersionData` 指向 ``vkCmdCopyAccelerationStructureToMemoryKHR`` 中定义的加速结构版本头。
+
+.. note:: ``pVersionData`` 指向一个 :math:`2\times VK\_UUID\_SIZE` 的 ``uint8_t`` 的数组，而不是两个 ``VK_UUID_SIZE`` 数组。因为此成员的预期用例将指向内存中加载先前序列化的加速结构（通过vkCmdCopyAccelerationStructureToMemoryKHR或vkCopyAcceleration StructureToMemory KHR）的头部。使用数组将需要 ``UUID`` 的额外拷贝。:bdg-danger:`不知所云`
+
+.. admonition:: 正确用法
+   :class: note
+
+   * ``pVersionData`` 必须是指向 :math:`2\times VK\_UUID\_SIZE` 的 ``uint8_t`` 的数组。
+
+VkAccelerationStructureCompatibilityKHR
+----------------------------------------------------
+
+``pCompatibility`` 可能的返回值如下：
+
+.. code:: c++
+
+    // 由 VK_KHR_acceleration_structure 提供
+    typedef enum VkAccelerationStructureCompatibilityKHR {
+        VK_ACCELERATION_STRUCTURE_COMPATIBILITY_COMPATIBLE_KHR = 0,
+        VK_ACCELERATION_STRUCTURE_COMPATIBILITY_INCOMPATIBLE_KHR = 1,
+    } VkAccelerationStructureCompatibilityKHR;
+
+* :bdg-secondary:`VK_ACCELERATION_STRUCTURE_COMPATIBILITY_COMPATIBLE_KHR` 表示 ``pVersionData`` 的加速结构版本与 ``device`` 兼容。
+* :bdg-secondary:`VK_ACCELERATION_STRUCTURE_COMPATIBILITY_INCOMPATIBLE_KHR` 表示 ``pVersionData`` 的加速结构版本与 ``device`` 不兼容。
+
+加速结构的 Host 端操作
+*****************************
