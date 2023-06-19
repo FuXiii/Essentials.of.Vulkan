@@ -7,6 +7,7 @@
 ## 2023/6/15
 
 >* 更新`VK_KHR_acceleration_structure`文档
+>* 增加`VK_KHR_deferred_host_operations`文档
 
 ## 2023/6/14
 
