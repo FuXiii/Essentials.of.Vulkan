@@ -21,6 +21,11 @@ VK_KHR_acceleration_structure
    * 2023/6/15 增加 ``VkAccelerationStructureCompatibilityKHR`` 章节
    * 2023/6/15 修改 ``销毁加速结构`` 章节顺序
    * 2023/6/15 增加 ``加速结构的 Host 端操作`` 章节
+   * 2023/6/19 更新 ``加速结构的 Host 端操作`` 章节
+   * 2023/6/19 增加 ``vkBuildAccelerationStructuresKHR`` 章节
+   * 2023/6/19 增加 ``vkCopyAccelerationStructureKHR`` 章节
+   * 2023/6/19 增加 ``vkCopyAccelerationStructureToMemoryKHR`` 章节
+   * 2023/6/19 增加 ``vkWriteAccelerationStructuresPropertiesKHR`` 章节
 
 .. admonition:: 加速结构的创建和构建
     :class: important
@@ -269,7 +274,7 @@ VkBufferDeviceAddressInfoKHR
 
 一个加速结构被构建的标志是对于一个目标加速结构执行了加速结构构建指令或拷贝指令。
 
-.. figure:: ../_static/VulkanDocAccelerationStructure.svg
+.. figure:: ../../_static/VulkanDocAccelerationStructure.svg
 
     加速结构
 
@@ -1567,3 +1572,170 @@ VkAccelerationStructureCompatibilityKHR
 
 加速结构的 Host 端操作
 *****************************
+
+如果驱动支持 ``VkPhysicalDeviceAccelerationStructureFeaturesKHR::accelerationStructureHostCommands`` 特性的话，这说明对于加速结构支持在 ``Host`` 端进行操作。相关 ``Host`` 端操作函数与 ``Device`` 端操作函数对应如下：
+
+* ``vkBuildAccelerationStructuresKHR`` 对应 ``vkCmdBuildAccelerationStructuresKHR``
+* ``vkCopyAccelerationStructureKHR`` 对应 ``vkCmdCopyAccelerationStructureKHR``
+* ``vkCopyAccelerationStructureToMemoryKHR`` 对应 ``vkCmdCopyAccelerationStructureToMemoryKHR``
+* ``vkCopyMemoryToAccelerationStructureKHR`` 对应 ``vkCmdCopyMemoryToAccelerationStructureKHR``
+* ``vkWriteAccelerationStructuresPropertiesKHR`` 对应 ``vkCmdWriteAccelerationStructuresPropertiesKHR``
+
+``Host`` 端操作函数与 ``Device`` 端操作函数在功能上是等价的，只不过是在 ``Host`` 端进行操作，而不是插入到命令缓存中（ ``command buffers`` ）。
+
+所有 ``Host`` 端的加速结构必须将内存绑定到 ``Host`` 端可访问的内存上，并且加速结构构建时的所有输入数据必须使用 ``Host`` 端内存而不是 ``Device`` 端数据。当时用 ``Host`` 端的函数时不需要应用将加速结构的内存映射出来。
+
+.. note:: ``vkBuildAccelerationStructuresKHR`` 和 ``vkCmdBuildAccelerationStructuresKHR`` 也许会使用不同的算法，然而并没有要求这两个函数的结果需要完全相同。这两个函数可能会分别建立各自完全不同的内存或遍历性能，但是应该尽可能地尽量做到相似。
+
+    除了这些细节之外，``Host`` 和 ``Device`` 操作是可互换兼容的。比如可以使用 ``vkBuildAccelerationStructuresKHR`` 构建一个加速结构，之后可以使用 ``vkCmdCopyAccelerationStructureKHR`` 将其进行压缩，并且使用 ``vkCopyAccelerationStructureToMemoryKHR`` 将加速结构进行序列化。
+
+.. note:: 为了高效执行，由于驱动可能在指令执行期间反复的读写加速结构内存，所以操作这个加速结构的内存需要总是绑定到 ``host cached`` 内存上（ ``VK_MEMORY_PROPERTY_HOST_CACHED_BIT`` ）。
+
+vkBuildAccelerationStructuresKHR
+----------------------------------------------------
+
+在 ``Host`` 端构建一个加速结构调用：
+
+.. code:: c++
+
+    // 由 VK_KHR_acceleration_structure 提供
+    VkResult vkBuildAccelerationStructuresKHR(
+        VkDevice                                    device,
+        VkDeferredOperationKHR                      deferredOperation,
+        uint32_t                                    infoCount,
+        const VkAccelerationStructureBuildGeometryInfoKHR* pInfos,
+        const VkAccelerationStructureBuildRangeInfoKHR* const* ppBuildRangeInfos);
+
+* :bdg-secondary:`device` 表示构建加速结构对应的 ``VkDevice`` 。
+* :bdg-secondary:`deferredOperation` 是一个可选的 ``VkDeferredOperationKHR`` 句柄，为该指令申请延迟操作。
+* :bdg-secondary:`infoCount` 表示要构建的加速结构数量。并表示 ``pInfos`` 和 ``ppBuildRangeInfos`` 需要提供的数量。
+* :bdg-secondary:`pInfos` 指向数量为 ``infoCount`` 类型为 ``VkAccelerationStructureBuildGeometryInfoKHR`` 结构体的数组，用于定义每一个要构建的加速结构。
+* :bdg-secondary:`ppBuildRangeInfos` 指向数量为 ``infoCount`` 类型为 ``VkAccelerationStructureBuildRangeInfoKHR`` 结构体指针数组。，每一个 ``ppBuildRangeInfos[i]`` 都指向一个数量为 ``pInfos[i].geometryCount`` 类型为 ``VkAccelerationStructureBuildRangeInfoKHR`` 的结构体数组，用于对应 ``pInfos[i]`` 中几何数句的动态内存偏移。
+
+该函数的工作和 ``vkCmdBuildAccelerationStructuresKHR`` 函数一致，只不过执行在 ``Host`` 端上。
+
+``vkBuildAccelerationStructuresKHR`` 支持一次性构建多个加速结构，然而构建与构建之间没有内置的顺序和同步。
+
+.. note:: 这也就意味着不能通过 ``vkBuildAccelerationStructuresKHR`` 函数调用同时构建底层加速结构和顶层加速结构。同样也不允许使用任何加速结构或暂付缓存的内存混叠。
+
+vkCopyAccelerationStructureKHR
+----------------------------------------------------
+
+在 ``Host`` 端拷贝和压缩加速结构，调用：
+
+.. code:: c++
+
+    // 由 VK_KHR_acceleration_structure 提供
+    VkResult vkCopyAccelerationStructureKHR(
+        VkDevice                                    device,
+        VkDeferredOperationKHR                      deferredOperation,
+        const VkCopyAccelerationStructureInfoKHR*   pInfo);
+
+* :bdg-secondary:`device` 表示构建加速结构对应的 ``VkDevice`` 。
+* :bdg-secondary:`deferredOperation` 是一个可选的 ``VkDeferredOperationKHR`` 句柄，为该指令申请延迟操作。
+* :bdg-secondary:`pInfo` 指向用于定义拷贝操作的 ``VkCopyAccelerationStructureInfoKHR`` 结构体。
+
+该函数的工作和 ``vkCmdCopyAccelerationStructureKHR`` 函数一致，只不过执行在 ``Host`` 端上。
+
+.. admonition:: 正确用法
+   :class: note
+
+   * 需要激活 ``VkPhysicalDeviceAccelerationStructureFeaturesKHR::accelerationStructureHostCommands`` 特性。
+   * 如果 ``deferredOperation`` 不是 ``VK_NULL_HANDLE`` 的话，其必须是一个有效的 ``VkDeferredOperationKHR`` 句柄。
+   * 任何与 ``deferredOperation`` 相关的前操作都需要完成结束。
+   * 用于 ``pInfo->src`` 的 ``buffer`` 必须绑定到 ``Host`` 端可访问的内存上。
+   * 用于 ``pInfo->dst`` 的 ``buffer`` 必须绑定到 ``Host`` 端可访问的内存上。
+   * 用于 ``pInfo->src`` 的 ``buffer`` 必须绑定到没有分配多实体的内存上。
+   * 用于 ``pInfo->dst`` 的 ``buffer`` 必须绑定到没有分配多实体的内存上。
+
+vkCopyMemoryToAccelerationStructureKHR
+-----------------------------------------
+
+将 ``Host`` 端可访问的内存拷贝到加速结构中，调用：
+
+.. code:: c++
+
+    // 由 VK_KHR_acceleration_structure 提供
+    VkResult vkCopyMemoryToAccelerationStructureKHR(
+        VkDevice                                    device,
+        VkDeferredOperationKHR                      deferredOperation,
+        const VkCopyMemoryToAccelerationStructureInfoKHR* pInfo);
+
+* :bdg-secondary:`device` 表示构建加速结构对应的 ``VkDevice`` ，与 ``pInfo->dst`` 的设备相同。
+* :bdg-secondary:`deferredOperation` 是一个可选的 ``VkDeferredOperationKHR`` 句柄，为该指令申请延迟操作。
+* :bdg-secondary:`pInfo` 指向用于定义拷贝操作的 ``VkCopyMemoryToAccelerationStructureInfoKHR`` 结构体。
+
+该函数的工作和 ``vkCmdCopyMemoryToAccelerationStructureKHR`` 函数一致，只不过执行在 ``Host`` 端上。
+
+该函数支持使用 ``vkCmdCopyAccelerationStructureToMemoryKHR`` 或 ``vkCopyAccelerationStructureToMemoryKHR`` 的加速结构内存。
+
+.. admonition:: 正确用法
+   :class: note
+
+   * 需要激活 ``VkPhysicalDeviceAccelerationStructureFeaturesKHR::accelerationStructureHostCommands`` 特性。
+   * 如果 ``deferredOperation`` 不是 ``VK_NULL_HANDLE`` 的话，其必须是一个有效的 ``VkDeferredOperationKHR`` 句柄。
+   * 任何与 ``deferredOperation`` 相关的前操作都需要完成结束。
+   * 用于 ``pInfo->src.hostAddress`` 必须是一个有效的 ``Host`` 端指针。
+   * 用于 ``pInfo->dst`` 的 ``buffer`` 必须绑定到 ``Host`` 端可访问的内存上。
+   * 用于 ``pInfo->src.hostAddress`` 必须 ``16`` 比特对齐。
+   * 用于 ``pInfo->dst`` 的 ``buffer`` 必须绑定到没有分配多实体的内存上。
+
+vkCopyAccelerationStructureToMemoryKHR
+-----------------------------------------
+
+将加速结构拷贝至 ``Host`` 端可访问的内存上，调用：
+
+.. code:: c++
+
+    // 由 VK_KHR_acceleration_structure 提供
+    VkResult vkCopyAccelerationStructureToMemoryKHR(
+        VkDevice                                    device,
+        VkDeferredOperationKHR                      deferredOperation,
+        const VkCopyAccelerationStructureToMemoryInfoKHR* pInfo);
+
+* :bdg-secondary:`device` 表示构建加速结构对应的 ``VkDevice`` ，与 ``pInfo->src`` 的设备相同。
+* :bdg-secondary:`deferredOperation` 是一个可选的 ``VkDeferredOperationKHR`` 句柄，为该指令申请延迟操作。
+* :bdg-secondary:`pInfo` 指向用于定义拷贝操作的 ``VkCopyAccelerationStructureToMemoryInfoKHR`` 结构体。
+
+该函数的工作和 ``vkCmdCopyAccelerationStructureToMemoryKHR`` 函数一致，只不过执行在 ``Host`` 端上。
+
+该函数与 ``vkCmdCopyAccelerationStructureToMemoryKHR`` 结果相同，只不过直接将结果写入 ``Host`` 端指针指向的内存上，并执行在 ``Host`` 端上而不是 ``Device`` 端。每次输出的结果并不一定每一个比特都相等，但都可以被 ``vkCmdCopyMemoryToAccelerationStructureKHR`` 或 ``vkCopyMemoryToAccelerationStructureKHR`` 使用。
+
+.. admonition:: 正确用法
+   :class: note
+
+   * 需要激活 ``VkPhysicalDeviceAccelerationStructureFeaturesKHR::accelerationStructureHostCommands`` 特性。
+   * 如果 ``deferredOperation`` 不是 ``VK_NULL_HANDLE`` 的话，其必须是一个有效的 ``VkDeferredOperationKHR`` 句柄。
+   * 任何与 ``deferredOperation`` 相关的前操作都需要完成结束。
+   * 用于 ``pInfo->src`` 的 ``buffer`` 必须绑定到 ``Host`` 端可访问的内存上。
+   * 用于 ``pInfo->dst.hostAddress`` 必须是有效的 ``Host`` 指针。
+   * 用于 ``pInfo->dst.hostAddress`` 必须 ``16`` 比特对齐。
+   * 用于 ``pInfo->src`` 的 ``buffer`` 必须绑定到没有分配多实体的内存上。
+
+vkWriteAccelerationStructuresPropertiesKHR
+---------------------------------------------
+
+在 ``Host`` 端查询加速结构大小，调用：
+
+.. code:: c++
+
+    // Provided by VK_KHR_acceleration_structure
+    VkResult vkWriteAccelerationStructuresPropertiesKHR(
+        VkDevice                                    device,
+        uint32_t                                    accelerationStructureCount,
+        const VkAccelerationStructureKHR*           pAccelerationStructures,
+        VkQueryType                                 queryType,
+        size_t                                      dataSize,
+        void*                                       pData,
+        size_t                                      stride);
+
+* :bdg-secondary:`device` 表示拥有 ``pAccelerationStructures`` 加速结构对应的 ``VkDevice`` 。
+* :bdg-secondary:`accelerationStructureCount` 表示要查询的加速结构的数量。
+* :bdg-secondary:`pAccelerationStructures` 用于指向之前构建的加速结构数组。
+* :bdg-secondary:`queryType` 是 ``VkQueryType`` 值用于设置查询类型。
+* :bdg-secondary:`dataSize` 是 ``pData`` 中数据的比特大小。
+* :bdg-secondary:`pData` 指向用户分配的缓存用于写入结果。
+* :bdg-secondary:`stride` 指向这是写入的每个结果之间的跨度。
+
+该函数的工作和 ``vkCmdWriteAccelerationStructuresPropertiesKHR`` 函数一致，只不过执行在 ``Host`` 端上。
+

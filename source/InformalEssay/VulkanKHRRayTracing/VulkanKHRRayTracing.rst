@@ -80,6 +80,7 @@ Vulkan KHR 光线追踪标准
    * 2023/6/13 增加 ``VkBufferDeviceAddressInfo`` 章节
    * 2023/6/13 增加 ``VkBufferDeviceAddressInfoKHR`` 章节
    * 2023/6/13 将 ``VK_KHR_acceleration_structure`` 相关所有章节转移至单独的 ``VK_KHR_acceleration_structure`` 文档中
+   * 2023/6/19 增加 ``VK_KHR_deferred_host_operations`` 文档目录
 
 .. admonition:: 有关本文档结构
     :class: warning
@@ -100,3 +101,4 @@ Vulkan KHR 光线追踪标准
    :maxdepth: 2
 
    ./VK_KHR_acceleration_structure.rst
+   ./VK_KHR_deferred_host_operations.rst
