@@ -4,6 +4,10 @@
 此更新日志为纵览更新，对于具体文章的更新位于每个文章的开头的 `更新记录` 中。
 ```
 
+## 2023/6/20
+
+>* 增加`VK_KHR_buffer_device_address`文档
+
 ## 2023/6/15
 
 >* 更新`VK_KHR_acceleration_structure`文档
