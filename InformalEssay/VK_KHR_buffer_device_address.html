@@ -3,11 +3,11 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="搜索" href="../search.html" /><link rel="next" title="RTX 着色器绑定表的三种方式" href="TheRTXShaderBindingTableThreeWays.html" /><link rel="prev" title="NVIDIA Vulkan 光线追踪教程" href="NVIDIAVulkanRayTracingTutorial.html" />
-        <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/Literature/vk_mini_path_tracer.html" />
+<link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="搜索" href="../search.html" /><link rel="next" title="应用" href="../Application/index.html" /><link rel="prev" title="VK_KHR_deferred_host_operations" href="VulkanKHRRayTracing/VK_KHR_deferred_host_operations.html" />
+        <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/InformalEssay/VK_KHR_buffer_device_address.html" />
 
     <link rel="shortcut icon" href="../_static/VulkanLogo.png"/><!-- Generated with Sphinx 6.2.1 and Furo 2023.05.20 -->
-        <title>Vulkan迷你路径追踪 - Vulkan入门精要</title>
+        <title>VK_KHR_buffer_device_address - Vulkan入门精要</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=e6660623a769aa55fea372102b9bf3151b292993" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
@@ -139,7 +139,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -169,25 +169,25 @@
 <li class="toctree-l1"><a class="reference internal" href="../Overview.html">纵览</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">文献翻译</span></p>
-<ul class="current">
-<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">文献</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of 文献</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="VulkanRayTracingFinalSpecificationRelease.html">Vulkan 光线追踪最终标准发布</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Vulkan-GuideRayTracing.html">光线追踪</a></li>
-<li class="toctree-l2"><a class="reference internal" href="NVIDIAVulkanRayTracingTutorial.html">NVIDIA Vulkan 光线追踪教程</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Vulkan迷你路径追踪</a></li>
-<li class="toctree-l2"><a class="reference internal" href="TheRTXShaderBindingTableThreeWays.html">RTX 着色器绑定表的三种方式</a></li>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../Literature/index.html">文献</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of 文献</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../Literature/VulkanRayTracingFinalSpecificationRelease.html">Vulkan 光线追踪最终标准发布</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Literature/Vulkan-GuideRayTracing.html">光线追踪</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Literature/NVIDIAVulkanRayTracingTutorial.html">NVIDIA Vulkan 光线追踪教程</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Literature/vk_mini_path_tracer.html">Vulkan迷你路径追踪</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Literature/TheRTXShaderBindingTableThreeWays.html">RTX 着色器绑定表的三种方式</a></li>
 </ul>
 </li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">随笔</span></p>
-<ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../InformalEssay/index.html">Vulkan 标准</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Vulkan 标准</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../InformalEssay/VulkanKHRRayTracing/VulkanKHRRayTracing.html">Vulkan KHR 光线追踪标准</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Vulkan KHR 光线追踪标准</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../InformalEssay/VulkanKHRRayTracing/VK_KHR_acceleration_structure.html">VK_KHR_acceleration_structure</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../InformalEssay/VulkanKHRRayTracing/VK_KHR_deferred_host_operations.html">VK_KHR_deferred_host_operations</a></li>
+<ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Vulkan 标准</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Vulkan 标准</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 has-children"><a class="reference internal" href="VulkanKHRRayTracing/VulkanKHRRayTracing.html">Vulkan KHR 光线追踪标准</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Vulkan KHR 光线追踪标准</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="VulkanKHRRayTracing/VK_KHR_acceleration_structure.html">VK_KHR_acceleration_structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="VulkanKHRRayTracing/VK_KHR_deferred_host_operations.html">VK_KHR_deferred_host_operations</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../InformalEssay/VK_KHR_buffer_device_address.html">VK_KHR_buffer_device_address</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">VK_KHR_buffer_device_address</a></li>
 </ul>
 </li>
 </ul>
@@ -221,7 +221,7 @@
         </a>
         <div class="content-icon-container">
           <div class="edit-this-page">
-  <a class="muted-link" href="https://github.com/FuXiii/Essentials.of.Vulkan/edit/main/source/Literature/vk_mini_path_tracer.rst" title="Edit this page">
+  <a class="muted-link" href="https://github.com/FuXiii/Essentials.of.Vulkan/edit/main/source/InformalEssay/VK_KHR_buffer_device_address.rst" title="Edit this page">
     <svg aria-hidden="true" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
@@ -237,14 +237,14 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="vulkan">
-<h1>Vulkan迷你路径追踪<a class="headerlink" href="#vulkan" title="此标题的永久链接">#</a></h1>
+          <section id="vk-khr-buffer-device-address">
+<h1>VK_KHR_buffer_device_address<a class="headerlink" href="#vk-khr-buffer-device-address" title="此标题的永久链接">#</a></h1>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header sd-bg-muted sd-bg-text-muted">
 <span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-history" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M1.643 3.143L.427 1.927A.25.25 0 000 2.104V5.75c0 .138.112.25.25.25h3.646a.25.25 0 00.177-.427L2.715 4.215a6.5 6.5 0 11-1.18 4.458.75.75 0 10-1.493.154 8.001 8.001 0 101.6-5.684zM7.75 4a.75.75 0 01.75.75v2.992l2.028.812a.75.75 0 01-.557 1.392l-2.5-1A.75.75 0 017 8.25v-3.5A.75.75 0 017.75 4z"></path></svg></span>更新记录<div class="sd-summary-down docutils">
@@ -253,10 +253,69 @@
 <svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
 </summary><div class="sd-summary-content sd-card-body docutils">
 <ul class="simple">
-<li><p class="sd-card-text">2023/5/15 创建本文</p></li>
+<li><p class="sd-card-text">2023/6/20 创建该文档</p></li>
+<li><p class="sd-card-text">2023/6/20 增加 <code class="docutils literal notranslate"><span class="pre">访问物理存储缓存</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/20 增加 <code class="docutils literal notranslate"><span class="pre">vkGetBufferDeviceAddress</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/20 增加 <code class="docutils literal notranslate"><span class="pre">vkGetBufferDeviceAddressKHR</span></code> 章节</p></li>
 </ul>
 </div>
-</details><p><a class="reference external" href="https://nvpro-samples.github.io/vk_mini_path_tracer/index.html">文献源</a></p>
+</details><p>该扩展属于 <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">device扩展</span> <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">在Vulkan 1.2中被纳入核心</span></p>
+<p><span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">依赖如下</span></p>
+<ul class="simple">
+<li><p>Vulkan 1.1</p></li>
+</ul>
+<p>或</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap54.html#VK_KHR_get_physical_device_properties2">VK_KHR_get_physical_device_properties2</a> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">instance扩展</span> <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">在Vulkan 1.1中被纳入核心</span></p></li>
+<li><dl class="simple">
+<dt><a class="reference external" href="https://registry.khronos.org/vulkan/specs/1.3-khr-extensions/html/chap47.html#VK_KHR_device_group">VK_KHR_device_group</a> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">device扩展</span> <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">在Vulkan 1.1中被纳入核心</span> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">依赖如下</span></dt><dd><ul>
+<li><p><a class="reference external" href="https://registry.khronos.org/vulkan/specs/1.3-khr-extensions/html/chap47.html#VK_KHR_device_group_creation">VK_KHR_device_group_creation</a> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">instance扩展</span> <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">在Vulkan 1.1中被纳入核心</span></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>新增加函数如下：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://registry.khronos.org/vulkan/specs/1.3-khr-extensions/html/chap14.html#vkGetBufferDeviceAddressKHR">vkGetBufferDeviceAddressKHR</a></p></li>
+<li><p><a class="reference external" href="https://registry.khronos.org/vulkan/specs/1.3-khr-extensions/html/chap14.html#vkGetBufferOpaqueCaptureAddressKHR">vkGetBufferOpaqueCaptureAddressKHR</a></p></li>
+<li><p><a class="reference external" href="https://registry.khronos.org/vulkan/specs/1.3-khr-extensions/html/chap11.html#vkGetDeviceMemoryOpaqueCaptureAddressKHR">vkGetDeviceMemoryOpaqueCaptureAddressKHR</a></p></li>
+</ul>
+<p>新增特性如下：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://registry.khronos.org/vulkan/specs/1.3-khr-extensions/html/chap38.html#VkPhysicalDeviceBufferDeviceAddressFeaturesKHR">VkPhysicalDeviceBufferDeviceAddressFeaturesKHR</a></p></li>
+</ul>
+<div class="note admonition">
+<p class="admonition-title">提升至 Vulkan 1.2 核心</p>
+<p>该扩展的所有函数都将作为 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.2</span></code> 的核心，并省略 <code class="docutils literal notranslate"><span class="pre">KHR</span></code> 后缀。如果设备支持 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.2</span></code> 但不支持该扩展的话 <code class="docutils literal notranslate"><span class="pre">bufferDeviceAddress</span></code> 特性将成为可选项。之前的类型、枚举和指令名称都还是有效的并作为核心函数的别名存在。</p>
+</div>
+<div class="note admonition">
+<p class="admonition-title">提升至 Vulkan 1.3 核心</p>
+<p>不管设备是否支持该扩展， <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.3</span></code> 中将会强制支持 <code class="docutils literal notranslate"><span class="pre">bufferDeviceAddress</span></code> 特性。</p>
+</div>
+<section id="id1">
+<h2>访问物理存储缓存<a class="headerlink" href="#id1" title="此标题的永久链接">#</a></h2>
+<p>查询获取着色器可访问的 <code class="docutils literal notranslate"><span class="pre">64</span></code> 比特的设备缓存地址，调用：</p>
+<section id="vkgetbufferdeviceaddress">
+<h3>vkGetBufferDeviceAddress<a class="headerlink" href="#vkgetbufferdeviceaddress" title="此标题的永久链接">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_2 提供</span>
+<span class="n">VkDeviceAddress</span><span class="w"> </span><span class="nf">vkGetBufferDeviceAddress</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkBufferDeviceAddressInfo</span><span class="o">*</span><span class="w">            </span><span class="n">pInfo</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>或是与之等价的</p>
+</section>
+<section id="id2">
+<h3>vkGetBufferDeviceAddressKHR<a class="headerlink" href="#id2" title="此标题的永久链接">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_buffer_device_address 提供</span>
+<span class="n">VkDeviceAddress</span><span class="w"> </span><span class="nf">vkGetBufferDeviceAddressKHR</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkBufferDeviceAddressInfo</span><span class="o">*</span><span class="w">            </span><span class="n">pInfo</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+</section>
 </section>
 
         </article>
@@ -264,23 +323,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="TheRTXShaderBindingTableThreeWays.html">
+          <a class="next-page" href="../Application/index.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">RTX 着色器绑定表的三种方式</div>
+                <div class="title">应用</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="NVIDIAVulkanRayTracingTutorial.html">
+          <a class="prev-page" href="VulkanKHRRayTracing/VK_KHR_deferred_host_operations.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">NVIDIA Vulkan 光线追踪教程</div>
+                <div class="title">VK_KHR_deferred_host_operations</div>
                 
               </div>
             </a>
@@ -309,8 +368,31 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">VK_KHR_buffer_device_address</a><ul>
+<li><a class="reference internal" href="#id1">访问物理存储缓存</a><ul>
+<li><a class="reference internal" href="#vkgetbufferdeviceaddress">vkGetBufferDeviceAddress</a></li>
+<li><a class="reference internal" href="#id2">vkGetBufferDeviceAddressKHR</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
