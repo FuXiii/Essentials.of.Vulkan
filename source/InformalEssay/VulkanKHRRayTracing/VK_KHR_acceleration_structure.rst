@@ -26,6 +26,7 @@ VK_KHR_acceleration_structure
    * 2023/6/19 增加 ``vkCopyAccelerationStructureKHR`` 章节
    * 2023/6/19 增加 ``vkCopyAccelerationStructureToMemoryKHR`` 章节
    * 2023/6/19 增加 ``vkWriteAccelerationStructuresPropertiesKHR`` 章节
+   * 2023/6/21 修改 ``VK_KHR_device_group_creation`` 将 ``device扩展`` 修改成 ``instance扩展``
 
 .. admonition:: 加速结构的创建和构建
     :class: important
@@ -45,7 +46,7 @@ VK_KHR_acceleration_structure
 * `VK_KHR_buffer_device_address <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap54.html#VK_KHR_buffer_device_address>`_ :bdg-info:`device扩展` :bdg-warning:`在Vulkan 1.2中被纳入核心` :bdg-primary:`依赖如下`
         * `VK_KHR_get_physical_device_properties2 <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap54.html#VK_KHR_get_physical_device_properties2>`_ :bdg-info:`instance扩展` :bdg-warning:`在Vulkan 1.1中被纳入核心`
         * `VK_KHR_device_group <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap54.html#VK_KHR_device_group>`_ :bdg-info:`device扩展` :bdg-warning:`在Vulkan 1.1中被纳入核心` :bdg-primary:`依赖如下`
-              * `VK_KHR_device_group_creation <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap54.html#VK_KHR_device_group_creation>`_ :bdg-info:`device扩展` :bdg-warning:`在Vulkan 1.1中被纳入核心`
+              * `VK_KHR_device_group_creation <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap54.html#VK_KHR_device_group_creation>`_ :bdg-info:`instance扩展` :bdg-warning:`在Vulkan 1.1中被纳入核心`
 * `VK_KHR_deferred_host_operations <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap54.html#VK_KHR_deferred_host_operations>`_ :bdg-info:`device扩展`
 
 新添加的对象类型（句柄）：

@@ -7,6 +7,7 @@
 ## 2023/6/21
 
 >* 更新`VK_KHR_buffer_device_address`文档
+>* 更新`VK_KHR_acceleration_structure`文档
 
 ## 2023/6/20
 
