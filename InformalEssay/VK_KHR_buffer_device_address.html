@@ -257,10 +257,24 @@
 <li><p class="sd-card-text">2023/6/20 增加 <code class="docutils literal notranslate"><span class="pre">访问物理存储缓存</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/6/20 增加 <code class="docutils literal notranslate"><span class="pre">vkGetBufferDeviceAddress</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/6/20 增加 <code class="docutils literal notranslate"><span class="pre">vkGetBufferDeviceAddressKHR</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/21 更新 <code class="docutils literal notranslate"><span class="pre">vkGetBufferDeviceAddressKHR</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/21 增加 <code class="docutils literal notranslate"><span class="pre">VkBufferDeviceAddressInfo</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/21 增加 <code class="docutils literal notranslate"><span class="pre">VkBufferDeviceAddressInfoKHR</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/21 增加 <code class="docutils literal notranslate"><span class="pre">vkGetBufferOpaqueCaptureAddress</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/21 增加 <code class="docutils literal notranslate"><span class="pre">vkGetBufferOpaqueCaptureAddressKHR</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/21 增加 <code class="docutils literal notranslate"><span class="pre">查询不透明捕获地址</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/21 增加 <code class="docutils literal notranslate"><span class="pre">vkGetDeviceMemoryOpaqueCaptureAddress</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/21 增加 <code class="docutils literal notranslate"><span class="pre">vkGetDeviceMemoryOpaqueCaptureAddressKHR</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/21 增加 <code class="docutils literal notranslate"><span class="pre">VkDeviceMemoryOpaqueCaptureAddressInfo</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/21 增加 <code class="docutils literal notranslate"><span class="pre">VkDeviceMemoryOpaqueCaptureAddressInfoKHR</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/21 增加 <code class="docutils literal notranslate"><span class="pre">依赖</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/21 增加 <code class="docutils literal notranslate"><span class="pre">新增函数</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/21 增加 <code class="docutils literal notranslate"><span class="pre">新增特性</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p>该扩展属于 <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">device扩展</span> <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">在Vulkan 1.2中被纳入核心</span></p>
-<p><span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">依赖如下</span></p>
+<section id="id1">
+<h2>依赖<a class="headerlink" href="#id1" title="此标题的永久链接">#</a></h2>
 <ul class="simple">
 <li><p>Vulkan 1.1</p></li>
 </ul>
@@ -275,13 +289,17 @@
 </dl>
 </li>
 </ul>
-<p>新增加函数如下：</p>
+</section>
+<section id="id2">
+<h2>新增函数<a class="headerlink" href="#id2" title="此标题的永久链接">#</a></h2>
 <ul class="simple">
 <li><p><a class="reference external" href="https://registry.khronos.org/vulkan/specs/1.3-khr-extensions/html/chap14.html#vkGetBufferDeviceAddressKHR">vkGetBufferDeviceAddressKHR</a></p></li>
 <li><p><a class="reference external" href="https://registry.khronos.org/vulkan/specs/1.3-khr-extensions/html/chap14.html#vkGetBufferOpaqueCaptureAddressKHR">vkGetBufferOpaqueCaptureAddressKHR</a></p></li>
 <li><p><a class="reference external" href="https://registry.khronos.org/vulkan/specs/1.3-khr-extensions/html/chap11.html#vkGetDeviceMemoryOpaqueCaptureAddressKHR">vkGetDeviceMemoryOpaqueCaptureAddressKHR</a></p></li>
 </ul>
-<p>新增特性如下：</p>
+</section>
+<section id="id3">
+<h2>新增特性<a class="headerlink" href="#id3" title="此标题的永久链接">#</a></h2>
 <ul class="simple">
 <li><p><a class="reference external" href="https://registry.khronos.org/vulkan/specs/1.3-khr-extensions/html/chap38.html#VkPhysicalDeviceBufferDeviceAddressFeaturesKHR">VkPhysicalDeviceBufferDeviceAddressFeaturesKHR</a></p></li>
 </ul>
@@ -293,8 +311,9 @@
 <p class="admonition-title">提升至 Vulkan 1.3 核心</p>
 <p>不管设备是否支持该扩展， <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.3</span></code> 中将会强制支持 <code class="docutils literal notranslate"><span class="pre">bufferDeviceAddress</span></code> 特性。</p>
 </div>
-<section id="id1">
-<h2>访问物理存储缓存<a class="headerlink" href="#id1" title="此标题的永久链接">#</a></h2>
+</section>
+<section id="id4">
+<h2>访问物理存储缓存<a class="headerlink" href="#id4" title="此标题的永久链接">#</a></h2>
 <p>查询获取着色器可访问的 <code class="docutils literal notranslate"><span class="pre">64</span></code> 比特的设备缓存地址，调用：</p>
 <section id="vkgetbufferdeviceaddress">
 <h3>vkGetBufferDeviceAddress<a class="headerlink" href="#vkgetbufferdeviceaddress" title="此标题的永久链接">#</a></h3>
@@ -306,13 +325,164 @@
 </div>
 <p>或是与之等价的</p>
 </section>
-<section id="id2">
-<h3>vkGetBufferDeviceAddressKHR<a class="headerlink" href="#id2" title="此标题的永久链接">#</a></h3>
+<section id="id5">
+<h3>vkGetBufferDeviceAddressKHR<a class="headerlink" href="#id5" title="此标题的永久链接">#</a></h3>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_buffer_device_address 提供</span>
 <span class="n">VkDeviceAddress</span><span class="w"> </span><span class="nf">vkGetBufferDeviceAddressKHR</span><span class="p">(</span>
 <span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkBufferDeviceAddressInfo</span><span class="o">*</span><span class="w">            </span><span class="n">pInfo</span><span class="p">);</span>
 </pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">device</span> 表示创建缓存的逻辑设备。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pInfo</span> 表示获取的缓存地址信息。</p></li>
+</ul>
+<p>返回的 <code class="docutils literal notranslate"><span class="pre">64</span></code> 比特值表示 <code class="docutils literal notranslate"><span class="pre">pInfo-&gt;buffer</span></code> 的起始地址。可以表示的范围为从返回值表示的位置开始到整个缓存的大小范围，其都可以使用 <code class="docutils literal notranslate"><span class="pre">SPV_KHR_physical_storage_buffer</span></code> 扩展和 <code class="docutils literal notranslate"><span class="pre">PhysicalStorageBuffer</span></code> 类用于将缓存绑定到着色器中进行访问。比如该返回值可以存到一个 <code class="docutils literal notranslate"><span class="pre">uniform</span></code> 缓存中，之后着色器就可以通过 <code class="docutils literal notranslate"><span class="pre">uniform</span></code> 缓存获取到该值并进行对应的读写。如果返回为 <code class="docutils literal notranslate"><span class="pre">0</span></code> 的话说明为 <code class="docutils literal notranslate"><span class="pre">null</span></code> 指针并且对于有效设备缓存地址一定不会返回为 <code class="docutils literal notranslate"><span class="pre">0</span></code> 。
+着色器对通过 <code class="docutils literal notranslate"><span class="pre">PhysicalStorageBuffer</span></code> 指针进行的所有加载、存储和原子操作都需要在同一个缓存范围内。</p>
+<p>如果使用 <code class="docutils literal notranslate"><span class="pre">VkBufferOpaqueCaptureAddressCreateInfo::opaqueCaptureAddress</span></code> 非零值创建的缓存的话，其返回值和捕获时的捕获值相同。</p>
+<p>对于 <code class="docutils literal notranslate"><span class="pre">VkBufferDeviceAddressInfo::buffer</span></code> 的缓存，返回地址必须满足 <code class="docutils literal notranslate"><span class="pre">VkMemoryRequirements::alignment</span></code> 对齐。</p>
+<p>如果多个 <code class="docutils literal notranslate"><span class="pre">VkBuffer</span></code> 重叠绑定到了同一个 <code class="docutils literal notranslate"><span class="pre">VkDeviceMemory</span></code> 上的话，驱动可能也会返回重叠的地址范围。这将会导致 <code class="docutils literal notranslate"><span class="pre">VkBuffer</span></code> 和地址的映射变的模棱两可。为了有效利用的目的，如果多个 <code class="docutils literal notranslate"><span class="pre">VkBuffer</span></code> 对象都可以关联到一个设备地址上，为了有效性只使用其中一个  <code class="docutils literal notranslate"><span class="pre">VkBuffer</span></code> 。</p>
+<div class="note admonition">
+<p class="admonition-title">正确用法</p>
+<ul class="simple">
+<li><p>必须开启 <code class="docutils literal notranslate"><span class="pre">bufferDeviceAddress</span></code> 特性。</p></li>
+<li><p>如果 <code class="docutils literal notranslate"><span class="pre">device</span></code> 使用的多物理设备创建的话，必须开启 <code class="docutils literal notranslate"><span class="pre">bufferDeviceAddressMultiDevice</span></code> 特性。</p></li>
+</ul>
+</div>
+</section>
+<section id="vkbufferdeviceaddressinfo">
+<h3>VkBufferDeviceAddressInfo<a class="headerlink" href="#vkbufferdeviceaddressinfo" title="此标题的永久链接">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_2 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkBufferDeviceAddressInfo</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VkStructureType</span><span class="w">    </span><span class="n">sType</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w">        </span><span class="n">pNext</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkBuffer</span><span class="w">           </span><span class="n">buffer</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkBufferDeviceAddressInfo</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>或是与之等价的</p>
+</section>
+<section id="vkbufferdeviceaddressinfokhr">
+<h3>VkBufferDeviceAddressInfoKHR<a class="headerlink" href="#vkbufferdeviceaddressinfokhr" title="此标题的永久链接">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_buffer_device_address 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="n">VkBufferDeviceAddressInfo</span><span class="w"> </span><span class="n">VkBufferDeviceAddressInfoKHR</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 表示结构体类型。必须是 <code class="docutils literal notranslate"><span class="pre">VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pNext</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向其他结构体来扩展该结构体。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">buffer</span> 要获取地址的对应缓存。</p></li>
+</ul>
+<div class="note admonition">
+<p class="admonition-title">正确用法</p>
+<ul class="simple">
+<li><p>如果缓存是非稀疏并且没有使用 <code class="docutils literal notranslate"><span class="pre">VK_BUFFER_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT</span></code> 标志位创建的话，则其必须绑定到一个完整且连续的 <code class="docutils literal notranslate"><span class="pre">VkDeviceMemory</span></code> 对象上。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">buffer</span></code> 必须使用 <code class="docutils literal notranslate"><span class="pre">VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT</span></code> 创建。</p></li>
+</ul>
+</div>
+</section>
+<section id="vkgetbufferopaquecaptureaddress">
+<h3>vkGetBufferOpaqueCaptureAddress<a class="headerlink" href="#vkgetbufferopaquecaptureaddress" title="此标题的永久链接">#</a></h3>
+<p>获取 <code class="docutils literal notranslate"><span class="pre">64</span></code> 位不透明缓存捕获地址，调用：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_2 提供</span>
+<span class="kt">uint64_t</span><span class="w"> </span><span class="nf">vkGetBufferOpaqueCaptureAddress</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkBufferDeviceAddressInfo</span><span class="o">*</span><span class="w">            </span><span class="n">pInfo</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>或是与之等价的</p>
+</section>
+<section id="id6">
+<h3>vkGetBufferOpaqueCaptureAddressKHR<a class="headerlink" href="#id6" title="此标题的永久链接">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_buffer_device_address 提供</span>
+<span class="kt">uint64_t</span><span class="w"> </span><span class="nf">vkGetBufferOpaqueCaptureAddressKHR</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkBufferDeviceAddressInfo</span><span class="o">*</span><span class="w">            </span><span class="n">pInfo</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">device</span> 表示创建缓存的逻辑设备。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pInfo</span> 表示获取的缓存地址信息。</p></li>
+</ul>
+<p>返回的 <code class="docutils literal notranslate"><span class="pre">64</span></code> 比特值表示 <code class="docutils literal notranslate"><span class="pre">pInfo-&gt;buffer</span></code> 的不透明捕获地址。</p>
+<p>如果缓存使用非 <code class="docutils literal notranslate"><span class="pre">0</span></code> 的 <code class="docutils literal notranslate"><span class="pre">VkBufferOpaqueCaptureAddressCreateInfo::opaqueCaptureAddress</span></code> 创建的话，则返回值都是相同的地址。</p>
+<div class="note admonition">
+<p class="admonition-title">正确用法</p>
+<ul class="simple">
+<li><p>必须开启 <code class="docutils literal notranslate"><span class="pre">bufferDeviceAddress</span></code> 特性。</p></li>
+<li><p>如果 <code class="docutils literal notranslate"><span class="pre">device</span></code> 使用的多物理设备创建的话，必须开启 <code class="docutils literal notranslate"><span class="pre">bufferDeviceAddressMultiDevice</span></code> 特性。</p></li>
+</ul>
+</div>
+</section>
+</section>
+<section id="id7">
+<h2>查询不透明捕获地址<a class="headerlink" href="#id7" title="此标题的永久链接">#</a></h2>
+<section id="vkgetdevicememoryopaquecaptureaddress">
+<h3>vkGetDeviceMemoryOpaqueCaptureAddress<a class="headerlink" href="#vkgetdevicememoryopaquecaptureaddress" title="此标题的永久链接">#</a></h3>
+<p>从内存对象中查询 <code class="docutils literal notranslate"><span class="pre">64</span></code> 为不透明捕获地址，调用：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_2 提供</span>
+<span class="kt">uint64_t</span><span class="w"> </span><span class="nf">vkGetDeviceMemoryOpaqueCaptureAddress</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkDeviceMemoryOpaqueCaptureAddressInfo</span><span class="o">*</span><span class="w"> </span><span class="n">pInfo</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>或是与之等价的</p>
+</section>
+<section id="id8">
+<h3>vkGetDeviceMemoryOpaqueCaptureAddressKHR<a class="headerlink" href="#id8" title="此标题的永久链接">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_buffer_device_address 提供</span>
+<span class="kt">uint64_t</span><span class="w"> </span><span class="nf">vkGetDeviceMemoryOpaqueCaptureAddressKHR</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkDeviceMemoryOpaqueCaptureAddressInfo</span><span class="o">*</span><span class="w"> </span><span class="n">pInfo</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">device</span> 表示创建缓存的逻辑设备。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pInfo</span> 表示获取的地址的内存对象信息。</p></li>
+</ul>
+<p>返回的 <code class="docutils literal notranslate"><span class="pre">64</span></code> 比特值表示 <code class="docutils literal notranslate"><span class="pre">pInfo-&gt;memory</span></code> 的不透明捕获地址。</p>
+<p>如果缓存使用非 <code class="docutils literal notranslate"><span class="pre">0</span></code> 的 <code class="docutils literal notranslate"><span class="pre">VkBufferOpaqueCaptureAddressCreateInfo::opaqueCaptureAddress</span></code> 创建的话，则返回值都是相同的地址。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>不透明地址仅仅在追踪中捕获和回放工具中存储地址，在随后的重播期间指定它们。</p>
+</div>
+<div class="note admonition">
+<p class="admonition-title">正确用法</p>
+<ul class="simple">
+<li><p>必须开启 <code class="docutils literal notranslate"><span class="pre">bufferDeviceAddress</span></code> 特性。</p></li>
+<li><p>如果 <code class="docutils literal notranslate"><span class="pre">device</span></code> 使用的多物理设备创建的话，必须开启 <code class="docutils literal notranslate"><span class="pre">bufferDeviceAddressMultiDevice</span></code> 特性。</p></li>
+</ul>
+</div>
+</section>
+<section id="vkdevicememoryopaquecaptureaddressinfo">
+<h3>VkDeviceMemoryOpaqueCaptureAddressInfo<a class="headerlink" href="#vkdevicememoryopaquecaptureaddressinfo" title="此标题的永久链接">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">VkDeviceMemoryOpaqueCaptureAddressInfo</span></code> 结构体定义如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_2 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkDeviceMemoryOpaqueCaptureAddressInfo</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VkStructureType</span><span class="w">    </span><span class="n">sType</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w">        </span><span class="n">pNext</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkDeviceMemory</span><span class="w">     </span><span class="n">memory</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkDeviceMemoryOpaqueCaptureAddressInfo</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>或是与之等价的</p>
+</section>
+<section id="vkdevicememoryopaquecaptureaddressinfokhr">
+<h3>VkDeviceMemoryOpaqueCaptureAddressInfoKHR<a class="headerlink" href="#vkdevicememoryopaquecaptureaddressinfokhr" title="此标题的永久链接">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_buffer_device_address 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="n">VkDeviceMemoryOpaqueCaptureAddressInfo</span><span class="w"> </span><span class="n">VkDeviceMemoryOpaqueCaptureAddressInfoKHR</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 表示结构体类型。必须是 <code class="docutils literal notranslate"><span class="pre">VK_STRUCTURE_TYPE_DEVICE_MEMORY_OPAQUE_CAPTURE_ADDRESS_INFO</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pNext</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向其他结构体来扩展该结构体。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">memory</span> 要获取地址的对应内存对象。</p></li>
+</ul>
+<div class="note admonition">
+<p class="admonition-title">正确用法</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">memory</span></code> 必须使用 <code class="docutils literal notranslate"><span class="pre">VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT</span></code> 标志位域分配。</p></li>
+</ul>
 </div>
 </section>
 </section>
@@ -381,9 +551,23 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">VK_KHR_buffer_device_address</a><ul>
-<li><a class="reference internal" href="#id1">访问物理存储缓存</a><ul>
+<li><a class="reference internal" href="#id1">依赖</a></li>
+<li><a class="reference internal" href="#id2">新增函数</a></li>
+<li><a class="reference internal" href="#id3">新增特性</a></li>
+<li><a class="reference internal" href="#id4">访问物理存储缓存</a><ul>
 <li><a class="reference internal" href="#vkgetbufferdeviceaddress">vkGetBufferDeviceAddress</a></li>
-<li><a class="reference internal" href="#id2">vkGetBufferDeviceAddressKHR</a></li>
+<li><a class="reference internal" href="#id5">vkGetBufferDeviceAddressKHR</a></li>
+<li><a class="reference internal" href="#vkbufferdeviceaddressinfo">VkBufferDeviceAddressInfo</a></li>
+<li><a class="reference internal" href="#vkbufferdeviceaddressinfokhr">VkBufferDeviceAddressInfoKHR</a></li>
+<li><a class="reference internal" href="#vkgetbufferopaquecaptureaddress">vkGetBufferOpaqueCaptureAddress</a></li>
+<li><a class="reference internal" href="#id6">vkGetBufferOpaqueCaptureAddressKHR</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id7">查询不透明捕获地址</a><ul>
+<li><a class="reference internal" href="#vkgetdevicememoryopaquecaptureaddress">vkGetDeviceMemoryOpaqueCaptureAddress</a></li>
+<li><a class="reference internal" href="#id8">vkGetDeviceMemoryOpaqueCaptureAddressKHR</a></li>
+<li><a class="reference internal" href="#vkdevicememoryopaquecaptureaddressinfo">VkDeviceMemoryOpaqueCaptureAddressInfo</a></li>
+<li><a class="reference internal" href="#vkdevicememoryopaquecaptureaddressinfokhr">VkDeviceMemoryOpaqueCaptureAddressInfoKHR</a></li>
 </ul>
 </li>
 </ul>
