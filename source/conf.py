@@ -29,8 +29,8 @@ comments_config = {
 }
 
 myst_enable_extensions = [
-    #'amsmath',
-    'dollarmath',
+    #"amsmath",
+    "dollarmath",
     #'myst_dmath_allow_labels',
     #'myst_dmath_allow_space',
     #'myst_dmath_allow_digits',
