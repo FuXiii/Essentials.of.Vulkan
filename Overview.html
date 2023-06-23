@@ -259,6 +259,7 @@
 <li><p class="sd-card-text">2023/6/23 增加 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">能为我们做什么</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/6/23 增加 <code class="docutils literal notranslate"><span class="pre">获取</span> <span class="pre">Vulkan</span> <span class="pre">接口</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/6/23 增加 <code class="docutils literal notranslate"><span class="pre">vkGetInstanceProcAddr</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/23 增加 <code class="docutils literal notranslate"><span class="pre">加载</span> <span class="pre">Vulkan</span> <span class="pre">动态库</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p>由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 比较复杂，为了更好的入门 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> ，还是大致过一遍 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的核心思路，这对以后的学习很有帮助。</p>
@@ -278,6 +279,8 @@
 <section id="id3">
 <h2>获取 Vulkan 接口<a class="headerlink" href="#id3" title="此标题的永久链接">#</a></h2>
 <p>由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 只是一套标准，具体的实现都在硬件驱动中，为了能够使用 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 驱动硬件设备，我们需要获取驱动中 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准实现的接口。</p>
+<section id="id4">
+<h3>加载 Vulkan 动态库<a class="headerlink" href="#id4" title="此标题的永久链接">#</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中提供了 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 进行 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准实现接口的获取。根据前文介绍我们知道 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 对应着 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的动态库，所以我们第一步就是加载 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的动态库。</p>
 <div class="note admonition">
 <p class="admonition-title"><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的动态库</p>
@@ -317,6 +320,7 @@
 <p class="admonition-title">vkGetInstanceProcAddr 和 Device 域函数</p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中并没有禁止用户使用 <code class="docutils literal notranslate"><span class="pre">vkGetInstanceProcAddr</span></code> 获得 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 域函数，但这是不推荐的，当有多个硬件设备时会造成模棱两可的函数获取。比如电脑上插着两个显卡，一个是摩尔线程的，一个是景嘉微的，这两个设备都支持绘制函数 <code class="docutils literal notranslate"><span class="pre">vkCmdDraw</span></code> 函数 ，但是到底获取的是哪个设备的实现是由 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 定义的，用户并不能知道返回的函数是哪个设备的实现。</p>
 </div>
+</section>
 <section id="vkgetinstanceprocaddr">
 <h3>vkGetInstanceProcAddr<a class="headerlink" href="#vkgetinstanceprocaddr" title="此标题的永久链接">#</a></h3>
 <p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中获取 <code class="docutils literal notranslate"><span class="pre">Instance</span></code> 域函数，提供了统一的 <code class="docutils literal notranslate"><span class="pre">vkGetInstanceProcAddr</span></code> 函数获取接口，如下：</p>
@@ -415,6 +419,7 @@
 <li><a class="reference internal" href="#">纵览</a><ul>
 <li><a class="reference internal" href="#vulkan">Vulkan 能为我们做什么</a></li>
 <li><a class="reference internal" href="#id3">获取 Vulkan 接口</a><ul>
+<li><a class="reference internal" href="#id4">加载 Vulkan 动态库</a></li>
 <li><a class="reference internal" href="#vkgetinstanceprocaddr">vkGetInstanceProcAddr</a></li>
 </ul>
 </li>
