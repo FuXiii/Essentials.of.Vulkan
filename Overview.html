@@ -258,6 +258,7 @@
 <li><p class="sd-card-text">2023/6/23 更新该文档</p></li>
 <li><p class="sd-card-text">2023/6/23 增加 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">能为我们做什么</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/6/23 增加 <code class="docutils literal notranslate"><span class="pre">获取</span> <span class="pre">Vulkan</span> <span class="pre">接口</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/23 增加 <code class="docutils literal notranslate"><span class="pre">vkGetInstanceProcAddr</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p>由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 比较复杂，为了更好的入门 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> ，还是大致过一遍 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的核心思路，这对以后的学习很有帮助。</p>
@@ -302,6 +303,50 @@
 <span class="p">}</span>
 </pre></div>
 </div>
+<p>之后我们就可以从加载的动态库中获取 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的函数了，但是在获取 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 函数前我们需要先介绍一下 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中函数的分类：</p>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">Instance 域函数</span> 主要是通过 <code class="docutils literal notranslate"><span class="pre">vkGetInstanceProcAddr</span></code> 函数接口获取，该类函数大部分与 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 进行交互。主要是获取一些与设备不相关与环境相关的函数。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">PhysicalDevice 域函数</span> 主要是通过 <code class="docutils literal notranslate"><span class="pre">vkGetInstanceProcAddr</span></code> 函数接口获，该类函数大部分与 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDevice</span></code> 进行交互。主要是一些获取硬件设备相关信息的函数。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">Device 域函数</span> 主要是通过 <code class="docutils literal notranslate"><span class="pre">vkGetDeviceProcAddr</span></code> 函数接口获，该类函数大部分与 <code class="docutils literal notranslate"><span class="pre">VkDevice</span></code> 进行交互。主要是获取一些与硬件设备相关的功能函数。</p></li>
+</ul>
+<div class="note admonition">
+<p class="admonition-title">PhysicalDevice 域函数</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准中并没有所谓的 <code class="docutils literal notranslate"><span class="pre">PhysicalDevice</span></code> 域函数，在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准中只分为 <code class="docutils literal notranslate"><span class="pre">Instance</span></code> 域函数和 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 域函数，但是在实际使用中由于 <code class="docutils literal notranslate"><span class="pre">PhysicalDevice</span></code> 域函数的特殊性是确确实实可以单独拎出来的，只不过在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准中 <code class="docutils literal notranslate"><span class="pre">PhysicalDevice</span></code> 域函数归到了 <code class="docutils literal notranslate"><span class="pre">Instance</span></code> 域函数中。</p>
+</div>
+<div class="note admonition">
+<p class="admonition-title">vkGetInstanceProcAddr 和 Device 域函数</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中并没有禁止用户使用 <code class="docutils literal notranslate"><span class="pre">vkGetInstanceProcAddr</span></code> 获得 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 域函数，但这是不推荐的，当有多个硬件设备时会造成模棱两可的函数获取。比如电脑上插着两个显卡，一个是摩尔线程的的一个是景嘉微的，这两个设备都支持绘制函数 <code class="docutils literal notranslate"><span class="pre">vkCmdDraw</span></code> 函数 ，但是到底获取的是哪个设备的实现是由 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 定义的，用户并不能知道返回的函数是哪个设备的实现。</p>
+</div>
+<section id="vkgetinstanceprocaddr">
+<h3>vkGetInstanceProcAddr<a class="headerlink" href="#vkgetinstanceprocaddr" title="此标题的永久链接">#</a></h3>
+<p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中获取 <code class="docutils literal notranslate"><span class="pre">Instance</span></code> 域函数，提供了统一的 <code class="docutils literal notranslate"><span class="pre">vkGetInstanceProcAddr</span></code> 函数获取接口，如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="n">VKAPI_PTR</span><span class="w"> </span><span class="o">*</span><span class="n">PFN_vkVoidFunction</span><span class="p">)(</span><span class="kt">void</span><span class="p">);</span>
+
+<span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="n">PFN_vkVoidFunction</span><span class="w"> </span><span class="nf">vkGetInstanceProcAddr</span><span class="p">(</span>
+<span class="w">  </span><span class="n">VkInstance</span><span class="w"> </span><span class="n">instance</span><span class="p">,</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">pName</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">instance</span> 获取 <code class="docutils literal notranslate"><span class="pre">instance</span></code> 兼容的函数接口，或是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 用于获取不依赖任何 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 的函数。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pName</span> 获取的接口函数名称。</p></li>
+</ul>
+<p>或取 <code class="docutils literal notranslate"><span class="pre">vkGetInstanceProcAddr</span></code> 函数之后既可以使用该函数获取 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 函数了。</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Windows</span></code> 获取 <code class="docutils literal notranslate"><span class="pre">vkGetInstanceProcAddr</span></code> 函数如下：</p></li>
+</ul>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">PFN_vkGetInstanceProcAddr</span><span class="w"> </span><span class="n">vkGetInstanceProcAddr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">PFN_vkGetInstanceProcAddr</span><span class="p">)(</span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="p">)(</span><span class="kt">void</span><span class="p">))</span><span class="n">GetProcAddress</span><span class="p">(</span><span class="n">library</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;vkGetInstanceProcAddr&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Linux</span></code> 获取 <code class="docutils literal notranslate"><span class="pre">vkGetInstanceProcAddr</span></code> 函数如下：</p></li>
+</ul>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">PFN_vkGetInstanceProcAddr</span><span class="w"> </span><span class="n">vkGetInstanceProcAddr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">PFN_vkGetInstanceProcAddr</span><span class="p">)</span><span class="n">dlsym</span><span class="p">(</span><span class="n">library</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;vkGetInstanceProcAddr&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 
@@ -369,7 +414,10 @@
             <ul>
 <li><a class="reference internal" href="#">纵览</a><ul>
 <li><a class="reference internal" href="#vulkan">Vulkan 能为我们做什么</a></li>
-<li><a class="reference internal" href="#id3">获取 Vulkan 接口</a></li>
+<li><a class="reference internal" href="#id3">获取 Vulkan 接口</a><ul>
+<li><a class="reference internal" href="#vkgetinstanceprocaddr">vkGetInstanceProcAddr</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

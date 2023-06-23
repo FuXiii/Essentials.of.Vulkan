@@ -10,6 +10,7 @@
    * 2023/6/23 更新该文档
    * 2023/6/23 增加 ``Vulkan 能为我们做什么`` 章节
    * 2023/6/23 增加 ``获取 Vulkan 接口`` 章节
+   * 2023/6/23 增加 ``vkGetInstanceProcAddr`` 章节
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -60,3 +61,50 @@ Vulkan 能为我们做什么
        library = dlopen("libvulkan.so", RTLD_NOW | RTLD_LOCAL);
    }
 
+之后我们就可以从加载的动态库中获取 ``Vulkan`` 的函数了，但是在获取 ``Vulkan`` 函数前我们需要先介绍一下 ``Vulkan`` 中函数的分类：
+
+* :bdg-secondary:`Instance 域函数` 主要是通过 ``vkGetInstanceProcAddr`` 函数接口获取，该类函数大部分与 ``VkInstance`` 进行交互。主要是获取一些与设备不相关与环境相关的函数。
+* :bdg-secondary:`PhysicalDevice 域函数` 主要是通过 ``vkGetInstanceProcAddr`` 函数接口获，该类函数大部分与 ``VkPhysicalDevice`` 进行交互。主要是一些获取硬件设备相关信息的函数。
+* :bdg-secondary:`Device 域函数` 主要是通过 ``vkGetDeviceProcAddr`` 函数接口获，该类函数大部分与 ``VkDevice`` 进行交互。主要是获取一些与硬件设备相关的功能函数。
+
+.. admonition:: PhysicalDevice 域函数
+   :class: note
+
+   在 ``Vulkan`` 标准中并没有所谓的 ``PhysicalDevice`` 域函数，在 ``Vulkan`` 标准中只分为 ``Instance`` 域函数和 ``Device`` 域函数，但是在实际使用中由于 ``PhysicalDevice`` 域函数的特殊性是确确实实可以单独拎出来的，只不过在 ``Vulkan`` 标准中 ``PhysicalDevice`` 域函数归到了 ``Instance`` 域函数中。
+
+.. admonition:: vkGetInstanceProcAddr 和 Device 域函数
+   :class: note
+
+   在 ``Vulkan`` 中并没有禁止用户使用 ``vkGetInstanceProcAddr`` 获得 ``Device`` 域函数，但这是不推荐的，当有多个硬件设备时会造成模棱两可的函数获取。比如电脑上插着两个显卡，一个是摩尔线程的的一个是景嘉微的，这两个设备都支持绘制函数 ``vkCmdDraw`` 函数 ，但是到底获取的是哪个设备的实现是由 ``Vulkan Loader`` 定义的，用户并不能知道返回的函数是哪个设备的实现。
+
+vkGetInstanceProcAddr
+************************
+
+在 ``Vulkan`` 中获取 ``Instance`` 域函数，提供了统一的 ``vkGetInstanceProcAddr`` 函数获取接口，如下：
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef void (VKAPI_PTR *PFN_vkVoidFunction)(void);
+
+   // 由 VK_VERSION_1_0 提供
+   PFN_vkVoidFunction vkGetInstanceProcAddr(
+     VkInstance instance,
+     const char* pName);
+
+* :bdg-secondary:`instance` 获取 ``instance`` 兼容的函数接口，或是 ``NULL`` 用于获取不依赖任何 ``VkInstance`` 的函数。
+* :bdg-secondary:`pName` 获取的接口函数名称。
+
+或取 ``vkGetInstanceProcAddr`` 函数之后既可以使用该函数获取 ``Vulkan`` 函数了。
+
+* ``Windows`` 获取 ``vkGetInstanceProcAddr`` 函数如下：
+
+.. code:: c++
+
+   PFN_vkGetInstanceProcAddr vkGetInstanceProcAddr = (PFN_vkGetInstanceProcAddr)(void (*)(void))GetProcAddress(library, "vkGetInstanceProcAddr");
+
+* ``Linux`` 获取 ``vkGetInstanceProcAddr`` 函数如下：
+
+.. code:: c++
+
+   PFN_vkGetInstanceProcAddr vkGetInstanceProcAddr = = (PFN_vkGetInstanceProcAddr)dlsym(library, "vkGetInstanceProcAddr");
