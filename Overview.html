@@ -139,7 +139,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -237,7 +237,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
@@ -255,9 +255,55 @@
 <ul class="simple">
 <li><p class="sd-card-text">2023/5/15 增加该文章</p></li>
 <li><p class="sd-card-text">2023/5/16 将 <code class="docutils literal notranslate"><span class="pre">开始于</span> <span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 章节的内容移动至单独 <code class="docutils literal notranslate"><span class="pre">开始于</span> <span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 文章中</p></li>
+<li><p class="sd-card-text">2023/6/23 更新该文档</p></li>
+<li><p class="sd-card-text">2023/6/23 增加 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">能为我们做什么</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/23 增加 <code class="docutils literal notranslate"><span class="pre">获取</span> <span class="pre">Vulkan</span> <span class="pre">接口</span></code> 章节</p></li>
 </ul>
 </div>
-</details></section>
+</details><p>由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 比较复杂，为了更好的入门 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> ，还是大致过一遍 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的核心思路，这对以后的学习很有帮助。</p>
+<section id="vulkan">
+<h2>Vulkan 能为我们做什么<a class="headerlink" href="#vulkan" title="此标题的永久链接">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 最主要的任务就是为我们提供了 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 并行计算的接口。是的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 仅仅只是规定了一套接口，其并没有接口的具体实现，而实现是需要硬件厂商自己适配实现，所以市面上并不是所有硬件设备都支持 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 。像 <code class="docutils literal notranslate"><span class="pre">NVIDIA</span></code> 、 <code class="docutils literal notranslate"><span class="pre">AMD</span></code> 和 <code class="docutils literal notranslate"><span class="pre">Intel</span></code> 等国际大厂基本提供了完整的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>
+核心标准接口。而像国产的后起之秀 <a class="reference external" href="https://www.mthreads.com/">摩尔线程</a> 也在努力适配 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准（ <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">景嘉微你要加油啊</span>）。由于标准的实现都是自家的，所以每家厂商都可以根据自家设备的特点进行优化和扩展，这样在提供 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 核心功能的基础上也推出了自家的扩展功能，而扩展功能往往是该设备的卖点（比如硬件实时光线追踪扩展功能）。</p>
+<p>而在使用 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 时，相比于标准，我们往往更关注于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 所提供的功能，主要的功能如下：</p>
+<ul class="simple">
+<li><p>光栅化渲染</p></li>
+<li><p>实时光线追踪</p></li>
+<li><p>视频编解码</p></li>
+<li><p>（通用）并行计算</p></li>
+</ul>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">光栅化渲染</span></code> 应该是最主要的功能了（同时也是 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的核心功能）。该章节也主要以 <code class="docutils literal notranslate"><span class="pre">光栅化渲染</span></code> 为核心进行纵览。</p>
+</section>
+<section id="id3">
+<h2>获取 Vulkan 接口<a class="headerlink" href="#id3" title="此标题的永久链接">#</a></h2>
+<p>由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 只是一套标准，具体的实现都在硬件驱动中，为了能够使用 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 驱动硬件设备，我们需要获取驱动中 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准实现的接口。</p>
+<p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中提供了 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 进行 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准实现接口的获取。根据前文介绍我们知道 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 对应着 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的动态库，所以我们第一步就是加载 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的动态库。</p>
+<div class="note admonition">
+<p class="admonition-title"><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的动态库</p>
+<p><code class="docutils literal notranslate"><span class="pre">Windows</span></code> 操作系统上 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的动态库为 <code class="docutils literal notranslate"><span class="pre">vulkan-1.dll</span></code> ，而 <code class="docutils literal notranslate"><span class="pre">Linux</span></code> 上的为 <code class="docutils literal notranslate"><span class="pre">libvulkan.so.1</span></code> 或 <code class="docutils literal notranslate"><span class="pre">libvulkan.so</span></code> 。</p>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Windows</span></code> 加载 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 动态库如下：</p></li>
+</ul>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Windows.h&gt;</span>
+
+<span class="n">HMODULE</span><span class="w"> </span><span class="n">library</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">LoadLibraryA</span><span class="p">(</span><span class="s">&quot;vulkan-1.dll&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Linux</span></code> 加载 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 动态库如下：</p></li>
+</ul>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;dlfcn.h&gt;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">library</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dlopen</span><span class="p">(</span><span class="s">&quot;libvulkan.so.1&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">RTLD_NOW</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">RTLD_LOCAL</span><span class="p">);</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">library</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">library</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dlopen</span><span class="p">(</span><span class="s">&quot;libvulkan.so&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">RTLD_NOW</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">RTLD_LOCAL</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
 
         </article>
       </div>
@@ -309,8 +355,28 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">纵览</a><ul>
+<li><a class="reference internal" href="#vulkan">Vulkan 能为我们做什么</a></li>
+<li><a class="reference internal" href="#id3">获取 Vulkan 接口</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
