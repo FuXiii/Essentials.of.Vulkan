@@ -99,7 +99,7 @@ vkGetInstanceProcAddr
 * :bdg-secondary:`instance` 获取 ``instance`` 兼容的函数接口，或是 ``NULL`` 用于获取不依赖任何 ``VkInstance`` 的函数。
 * :bdg-secondary:`pName` 获取的接口函数名称。
 
-或取 ``vkGetInstanceProcAddr`` 函数之后既可以使用该函数获取 ``Vulkan`` 函数了。
+获取 ``vkGetInstanceProcAddr`` 函数之后就可以使用该函数获取 ``Vulkan`` 函数了。
 
 * ``Windows`` 获取 ``vkGetInstanceProcAddr`` 函数如下：
 
