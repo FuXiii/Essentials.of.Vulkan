@@ -17,6 +17,10 @@
    * 2023/5/17 更新 ``Vulkan的版本`` 章节
    * 2023/5/18 更新 ``Vulkan的头文件`` 章节
    * 2023/5/18 增加 ``Vulkan SDK 最佳实践`` 章节
+   * 2023/6/23 增加 ``Vulkan SDK 内容`` 章节
+   * 2023/6/23 增加 ``Bin 和 Bin32`` 章节
+   * 2023/6/23 增加 ``Include 与 Lib 和 Lib32`` 章节
+   * 2023/6/23 增加 ``Templates`` 章节
 
 ``Khronos`` 这次推出了 ``Vulkan`` 官方的软件开发工具包 `Vulkan SDK <https://vulkan.lunarg.com/home/welcome>`_ ，这避免了像 ``OpenGL`` 开发环境混乱的情形再次上演。
 
@@ -493,6 +497,72 @@ Vulkan的库
    现在已经不推荐使用静态库链接到 ``Vulkan`` 了。而是推荐直接使用 ``Vulkan`` 的动态库，也就是 ``Vulkan`` 运行时的那个动态库， ``Windows`` 下为 ``vulkan-1.dll`` ，
    在 ``Linux`` 操作系统中为 ``libvulkan.so.1`` 或 ``libvulkan.so`` 。有关原因请查阅 `Vulkan-Loader <https://github.com/KhronosGroup/Vulkan-Loader/blob/main/docs/LoaderApplicationInterface.md#static-linking>`_ 文档
 
+Vulkan SDK 内容
+######################
+
+``Vulkan SDK`` 安装之后，对应的安装目录下有很多文件和文件夹，这里对内部内容进行简单介绍。
+
+.. note:: 这里主要以 ``Windows`` 系统下的 ``1.3.246.1`` 版本的 ``Vulkan SDK`` 为基础进行介绍，其他操作系统的其他版本的 ``Vulkan SDK`` 内容都差不多。
+
+======================  =========================================
+  文件夹                 说明
+======================  =========================================
+``Bin``                 ``64`` 位二进制库和可执行程序，包括系统路径下的 ``layer`` 和 ``JSON`` 的清单文件。:bdg-warning:`注：如果只安装了32位的话将不会有该文件夹`
+``Bin32``               ``32`` 位二进制库和可执行程序，包括系统路径下的 ``layer`` 和 ``JSON`` 的清单文件
+``Config``              用于 ``SDL2`` 库的 ``CMake`` 文件
+``Helpers``             该文件夹下的程序被 ``Vulkan SDK`` 的安装器和维护工具使用。请不要移除这些文件
+``Demos``               ``Vulkan Cube`` 和 ``Vulkan Info`` 的程序源码和 ``Visual Studio`` 的工程
+``Include``             用于编译 ``Vulkan`` 程序的头文件
+``Lib``                 ``64`` 位 ``layer`` 和工具的二进制库
+``Lib32``               ``32`` 位 ``layer`` 和工具的二进制库
+``share``               ``vk.xml`` 文件的主目录
+``Source``              ``spirv_reflect.c`` 之类的源码
+``Templates``           ``Visual Studio`` 的 ``Vulkan`` 工程模板
+======================  =========================================
+
+Bin 和 Bin32
+*****************
+
+该文件夹下一般都是一些常用的 ``layer`` 和工具的二进制文件。其中有几个可执行程序需要注意一下：
+
+* ``vkcube.exe`` 一般用于快速验证 ``Vulkan SDK`` 是否安装成功。执行会展现一个旋转方盒子。
+* ``vkvia.exe`` 是 ``Vulkan Installation Analyzer(VIA)`` 的可执行程序，是 ``Vulkan`` 的安装验证分析器。当执行该程序后，会在执行目录输出 ``vkvia.html`` 文件，使用浏览器可查看相关信息。
+* ``vkconfig.exe`` 是用于查看和配置 ``Vulkan`` 信息和环境的利器，非常好用。
+* ``glslangValidator.exe`` 用于验证 ``GLSL`` 和 ``HLSL`` 着色器文件的语法正确性并生成 ``Vulkan`` 支持的 ``SPIR-V`` 着色器文件。
+
+.. admonition:: SPIR-V
+   :class: note
+
+   ``SPIR-V`` 是 ``Vulkan`` 唯一支持的着色器格式，是一个人类不可阅读的二进制格式标准，只要是给硬件使用的。
+
+Include 与 Lib 和 Lib32
+*************************
+
+``Include`` 与 ``Lib`` 和 ``Lib32`` 会根据 ``Vulkan SDK`` 安装时选择的安装内容的不同而不同，但大体应该相差不大。
+
+* ``glslang`` 是 ``glslangValidator.exe`` 的父工程， ``glslangValidator.exe`` 是 ``glslang`` 的一个子项目程序。
+* ``shaderc`` 与 ``glslang`` 类似，也是进行着色器文件编译。
+* ``spirv_cross`` 用于将 ``SPIR-V`` 的文件转换成 ``GLSL`` 或 ``HLSL`` 标准或人类可阅读的格式。
+* ``spirv-tools`` 用于验证 ``SPIR-V`` 着色器的正确性的可以简单理解为 ``SPIR-V`` 版的 ``glslang`` 。
+* ``vulkan-1.lib`` ``Vulkan`` 的静态加载库。
+
+Templates
+*************************
+
+该文件夹下有对应 ``VisualStudio`` 版本的文件夹，分别用于对应相应版本的 ``VisualStudio`` 项目模板，一般都是压缩文件。将压缩文件直接复制到如下目录：
+
+.. code:: console
+
+   C:\Users\{UserName}\Documents\Visual Studio {Version}\Templates\ProjectTemplates\Visual C++ Project
+
+* :bdg-secondary:`{UserName}` 您电脑的用户名。
+* :bdg-secondary:`{Version}` ``VisualStudio`` 的版本。
+
+之后打开相应版本的 ``VisualStudio`` ，新建项目就会有如图新增选项：
+
+.. figure:: _static/VulkanSDKTemplates.png
+
+   VisualStudio 工程模板
 
 Vulkan SDK 最佳实践
 ######################
@@ -516,3 +586,4 @@ Vulkan SDK 最佳实践
    :class: caution
 
    理论上来说是不需要依赖 ``Vulkan SDK`` 的，但是如果使用一些第三方库，这些第三方库可能会依赖  ``Vulkan SDK`` ，比如 `VulkanMemoryAllocator <https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator>`_ 。此时 ``Vulkan SDK`` 还是需要的。
+

@@ -265,6 +265,10 @@
 <li><p class="sd-card-text">2023/5/17 更新 <code class="docutils literal notranslate"><span class="pre">Vulkan的版本</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/5/18 更新 <code class="docutils literal notranslate"><span class="pre">Vulkan的头文件</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/5/18 增加 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span> <span class="pre">最佳实践</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/23 增加 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span> <span class="pre">内容</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/23 增加 <code class="docutils literal notranslate"><span class="pre">Bin</span> <span class="pre">和</span> <span class="pre">Bin32</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/23 增加 <code class="docutils literal notranslate"><span class="pre">Include</span> <span class="pre">与</span> <span class="pre">Lib</span> <span class="pre">和</span> <span class="pre">Lib32</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/23 增加 <code class="docutils literal notranslate"><span class="pre">Templates</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p><code class="docutils literal notranslate"><span class="pre">Khronos</span></code> 这次推出了 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 官方的软件开发工具包 <a class="reference external" href="https://vulkan.lunarg.com/home/welcome">Vulkan SDK</a> ，这避免了像 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 开发环境混乱的情形再次上演。</p>
@@ -407,10 +411,10 @@
 </pre></div>
 </div>
 <p>你将会看到一个旋转的方盒子，说明安装配置成功。</p>
-<figure class="align-default" id="id10">
+<figure class="align-default" id="id11">
 <img alt="_images/vkcube.png" src="_images/vkcube.png" />
 <figcaption>
-<p><span class="caption-text">vkcube</span><a class="headerlink" href="#id10" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">vkcube</span><a class="headerlink" href="#id11" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 </section>
@@ -700,7 +704,102 @@
 </div>
 </section>
 <section id="id8">
-<h2>Vulkan SDK 最佳实践<a class="headerlink" href="#id8" title="此标题的永久链接">#</a></h2>
+<h2>Vulkan SDK 内容<a class="headerlink" href="#id8" title="此标题的永久链接">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 安装之后，对应的安装目录下有很多文件和文件夹，这里对内部内容进行简单介绍。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>这里主要以 <code class="docutils literal notranslate"><span class="pre">Windows</span></code> 系统下的 <code class="docutils literal notranslate"><span class="pre">1.3.246.1</span></code> 版本的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 为基础进行介绍，其他操作系统的其他版本的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 内容都差不多。</p>
+</div>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>文件夹</p></th>
+<th class="head"><p>说明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Bin</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">64</span></code> 位二进制库和可执行程序，包括系统路径下的 <code class="docutils literal notranslate"><span class="pre">layer</span></code> 和 <code class="docutils literal notranslate"><span class="pre">JSON</span></code> 的清单文件。<span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">注：如果只安装了32位的话将不会有该文件夹</span></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Bin32</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">32</span></code> 位二进制库和可执行程序，包括系统路径下的 <code class="docutils literal notranslate"><span class="pre">layer</span></code> 和 <code class="docutils literal notranslate"><span class="pre">JSON</span></code> 的清单文件</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Config</span></code></p></td>
+<td><p>用于 <code class="docutils literal notranslate"><span class="pre">SDL2</span></code> 库的 <code class="docutils literal notranslate"><span class="pre">CMake</span></code> 文件</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Helpers</span></code></p></td>
+<td><p>该文件夹下的程序被 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 的安装器和维护工具使用。请不要移除这些文件</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Demos</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Cube</span></code> 和 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Info</span></code> 的程序源码和 <code class="docutils literal notranslate"><span class="pre">Visual</span> <span class="pre">Studio</span></code> 的工程</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Include</span></code></p></td>
+<td><p>用于编译 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 程序的头文件</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Lib</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">64</span></code> 位 <code class="docutils literal notranslate"><span class="pre">layer</span></code> 和工具的二进制库</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Lib32</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">32</span></code> 位 <code class="docutils literal notranslate"><span class="pre">layer</span></code> 和工具的二进制库</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">share</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">vk.xml</span></code> 文件的主目录</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Source</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">spirv_reflect.c</span></code> 之类的源码</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Templates</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Visual</span> <span class="pre">Studio</span></code> 的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 工程模板</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<section id="bin-bin32">
+<h3>Bin 和 Bin32<a class="headerlink" href="#bin-bin32" title="此标题的永久链接">#</a></h3>
+<p>该文件夹下一般都是一些常用的 <code class="docutils literal notranslate"><span class="pre">layer</span></code> 和工具的二进制文件。其中有几个可执行程序需要注意一下：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">vkcube.exe</span></code> 一般用于快速验证 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 是否安装成功。执行会展现一个旋转方盒子。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vkvia.exe</span></code> 是 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Installation</span> <span class="pre">Analyzer(VIA)</span></code> 的可执行程序，是 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的安装验证分析器。当执行该程序后，会在执行目录输出 <code class="docutils literal notranslate"><span class="pre">vkvia.html</span></code> 文件，使用浏览器可查看相关信息。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vkconfig.exe</span></code> 是用于查看和配置 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 信息和环境的利器，非常好用。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">glslangValidator.exe</span></code> 用于验证 <code class="docutils literal notranslate"><span class="pre">GLSL</span></code> 和 <code class="docutils literal notranslate"><span class="pre">HLSL</span></code> 着色器文件的语法正确性并生成 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 支持的 <code class="docutils literal notranslate"><span class="pre">SPIR-V</span></code> 着色器文件。</p></li>
+</ul>
+<div class="note admonition">
+<p class="admonition-title">SPIR-V</p>
+<p><code class="docutils literal notranslate"><span class="pre">SPIR-V</span></code> 是 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 唯一支持的着色器格式，是一个人类不可阅读的二进制格式标准，只要是给硬件使用的。</p>
+</div>
+</section>
+<section id="include-lib-lib32">
+<h3>Include 与 Lib 和 Lib32<a class="headerlink" href="#include-lib-lib32" title="此标题的永久链接">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">Include</span></code> 与 <code class="docutils literal notranslate"><span class="pre">Lib</span></code> 和 <code class="docutils literal notranslate"><span class="pre">Lib32</span></code> 会根据 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 安装时选择的安装内容的不同而不同，但大体应该相差不大。</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">glslang</span></code> 是 <code class="docutils literal notranslate"><span class="pre">glslangValidator.exe</span></code> 的父工程， <code class="docutils literal notranslate"><span class="pre">glslangValidator.exe</span></code> 是 <code class="docutils literal notranslate"><span class="pre">glslang</span></code> 的一个子项目程序。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">shaderc</span></code> 与 <code class="docutils literal notranslate"><span class="pre">glslang</span></code> 类似，也是进行着色器文件编译。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">spirv_cross</span></code> 用于将 <code class="docutils literal notranslate"><span class="pre">SPIR-V</span></code> 的文件转换成 <code class="docutils literal notranslate"><span class="pre">GLSL</span></code> 或 <code class="docutils literal notranslate"><span class="pre">HLSL</span></code> 标准或人类可阅读的格式。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">spirv-tools</span></code> 用于验证 <code class="docutils literal notranslate"><span class="pre">SPIR-V</span></code> 着色器的正确性的可以简单理解为 <code class="docutils literal notranslate"><span class="pre">SPIR-V</span></code> 版的 <code class="docutils literal notranslate"><span class="pre">glslang</span></code> 。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vulkan-1.lib</span></code> <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的静态加载库。</p></li>
+</ul>
+</section>
+<section id="templates">
+<h3>Templates<a class="headerlink" href="#templates" title="此标题的永久链接">#</a></h3>
+<p>该文件夹下有对应 <code class="docutils literal notranslate"><span class="pre">VisualStudio</span></code> 版本的文件夹，分别用于对应相应版本的 <code class="docutils literal notranslate"><span class="pre">VisualStudio</span></code> 项目模板，一般都是压缩文件。将压缩文件直接复制到如下目录：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">C:\Users\{UserName}\Documents\Visual Studio {Version}\Templates\ProjectTemplates\Visual C++ Project</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">{UserName}</span> 您电脑的用户名。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">{Version}</span> <code class="docutils literal notranslate"><span class="pre">VisualStudio</span></code> 的版本。</p></li>
+</ul>
+<p>之后打开相应版本的 <code class="docutils literal notranslate"><span class="pre">VisualStudio</span></code> ，新建项目就会有如图新增选项：</p>
+<figure class="align-default" id="id12">
+<img alt="_images/VulkanSDKTemplates.png" src="_images/VulkanSDKTemplates.png" />
+<figcaption>
+<p><span class="caption-text">VisualStudio 工程模板</span><a class="headerlink" href="#id12" title="此图像的永久链接">#</a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="id9">
+<h2>Vulkan SDK 最佳实践<a class="headerlink" href="#id9" title="此标题的永久链接">#</a></h2>
 <p>对于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 的最佳实践就是 <code class="docutils literal notranslate"><span class="pre">不使用</span></code> <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 。是的，不使用安装的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 中的头文件和静态库。</p>
 <ul>
 <li><p>对于库</p>
@@ -795,7 +894,13 @@
 <li><a class="reference internal" href="#vulkan">Vulkan的版本</a></li>
 <li><a class="reference internal" href="#id5">Vulkan的头文件</a></li>
 <li><a class="reference internal" href="#id6">Vulkan的库</a></li>
-<li><a class="reference internal" href="#id8">Vulkan SDK 最佳实践</a></li>
+<li><a class="reference internal" href="#id8">Vulkan SDK 内容</a><ul>
+<li><a class="reference internal" href="#bin-bin32">Bin 和 Bin32</a></li>
+<li><a class="reference internal" href="#include-lib-lib32">Include 与 Lib 和 Lib32</a></li>
+<li><a class="reference internal" href="#templates">Templates</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id9">Vulkan SDK 最佳实践</a></li>
 </ul>
 </li>
 </ul>
