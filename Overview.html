@@ -260,6 +260,9 @@
 <li><p class="sd-card-text">2023/6/23 增加 <code class="docutils literal notranslate"><span class="pre">获取</span> <span class="pre">Vulkan</span> <span class="pre">接口</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/6/23 增加 <code class="docutils literal notranslate"><span class="pre">vkGetInstanceProcAddr</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/6/23 增加 <code class="docutils literal notranslate"><span class="pre">加载</span> <span class="pre">Vulkan</span> <span class="pre">动态库</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/24 更新 <code class="docutils literal notranslate"><span class="pre">vkGetInstanceProcAddr</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/24 更新 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">最初之物</span> <span class="pre">VkInstance</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/24 增加 <code class="docutils literal notranslate"><span class="pre">创建</span> <span class="pre">VkInstance</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p>由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 比较复杂，为了更好的入门 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> ，还是大致过一遍 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的核心思路，这对以后的学习很有帮助。</p>
@@ -338,6 +341,15 @@
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pName</span> 获取的接口函数名称。</p></li>
 </ul>
 <p>获取 <code class="docutils literal notranslate"><span class="pre">vkGetInstanceProcAddr</span></code> 函数之后就可以使用该函数获取 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 函数了。</p>
+<div class="note admonition">
+<p class="admonition-title">PFN_{函数名}</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准中，所有的接口函数都有对应的函数指针声明，命名规则为 <code class="docutils literal notranslate"><span class="pre">PFN_{函数名}</span></code> 。</p>
+</div>
+<div class="note admonition">
+<p class="admonition-title">PFN_vkVoidFunction 与 vkGetInstanceProcAddr</p>
+<p><code class="docutils literal notranslate"><span class="pre">vkGetInstanceProcAddr</span></code> 会返回 <code class="docutils literal notranslate"><span class="pre">PFN_vkVoidFunction</span></code> 类型函数指针。但是我们想获得 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中如 <code class="docutils literal notranslate"><span class="pre">vkCreateInstance</span></code> 这样的函数指针，该指针并不是 <code class="docutils literal notranslate"><span class="pre">PFN_vkVoidFunction</span></code> 类型的，而是 <code class="docutils literal notranslate"><span class="pre">PFN_vkCreateInstance</span></code> 类型的，如何从 <code class="docutils literal notranslate"><span class="pre">PFN_vkVoidFunction</span></code> 类型获得 <code class="docutils literal notranslate"><span class="pre">PFN_vkCreateInstance</span></code> 类型呢？
+在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中规定直接使用强制类型转换即可。下文有示例。</p>
+</div>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Windows</span></code> 获取 <code class="docutils literal notranslate"><span class="pre">vkGetInstanceProcAddr</span></code> 函数如下：</p></li>
 </ul>
@@ -348,6 +360,170 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">Linux</span></code> 获取 <code class="docutils literal notranslate"><span class="pre">vkGetInstanceProcAddr</span></code> 函数如下：</p></li>
 </ul>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">PFN_vkGetInstanceProcAddr</span><span class="w"> </span><span class="n">vkGetInstanceProcAddr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">PFN_vkGetInstanceProcAddr</span><span class="p">)</span><span class="n">dlsym</span><span class="p">(</span><span class="n">library</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;vkGetInstanceProcAddr&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>之后就可以使用 <code class="docutils literal notranslate"><span class="pre">vkGetInstanceProcAddr</span></code> 获取 <code class="docutils literal notranslate"><span class="pre">Instance</span></code> 域的函数了。比如获取 <code class="docutils literal notranslate"><span class="pre">vkCreateInstance</span></code> 函数接口：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">PFN_vkCreateInstance</span><span class="w"> </span><span class="n">vkCreateInstance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">PFN_vkCreateInstance</span><span class="p">)</span><span class="n">vkGetInstanceProcAddr</span><span class="p">(</span><span class="n">VK_NULL_HANDLE</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;vkCreateInstance&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="note admonition">
+<p class="admonition-title">VK_NULL_HANDLE</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中 <code class="docutils literal notranslate"><span class="pre">VK_NULL_HANDLE</span></code> 被定义为空或无效句柄，一般被声明为 <code class="docutils literal notranslate"><span class="pre">0</span></code> 、 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 或 <code class="docutils literal notranslate"><span class="pre">nullptr</span></code> 。</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>对于获取 <code class="docutils literal notranslate"><span class="pre">PhysicalDevice</span></code> 域函数和 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 域函数将会在后文有所体现。</p>
+</div>
+</section>
+</section>
+<section id="vulkan-vkinstance">
+<h2>Vulkan 最初之物 VkInstance<a class="headerlink" href="#vulkan-vkinstance" title="此标题的永久链接">#</a></h2>
+<p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中首先要创建的就是 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 对象。该对象包含了用户设置的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 环境信息，包括使用的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的版本信息等，用于初始化 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 环境，并构建出 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 这个繁杂的系统根基。 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 定义如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#define VK_DEFINE_HANDLE(object) typedef struct object##_T* object;</span>
+
+<span class="n">VK_DEFINE_HANDLE</span><span class="p">(</span><span class="n">VkInstance</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>从 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 定义可知为一个句柄，该句柄为一个结构体指针。在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中所有的对象都是一个句柄。</p>
+<p>如上 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 声明等价于:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkInstance_T</span><span class="o">*</span><span class="w"> </span><span class="n">VkInstance</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>也就是说 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 在底层其实是作为一个类型为 <code class="docutils literal notranslate"><span class="pre">VkInstance_T</span></code> 的指针在使用。</p>
+<div class="note admonition">
+<p class="admonition-title">Vulkan 中的句柄</p>
+<p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中并不是所有的句柄都是指针类型，也有可能是一个 <code class="docutils literal notranslate"><span class="pre">64</span></code> 位的无符号整形，具体是什么类型与平台相关。但用户并不需要关心句柄的底层表达， <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中对所有的句柄都做了分别进行了声明，这样用户只需要使用 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 提供的句柄声明即可。
+比如声明一个未初始化的 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 句柄（对象）：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkInstance</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_NULL_HANDLE</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<section id="vkinstance">
+<h3>创建 VkInstance<a class="headerlink" href="#vkinstance" title="此标题的永久链接">#</a></h3>
+<p>我们通过之前获取到的 <code class="docutils literal notranslate"><span class="pre">vkCreateInstance</span></code> 函数创建 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 。相关声明如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="n">VkResult</span><span class="w"> </span><span class="nf">vkCreateInstance</span><span class="p">(</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkInstanceCreateInfo</span><span class="o">*</span><span class="w">                 </span><span class="n">pCreateInfo</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkAllocationCallbacks</span><span class="o">*</span><span class="w">                </span><span class="n">pAllocator</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkInstance</span><span class="o">*</span><span class="w">                                 </span><span class="n">pInstance</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pCreateInfo</span> 指向 <code class="docutils literal notranslate"><span class="pre">VkInstanceCreateInfo</span></code> 数据结构对象，用于控制 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 的创建。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pAllocator</span> 内存分配器。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pInstance</span> 创建 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 。</p></li>
+</ul>
+<div class="note admonition">
+<p class="admonition-title">pAllocator</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中创建句柄是需要设置内存分配器的，也就是 <code class="docutils literal notranslate"><span class="pre">pAllocator</span></code> ，这对于统计内存使用情况和自定义非常重要，如果没有自定义分配器的话也可以是直接传 <code class="docutils literal notranslate"><span class="pre">nullptr</span></code> ，这将会使用 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 内置的分配器进行分配。</p>
+</div>
+<p>如果创建成功将会返回 <code class="docutils literal notranslate"><span class="pre">VkResult::VK_SUCCESS</span></code> 枚举值，否则将返回错误结果枚举值。</p>
+<div class="note admonition">
+<p class="admonition-title">VK_SUCCESS</p>
+<p>对于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中返回的大多数结果值来说，成功基本都是 <code class="docutils literal notranslate"><span class="pre">VK_SUCCESS</span></code> ，否则就是失败（有极个别返回其他结果也可以算作成功，遇到再说）。还有一点需要注意的是， <code class="docutils literal notranslate"><span class="pre">VK_SUCCESS</span></code> 的枚举值为 <code class="docutils literal notranslate"><span class="pre">0</span></code> ：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkResult</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="n">VK_SUCCESS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">   </span><span class="p">...</span>
+<span class="p">}</span><span class="n">VkResult</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>也就是，不应该出现如下判断：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkResult</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vkCreateInstance</span><span class="p">(...);</span>
+<span class="k">if</span><span class="p">(</span><span class="n">result</span><span class="p">)</span><span class="w"> </span><span class="c1">// 如果此时 result 为 VK_SUCCESS ，而 VK_SUCCESS 的枚举值为 0 ，会导致判定不满足条件。</span>
+<span class="p">...</span>
+</pre></div>
+</div>
+<p>而正确的做法为：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkResult</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vkCreateInstance</span><span class="p">(...);</span>
+<span class="k">if</span><span class="p">(</span><span class="n">result</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">VkResult</span><span class="o">::</span><span class="n">VK_SUCCESS</span><span class="p">)</span>
+<span class="p">...</span>
+</pre></div>
+</div>
+</div>
+<p>来看一下 <code class="docutils literal notranslate"><span class="pre">VkInstanceCreateInfo</span></code> 的定义：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkInstanceCreateInfo</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VkStructureType</span><span class="w">             </span><span class="n">sType</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w">                 </span><span class="n">pNext</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkInstanceCreateFlags</span><span class="w">       </span><span class="n">flags</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkApplicationInfo</span><span class="o">*</span><span class="w">    </span><span class="n">pApplicationInfo</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                    </span><span class="n">enabledLayerCount</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="k">const</span><span class="o">*</span><span class="w">          </span><span class="n">ppEnabledLayerNames</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                    </span><span class="n">enabledExtensionCount</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="k">const</span><span class="o">*</span><span class="w">          </span><span class="n">ppEnabledExtensionNames</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkInstanceCreateInfo</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 是该结构体的类型枚举值，必须是 <code class="docutils literal notranslate"><span class="pre">VkStructureType::VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pNext</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向其他结构体来扩展该结构体。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">flags</span> 是 <code class="docutils literal notranslate"><span class="pre">VkInstanceCreateFlagBits</span></code> 所表示的位域值，用于设置 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 的行为。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pApplicationInfo</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向应用信息结构体，用于  <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 的细节设置。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">enabledLayerCount</span> 激活的 <code class="docutils literal notranslate"><span class="pre">layer</span></code> 数量。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">ppEnabledLayerNames</span> 指向数量为 <code class="docutils literal notranslate"><span class="pre">enabledLayerCount</span></code> 的 <code class="docutils literal notranslate"><span class="pre">layer</span></code> 字符串数组，用于设置要激活的 <code class="docutils literal notranslate"><span class="pre">layer</span></code>。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">enabledExtensionCount</span> 激活 <code class="docutils literal notranslate"><span class="pre">instance</span></code> 扩展的数量。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">enabledExtensionCount</span> 指向数量为 <code class="docutils literal notranslate"><span class="pre">enabledExtensionCount</span></code> 的扩展字符串数组，用于设置要激活的 <code class="docutils literal notranslate"><span class="pre">instance</span></code> 扩展。</p></li>
+</ul>
+<div class="note admonition">
+<p class="admonition-title">sType 与 pNext</p>
+<p>初次学习 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 时会有个疑问： <code class="docutils literal notranslate"><span class="pre">VkInstanceCreateInfo</span></code> 已经是一个结构体了为什么还有使用 <code class="docutils literal notranslate"><span class="pre">sType</span></code> 再指定一遍结构体类型呢？而且 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中几乎所有的结构体内都声明了 <code class="docutils literal notranslate"><span class="pre">sType</span></code> 成员，为什么？</p>
+<p>这就不得不说明一下 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的扩展模块了。随着时代的发展，类似于 <code class="docutils literal notranslate"><span class="pre">VkInstanceCreateInfo</span></code> 结构体中的数据可能并不满足于技术背景，需要进行扩展，为此 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 引入了 <code class="docutils literal notranslate"><span class="pre">pNext</span></code> 成员， <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中几乎所有的结构体内都声明了 <code class="docutils literal notranslate"><span class="pre">pNext</span></code> 成员，而 <code class="docutils literal notranslate"><span class="pre">pNext</span></code> 为 <code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">void*</span></code> 类型，这也就是说 <code class="docutils literal notranslate"><span class="pre">pNext</span></code>
+可以指向任意一个类型对象的数据地址。由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中几乎所有的结构体内都声明了 <code class="docutils literal notranslate"><span class="pre">pNext</span></code> 成员，这样每个结构体都可以使用 <code class="docutils literal notranslate"><span class="pre">pNext</span></code> 指向下一个 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的结构体，这样一个接着一个将结构体进行串链就形成了一个扩展链。</p>
+<div class="mermaid">
+            flowchart LR
+   subgraph VkInstanceCreateInfo
+      direction TB
+         VkInstanceCreateInfo_sType[&quot;sType = VkStructureType::VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO&quot;]
+         VkInstanceCreateInfo_pNext[&quot;pNext&quot;]
+         %%VkInstanceCreateInfo_sType-.-&gt;VkInstanceCreateInfo_pNext
+   end
+
+   subgraph VulkanSomeStructureA[&quot;Vulkan某个结构体类型A&quot;]
+      direction TB
+         VulkanSomeStructureA_sType[&quot;sType = VkStructureType::某个结构体A类型&quot;]
+         VulkanSomeStructureA_pNext[&quot;pNext&quot;]
+         %%VulkanSomeStructureA_sType-.-&gt;VulkanSomeStructureA_pNext
+   end
+
+   subgraph VulkanSomeStructureB[&quot;Vulkan某个结构体类型B&quot;]
+      direction TB
+         VulkanSomeStructureB_sType[&quot;sType = VkStructureType::某个结构体B类型&quot;]
+         VulkanSomeStructureB_pNext[&quot;pNext&quot;]
+         %%VulkanSomeStructureB_sType-.-&gt;VulkanSomeStructureB_pNext
+   end
+
+   VkInstanceCreateInfo_pNext--&gt;VulkanSomeStructureA
+   VulkanSomeStructureA_pNext--&gt;VulkanSomeStructureB
+   VulkanSomeStructureB_pNext--&gt;a2[&quot;...&quot;]
+        </div><p>这样驱动就可以根据 <code class="docutils literal notranslate"><span class="pre">pNext</span></code> 指针链遍历所有的结构体数据了，但是有一个问题 <code class="docutils literal notranslate"><span class="pre">pNext</span></code> 只是个 <code class="docutils literal notranslate"><span class="pre">void*</span></code> 指针，驱动在获取到 <code class="docutils literal notranslate"><span class="pre">pNext</span></code> 指向的地址时并不知道这个地址应该按照哪种结构体类型进行解析，这时 <code class="docutils literal notranslate"><span class="pre">sType</span></code> 的作用就体现出来了，驱动获取该地址下的 <code class="docutils literal notranslate"><span class="pre">sType</span></code> 的数据，这样驱动就知道如何解析此块地址了。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 驱动内部可能的实现</span>
+
+<span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">pNext</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">某个结构体的地址</span><span class="p">;</span>
+<span class="n">VkStructureType</span><span class="w"> </span><span class="n">sType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VkStructureType</span><span class="o">::</span><span class="n">VK_STRUCTURE_TYPE_MAX_ENUM</span><span class="p">;</span>
+<span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sType</span><span class="p">,</span><span class="w"> </span><span class="n">pNext</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">VkStructureType</span><span class="p">));</span>
+
+<span class="k">switch</span><span class="p">(</span><span class="n">sType</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="k">case</span><span class="w"> </span><span class="no">VkStructureType</span><span class="o">::</span><span class="no">VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO</span><span class="p">:</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="n">VkInstanceCreateInfo</span><span class="o">*</span><span class="w"> </span><span class="n">instance_create_info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">VkInstanceCreateInfo</span><span class="o">*</span><span class="p">)(</span><span class="n">pNext</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="k">break</span><span class="p">;</span>
+<span class="w">   </span><span class="p">...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>目前我们只需要关注 <code class="docutils literal notranslate"><span class="pre">VkApplicationInfo</span></code> 就好，其定义如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkApplicationInfo</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VkStructureType</span><span class="w">    </span><span class="n">sType</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w">        </span><span class="n">pNext</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w">        </span><span class="n">pApplicationName</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">           </span><span class="n">applicationVersion</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w">        </span><span class="n">pEngineName</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">           </span><span class="n">engineVersion</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">           </span><span class="n">apiVersion</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkApplicationInfo</span><span class="p">;</span>
 </pre></div>
 </div>
 </section>
@@ -423,6 +599,10 @@
 <li><a class="reference internal" href="#vkgetinstanceprocaddr">vkGetInstanceProcAddr</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#vulkan-vkinstance">Vulkan 最初之物 VkInstance</a><ul>
+<li><a class="reference internal" href="#vkinstance">创建 VkInstance</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -444,5 +624,7 @@
     <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
     <script src="_static/translations.js"></script>
     <script src="_static/design-tabs.js"></script>
+    <script src="https://unpkg.com/mermaid@10.2.0/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
     </body>
 </html>
