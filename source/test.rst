@@ -1,6 +1,8 @@
 Test
 ======
 
+:octicon:`light-bulb;1em;sd-text-info`
+
 :bdg:`plain badge`
 
 :bdg-primary:`primary`, :bdg-primary-line:`primary-line`

@@ -15,6 +15,11 @@
    * 2023/6/24 更新 ``vkGetInstanceProcAddr`` 章节
    * 2023/6/24 更新 ``Vulkan 最初之物 VkInstance`` 章节
    * 2023/6/24 增加 ``创建 VkInstance`` 章节
+   * 2023/6/25 更新 ``创建 VkInstance`` 章节
+   * 2023/6/25 增加 ``vkCreateInstance`` 章节
+   * 2023/6/25 增加 ``VkInstanceCreateInfo`` 章节
+   * 2023/6/25 增加 ``VkApplicationInfo`` 章节
+   * 2023/6/25 增加 ``获取支持的 Vulkan 版本`` 章节
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -174,6 +179,9 @@ Vulkan 最初之物 VkInstance
 创建 VkInstance
 ************************
 
+vkCreateInstance
+--------------------
+
 我们通过之前获取到的 ``vkCreateInstance`` 函数创建 ``VkInstance`` 。相关声明如下：
 
 .. code:: c++
@@ -186,7 +194,7 @@ Vulkan 最初之物 VkInstance
 
 * :bdg-secondary:`pCreateInfo` 指向 ``VkInstanceCreateInfo`` 数据结构对象，用于控制 ``VkInstance`` 的创建。
 * :bdg-secondary:`pAllocator` 内存分配器。
-* :bdg-secondary:`pInstance` 创建 ``VkInstance`` 。
+* :bdg-secondary:`pInstance` 创建的目标 ``VkInstance`` 结果。
 
 .. admonition:: pAllocator
    :class: note
@@ -223,6 +231,9 @@ Vulkan 最初之物 VkInstance
       if(result == VkResult::VK_SUCCESS)
       ...
 
+VkInstanceCreateInfo
+----------------------
+
 来看一下 ``VkInstanceCreateInfo`` 的定义：
 
 .. code:: c++
@@ -253,11 +264,11 @@ Vulkan 最初之物 VkInstance
 
    初次学习 ``Vulkan`` 时会有个疑问： ``VkInstanceCreateInfo`` 已经是一个结构体了为什么还有使用 ``sType`` 再指定一遍结构体类型呢？而且 ``Vulkan`` 中几乎所有的结构体内都声明了 ``sType`` 成员，为什么？
 
-   这就不得不说明一下 ``Vulkan`` 的扩展模块了。随着时代的发展，类似于 ``VkInstanceCreateInfo`` 结构体中的数据可能并不满足于技术背景，需要进行扩展，为此 ``Vulkan`` 引入了 ``pNext`` 成员， ``Vulkan`` 中几乎所有的结构体内都声明了 ``pNext`` 成员，而 ``pNext`` 为 ``const void*`` 类型，这也就是说 ``pNext`` 
-   可以指向任意一个类型对象的数据地址。由于 ``Vulkan`` 中几乎所有的结构体内都声明了 ``pNext`` 成员，这样每个结构体都可以使用 ``pNext`` 指向下一个 ``Vulkan`` 的结构体，这样一个接着一个将结构体进行串链就形成了一个扩展链。
+   这就不得不说明一下 ``Vulkan`` 的扩展模块了。随着时代的发展，类似于 ``VkInstanceCreateInfo`` 结构体中的数据可能并不满足于技术背景，需要进行扩展，为此 ``Vulkan`` 引入了 ``pNext`` 成员， ``Vulkan`` 中几乎所有的结构体内都声明了 ``pNext`` 成员，而 ``pNext`` 为 ``const void*`` 类型，这也就是说 ``pNext`` 可以
+   指向任意一个类型对象的数据地址。由于 ``Vulkan`` 中几乎所有的结构体内都声明了 ``pNext`` 成员，这样每个结构体都可以使用 ``pNext`` 指向下一个 ``Vulkan`` 的结构体，这样一个接着一个将结构体进行串链就形成了一个扩展链。
 
    .. mermaid::
-   
+
       flowchart LR
          subgraph VkInstanceCreateInfo
             direction TB
@@ -283,11 +294,11 @@ Vulkan 最初之物 VkInstance
          VkInstanceCreateInfo_pNext-->VulkanSomeStructureA
          VulkanSomeStructureA_pNext-->VulkanSomeStructureB
          VulkanSomeStructureB_pNext-->a2["..."]
-   
+
    这样驱动就可以根据 ``pNext`` 指针链遍历所有的结构体数据了，但是有一个问题 ``pNext`` 只是个 ``void*`` 指针，驱动在获取到 ``pNext`` 指向的地址时并不知道这个地址应该按照哪种结构体类型进行解析，这时 ``sType`` 的作用就体现出来了，驱动获取该地址下的 ``sType`` 的数据，这样驱动就知道如何解析此块地址了。
 
    .. code:: c++
-      
+
       // 驱动内部可能的实现
 
       const void* pNext = 某个结构体的地址;
@@ -304,6 +315,9 @@ Vulkan 最初之物 VkInstance
          ...
       }
 
+VkApplicationInfo
+----------------------
+
 目前我们只需要关注 ``VkApplicationInfo`` 就好，其定义如下：
 
 .. code:: c++
@@ -318,3 +332,59 @@ Vulkan 最初之物 VkInstance
        uint32_t           apiVersion;
    } VkApplicationInfo;
 
+* :bdg-secondary:`sType` 是该结构体的类型枚举值，必须是 ``VkStructureType::VK_STRUCTURE_TYPE_APPLICATION_INFO`` 。
+* :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
+* :bdg-secondary:`pApplicationName` 要么是 ``NULL`` 要么指向一个以空字符为结尾的 ``UTF-8`` 字符串，用于表示用户自定义应用名称。
+* :bdg-secondary:`applicationVersion` 一个无符号整型，用于用户自定义应用版本。
+* :bdg-secondary:`pEngineName` 要么是 ``NULL`` 要么指向一个以空字符为结尾的 ``UTF-8`` 字符串，用于表示用户自定义引擎名称。
+* :bdg-secondary:`engineVersion` 一个无符号整型，用于用户自定义引擎版本。
+* :bdg-secondary:`apiVersion` 应用打算使用的 ``Vulkan`` 的最高版本，并且忽略 ``apiVersion`` 的 ``patch`` 版本。
+
+如果设备驱动只支持 ``Vulkan 1.0`` 而用户设置的 ``apiVersion`` 的 ``Vulkan`` 版本高于 ``Vulkan 1.0`` 的话，将会返回 ``VK_ERROR_INCOMPATIBLE_DRIVER`` 。
+
+.. note:: 如果 ``VkInstanceCreateInfo::pApplicationInfo`` 为 ``NULL`` 或 ``apiVersion`` 为 ``0`` 的话，等价于 ``apiVersion`` 设置为 ``VK_MAKE_API_VERSION(0,1,0,0)`` 也就是 ``Vulkan 1.0`` 版本。
+
+这里我们主要关注 ``apiVersion`` 参数，这是一个非常重要的参数。该参数指定的 ``Vulkan`` 版本决定了应用可以使用该版本及以前的版本功能，并不能使用高于 ``apiVersion`` 的 ``Vulkan`` 版本功能。
+
+.. note:: 有关 ``apiVersion`` 如何组成 ``Vulkan`` 版本的，已在 ``开始于 Vulkan SDK`` 的 ``Vulkan的版本`` 中有讲解。
+
+现在我们就可以创建一个最简单的 ``Vulkan 1.0`` 版本的 ``VkInstance`` 了：
+
+.. code:: c++
+
+   VkInstance instance = VK_NULL_HANDLE;
+
+   VkApplicationInfo application_info = {};
+   application_info.sType = VkStructureType::VK_STRUCTURE_TYPE_APPLICATION_INFO;
+   application_info.pNext = nullptr;
+   application_info.pApplicationName = nullptr;
+   application_info.applicationVersion = 0;
+   application_info.pEngineName = nullptr;
+   application_info.engineVersion = 0;
+   application_info.apiVersion = VK_MAKE_API_VERSION(0, 1, 0, 0);
+
+   VkInstanceCreateInfo instance_create_info = {};
+   instance_create_info.sType = VkStructureType::VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+   instance_create_info.pNext = nullptr;
+   instance_create_info.flags = 0;
+   instance_create_info.pApplicationInfo = &application_info;
+   instance_create_info.enabledLayerCount = 0;
+   instance_create_info.ppEnabledLayerNames = nullptr;
+   instance_create_info.enabledExtensionCount = 0;
+   instance_create_info.ppEnabledExtensionNames = nullptr;
+
+   VkResult result = vkCreateInstance(&instance_create_info, nullptr, &instance);
+   if (result != VK_SUCCESS)
+   {
+      return 创建失败;
+   }
+
+.. note:: 经过如上的代码，你可以发现创建一个句柄需要填写各种各样的 ``Vk{结构体名称}Info`` 或 ``Vk{句柄名称}CreateInfo`` 等结构体。在 ``Vulkan`` 中各式各样的结构体占了绝大多数。给人一种：:bdg-info:`来，我这样有张大表，先把表填了，我才知道接下来如何干活` 。
+
+.. admonition:: 现在我们面临一个问题
+   :class: hint
+
+   我咋知道设备支持 ``Vulkan`` 的哪个版本？
+
+获取支持的 Vulkan 版本
+############################
