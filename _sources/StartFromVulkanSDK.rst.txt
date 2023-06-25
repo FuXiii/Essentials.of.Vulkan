@@ -245,9 +245,9 @@ Vulkan的版本
 
 一旦系统中安装了支持 ``Vulkan`` 的驱动，这里会有两个 ``Vulkan`` 版本，一个版本是 ``Vulkan Loader`` 的版本，一个是物理设备的版本。
 
-* ``Vulkan`` ``Instance`` 的版本
+* ``Vulkan Loader`` 的版本
 
-   这也是 ``Vulkan Loader`` 的版本。如果命令行中执行 ``vulkaninfo`` 指令， ``Vulkan`` ``Instance`` 的版本将会第一个显示。 ``Vulkan Loader`` 是跟随您的设备驱动更新而一同发行的。
+   这也是 ``Vulkan`` ``Instance`` 的版本。如果命令行中执行 ``vulkaninfo`` 指令， ``Vulkan`` ``Instance`` 的版本将会第一个显示。 ``Vulkan Loader`` 是跟随您的设备驱动更新而一同发行的。
 
    .. admonition:: Instance
       :class: note
@@ -262,7 +262,7 @@ Vulkan的版本
             const VkInstanceCreateInfo*                 pCreateInfo,
             const VkAllocationCallbacks*                pAllocator,
             VkInstance*                                 pInstance);
-      
+
       .. code:: c++
 
          // 由Vulkan1.0提供
@@ -411,7 +411,7 @@ Vulkan的头文件
 
 头文件位于 ``Vulkan SDK`` 的安装目录下： ``$VULKAN_SDK/Include`` 。
 
-.. note:: 
+.. note::
 
    ``$VULKAN_SDK/Include`` 的目录下一般不仅包括 ``Vulkan`` 的头文件，其包括整个 ``Vulkan SDK`` 的头文件。其中 ``vk_video`` 和 ``vulkan`` 内包含 ``Vulkan`` 的头文件。
 
