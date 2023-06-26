@@ -24,6 +24,10 @@
    * 2023/6/26 增加 ``vkEnumerateInstanceVersion`` 章节
    * 2023/6/26 增加 ``Vulkan 的接口`` 章节
    * 2023/6/26 增加 ``获取物理硬件设备`` 章节
+   * 2023/6/26 增加 ``Vulkan 函数分类`` 章节并增加 ``全局函数`` 声明
+   * 2023/6/26 更新 ``vkGetInstanceProcAddr`` 章节，增加 ``全局函数`` 相关说明
+   * 2023/6/26 更新 ``vkCreateInstance`` 章节，增加 ``全局函数`` 相关说明
+   * 2023/6/26 更新 ``vkEnumerateInstanceVersion`` 章节，增加 ``全局函数`` 相关说明
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -84,9 +88,16 @@ Vulkan 的接口
        library = dlopen("libvulkan.so", RTLD_NOW | RTLD_LOCAL);
    }
 
+Vulkan 函数分类
+************************
+
 之后我们就可以从加载的动态库中获取 ``Vulkan`` 的函数了，但是在获取 ``Vulkan`` 函数前我们需要先介绍一下 ``Vulkan`` 中函数的分类：
 
 * :bdg-secondary:`Instance 域函数` 主要是通过 ``vkGetInstanceProcAddr`` 函数接口获取，该类函数大部分与 ``VkInstance`` 进行交互。主要是获取一些与设备不相关与环境相关的函数。
+   * :bdg-secondary:`全局函数` 在 ``Instance`` 域函数中有几个函数为全局函数。所谓全局函数是指任何驱动都需要实现的接口，并且用户可直接无条件获取其实现。
+
+   .. The global commands are: vkEnumerateInstanceVersion, vkEnumerateInstanceExtensionProperties, vkEnumerateInstanceLayerProperties, and vkCreateInstance.
+
 * :bdg-secondary:`PhysicalDevice 域函数` 主要是通过 ``vkGetInstanceProcAddr`` 函数接口获，该类函数大部分与 ``VkPhysicalDevice`` 进行交互。主要是一些获取硬件设备相关信息的函数。
 * :bdg-secondary:`Device 域函数` 主要是通过 ``vkGetDeviceProcAddr`` 函数接口获，该类函数大部分与 ``VkDevice`` 进行交互。主要是获取一些与硬件设备相关的功能函数。
 
@@ -119,6 +130,11 @@ vkGetInstanceProcAddr
 * :bdg-secondary:`pName` 获取的接口函数名称。
 
 获取 ``vkGetInstanceProcAddr`` 函数之后就可以使用该函数获取 ``Vulkan`` 函数了。
+
+.. admonition:: 获取全局函数
+   :class: note
+
+   获取全局函数时 ``instance`` 为 ``VK_NULL_HANDLE``
 
 .. admonition:: PFN_{函数名}
    :class: note
@@ -206,6 +222,8 @@ vkCreateInstance
 * :bdg-secondary:`pCreateInfo` 指向 ``VkInstanceCreateInfo`` 数据结构对象，用于控制 ``VkInstance`` 的创建。
 * :bdg-secondary:`pAllocator` 内存分配器。
 * :bdg-secondary:`pInstance` 创建的目标 ``VkInstance`` 结果。
+
+.. important:: ``vkCreateInstance`` 属于全局函数。
 
 .. admonition:: pAllocator
    :class: note
@@ -438,6 +456,8 @@ vkEnumerateInstanceVersion
        uint32_t*                                   pApiVersion);
 
 * :bdg-secondary:`pApiVersion` ``instance`` 域函数支持的 ``Vulkan`` 版本。
+
+.. important:: ``vkCreateInstance`` 属于全局函数。
 
 接下来就让我们获取支持的 ``Vulkan`` 版本吧：
 

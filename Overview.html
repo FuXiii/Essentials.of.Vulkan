@@ -272,6 +272,10 @@
 <li><p class="sd-card-text">2023/6/26 增加 <code class="docutils literal notranslate"><span class="pre">vkEnumerateInstanceVersion</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/6/26 增加 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">的接口</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/6/26 增加 <code class="docutils literal notranslate"><span class="pre">获取物理硬件设备</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/26 增加 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">函数分类</span></code> 章节并增加 <code class="docutils literal notranslate"><span class="pre">全局函数</span></code> 声明</p></li>
+<li><p class="sd-card-text">2023/6/26 更新 <code class="docutils literal notranslate"><span class="pre">vkGetInstanceProcAddr</span></code> 章节，增加 <code class="docutils literal notranslate"><span class="pre">全局函数</span></code> 相关说明</p></li>
+<li><p class="sd-card-text">2023/6/26 更新 <code class="docutils literal notranslate"><span class="pre">vkCreateInstance</span></code> 章节，增加 <code class="docutils literal notranslate"><span class="pre">全局函数</span></code> 相关说明</p></li>
+<li><p class="sd-card-text">2023/6/26 更新 <code class="docutils literal notranslate"><span class="pre">vkEnumerateInstanceVersion</span></code> 章节，增加 <code class="docutils literal notranslate"><span class="pre">全局函数</span></code> 相关说明</p></li>
 </ul>
 </div>
 </details><p>由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 比较复杂，为了更好的入门 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> ，还是大致过一遍 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的核心思路，这对以后的学习很有帮助。</p>
@@ -323,9 +327,18 @@
 <span class="p">}</span>
 </pre></div>
 </div>
+</section>
+<section id="id6">
+<h3>Vulkan 函数分类<a class="headerlink" href="#id6" title="此标题的永久链接">#</a></h3>
 <p>之后我们就可以从加载的动态库中获取 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的函数了，但是在获取 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 函数前我们需要先介绍一下 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中函数的分类：</p>
 <ul class="simple">
-<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">Instance 域函数</span> 主要是通过 <code class="docutils literal notranslate"><span class="pre">vkGetInstanceProcAddr</span></code> 函数接口获取，该类函数大部分与 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 进行交互。主要是获取一些与设备不相关与环境相关的函数。</p></li>
+<li><dl class="simple">
+<dt><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">Instance 域函数</span> 主要是通过 <code class="docutils literal notranslate"><span class="pre">vkGetInstanceProcAddr</span></code> 函数接口获取，该类函数大部分与 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 进行交互。主要是获取一些与设备不相关与环境相关的函数。</dt><dd><ul>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">全局函数</span> 在 <code class="docutils literal notranslate"><span class="pre">Instance</span></code> 域函数中有几个函数为全局函数。所谓全局函数是指任何驱动都需要实现的接口，并且用户可直接无条件获取其实现。</p></li>
+</ul>
+</dd>
+</dl>
+</li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">PhysicalDevice 域函数</span> 主要是通过 <code class="docutils literal notranslate"><span class="pre">vkGetInstanceProcAddr</span></code> 函数接口获，该类函数大部分与 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDevice</span></code> 进行交互。主要是一些获取硬件设备相关信息的函数。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">Device 域函数</span> 主要是通过 <code class="docutils literal notranslate"><span class="pre">vkGetDeviceProcAddr</span></code> 函数接口获，该类函数大部分与 <code class="docutils literal notranslate"><span class="pre">VkDevice</span></code> 进行交互。主要是获取一些与硬件设备相关的功能函数。</p></li>
 </ul>
@@ -355,6 +368,10 @@
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pName</span> 获取的接口函数名称。</p></li>
 </ul>
 <p>获取 <code class="docutils literal notranslate"><span class="pre">vkGetInstanceProcAddr</span></code> 函数之后就可以使用该函数获取 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 函数了。</p>
+<div class="note admonition">
+<p class="admonition-title">获取全局函数</p>
+<p>获取全局函数时 <code class="docutils literal notranslate"><span class="pre">instance</span></code> 为 <code class="docutils literal notranslate"><span class="pre">VK_NULL_HANDLE</span></code></p>
+</div>
 <div class="note admonition">
 <p class="admonition-title">PFN_{函数名}</p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准中，所有的接口函数都有对应的函数指针声明，命名规则为 <code class="docutils literal notranslate"><span class="pre">PFN_{函数名}</span></code> 。</p>
@@ -429,6 +446,10 @@
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pAllocator</span> 内存分配器。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pInstance</span> 创建的目标 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 结果。</p></li>
 </ul>
+<div class="admonition important">
+<p class="admonition-title">重要</p>
+<p><code class="docutils literal notranslate"><span class="pre">vkCreateInstance</span></code> 属于全局函数。</p>
+</div>
 <div class="note admonition">
 <p class="admonition-title">pAllocator</p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中创建句柄是需要设置内存分配器的，也就是 <code class="docutils literal notranslate"><span class="pre">pAllocator</span></code> ，这对于统计内存使用情况和自定义非常重要，如果没有自定义分配器的话也可以是直接传 <code class="docutils literal notranslate"><span class="pre">nullptr</span></code> ，这将会使用 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 内置的分配器进行分配。</p>
@@ -608,8 +629,8 @@
 </section>
 </section>
 </section>
-<section id="id6">
-<h2>获取支持的 Vulkan 版本<a class="headerlink" href="#id6" title="此标题的永久链接">#</a></h2>
+<section id="id7">
+<h2>获取支持的 Vulkan 版本<a class="headerlink" href="#id7" title="此标题的永久链接">#</a></h2>
 <p>由于历史原因 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.0</span></code> 标准在设计时并没有考虑到获取 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本，只有获取驱动支持的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本。在 <code class="docutils literal notranslate"><span class="pre">开始于</span> <span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 中我们知道 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本有两个版本，一个是系统端支持的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本，一个是驱动支持的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本。为什么会有两个版本？</p>
 <p>这是由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的函数分为不同域。系统端支持的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本主要是用于配置系统支持的功能、 <code class="docutils literal notranslate"><span class="pre">layer</span></code> 和扩展，不同版本支持的功能、 <code class="docutils literal notranslate"><span class="pre">layer</span></code> 和扩展不尽相同。驱动支持的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本主要是用于配置硬件设备支持的功能和扩展，不同版本支持的功能和扩展不尽相同。</p>
 <p>之后在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.1</span></code> 标准中，推出了 <code class="docutils literal notranslate"><span class="pre">vkEnumerateInstanceVersion</span></code> 接口来获取支持的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本。</p>
@@ -639,6 +660,10 @@
 <ul class="simple">
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pApiVersion</span> <code class="docutils literal notranslate"><span class="pre">instance</span></code> 域函数支持的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本。</p></li>
 </ul>
+<div class="admonition important">
+<p class="admonition-title">重要</p>
+<p><code class="docutils literal notranslate"><span class="pre">vkCreateInstance</span></code> 属于全局函数。</p>
+</div>
 <p>接下来就让我们获取支持的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本吧：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">PFN_vkEnumerateInstanceVersion</span><span class="w"> </span><span class="n">vkEnumerateInstanceVersion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">PFN_vkEnumerateInstanceVersion</span><span class="p">)</span><span class="n">vkGetInstanceProcAddr</span><span class="p">(</span><span class="n">VK_NULL_HANDLE</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;vkEnumerateInstanceVersion&quot;</span><span class="p">);</span>
 
@@ -660,8 +685,8 @@
 </div>
 </section>
 </section>
-<section id="id7">
-<h2>获取物理硬件设备<a class="headerlink" href="#id7" title="此标题的永久链接">#</a></h2>
+<section id="id8">
+<h2>获取物理硬件设备<a class="headerlink" href="#id8" title="此标题的永久链接">#</a></h2>
 </section>
 </section>
 
@@ -732,6 +757,7 @@
 <li><a class="reference internal" href="#id3">Vulkan 的接口</a></li>
 <li><a class="reference internal" href="#id4">获取 Vulkan 接口</a><ul>
 <li><a class="reference internal" href="#id5">加载 Vulkan 动态库</a></li>
+<li><a class="reference internal" href="#id6">Vulkan 函数分类</a></li>
 <li><a class="reference internal" href="#vkgetinstanceprocaddr">vkGetInstanceProcAddr</a></li>
 </ul>
 </li>
@@ -744,11 +770,11 @@
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id6">获取支持的 Vulkan 版本</a><ul>
+<li><a class="reference internal" href="#id7">获取支持的 Vulkan 版本</a><ul>
 <li><a class="reference internal" href="#vkenumerateinstanceversion">vkEnumerateInstanceVersion</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id7">获取物理硬件设备</a></li>
+<li><a class="reference internal" href="#id8">获取物理硬件设备</a></li>
 </ul>
 </li>
 </ul>
