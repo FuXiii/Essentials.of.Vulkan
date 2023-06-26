@@ -268,6 +268,9 @@
 <li><p class="sd-card-text">2023/6/25 增加 <code class="docutils literal notranslate"><span class="pre">VkInstanceCreateInfo</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/6/25 增加 <code class="docutils literal notranslate"><span class="pre">VkApplicationInfo</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/6/25 增加 <code class="docutils literal notranslate"><span class="pre">获取支持的</span> <span class="pre">Vulkan</span> <span class="pre">版本</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/26 更新 <code class="docutils literal notranslate"><span class="pre">获取支持的</span> <span class="pre">Vulkan</span> <span class="pre">版本</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/26 增加 <code class="docutils literal notranslate"><span class="pre">vkEnumerateInstanceVersion</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/26 增加 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">的接口</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p>由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 比较复杂，为了更好的入门 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> ，还是大致过一遍 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的核心思路，这对以后的学习很有帮助。</p>
@@ -285,10 +288,15 @@
 <p>其中 <code class="docutils literal notranslate"><span class="pre">光栅化渲染</span></code> 应该是最主要的功能了（同时也是 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的核心功能）。该章节也主要以 <code class="docutils literal notranslate"><span class="pre">光栅化渲染</span></code> 为核心进行纵览。</p>
 </section>
 <section id="id3">
-<h2>获取 Vulkan 接口<a class="headerlink" href="#id3" title="此标题的永久链接">#</a></h2>
-<p>由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 只是一套标准，具体的实现都在硬件驱动中，为了能够使用 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 驱动硬件设备，我们需要获取驱动中 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准实现的接口。</p>
+<h2>Vulkan 的接口<a class="headerlink" href="#id3" title="此标题的永久链接">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的接口，也就是 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 函数，最开始是使用 <code class="docutils literal notranslate"><span class="pre">C</span></code> 语言发布的，有些繁琐，后来推出了 <code class="docutils literal notranslate"><span class="pre">C++</span></code> 版本的接口，现在 <code class="docutils literal notranslate"><span class="pre">Python</span></code> 、 <code class="docutils literal notranslate"><span class="pre">Java</span></code> 和 <code class="docutils literal notranslate"><span class="pre">C#</span></code> 等高级语言也陆续支持开发 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> ，支持 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的家族也在慢慢壮大。</p>
+<p>本教程主要是用最原始的 <code class="docutils literal notranslate"><span class="pre">C</span></code> 语言版本进行讲解。</p>
+</section>
 <section id="id4">
-<h3>加载 Vulkan 动态库<a class="headerlink" href="#id4" title="此标题的永久链接">#</a></h3>
+<h2>获取 Vulkan 接口<a class="headerlink" href="#id4" title="此标题的永久链接">#</a></h2>
+<p>由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 只是一套标准，具体的实现都在硬件驱动中，为了能够使用 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 驱动硬件设备，我们需要获取驱动中 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准实现的接口。</p>
+<section id="id5">
+<h3>加载 Vulkan 动态库<a class="headerlink" href="#id5" title="此标题的永久链接">#</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中提供了 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 进行 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准实现接口的获取。根据前文介绍我们知道 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 对应着 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的动态库，所以我们第一步就是加载 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的动态库。</p>
 <div class="note admonition">
 <p class="admonition-title"><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的动态库</p>
@@ -528,7 +536,8 @@
 <section id="vkapplicationinfo">
 <h4>VkApplicationInfo<a class="headerlink" href="#vkapplicationinfo" title="此标题的永久链接">#</a></h4>
 <p>目前我们只需要关注 <code class="docutils literal notranslate"><span class="pre">VkApplicationInfo</span></code> 就好，其定义如下：</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkApplicationInfo</span><span class="w"> </span><span class="p">{</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkApplicationInfo</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">VkStructureType</span><span class="w">    </span><span class="n">sType</span><span class="p">;</span>
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w">        </span><span class="n">pNext</span><span class="p">;</span>
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w">        </span><span class="n">pApplicationName</span><span class="p">;</span>
@@ -548,7 +557,7 @@
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">engineVersion</span> 一个无符号整型，用于用户自定义引擎版本。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">apiVersion</span> 应用打算使用的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的最高版本，并且忽略 <code class="docutils literal notranslate"><span class="pre">apiVersion</span></code> 的 <code class="docutils literal notranslate"><span class="pre">patch</span></code> 版本。</p></li>
 </ul>
-<p>如果设备驱动只支持 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.0</span></code> 而用户设置的 <code class="docutils literal notranslate"><span class="pre">apiVersion</span></code> 的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本高于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.0</span></code> 的话，将会返回 <code class="docutils literal notranslate"><span class="pre">VK_ERROR_INCOMPATIBLE_DRIVER</span></code> 。</p>
+<p>如果设备驱动只支持 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.0</span></code> 而用户设置的 <code class="docutils literal notranslate"><span class="pre">apiVersion</span></code> 的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本高于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.0</span></code> 的话， <code class="docutils literal notranslate"><span class="pre">vkCreateInstance</span></code> 将会返回 <code class="docutils literal notranslate"><span class="pre">VK_ERROR_INCOMPATIBLE_DRIVER</span></code> 。</p>
 <div class="admonition note">
 <p class="admonition-title">备注</p>
 <p>如果 <code class="docutils literal notranslate"><span class="pre">VkInstanceCreateInfo::pApplicationInfo</span></code> 为 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 或 <code class="docutils literal notranslate"><span class="pre">apiVersion</span></code> 为 <code class="docutils literal notranslate"><span class="pre">0</span></code> 的话，等价于 <code class="docutils literal notranslate"><span class="pre">apiVersion</span></code> 设置为 <code class="docutils literal notranslate"><span class="pre">VK_MAKE_API_VERSION(0,1,0,0)</span></code> 也就是 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.0</span></code> 版本。</p>
@@ -598,8 +607,57 @@
 </section>
 </section>
 </section>
-<section id="id5">
-<h2>获取支持的 Vulkan 版本<a class="headerlink" href="#id5" title="此标题的永久链接">#</a></h2>
+<section id="id6">
+<h2>获取支持的 Vulkan 版本<a class="headerlink" href="#id6" title="此标题的永久链接">#</a></h2>
+<p>由于历史原因 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.0</span></code> 标准在设计时并没有考虑到获取 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本，只有获取驱动支持的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本。在 <code class="docutils literal notranslate"><span class="pre">开始于</span> <span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 中我们知道 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本有两个版本，一个是系统端支持的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本，一个是驱动支持的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本。为什么会有两个版本？</p>
+<p>这是由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的函数分为不同域。系统端支持的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本主要是用于配置系统支持的功能、 <code class="docutils literal notranslate"><span class="pre">layer</span></code> 和扩展，不同版本支持的功能、 <code class="docutils literal notranslate"><span class="pre">layer</span></code> 和扩展不尽相同。驱动支持的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本主要是用于配置硬件设备支持的功能和扩展，不同版本支持的功能和扩展不尽相同。</p>
+<p>之后在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.1</span></code> 标准中，推出了 <code class="docutils literal notranslate"><span class="pre">vkEnumerateInstanceVersion</span></code> 接口来获取支持的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本。</p>
+<div class="note admonition">
+<p class="admonition-title">硬件设备的 Layer</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.0</span></code> 中硬件设备是有相关的 <code class="docutils literal notranslate"><span class="pre">Layer</span></code> 功能的，但用处不大，比较鸡肋，后来 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准组将硬件设备的 <code class="docutils literal notranslate"><span class="pre">Layer</span></code> 遗弃，但对外的接口还保留着。</p>
+</div>
+<p>由于在支持 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.0</span></code> 的实现中 <code class="docutils literal notranslate"><span class="pre">vkCreateInstance</span></code> 可能由于 <code class="docutils literal notranslate"><span class="pre">VK_ERROR_INCOMPATIBLE_DRIVER</span></code> 失败返回，所以需要在调用 <code class="docutils literal notranslate"><span class="pre">vkCreateInstance</span></code> 之前获取支持的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本。获取流程如下：</p>
+<div class="mermaid">
+            flowchart TD
+   TryToGetvkEnumerateInstanceVersion[&quot;尝试获取 vkEnumerateInstanceVersion 函数接口实现&quot;]
+   IsNull{&quot;是否为 NULL&quot;}
+   SupportVulkan_1_0[&quot;支持Vulkan 1.0&quot;]
+   SupportVulkanFromvkEnumerateInstanceVersion[&quot;支持 vkEnumerateInstanceVersion 中获得的 Vulkan 版本&quot;]
+
+   TryToGetvkEnumerateInstanceVersion--&gt;IsNull
+   IsNull--是--&gt;SupportVulkan_1_0
+   IsNull--否--&gt;SupportVulkanFromvkEnumerateInstanceVersion
+        </div><section id="vkenumerateinstanceversion">
+<h3>vkEnumerateInstanceVersion<a class="headerlink" href="#vkenumerateinstanceversion" title="此标题的永久链接">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">vkEnumerateInstanceVersion</span></code> 函数定义如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_1 提供</span>
+<span class="n">VkResult</span><span class="w"> </span><span class="nf">vkEnumerateInstanceVersion</span><span class="p">(</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="o">*</span><span class="w">                                   </span><span class="n">pApiVersion</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pApiVersion</span> <code class="docutils literal notranslate"><span class="pre">instance</span></code> 域函数支持的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本。</p></li>
+</ul>
+<p>接下来就让我们获取支持的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本吧：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">PFN_vkEnumerateInstanceVersion</span><span class="w"> </span><span class="n">vkEnumerateInstanceVersion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">PFN_vkEnumerateInstanceVersion</span><span class="p">)</span><span class="n">vkGetInstanceProcAddr</span><span class="p">(</span><span class="n">VK_NULL_HANDLE</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;vkEnumerateInstanceVersion&quot;</span><span class="p">);</span>
+
+<span class="k">if</span><span class="p">(</span><span class="n">vkEnumerateInstanceVersion</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">vulkan_version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">   </span><span class="n">VkResult</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vkEnumerateInstanceVersion</span><span class="p">(</span><span class="o">&amp;</span><span class="n">vulkan_version</span><span class="p">);</span>
+<span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">result</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">VK_SUCCESS</span><span class="p">)</span>
+<span class="w">   </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">Vulkan</span><span class="w"> </span><span class="n">Loader</span><span class="w"> </span><span class="n">或任意一个</span><span class="w"> </span><span class="n">Layer</span><span class="w"> </span><span class="n">发生了内存分配失败</span><span class="p">;</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="n">vulkan_version</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="k">else</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="n">VK_MAKE_API_VERSION</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 
@@ -667,8 +725,9 @@
             <ul>
 <li><a class="reference internal" href="#">纵览</a><ul>
 <li><a class="reference internal" href="#vulkan">Vulkan 能为我们做什么</a></li>
-<li><a class="reference internal" href="#id3">获取 Vulkan 接口</a><ul>
-<li><a class="reference internal" href="#id4">加载 Vulkan 动态库</a></li>
+<li><a class="reference internal" href="#id3">Vulkan 的接口</a></li>
+<li><a class="reference internal" href="#id4">获取 Vulkan 接口</a><ul>
+<li><a class="reference internal" href="#id5">加载 Vulkan 动态库</a></li>
 <li><a class="reference internal" href="#vkgetinstanceprocaddr">vkGetInstanceProcAddr</a></li>
 </ul>
 </li>
@@ -681,7 +740,10 @@
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id5">获取支持的 Vulkan 版本</a></li>
+<li><a class="reference internal" href="#id6">获取支持的 Vulkan 版本</a><ul>
+<li><a class="reference internal" href="#vkenumerateinstanceversion">vkEnumerateInstanceVersion</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

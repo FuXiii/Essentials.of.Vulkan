@@ -20,6 +20,9 @@
    * 2023/6/25 增加 ``VkInstanceCreateInfo`` 章节
    * 2023/6/25 增加 ``VkApplicationInfo`` 章节
    * 2023/6/25 增加 ``获取支持的 Vulkan 版本`` 章节
+   * 2023/6/26 更新 ``获取支持的 Vulkan 版本`` 章节
+   * 2023/6/26 增加 ``vkEnumerateInstanceVersion`` 章节
+   * 2023/6/26 增加 ``Vulkan 的接口`` 章节
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -37,6 +40,13 @@ Vulkan 能为我们做什么
 * （通用）并行计算
 
 其中 ``光栅化渲染`` 应该是最主要的功能了（同时也是 ``Vulkan`` 的核心功能）。该章节也主要以 ``光栅化渲染`` 为核心进行纵览。
+
+Vulkan 的接口
+######################
+
+``Vulkan`` 的接口，也就是 ``Vulkan`` 函数，最开始是使用 ``C`` 语言发布的，有些繁琐，后来推出了 ``C++`` 版本的接口，现在 ``Python`` 、 ``Java`` 和 ``C#`` 等高级语言也陆续支持开发 ``Vulkan`` ，支持 ``Vulkan`` 的家族也在慢慢壮大。
+
+本教程主要是用最原始的 ``C`` 语言版本进行讲解。
 
 获取 Vulkan 接口
 ######################
@@ -322,6 +332,7 @@ VkApplicationInfo
 
 .. code:: c++
 
+   // 由 VK_VERSION_1_0 提供
    typedef struct VkApplicationInfo {
        VkStructureType    sType;
        const void*        pNext;
@@ -340,7 +351,7 @@ VkApplicationInfo
 * :bdg-secondary:`engineVersion` 一个无符号整型，用于用户自定义引擎版本。
 * :bdg-secondary:`apiVersion` 应用打算使用的 ``Vulkan`` 的最高版本，并且忽略 ``apiVersion`` 的 ``patch`` 版本。
 
-如果设备驱动只支持 ``Vulkan 1.0`` 而用户设置的 ``apiVersion`` 的 ``Vulkan`` 版本高于 ``Vulkan 1.0`` 的话，将会返回 ``VK_ERROR_INCOMPATIBLE_DRIVER`` 。
+如果设备驱动只支持 ``Vulkan 1.0`` 而用户设置的 ``apiVersion`` 的 ``Vulkan`` 版本高于 ``Vulkan 1.0`` 的话， ``vkCreateInstance`` 将会返回 ``VK_ERROR_INCOMPATIBLE_DRIVER`` 。
 
 .. note:: 如果 ``VkInstanceCreateInfo::pApplicationInfo`` 为 ``NULL`` 或 ``apiVersion`` 为 ``0`` 的话，等价于 ``apiVersion`` 设置为 ``VK_MAKE_API_VERSION(0,1,0,0)`` 也就是 ``Vulkan 1.0`` 版本。
 
@@ -388,3 +399,66 @@ VkApplicationInfo
 
 获取支持的 Vulkan 版本
 ############################
+
+由于历史原因 ``Vulkan 1.0`` 标准在设计时并没有考虑到获取 ``Vulkan`` 版本，只有获取驱动支持的 ``Vulkan`` 版本。在 ``开始于 Vulkan SDK`` 中我们知道 ``Vulkan`` 版本有两个版本，一个是系统端支持的 ``Vulkan`` 版本，一个是驱动支持的 ``Vulkan`` 版本。为什么会有两个版本？
+
+这是由于 ``Vulkan`` 的函数分为不同域。系统端支持的 ``Vulkan`` 版本主要是用于配置系统支持的功能、 ``layer`` 和扩展，不同版本支持的功能、 ``layer`` 和扩展不尽相同。驱动支持的 ``Vulkan`` 版本主要是用于配置硬件设备支持的功能和扩展，不同版本支持的功能和扩展不尽相同。
+
+之后在 ``Vulkan 1.1`` 标准中，推出了 ``vkEnumerateInstanceVersion`` 接口来获取支持的 ``Vulkan`` 版本。
+
+.. admonition:: 硬件设备的 Layer
+   :class: note
+
+   在 ``Vulkan 1.0`` 中硬件设备是有相关的 ``Layer`` 功能的，但用处不大，比较鸡肋，后来 ``Vulkan`` 标准组将硬件设备的 ``Layer`` 遗弃，但对外的接口还保留着。
+
+由于在支持 ``Vulkan 1.0`` 的实现中 ``vkCreateInstance`` 可能由于 ``VK_ERROR_INCOMPATIBLE_DRIVER`` 失败返回，所以需要在调用 ``vkCreateInstance`` 之前获取支持的 ``Vulkan`` 版本。获取流程如下：
+
+.. mermaid::
+
+   flowchart TD
+      TryToGetvkEnumerateInstanceVersion["尝试获取 vkEnumerateInstanceVersion 函数接口实现"]
+      IsNull{"是否为 NULL"}
+      SupportVulkan_1_0["支持Vulkan 1.0"]
+      SupportVulkanFromvkEnumerateInstanceVersion["支持 vkEnumerateInstanceVersion 中获得的 Vulkan 版本"]
+
+      TryToGetvkEnumerateInstanceVersion-->IsNull
+      IsNull--是-->SupportVulkan_1_0
+      IsNull--否-->SupportVulkanFromvkEnumerateInstanceVersion
+
+vkEnumerateInstanceVersion
+********************************
+
+``vkEnumerateInstanceVersion`` 函数定义如下：
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_1 提供
+   VkResult vkEnumerateInstanceVersion(
+       uint32_t*                                   pApiVersion);
+
+* :bdg-secondary:`pApiVersion` ``instance`` 域函数支持的 ``Vulkan`` 版本。
+
+接下来就让我们获取支持的 ``Vulkan`` 版本吧：
+
+.. code:: c++
+
+   PFN_vkEnumerateInstanceVersion vkEnumerateInstanceVersion = (PFN_vkEnumerateInstanceVersion)vkGetInstanceProcAddr(VK_NULL_HANDLE, "vkEnumerateInstanceVersion");
+
+   if(vkEnumerateInstanceVersion != nullptr)
+   {
+      uint32_t vulkan_version = 0;
+      VkResult result = vkEnumerateInstanceVersion(&vulkan_version);
+      if (result != VK_SUCCESS)
+      {
+         return Vulkan Loader 或任意一个 Layer 发生了内存分配失败;
+      }
+      return vulkan_version;
+   }
+   else
+   {
+      return VK_MAKE_API_VERSION(0,1,0,0);
+   }
+
+
+
+
