@@ -23,6 +23,7 @@
    * 2023/6/26 更新 ``获取支持的 Vulkan 版本`` 章节
    * 2023/6/26 增加 ``vkEnumerateInstanceVersion`` 章节
    * 2023/6/26 增加 ``Vulkan 的接口`` 章节
+   * 2023/6/26 增加 ``获取物理硬件设备`` 章节
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -458,6 +459,10 @@ vkEnumerateInstanceVersion
    {
       return VK_MAKE_API_VERSION(0,1,0,0);
    }
+
+获取物理硬件设备
+############################
+
 
 
 
