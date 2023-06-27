@@ -28,6 +28,9 @@
    * 2023/6/26 更新 ``vkGetInstanceProcAddr`` 章节，增加 ``全局函数`` 相关说明
    * 2023/6/26 更新 ``vkCreateInstance`` 章节，增加 ``全局函数`` 相关说明
    * 2023/6/26 更新 ``vkEnumerateInstanceVersion`` 章节，增加 ``全局函数`` 相关说明
+   * 2023/6/27 更新 ``获取物理硬件设备`` 章节
+   * 2023/6/27 更新 ``Vulkan 函数分类`` 章节，增加全局函数的条目
+   * 2023/6/27 增加 ``vkEnumeratePhysicalDevices`` 章节
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -94,9 +97,11 @@ Vulkan 函数分类
 之后我们就可以从加载的动态库中获取 ``Vulkan`` 的函数了，但是在获取 ``Vulkan`` 函数前我们需要先介绍一下 ``Vulkan`` 中函数的分类：
 
 * :bdg-secondary:`Instance 域函数` 主要是通过 ``vkGetInstanceProcAddr`` 函数接口获取，该类函数大部分与 ``VkInstance`` 进行交互。主要是获取一些与设备不相关与环境相关的函数。
-   * :bdg-secondary:`全局函数` 在 ``Instance`` 域函数中有几个函数为全局函数。所谓全局函数是指任何驱动都需要实现的接口，并且用户可直接无条件获取其实现。
-
-   .. The global commands are: vkEnumerateInstanceVersion, vkEnumerateInstanceExtensionProperties, vkEnumerateInstanceLayerProperties, and vkCreateInstance.
+   * :bdg-secondary:`全局函数` 在 ``Instance`` 域函数中有几个函数为全局函数。所谓全局函数是指任何驱动都需要实现的接口，并且用户可直接无条件获取其实现。全局函数如下：
+      * ``vkEnumerateInstanceVersion``
+      * ``vkEnumerateInstanceExtensionProperties``
+      * ``vkEnumerateInstanceLayerProperties``
+      * ``vkCreateInstance``
 
 * :bdg-secondary:`PhysicalDevice 域函数` 主要是通过 ``vkGetInstanceProcAddr`` 函数接口获，该类函数大部分与 ``VkPhysicalDevice`` 进行交互。主要是一些获取硬件设备相关信息的函数。
 * :bdg-secondary:`Device 域函数` 主要是通过 ``vkGetDeviceProcAddr`` 函数接口获，该类函数大部分与 ``VkDevice`` 进行交互。主要是获取一些与硬件设备相关的功能函数。
@@ -483,7 +488,47 @@ vkEnumerateInstanceVersion
 获取物理硬件设备
 ############################
 
+``Vulkan`` 具有能够发现连接在主板上支持 ``Vulkan`` 设备的能力。通过 ``vkEnumeratePhysicalDevices`` 函数获取支持 ``Vulkan`` 的设备。
 
+vkEnumeratePhysicalDevices
+********************************
 
+.. code:: c++
 
+   // 由 VK_VERSION_1_0 提供
+   VkResult vkEnumeratePhysicalDevices(
+       VkInstance                                  instance,
+       uint32_t*                                   pPhysicalDeviceCount,
+       VkPhysicalDevice*                           pPhysicalDevices);
 
+* :bdg-secondary:`instance` 是之前使用 ``vkCreateInstance`` 创建的 ``VkInstance`` 句柄。
+* :bdg-secondary:`pPhysicalDeviceCount` 是用于指定或获取的物理设备数量。
+* :bdg-secondary:`pPhysicalDevices` 要么是 ``NULL`` 要么是数量不小于 ``pPhysicalDeviceCount`` 的 ``VkPhysicalDevice`` 数组。
+
+如果 ``pPhysicalDevices`` 是 ``NULL`` 的话 ``vkEnumeratePhysicalDevices`` 函数将会将查询到支持 ``Vulkan`` 的设备数量写入 ``pPhysicalDeviceCount`` 所指向的内存中，所以 ``pPhysicalDeviceCount`` 必须是一个有效指针。
+
+如果 ``pPhysicalDevices`` 不是 ``NULL`` 的话 ``vkEnumeratePhysicalDevices`` 函数将会将 ``pPhysicalDeviceCount`` 数量的有效 ``VkPhysicalDevice`` 句柄依次写入 ``pPhysicalDevices`` 指向的数组中。如果 ``pPhysicalDeviceCount`` 指定的数量小于支持 ``Vulkan`` 的设备数量的话， ``vkEnumeratePhysicalDevices`` 将会写入 ``pPhysicalDeviceCount`` 个物理设备句柄到数组中并返回 ``VK_INCOMPLETE`` 表示并不是所有设备都写入数组返回。
+
+如果一些正常 ``vkEnumeratePhysicalDevices`` 将会返回 ``VK_SUCCESS`` 。
+
+接下来就让我们获取支持的 ``Vulkan`` 的物理设备吧：
+
+首先获取 ``vkEnumeratePhysicalDevices`` 函数：
+
+.. code:: c++
+
+   VkInstance instance = 之前成功创建的 VkInstance ;
+
+   PFN_vkEnumeratePhysicalDevices vkEnumeratePhysicalDevices = (PFN_vkEnumeratePhysicalDevices)vkGetInstanceProcAddr(instance, "vkEnumeratePhysicalDevices");
+
+.. note:: 此时 ``vkGetInstanceProcAddr`` 的第一个参数不为 ``VK_NULL_HANDLE`` 而为有效 ``VkInstance`` 句柄。
+
+之后即可以获取到物理设备了：
+
+.. code:: c++
+
+   uint32_t physical_device_count = 0;
+   vkEnumeratePhysicalDevices(instance, &physical_device_count, nullptr);
+
+   std::vector<VkPhysicalDevice> physical_devices(physical_device_count);
+   vkEnumeratePhysicalDevices(instance, &physical_device_count, physical_devices.data());

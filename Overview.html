@@ -276,6 +276,9 @@
 <li><p class="sd-card-text">2023/6/26 更新 <code class="docutils literal notranslate"><span class="pre">vkGetInstanceProcAddr</span></code> 章节，增加 <code class="docutils literal notranslate"><span class="pre">全局函数</span></code> 相关说明</p></li>
 <li><p class="sd-card-text">2023/6/26 更新 <code class="docutils literal notranslate"><span class="pre">vkCreateInstance</span></code> 章节，增加 <code class="docutils literal notranslate"><span class="pre">全局函数</span></code> 相关说明</p></li>
 <li><p class="sd-card-text">2023/6/26 更新 <code class="docutils literal notranslate"><span class="pre">vkEnumerateInstanceVersion</span></code> 章节，增加 <code class="docutils literal notranslate"><span class="pre">全局函数</span></code> 相关说明</p></li>
+<li><p class="sd-card-text">2023/6/27 更新 <code class="docutils literal notranslate"><span class="pre">获取物理硬件设备</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/27 更新 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">函数分类</span></code> 章节，增加全局函数的条目</p></li>
+<li><p class="sd-card-text">2023/6/27 增加 <code class="docutils literal notranslate"><span class="pre">vkEnumeratePhysicalDevices</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p>由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 比较复杂，为了更好的入门 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> ，还是大致过一遍 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的核心思路，这对以后的学习很有帮助。</p>
@@ -334,7 +337,16 @@
 <ul class="simple">
 <li><dl class="simple">
 <dt><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">Instance 域函数</span> 主要是通过 <code class="docutils literal notranslate"><span class="pre">vkGetInstanceProcAddr</span></code> 函数接口获取，该类函数大部分与 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 进行交互。主要是获取一些与设备不相关与环境相关的函数。</dt><dd><ul>
-<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">全局函数</span> 在 <code class="docutils literal notranslate"><span class="pre">Instance</span></code> 域函数中有几个函数为全局函数。所谓全局函数是指任何驱动都需要实现的接口，并且用户可直接无条件获取其实现。</p></li>
+<li><dl class="simple">
+<dt><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">全局函数</span> 在 <code class="docutils literal notranslate"><span class="pre">Instance</span></code> 域函数中有几个函数为全局函数。所谓全局函数是指任何驱动都需要实现的接口，并且用户可直接无条件获取其实现。全局函数如下：</dt><dd><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">vkEnumerateInstanceVersion</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vkEnumerateInstanceExtensionProperties</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vkEnumerateInstanceLayerProperties</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vkCreateInstance</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</li>
 </ul>
 </dd>
 </dl>
@@ -687,6 +699,44 @@
 </section>
 <section id="id8">
 <h2>获取物理硬件设备<a class="headerlink" href="#id8" title="此标题的永久链接">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 具有能够发现连接在主板上支持 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 设备的能力。通过 <code class="docutils literal notranslate"><span class="pre">vkEnumeratePhysicalDevices</span></code> 函数获取支持 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的设备。</p>
+<section id="vkenumeratephysicaldevices">
+<h3>vkEnumeratePhysicalDevices<a class="headerlink" href="#vkenumeratephysicaldevices" title="此标题的永久链接">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="n">VkResult</span><span class="w"> </span><span class="nf">vkEnumeratePhysicalDevices</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkInstance</span><span class="w">                                  </span><span class="n">instance</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="o">*</span><span class="w">                                   </span><span class="n">pPhysicalDeviceCount</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkPhysicalDevice</span><span class="o">*</span><span class="w">                           </span><span class="n">pPhysicalDevices</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">instance</span> 是之前使用 <code class="docutils literal notranslate"><span class="pre">vkCreateInstance</span></code> 创建的 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 句柄。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pPhysicalDeviceCount</span> 是用于指定或获取的物理设备数量。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pPhysicalDevices</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么是数量不小于 <code class="docutils literal notranslate"><span class="pre">pPhysicalDeviceCount</span></code> 的 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDevice</span></code> 数组。</p></li>
+</ul>
+<p>如果 <code class="docutils literal notranslate"><span class="pre">pPhysicalDevices</span></code> 是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 的话 <code class="docutils literal notranslate"><span class="pre">vkEnumeratePhysicalDevices</span></code> 函数将会将查询到支持 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的设备数量写入 <code class="docutils literal notranslate"><span class="pre">pPhysicalDeviceCount</span></code> 所指向的内存中，所以 <code class="docutils literal notranslate"><span class="pre">pPhysicalDeviceCount</span></code> 必须是一个有效指针。</p>
+<p>如果 <code class="docutils literal notranslate"><span class="pre">pPhysicalDevices</span></code> 不是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 的话 <code class="docutils literal notranslate"><span class="pre">vkEnumeratePhysicalDevices</span></code> 函数将会将 <code class="docutils literal notranslate"><span class="pre">pPhysicalDeviceCount</span></code> 数量的有效 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDevice</span></code> 句柄依次写入 <code class="docutils literal notranslate"><span class="pre">pPhysicalDevices</span></code> 指向的数组中。如果 <code class="docutils literal notranslate"><span class="pre">pPhysicalDeviceCount</span></code> 指定的数量小于支持 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的设备数量的话， <code class="docutils literal notranslate"><span class="pre">vkEnumeratePhysicalDevices</span></code> 将会写入 <code class="docutils literal notranslate"><span class="pre">pPhysicalDeviceCount</span></code> 个物理设备句柄到数组中并返回 <code class="docutils literal notranslate"><span class="pre">VK_INCOMPLETE</span></code> 表示并不是所有设备都写入数组返回。</p>
+<p>如果一些正常 <code class="docutils literal notranslate"><span class="pre">vkEnumeratePhysicalDevices</span></code> 将会返回 <code class="docutils literal notranslate"><span class="pre">VK_SUCCESS</span></code> 。</p>
+<p>接下来就让我们获取支持的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的物理设备吧：</p>
+<p>首先获取 <code class="docutils literal notranslate"><span class="pre">vkEnumeratePhysicalDevices</span></code> 函数：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkInstance</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前成功创建的</span><span class="w"> </span><span class="n">VkInstance</span><span class="w"> </span><span class="p">;</span>
+
+<span class="n">PFN_vkEnumeratePhysicalDevices</span><span class="w"> </span><span class="n">vkEnumeratePhysicalDevices</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">PFN_vkEnumeratePhysicalDevices</span><span class="p">)</span><span class="n">vkGetInstanceProcAddr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;vkEnumeratePhysicalDevices&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>此时 <code class="docutils literal notranslate"><span class="pre">vkGetInstanceProcAddr</span></code> 的第一个参数不为 <code class="docutils literal notranslate"><span class="pre">VK_NULL_HANDLE</span></code> 而为有效 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 句柄。</p>
+</div>
+<p>之后即可以获取到物理设备了：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">physical_device_count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="n">vkEnumeratePhysicalDevices</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">physical_device_count</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">VkPhysicalDevice</span><span class="o">&gt;</span><span class="w"> </span><span class="n">physical_devices</span><span class="p">(</span><span class="n">physical_device_count</span><span class="p">);</span>
+<span class="n">vkEnumeratePhysicalDevices</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">physical_device_count</span><span class="p">,</span><span class="w"> </span><span class="n">physical_devices</span><span class="p">.</span><span class="n">data</span><span class="p">());</span>
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 
@@ -784,7 +834,10 @@
 <li><a class="reference internal" href="#vkenumerateinstanceversion">vkEnumerateInstanceVersion</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id8">获取物理硬件设备</a></li>
+<li><a class="reference internal" href="#id8">获取物理硬件设备</a><ul>
+<li><a class="reference internal" href="#vkenumeratephysicaldevices">vkEnumeratePhysicalDevices</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
