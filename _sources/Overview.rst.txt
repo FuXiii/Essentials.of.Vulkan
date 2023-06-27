@@ -532,3 +532,57 @@ vkEnumeratePhysicalDevices
 
    std::vector<VkPhysicalDevice> physical_devices(physical_device_count);
    vkEnumeratePhysicalDevices(instance, &physical_device_count, physical_devices.data());
+
+
+..
+   获取物理设备属性
+
+   设备队列
+
+   获取设备队列信息
+
+   创建逻辑设备（设备队列）
+
+   获得设备队列
+
+   内存
+
+   Buffer 缓存
+
+      vertex buffer
+
+   Image 图片
+
+      color output image
+
+   Image View
+
+   surface
+
+   交换链
+
+   attachment
+
+   RenderPass
+
+   FrameBuffer
+
+   着色器
+
+   描述符布局
+
+   描述符
+
+   图形管线
+
+   命令缓存
+
+   指令记录
+
+   指令推送
+
+   等待执行完成
+
+   显示结果
+   
+   
