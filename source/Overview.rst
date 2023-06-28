@@ -31,6 +31,12 @@
    * 2023/6/27 更新 ``获取物理硬件设备`` 章节
    * 2023/6/27 更新 ``Vulkan 函数分类`` 章节，增加全局函数的条目
    * 2023/6/27 增加 ``vkEnumeratePhysicalDevices`` 章节
+   * 2023/6/28 增加 ``获取物理设备属性`` 章节
+   * 2023/6/28 增加 ``vkGetPhysicalDeviceProperties`` 章节
+   * 2023/6/28 增加 ``VkPhysicalDeviceProperties`` 章节
+   * 2023/6/28 更新 ``vkEnumeratePhysicalDevices`` 章节
+   * 2023/6/28 增加 ``VkPhysicalDeviceType`` 章节
+   * 2023/6/28 更新 ``vkGetInstanceProcAddr`` 章节，增加 ``句柄`` 描述
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -71,25 +77,27 @@ Vulkan 的接口
 
    ``Windows`` 操作系统上 ``Vulkan`` 的动态库为 ``vulkan-1.dll`` ，而 ``Linux`` 上的为 ``libvulkan.so.1`` 或 ``libvulkan.so`` 。
 
-* ``Windows`` 加载 ``Vulkan`` 动态库如下：
+.. tab-set::
 
-.. code:: c++
+    .. tab-item:: Windows 加载
 
-   #include <Windows.h>
+      .. code:: c++
 
-   HMODULE library = LoadLibraryA("vulkan-1.dll");
+         #include <Windows.h>
 
-* ``Linux`` 加载 ``Vulkan`` 动态库如下：
+         HMODULE library = LoadLibraryA("vulkan-1.dll");
 
-.. code:: c++
+    .. tab-item:: Linux 加载
 
-   #include <dlfcn.h>
+      .. code:: c++
 
-   void *library = dlopen("libvulkan.so.1", RTLD_NOW | RTLD_LOCAL);
-   if (!library)
-   {
-       library = dlopen("libvulkan.so", RTLD_NOW | RTLD_LOCAL);
-   }
+         #include <dlfcn.h>
+
+         void *library = dlopen("libvulkan.so.1", RTLD_NOW | RTLD_LOCAL);
+         if (!library)
+         {
+             library = dlopen("libvulkan.so", RTLD_NOW | RTLD_LOCAL);
+         }
 
 Vulkan 函数分类
 ************************
@@ -152,17 +160,19 @@ vkGetInstanceProcAddr
    ``vkGetInstanceProcAddr`` 会返回 ``PFN_vkVoidFunction`` 类型函数指针。但是我们想获得 ``Vulkan`` 中如 ``vkCreateInstance`` 这样的函数指针，该指针并不是 ``PFN_vkVoidFunction`` 类型的，而是 ``PFN_vkCreateInstance`` 类型的，如何从 ``PFN_vkVoidFunction`` 类型获得 ``PFN_vkCreateInstance`` 类型呢？
    在 ``Vulkan`` 中规定直接使用强制类型转换即可。下文有示例。
 
-* ``Windows`` 获取 ``vkGetInstanceProcAddr`` 函数如下：
+.. tab-set::
 
-.. code:: c++
+    .. tab-item:: Windows 获取
 
-   PFN_vkGetInstanceProcAddr vkGetInstanceProcAddr = (PFN_vkGetInstanceProcAddr)(void (*)(void))GetProcAddress(library, "vkGetInstanceProcAddr");
+      .. code:: c++
 
-* ``Linux`` 获取 ``vkGetInstanceProcAddr`` 函数如下：
+         PFN_vkGetInstanceProcAddr vkGetInstanceProcAddr = (PFN_vkGetInstanceProcAddr)(void (*)(void))GetProcAddress(library, "vkGetInstanceProcAddr");
 
-.. code:: c++
+    .. tab-item:: Linux 获取
 
-   PFN_vkGetInstanceProcAddr vkGetInstanceProcAddr = = (PFN_vkGetInstanceProcAddr)dlsym(library, "vkGetInstanceProcAddr");
+      .. code:: c++
+
+         PFN_vkGetInstanceProcAddr vkGetInstanceProcAddr = (PFN_vkGetInstanceProcAddr)dlsym(library, "vkGetInstanceProcAddr");
 
 之后就可以使用 ``vkGetInstanceProcAddr`` 获取 ``Instance`` 域的函数了。比如获取 ``vkCreateInstance`` 函数接口：
 
@@ -176,6 +186,10 @@ vkGetInstanceProcAddr
    在 ``Vulkan`` 中 ``VK_NULL_HANDLE`` 被定义为空或无效句柄，一般被声明为 ``0`` 、 ``NULL`` 或 ``nullptr`` 。
 
 .. note:: 对于获取 ``PhysicalDevice`` 域函数和 ``Device`` 域函数将会在后文有所体现。
+
+.. note:: 句柄
+
+   英文为 ``Handle`` ，一般认为句柄与唯一识别号作用相同，一个句柄代表一个具体对象，函数作用在句柄上，内部是在修改句柄背后对应的那个对象。
 
 Vulkan 最初之物 VkInstance
 ############################
@@ -509,7 +523,9 @@ vkEnumeratePhysicalDevices
 
 如果 ``pPhysicalDevices`` 不是 ``NULL`` 的话 ``vkEnumeratePhysicalDevices`` 函数将会将 ``pPhysicalDeviceCount`` 数量的有效 ``VkPhysicalDevice`` 句柄依次写入 ``pPhysicalDevices`` 指向的数组中。如果 ``pPhysicalDeviceCount`` 指定的数量小于支持 ``Vulkan`` 的设备数量的话， ``vkEnumeratePhysicalDevices`` 将会写入 ``pPhysicalDeviceCount`` 个物理设备句柄到数组中并返回 ``VK_INCOMPLETE`` 表示并不是所有设备都写入数组返回。
 
-如果一些正常 ``vkEnumeratePhysicalDevices`` 将会返回 ``VK_SUCCESS`` 。
+如果一切正常 ``vkEnumeratePhysicalDevices`` 将会返回 ``VK_SUCCESS`` 。
+
+.. note:: 获取 ``VkPhysicalDevice`` 句柄不需要通过类似 ``vkCreatePhysicalDevice`` 这样的函数创建（ ``Vulkan`` 标准也没有该函数 ），而是在调用 ``vkCreateInstance`` 时内部已经做好了管理。也就是说 ``VkPhysicalDevice`` 的生命周期与 ``VkInstance`` 句柄一致。
 
 接下来就让我们获取支持的 ``Vulkan`` 的物理设备吧：
 
@@ -533,10 +549,114 @@ vkEnumeratePhysicalDevices
    std::vector<VkPhysicalDevice> physical_devices(physical_device_count);
    vkEnumeratePhysicalDevices(instance, &physical_device_count, physical_devices.data());
 
+获取物理设备属性
+############################
+
+当获取到物理设备 ``VkPhysicalDevice`` 句柄之后，可以通过 ``vkGetPhysicalDeviceProperties`` 函数获取对应物理设备的属性。
+
+vkGetPhysicalDeviceProperties
+********************************
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   void vkGetPhysicalDeviceProperties(
+       VkPhysicalDevice                            physicalDevice,
+       VkPhysicalDeviceProperties*                 pProperties);
+
+* :bdg-secondary:`physicalDevice` 对应要获取属性的物理设备的句柄。
+* :bdg-secondary:`pProperties` 对应返回的物理设备属性。
+
+``VkPhysicalDeviceProperties`` 定义如下：
+
+VkPhysicalDeviceProperties
+********************************
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef struct VkPhysicalDeviceProperties {
+       uint32_t                            apiVersion;
+       uint32_t                            driverVersion;
+       uint32_t                            vendorID;
+       uint32_t                            deviceID;
+       VkPhysicalDeviceType                deviceType;
+       char                                deviceName[VK_MAX_PHYSICAL_DEVICE_NAME_SIZE];
+       uint8_t                             pipelineCacheUUID[VK_UUID_SIZE];
+       VkPhysicalDeviceLimits              limits;
+       VkPhysicalDeviceSparseProperties    sparseProperties;
+   } VkPhysicalDeviceProperties;
+
+* :bdg-secondary:`apiVersion` 该设备驱动支持的 ``Vulkan`` 版本。
+* :bdg-secondary:`driverVersion` 该设备驱动版本。
+* :bdg-secondary:`vendorID` 设备供应商的 ``ID`` 。
+* :bdg-secondary:`deviceID` 设备的 ``ID`` 。
+* :bdg-secondary:`deviceType` 设备类型。
+* :bdg-secondary:`deviceName` 设备名称。
+* :bdg-secondary:`pipelineCacheUUID` 设备的通用唯一识别码（ ``universally unique identifier`` ）。
+* :bdg-secondary:`limits` 设备的限值信息。
+* :bdg-secondary:`sparseProperties` 稀疏数据属性。
+
+这里我们主要关注 ``apiVersion`` 和 ``deviceType`` 属性。
+
+* ``apiVersion`` 主要是用于描述对应设备支持的 ``Vulkan`` 的版本，该版本很重要，说明设备只支持 ``apiVersion`` 版本之前的标准，如果在此设备上使用高于 ``apiVersion`` 版本的功能的话将会导致错误或未定义行为。
+* ``deviceType`` 主要是用于描述对应设备是独立显卡还是集成显卡。
+
+``VkPhysicalDeviceType`` 枚举值定义如下：
+
+VkPhysicalDeviceType
+********************************
+
+.. code:: c++
+
+   // Provided by VK_VERSION_1_0
+   typedef enum VkPhysicalDeviceType {
+       VK_PHYSICAL_DEVICE_TYPE_OTHER = 0,
+       VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU = 1,
+       VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU = 2,
+       VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU = 3,
+       VK_PHYSICAL_DEVICE_TYPE_CPU = 4,
+   } VkPhysicalDeviceType;
+
+* :bdg-secondary:`VK_PHYSICAL_DEVICE_TYPE_OTHER` 该设备类型不与任何其他类型匹配， ``Vulkan`` 中未定义的设备类型。
+* :bdg-secondary:`VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU` 集成显卡。
+* :bdg-secondary:`VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU` 独立显卡。
+* :bdg-secondary:`VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU` 虚拟环境中的虚拟显卡。
+* :bdg-secondary:`VK_PHYSICAL_DEVICE_TYPE_CPU` 中央处理器（ ``CPU`` ）。
+
+.. admonition:: VK_PHYSICAL_DEVICE_TYPE_CPU
+   :class: note
+
+   虽然 ``VK_PHYSICAL_DEVICE_TYPE_CPU`` 表示 ``CPU`` 类型的设备，但是在通过 ``vkEnumeratePhysicalDevices`` 获取物理设备时，并不一定会得到插在主板上的 ``CPU`` 设备句柄，由于 ``CPU`` 并不一定支持 ``Vulkan`` ，所以 ``CPU`` 不一定能够获得，大部分支持 ``Vulkan`` 的设备还是显卡设备。
+
+在使用时，一般首选使用 ``VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU`` 独立显卡，之后再考虑使用 ``VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU`` 集成显卡。
+
+获取物理属性例程如下：
+
+首先获取 ``vkGetPhysicalDeviceProperties`` 函数：
+
+.. code:: c++
+
+   VkInstance instance = 之前成功创建的 VkInstance ;
+
+   PFN_vkGetPhysicalDeviceProperties vkGetPhysicalDeviceProperties = (PFN_vkGetPhysicalDeviceProperties)vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceProperties");
+
+之后就可以调用 ``vkGetPhysicalDeviceProperties`` 获取相应的设备属性了：
+
+.. code:: c++
+
+   std::vector<VkPhysicalDevice> physical_devices = 之前获取到的所有设备;
+
+   for(VkPhysicalDevice physical_device : physical_devices)
+   {
+      VkPhysicalDeviceProperties physical_device_properties = {};
+      vkGetPhysicalDeviceProperties(physical_device, &physical_device_properties);
+
+      std::cout << "Physical Device Name:" << physical_device_properties.deviceName << std::endl;
+   }
+
 
 ..
-   获取物理设备属性
-
    设备队列
 
    获取设备队列信息

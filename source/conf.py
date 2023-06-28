@@ -94,3 +94,5 @@ html_css_files = [
 html_js_files = [
     'https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js',
 ]
+
+pygments_style = 'monokai'
