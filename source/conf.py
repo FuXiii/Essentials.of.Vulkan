@@ -96,3 +96,80 @@ html_js_files = [
 ]
 
 pygments_style = 'monokai'
+
+###from pygments.lexers.c_cpp import CppLexer
+###from pygments.token import Name, Keyword
+###from sphinx.highlighting import lexers
+###
+###class VulkanLexer(CppLexer):
+###
+###    name = 'Vulkan'
+###    aliases = ['vulkan']
+###
+###    EXTRA_KEYWORDS = set((
+###        'VK_MAKE_VERSION',
+###        'VK_VERSION_MAJOR',
+###        'VK_VERSION_MINOR',
+###        'VK_VERSION_PATCH',
+###        'VK_API_VERSION_VARIANT',
+###        'VK_API_VERSION_MAJOR',
+###        'VK_API_VERSION_MINOR',
+###        'VK_API_VERSION_PATCH',
+###        'VkBool32',
+###        'VkDeviceAddress',
+###        'VkDeviceSize',
+###        'VkFlags',
+###        'VkSampleMask',
+###        'VkBuffer',
+###        'VkImage',
+###        'VkInstance',
+###        'VkPhysicalDevice',
+###        'VkDevice',
+###        'VkQueue',
+###        'VkSemaphore',
+###        'VkCommandBuffer',
+###        'VkFence',
+###        'VkDeviceMemory',
+###        'VkEvent',
+###        'VkQueryPool',
+###        'VkBufferView',
+###        'VkImageView',
+###        'VkShaderModule',
+###        'VkPipelineCache',
+###        'VkPipelineLayout',
+###        'VkPipeline',
+###        'VkRenderPass',
+###        'VkDescriptorSetLayout',
+###        'VkSampler',
+###        'VkDescriptorSet',
+###        'VkDescriptorPool',
+###        'VkFramebuffer',
+###        'VkCommandPool',
+###        'VK_ATTACHMENT_UNUSED',
+###        'VK_FALSE',
+###        'VK_LOD_CLAMP_NONE',
+###        'VK_QUEUE_FAMILY_IGNORED',
+###        'VK_REMAINING_ARRAY_LAYERS',
+###        'VK_REMAINING_MIP_LEVELS',
+###        'VK_SUBPASS_EXTERNAL',
+###        'VK_TRUE',
+###        'VK_WHOLE_SIZE',
+###        'VK_MAX_MEMORY_TYPES',
+###        'VK_MAX_PHYSICAL_DEVICE_NAME_SIZE',
+###        'VK_UUID_SIZE',
+###        'VK_MAX_EXTENSION_NAME_SIZE',
+###        'VK_MAX_DESCRIPTION_SIZE',
+###        'VK_MAX_MEMORY_HEAPS',
+###        'VkResult',
+###        'VkStructureType',
+###        'VkPhysicalDeviceProperties',
+###    ))
+###
+###    def get_tokens_unprocessed(self, text):
+###        for index, token, value in CppLexer.get_tokens_unprocessed(self, text):
+###            if token is Name and value in self.EXTRA_KEYWORDS:
+###                yield index, Keyword.Pseudo, value
+###            else:
+###                yield index, token, value
+###
+###lexers['vulkan'] = VulkanLexer(startinline=True)
