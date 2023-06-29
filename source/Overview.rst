@@ -37,6 +37,13 @@
    * 2023/6/28 更新 ``vkEnumeratePhysicalDevices`` 章节
    * 2023/6/28 增加 ``VkPhysicalDeviceType`` 章节
    * 2023/6/28 更新 ``vkGetInstanceProcAddr`` 章节，增加 ``句柄`` 描述
+   * 2023/6/29 增加 ``设备队列`` 章节
+   * 2023/6/29 更新 ``VkPhysicalDeviceProperties`` 章节，增加 ``稀疏`` 说明
+   * 2023/6/29 增加 ``获取设备队列信息`` 章节
+   * 2023/6/29 增加 ``vkGetPhysicalDeviceQueueFamilyProperties`` 章节
+   * 2023/6/29 增加 ``VkQueueFamilyProperties`` 章节
+   * 2023/6/29 增加 ``VkQueueFlags`` 章节
+   * 2023/6/29 增加 ``VkQueueFlagBits`` 章节
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -597,6 +604,11 @@ VkPhysicalDeviceProperties
 * :bdg-secondary:`limits` 设备的限值信息。
 * :bdg-secondary:`sparseProperties` 稀疏数据属性。
 
+.. admonition:: 稀疏
+   :class: note
+
+   ``稀疏`` 为离散在内存各处的大量数据，这些数据可以被一并使用，常用表述数据量巨大的资源。
+
 这里我们主要关注 ``apiVersion`` 和 ``deviceType`` 属性。
 
 * ``apiVersion`` 主要是用于描述对应设备支持的 ``Vulkan`` 的版本，该版本很重要，说明设备只支持 ``apiVersion`` 版本之前的标准，如果在此设备上使用高于 ``apiVersion`` 版本的功能的话将会导致错误或未定义行为。
@@ -609,7 +621,7 @@ VkPhysicalDeviceType
 
 .. code:: c++
 
-   // Provided by VK_VERSION_1_0
+   // 由 VK_VERSION_1_0 提供
    typedef enum VkPhysicalDeviceType {
        VK_PHYSICAL_DEVICE_TYPE_OTHER = 0,
        VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU = 1,
@@ -655,12 +667,233 @@ VkPhysicalDeviceType
       std::cout << "Physical Device Name:" << physical_device_properties.deviceName << std::endl;
    }
 
+设备队列
+############################
+
+接下来简单介绍一下 ``Vulkan`` 中的设备队列。
+
+``Vulkan`` 中的每一个 ``VkPhysicalDevice`` 物理设备上都有一到多个设备队列。设备队列用于执行所有的用户任务指令，包括渲染、计算、查询、剔除和构建等等各种任务指令。
+
+每个设备队列支持一到多个功能域，这些功能域分为如下 ``5`` 种：
+
+* :bdg-secondary:`图形` 主要用于图形渲染，执行各种渲染绘制指令。
+* :bdg-secondary:`计算` 主要用于执行并行计算（计算着色器），执行各种计算指令。
+* :bdg-secondary:`转移` 主要用于执行资源的布局转移并支持在不同队列中进行转移，执行各种转移指令。
+* :bdg-secondary:`稀疏绑定` 主要用于稀疏内存的管理。
+* :bdg-secondary:`受保护` 主要用于受保护的内存的管理。
+
+在使用时常用的为 ``图形`` 、 ``计算`` 和 ``转移`` 功能的队列。
+
+.. admonition:: 设备队列和功能域
+   :class: important
+
+   每个物理设备上支持一到多个设备队列，每个设备队列支持一到多个功能域。这里很有可能多个设备队列支持相同的功能域。比如同一物理设备上的设备队列 ``A`` 和 ``B`` 都支持图形和计算功能。
+
+获取设备队列（族）信息
+********************************
+
+在 ``Vulkan`` 中是通过 ``vkGetPhysicalDeviceQueueFamilyProperties`` 函数获取：
+
+vkGetPhysicalDeviceQueueFamilyProperties
+-------------------------------------------
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   void vkGetPhysicalDeviceQueueFamilyProperties(
+       VkPhysicalDevice                            physicalDevice,
+       uint32_t*                                   pQueueFamilyPropertyCount,
+       VkQueueFamilyProperties*                    pQueueFamilyProperties);
+
+* :bdg-secondary:`physicalDevice` 要获取属性的物理设备的句柄。
+* :bdg-secondary:`pQueueFamilyPropertyCount` 是用于指定或获取的设备队列族数量。
+* :bdg-secondary:`pQueueFamilyProperties` 要么是 ``NULL`` 要么是数量不小于 ``pQueueFamilyPropertyCount`` 的 ``VkQueueFamilyProperties`` 数组。
+
+该函数的用法与 ``vkEnumeratePhysicalDevices`` 函数是一样的。
+
+如果 ``pQueueFamilyProperties`` 是 ``NULL`` 的话 ``vkGetPhysicalDeviceQueueFamilyProperties`` 函数将会将查询到的设备队列族数量写入 ``pQueueFamilyPropertyCount`` 所指向的内存中，所以 ``pQueueFamilyPropertyCount`` 必须是一个有效指针。
+
+如果 ``pQueueFamilyProperties`` 不是 ``NULL`` 的话 ``vkGetPhysicalDeviceQueueFamilyProperties`` 函数将会将 ``pQueueFamilyPropertyCount`` 数量的 ``VkQueueFamilyProperties`` 数据依次写入 ``pQueueFamilyProperties`` 指向的数组中。如果 ``pQueueFamilyPropertyCount`` 指定的数量小于支持 ``Vulkan`` 的设备队列数量的话， ``vkGetPhysicalDeviceQueueFamilyProperties`` 将会写入 ``pQueueFamilyPropertyCount`` 个设备队列族信息。
+
+.. admonition:: 队列族
+   :class: note
+
+   在 ``Vulkan`` 中设备队列是按照 ``族`` 进行管理的，前面我们知道一个物理设备上的可能会有多个设备队列支持相同的功能域，这些支持相同功能域的设备队列算作同一族。
+
+   .. mermaid::
+
+      flowchart TB
+         subgraph DeviceQueueFamily_A["设备队列族 A"]
+            direction LR
+            subgraph DeviceQueueFamily_A_Flags["支持的功能域"]
+               direction LR
+                  DeviceQueueFamily_A_GRAPHICS["图形"]
+                  DeviceQueueFamily_A_COMPUTE["计算"]
+                  DeviceQueueFamily_A_TRANSFER["转移"]
+
+                  DeviceQueueFamily_A_GRAPHICS -.- DeviceQueueFamily_A_COMPUTE -.- DeviceQueueFamily_A_TRANSFER
+            end
+
+            subgraph DeviceQueueFamily_A_Queues["支持的队列"]
+               direction TB
+                  DeviceQueueFamily_A_Queue0["队列0"]
+                  DeviceQueueFamily_A_Queue1["队列1"]
+                  DeviceQueueFamily_A_Queue2["队列2"]
+
+                  DeviceQueueFamily_A_Queue0 -.- DeviceQueueFamily_A_Queue1 -.- DeviceQueueFamily_A_Queue2
+            end
+
+            DeviceQueueFamily_A_Flags o--o DeviceQueueFamily_A_Queues
+
+         end
+
+         subgraph DeviceQueueFamily_B["设备队列族 B"]
+            direction LR
+            subgraph DeviceQueueFamily_B_Flags["支持的功能域"]
+               direction LR
+                  DeviceQueueFamily_B_COMPUTE["计算"]
+                  DeviceQueueFamily_B_TRANSFER["转移"]
+
+                  DeviceQueueFamily_B_COMPUTE -.- DeviceQueueFamily_B_TRANSFER
+            end
+
+            subgraph DeviceQueueFamily_B_Queues["支持的队列"]
+               direction TB
+                  DeviceQueueFamily_B_Queue3["队列3"]
+            end
+
+            DeviceQueueFamily_B_Flags o--o DeviceQueueFamily_B_Queues
+
+         end
+
+         DeviceQueueFamily_A-->DeviceQueueFamily_B
+         DeviceQueueFamily_B-->etc["..."]
+
+         style DeviceQueueFamily_A_Flags fill:#f96
+         style DeviceQueueFamily_B_Flags fill:#f96
+         style DeviceQueueFamily_A_Queues fill:#00bfa5
+         style DeviceQueueFamily_B_Queues fill:#00bfa5
+
+设备队列族 ``VkQueueFamilyProperties`` 定义如下：
+
+VkQueueFamilyProperties
+---------------------------
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef struct VkQueueFamilyProperties {
+       VkQueueFlags    queueFlags;
+       uint32_t        queueCount;
+       uint32_t        timestampValidBits;
+       VkExtent3D      minImageTransferGranularity;
+   } VkQueueFamilyProperties;
+
+* :bdg-secondary:`queueFlags` 为队列族位域，用于描述该队列族支持的功能域。
+* :bdg-secondary:`queueCount` 该队列族中的队列数量。
+* :bdg-secondary:`timestampValidBits` 时间戳中有效的位数，有效的位数范围为 ``36`` 到 ``64`` 位，如果为 ``0`` 说明不支持时间戳。超出有效范围的位保证为 ``0`` 。
+* :bdg-secondary:`minImageTransferGranularity` 在该族队列上进行图片转移操作时支持的最小转移粒度（大小）。
+
+目前我们主要关心 ``queueFlags`` 和 ``queueCount`` 。
+
+``queueFlags`` 为 ``VkQueueFlags`` 类型，其定义如下：
+
+VkQueueFlags
+---------------------------
+
+.. code:: c++
+
+   typedef uint32_t VkFlags;
+   typedef VkFlags VkQueueFlags;
+
+可以看到 ``VkQueueFlags`` 其实就是一个 ``uint32_t`` 的标志位。
+
+.. admonition:: VkFlags
+   :class: note
+
+   在 ``Vulkan`` 中所有的标志位 ``Vk{标志位名称}Flags`` 都为 ``VkFlags`` 也就是 ``uint32_t`` 。每一位对应的含义都在对应的 ``Vk{标志位名称}FlagBits`` 枚举中定义。
+
+.. admonition:: 标志位与位域
+   :class: note
+
+   所谓标志位，也就是位域。像 ``uint32_t`` 其比特位有 ``32`` 个，如果某一比特位为 ``1`` 则说明对应的位域被激活，也就是对应位域表示的事物被激活。比如：
+
+   .. code:: c++
+
+      uint32_t LIKE_CAT_BIT = 0x00000001; //对应的二进制：0000 0000 0000 0000 0000 0000 0000 0001
+      uint32_t LIKE_DOG_BIT = 0x00000002; //对应的二进制：0000 0000 0000 0000 0000 0000 0000 0010
+
+      uint32_t likes = 某人的喜好;
+
+      if(likes == 0) //什么也不喜欢
+      if((likes & LIKE_CAT_BI) == LIKE_CAT_BIT) //喜欢猫
+      if((likes & LIKE_DOG_BIT) == LIKE_DOG_BIT) //喜欢狗
+      if((likes & (LIKE_CAT_BIT | LIKE_DOG_BIT)) == (LIKE_CAT_BIT | LIKE_DOG_BIT)) //既喜欢猫，也喜欢狗
+
+``VkQueueFlags`` 对应位域的 ``VkQueueFlagBits`` 定义如下:
+
+VkQueueFlagBits
+---------------------------
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef enum VkQueueFlagBits {
+       VK_QUEUE_GRAPHICS_BIT = 0x00000001,
+       VK_QUEUE_COMPUTE_BIT = 0x00000002,
+       VK_QUEUE_TRANSFER_BIT = 0x00000004,
+       VK_QUEUE_SPARSE_BINDING_BIT = 0x00000008,
+     // 由 VK_VERSION_1_1 提供
+       VK_QUEUE_PROTECTED_BIT = 0x00000010,
+   } VkQueueFlagBits;
+
+* :bdg-secondary:`VK_QUEUE_GRAPHICS_BIT` 表示该队列族中的队列支持 ``图形`` 功能。
+* :bdg-secondary:`VK_QUEUE_COMPUTE_BIT` 表示该队列族中的队列支持 ``计算`` 功能。
+* :bdg-secondary:`VK_QUEUE_TRANSFER_BIT` 表示该队列族中的队列支持 ``转移`` 功能。
+* :bdg-secondary:`VK_QUEUE_SPARSE_BINDING_BIT` 表示该队列族中的队列支持 ``稀疏绑定`` 功能。
+* :bdg-secondary:`VK_QUEUE_PROTECTED_BIT` 表示该队列族中的队列支持 ``受保护`` 功能。
+
+获取设备队列（族）信息例程如下：
+
+首先获取 ``vkGetPhysicalDeviceQueueFamilyProperties`` 函数：
+
+.. code:: c++
+
+   VkInstance instance = 之前成功创建的 VkInstance ;
+
+   PFN_vkGetPhysicalDeviceQueueFamilyProperties vkGetPhysicalDeviceQueueFamilyProperties = (PFN_vkGetPhysicalDeviceQueueFamilyProperties)vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceQueueFamilyProperties");
+
+之后就可以调用 ``vkGetPhysicalDeviceQueueFamilyProperties`` 获取相应的设备队列（族）属性了：
+
+.. code:: c++
+
+   uint32_t queue_family_count = 0;
+   vkGetPhysicalDeviceQueueFamilyProperties(instance, &queue_family_count, nullptr);
+
+   std::vector<VkQueueFamilyProperties> queue_familys(queue_family_count);
+   vkGetPhysicalDeviceQueueFamilyProperties(instance, &queue_family_count, queue_familys.data());
+
+   uint32_t uint32_max = std::numeric_limits<uint32_t>::max();
+   uint32_t support_graphics_queue_family_index = uint32_max;
+   for(uint32_t index = 0; index < queue_family_count ; index++)
+   {
+      if((queue_familys[index].queueFlags & VkQueueFlagBits::VK_QUEUE_GRAPHICS_BIT) == VkQueueFlagBits::VK_QUEUE_GRAPHICS_BIT)
+      {
+         // 寻找支持图形的队列族
+         support_graphics_queue_family_index = index;
+         break;
+      }
+   }
+
+   assert(support_graphics_queue_family_index != uint32_max) //没找到支持图形的队列族
+
+.. admonition:: VK_QUEUE_GRAPHICS_BIT
+   :class: note
+
+   我们一般倾向于需要支持 ``VK_QUEUE_GRAPHICS_BIT`` 图形功能的队列族，这是因为大部分设备队列族如果支持图形功能的话，其他的计算、转移和稀疏绑定功能也会同时支持。
+
 
 ..
-   设备队列
-
-   获取设备队列信息
-
    创建逻辑设备（设备队列）
 
    获得设备队列
