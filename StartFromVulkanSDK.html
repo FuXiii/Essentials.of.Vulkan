@@ -269,6 +269,7 @@
 <li><p class="sd-card-text">2023/6/23 增加 <code class="docutils literal notranslate"><span class="pre">Bin</span> <span class="pre">和</span> <span class="pre">Bin32</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/6/23 增加 <code class="docutils literal notranslate"><span class="pre">Include</span> <span class="pre">与</span> <span class="pre">Lib</span> <span class="pre">和</span> <span class="pre">Lib32</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/6/23 增加 <code class="docutils literal notranslate"><span class="pre">Templates</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/29 更新 <code class="docutils literal notranslate"><span class="pre">安装</span> <span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 章节，改成 <code class="docutils literal notranslate"><span class="pre">Tab</span></code> 标签呈现</p></li>
 </ul>
 </div>
 </details><p><code class="docutils literal notranslate"><span class="pre">Khronos</span></code> 这次推出了 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 官方的软件开发工具包 <a class="reference external" href="https://vulkan.lunarg.com/home/welcome">Vulkan SDK</a> ，这避免了像 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 开发环境混乱的情形再次上演。</p>
@@ -292,10 +293,11 @@
 有关 <code class="docutils literal notranslate"><span class="pre">Android</span></code> 的适配应该和 <code class="docutils literal notranslate"><span class="pre">Linux</span></code> 是相通的， <code class="docutils literal notranslate"><span class="pre">MacOS</span></code> 没适配，苹果的电脑太贵了。 ┑(￣Д ￣)┍</p>
 <p>对于 <code class="docutils literal notranslate"><span class="pre">Android</span></code> 和  <code class="docutils literal notranslate"><span class="pre">MacOS</span></code> 有适配过的小伙伴，欢迎分享~ ꒰’ꀾ’꒱ 。</p>
 </div>
-<ul>
-<li><p>对于 <code class="docutils literal notranslate"><span class="pre">Windows</span></code> 操作系统</p>
-<blockquote>
-<div><p><code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 是一个自解压安装包，运行下载的可执行文件即可。默认的安装地址为 <code class="docutils literal notranslate"><span class="pre">C:\VulkanSDK\version</span></code> 。</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-0">
+Windows 安装</label><div class="sd-tab-content docutils">
+<p><code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 是一个自解压安装包，运行下载的可执行文件即可。默认的安装地址为 <code class="docutils literal notranslate"><span class="pre">C:\VulkanSDK\{VulkanSDK的版本}</span></code> 。</p>
 <div class="admonition note">
 <p class="admonition-title">备注</p>
 <p>如果你已经下载安装了一个或多个新版的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> （ <code class="docutils literal notranslate"><span class="pre">1.2.189.1</span></code> 或是更新的版本 ），此时如果您需要安装一个老版本的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> （早于 <code class="docutils literal notranslate"><span class="pre">1.2.189.1</span></code>）的话，
@@ -308,12 +310,13 @@
 <p class="admonition-title">备注</p>
 <p>一些程序和命令行环境在没有重新启动时可能获取不到 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 相关的环境变量。</p>
 </div>
-</div></blockquote>
-</li>
-<li><p>对于 <code class="docutils literal notranslate"><span class="pre">Linux</span></code> 操作系统</p>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-1">
+Linux 安装</label><div class="sd-tab-content docutils">
+<p><code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 是一个压缩文件，将其解压出来放到任意您想放到的位置即可。</p>
 <blockquote>
-<div><p><code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 是一个压缩文件，将其解压出来放到任意您想放到的位置即可。</p>
-<ol class="arabic">
+<div><ol class="arabic">
 <li><p>创建一个文件夹，用于存放安装的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 。假如这个文件夹叫 <code class="docutils literal notranslate"><span class="pre">vulkan</span></code>，在您的 <code class="docutils literal notranslate"><span class="pre">HOME</span></code> 目录下。</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cd ~</span>
 <span class="go">mkdir vulkan</span>
@@ -401,8 +404,8 @@
 </pre></div>
 </div>
 </div></blockquote>
-</li>
-</ul>
+</div>
+</div>
 </section>
 <section id="id3">
 <h2>验证安装<a class="headerlink" href="#id3" title="此标题的永久链接">#</a></h2>

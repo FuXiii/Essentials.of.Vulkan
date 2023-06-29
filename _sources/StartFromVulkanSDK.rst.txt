@@ -21,6 +21,7 @@
    * 2023/6/23 增加 ``Bin 和 Bin32`` 章节
    * 2023/6/23 增加 ``Include 与 Lib 和 Lib32`` 章节
    * 2023/6/23 增加 ``Templates`` 章节
+   * 2023/6/29 更新 ``安装 Vulkan SDK`` 章节，改成 ``Tab`` 标签呈现
 
 ``Khronos`` 这次推出了 ``Vulkan`` 官方的软件开发工具包 `Vulkan SDK <https://vulkan.lunarg.com/home/welcome>`_ ，这避免了像 ``OpenGL`` 开发环境混乱的情形再次上演。
 
@@ -33,130 +34,132 @@
 
 下载对应平台的安装包，安装即可。
 
-.. important:: 
-   
+.. important::
+
    ``Vulkan SDK`` 并不会安装硬件设备的 ``Vulkan`` 驱动！！仅仅提供用于应用开发和调试的工具和库，如果您在尝试安装驱动，请移步至对应硬件设备供应商的官网处获取驱动。
 
 安装 Vulkan SDK
 ####################
 
-.. hint:: 
-   
+.. hint::
+
    本人目前只完整适配过 ``Windows`` 和 ``Linux`` 系统，主要以这两个操作系统讲解。
    有关 ``Android`` 的适配应该和 ``Linux`` 是相通的， ``MacOS`` 没适配，苹果的电脑太贵了。 ┑(￣Д ￣)┍
 
    对于 ``Android`` 和  ``MacOS`` 有适配过的小伙伴，欢迎分享~ ꒰'ꀾ'꒱ 。
 
-* 对于 ``Windows`` 操作系统
+.. tab-set::
 
-   ``Vulkan SDK`` 是一个自解压安装包，运行下载的可执行文件即可。默认的安装地址为 ``C:\VulkanSDK\version`` 。
+    .. tab-item:: Windows 安装
 
-   .. note::
-
-      如果你已经下载安装了一个或多个新版的 ``Vulkan SDK`` （ ``1.2.189.1`` 或是更新的版本 ），此时如果您需要安装一个老版本的 ``Vulkan SDK`` （早于 ``1.2.189.1``）的话，
-      您必须将最近安装的 ``Vulkan SDK`` 卸载掉，可以使用 ``Windows`` 系统的控制面板的应用管理进行卸载，或是通过 ``Vulkan SDK`` 安装目录下的
-      ``maintenancetool.exe`` 进行卸载。
-
-   ``Vulkan SDK`` 安装之后将会将安装目录作为 ``VULKAN_SDK`` 的变量添加到环境变量中，并且也会将 ``%VULKAN_SDK%\Bin`` 目录添加到系统的 ``PATH`` 环境变量中。同时也会增加
-   ``VK_SDK_PATH`` 环境变量，其值和 ``VULKAN_SDK`` 环境变量是一样的。
-
-   .. note::
-
-      一些程序和命令行环境在没有重新启动时可能获取不到 ``Vulkan SDK`` 相关的环境变量。
-
-* 对于 ``Linux`` 操作系统
-
-   ``Vulkan SDK`` 是一个压缩文件，将其解压出来放到任意您想放到的位置即可。
-
-   1. 创建一个文件夹，用于存放安装的 ``Vulkan SDK`` 。假如这个文件夹叫 ``vulkan``，在您的 ``HOME`` 目录下。
-   
-      .. code:: console
-
-         cd ~
-         mkdir vulkan
-         cd vulkan
-
-   2. 使用 ``sha256sum`` 检查下载的压缩文件的完整性。假如压缩包下载到了 ``$HOME/Downloads``。
-
-      .. code:: console
-
-         sha256sum $HOME/Downloads/vulkansdk-linux-x86_64-1.x.yy.z.tar.gz
+      ``Vulkan SDK`` 是一个自解压安装包，运行下载的可执行文件即可。默认的安装地址为 ``C:\VulkanSDK\{VulkanSDK的版本}`` 。
 
       .. note::
 
-         ``x`` 、``yy`` 和 ``z`` 是解压出来的 ``Vulkan SDK`` 对应版本，下文皆是如此。
+         如果你已经下载安装了一个或多个新版的 ``Vulkan SDK`` （ ``1.2.189.1`` 或是更新的版本 ），此时如果您需要安装一个老版本的 ``Vulkan SDK`` （早于 ``1.2.189.1``）的话，
+         您必须将最近安装的 ``Vulkan SDK`` 卸载掉，可以使用 ``Windows`` 系统的控制面板的应用管理进行卸载，或是通过 ``Vulkan SDK`` 安装目录下的
+         ``maintenancetool.exe`` 进行卸载。
 
-   3. 解压 ``Vulkan SDK`` 压缩包。假如压缩包下载到了 ``$HOME/Downloads``。
+      ``Vulkan SDK`` 安装之后将会将安装目录作为 ``VULKAN_SDK`` 的变量添加到环境变量中，并且也会将 ``%VULKAN_SDK%\Bin`` 目录添加到系统的 ``PATH`` 环境变量中。同时也会增加
+      ``VK_SDK_PATH`` 环境变量，其值和 ``VULKAN_SDK`` 环境变量是一样的。
 
-      .. code:: console
+      .. note::
 
-         tar xf $HOME/Downloads/vulkansdk-linux-x86_64-1.x.yy.z.tar.gz
+         一些程序和命令行环境在没有重新启动时可能获取不到 ``Vulkan SDK`` 相关的环境变量。
 
-   4. 如果没有安装运行时依赖，安装之。
+    .. tab-item:: Linux 安装
 
-      Ubuntu 22.04:
+      ``Vulkan SDK`` 是一个压缩文件，将其解压出来放到任意您想放到的位置即可。
 
-      .. code:: console
+        1. 创建一个文件夹，用于存放安装的 ``Vulkan SDK`` 。假如这个文件夹叫 ``vulkan``，在您的 ``HOME`` 目录下。
 
-         sudo apt install qtbase5-dev libxcb-xinput0 libxcb-xinerama0
+           .. code:: console
 
-      Ubuntu 20.04:
+              cd ~
+              mkdir vulkan
+              cd vulkan
 
-      .. code:: console
+        2. 使用 ``sha256sum`` 检查下载的压缩文件的完整性。假如压缩包下载到了 ``$HOME/Downloads``。
 
-         sudo apt install qt5-default libxcb-xinput0 libxcb-xinerama0
+           .. code:: console
 
-      Fedora:
+              sha256sum $HOME/Downloads/vulkansdk-linux-x86_64-1.x.yy.z.tar.gz
 
-      .. code:: console
+           .. note::
 
-         sudo dnf install qt xinput libXinerama
+              ``x`` 、``yy`` 和 ``z`` 是解压出来的 ``Vulkan SDK`` 对应版本，下文皆是如此。
 
-      Arch Linux:
+        3. 解压 ``Vulkan SDK`` 压缩包。假如压缩包下载到了 ``$HOME/Downloads``。
 
-      .. code:: console
+           .. code:: console
 
-         sudo pacman -S qt5-base libxcb libxinerama
+              tar xf $HOME/Downloads/vulkansdk-linux-x86_64-1.x.yy.z.tar.gz
 
-   与 ``Windows`` 系统不同的是， ``Linux`` 的环境变量需要自己手动设置。要设置的环境变量如下表所示，其中 ``VULKAN_SDK`` 环境变量是安装 ``Vulkan SDK`` 的目录（比如 ``~/vulkan/1.x.yy.z/x86_64`` ），剩下的
-   环境变量路径都相对于 ``VULKAN_SDK`` 路径。
+        4. 如果没有安装运行时依赖，安装之。
 
-   ======================  =========================================
-     环境变量               文件/路径
-   ======================  =========================================
-   ``PATH``                 ``$VULKAN_SDK/bin``
-   ``LD_LIBRARY_PATH``      ``$VULKAN_SDK/lib``
-   ``VK_LAYER_PATH``        ``$VULKAN_SDK/etc/vulkan/explicit_layer.d``
-   ``VK_ADD_LAYER_PATH``    ``$VULKAN_SDK/etc/vulkan/explicit_layer.d``
-   ======================  =========================================
+           Ubuntu 22.04:
 
-   使用 ``source`` 指令去加载设置环境变量脚本：
+           .. code:: console
 
-   .. code:: console
+              sudo apt install qtbase5-dev libxcb-xinput0 libxcb-xinerama0
 
-      source ~/vulkan/1.x.yy.z/setup-env.sh
+           Ubuntu 20.04:
 
-   或者可以自己手动设置环境变量：
+           .. code:: console
 
-   .. code:: console
+              sudo apt install qt5-default libxcb-xinput0 libxcb-xinerama0
 
-      export VULKAN_SDK=~/vulkan/1.x.yy.z/x86_64
-      export PATH=$VULKAN_SDK/bin:$PATH
-      export LD_LIBRARY_PATH=$VULKAN_SDK/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
-      export VK_LAYER_PATH=$VULKAN_SDK/etc/vulkan/explicit_layer.d
+           Fedora:
 
-   .. admonition:: 永久性设置 ``Vulkan SDK`` 环境变量
-      :class: note
+           .. code:: console
 
-      以上的两种方式为临时设置环境变量，当更换或重启控制台、重启计算机都会使之前设置的环境变量失效。
-      如果想要永久性设置环境变量，请参考对应 ``shell`` 或桌面文档，不同系统有些许区别。比如在大多数 ``Ubuntu`` 的桌面系统中，在 ``.profile`` 文件中增加
-      ``setup-env.sh`` 文件的源，用于设置永久性环境变量，该环境变量之后就可以全局使用而不需要单独配置。
+              sudo dnf install qt xinput libXinerama
 
-   对于卸载 ``Vulkan SDK`` 仅通过删除 ``Vulkan SDK`` 解压安装的文件夹即可，例如：
+           Arch Linux:
 
-   .. code:: console
+           .. code:: console
 
-      rm -rf ~/vulkan/1.x.yy.z
+              sudo pacman -S qt5-base libxcb libxinerama
+
+        与 ``Windows`` 系统不同的是， ``Linux`` 的环境变量需要自己手动设置。要设置的环境变量如下表所示，其中 ``VULKAN_SDK`` 环境变量是安装 ``Vulkan SDK`` 的目录（比如 ``~/vulkan/1.x.yy.z/x86_64`` ），剩下的
+        环境变量路径都相对于 ``VULKAN_SDK`` 路径。
+
+        ======================  =========================================
+          环境变量               文件/路径
+        ======================  =========================================
+        ``PATH``                 ``$VULKAN_SDK/bin``
+        ``LD_LIBRARY_PATH``      ``$VULKAN_SDK/lib``
+        ``VK_LAYER_PATH``        ``$VULKAN_SDK/etc/vulkan/explicit_layer.d``
+        ``VK_ADD_LAYER_PATH``    ``$VULKAN_SDK/etc/vulkan/explicit_layer.d``
+        ======================  =========================================
+
+        使用 ``source`` 指令去加载设置环境变量脚本：
+
+        .. code:: console
+
+           source ~/vulkan/1.x.yy.z/setup-env.sh
+
+        或者可以自己手动设置环境变量：
+
+        .. code:: console
+
+           export VULKAN_SDK=~/vulkan/1.x.yy.z/x86_64
+           export PATH=$VULKAN_SDK/bin:$PATH
+           export LD_LIBRARY_PATH=$VULKAN_SDK/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+           export VK_LAYER_PATH=$VULKAN_SDK/etc/vulkan/explicit_layer.d
+
+        .. admonition:: 永久性设置 ``Vulkan SDK`` 环境变量
+           :class: note
+
+           以上的两种方式为临时设置环境变量，当更换或重启控制台、重启计算机都会使之前设置的环境变量失效。
+           如果想要永久性设置环境变量，请参考对应 ``shell`` 或桌面文档，不同系统有些许区别。比如在大多数 ``Ubuntu`` 的桌面系统中，在 ``.profile`` 文件中增加
+           ``setup-env.sh`` 文件的源，用于设置永久性环境变量，该环境变量之后就可以全局使用而不需要单独配置。
+
+        对于卸载 ``Vulkan SDK`` 仅通过删除 ``Vulkan SDK`` 解压安装的文件夹即可，例如：
+
+        .. code:: console
+
+           rm -rf ~/vulkan/1.x.yy.z
 
 验证安装
 ####################
