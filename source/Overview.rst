@@ -44,6 +44,10 @@
    * 2023/6/29 增加 ``VkQueueFamilyProperties`` 章节
    * 2023/6/29 增加 ``VkQueueFlags`` 章节
    * 2023/6/29 增加 ``VkQueueFlagBits`` 章节
+   * 2023/6/30 更新 ``加载 Vulkan 动态库`` 章节，增加 ``Vulkan 的静态库`` 说明
+   * 2023/6/30 增加 ``逻辑设备`` 章节
+   * 2023/6/30 增加 ``创建逻辑设备`` 章节
+   * 2023/6/30 增加 ``vkCreateDevice`` 章节
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -79,10 +83,24 @@ Vulkan 的接口
 
 ``Vulkan`` 中提供了 ``Vulkan Loader`` 进行 ``Vulkan`` 标准实现接口的获取。根据前文介绍我们知道 ``Vulkan Loader`` 对应着 ``Vulkan`` 的动态库，所以我们第一步就是加载 ``Vulkan`` 的动态库。
 
-.. admonition:: ``Vulkan`` 的动态库
+.. admonition:: Vulkan 的动态库
    :class: note
 
    ``Windows`` 操作系统上 ``Vulkan`` 的动态库为 ``vulkan-1.dll`` ，而 ``Linux`` 上的为 ``libvulkan.so.1`` 或 ``libvulkan.so`` 。
+
+.. admonition:: Vulkan 的静态库
+   :class: hint
+
+   为什么不是用 ``Vulkan`` 的静态库呢？最主要的原因来源于 `Vulkan Loader 的 Static Linking <https://github.com/KhronosGroup/Vulkan-Loader/blob/main/docs/LoaderApplicationInterface.md#static-linking>`_ 文档：
+
+      In previous versions of the loader, it was possible to statically link the loader. This was removed and is no longer possible. The decision to remove static linking was because of changes to the driver which made older applications that statically linked unable to find newer drivers.
+
+      在 ``Loader`` 之前的版本中，是可以静态链接 ``Loader`` 的。这将会在不久的将来移除。这是由于之前静态链接的老程序无法找到新的驱动。
+
+   此外静态链接有如下问题：
+
+   * 除非重编译链接原工程否则永远得不到新 ``Loader`` 内容
+   * 包含的两个库可能会链接了不同版本的 ``Loader``
 
 .. tab-set::
 
@@ -892,7 +910,18 @@ VkQueueFlagBits
 
    我们一般倾向于需要支持 ``VK_QUEUE_GRAPHICS_BIT`` 图形功能的队列族，这是因为大部分设备队列族如果支持图形功能的话，其他的计算、转移和稀疏绑定功能也会同时支持。
 
+逻辑设备
+############################
 
+在获得了物理设备句柄之后，我们需要在某个物理设备上创建逻辑设备，之后所有的操作都应用于此逻辑设备上。 ``Vulkan`` 中使用 ``VkDevice`` 句柄表示一个逻辑设备。
+
+创建逻辑设备
+********************************
+
+首先需要使用 ``vkCreateDevice`` 创建逻辑设备。
+
+vkCreateDevice
+-----------------
 ..
    创建逻辑设备（设备队列）
 
