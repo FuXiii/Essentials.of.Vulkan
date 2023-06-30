@@ -48,6 +48,9 @@
    * 2023/6/30 增加 ``逻辑设备`` 章节
    * 2023/6/30 增加 ``创建逻辑设备`` 章节
    * 2023/6/30 增加 ``vkCreateDevice`` 章节
+   * 2023/6/30 增加 ``VkDeviceCreateInfo`` 章节
+   * 2023/6/30 增加 ``VkDeviceQueueCreateInfo`` 章节
+   * 2023/6/30 更新 ``获取设备队列（族）信息`` 章节。修改 ``例程`` 的错误
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -885,11 +888,13 @@ VkQueueFlagBits
 
 .. code:: c++
 
+   VkPhysicalDevice physical_device = 之前获取到的物理设备句柄;
+
    uint32_t queue_family_count = 0;
-   vkGetPhysicalDeviceQueueFamilyProperties(instance, &queue_family_count, nullptr);
+   vkGetPhysicalDeviceQueueFamilyProperties(physical_device, &queue_family_count, nullptr);
 
    std::vector<VkQueueFamilyProperties> queue_familys(queue_family_count);
-   vkGetPhysicalDeviceQueueFamilyProperties(instance, &queue_family_count, queue_familys.data());
+   vkGetPhysicalDeviceQueueFamilyProperties(physical_device, &queue_family_count, queue_familys.data());
 
    uint32_t uint32_max = std::numeric_limits<uint32_t>::max();
    uint32_t support_graphics_queue_family_index = uint32_max;
@@ -904,6 +909,11 @@ VkQueueFlagBits
    }
 
    assert(support_graphics_queue_family_index != uint32_max) //没找到支持图形的队列族
+
+.. admonition:: support_graphics_queue_family_index
+   :class: note
+
+   需要获取存储对应设备队列族在 ``VkQueueFamilyProperties`` 数组中的索引值，这会在之后使用到。
 
 .. admonition:: VK_QUEUE_GRAPHICS_BIT
    :class: note
@@ -922,6 +932,126 @@ VkQueueFlagBits
 
 vkCreateDevice
 -----------------
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   VkResult vkCreateDevice(
+       VkPhysicalDevice                            physicalDevice,
+       const VkDeviceCreateInfo*                   pCreateInfo,
+       const VkAllocationCallbacks*                pAllocator,
+       VkDevice*                                   pDevice);
+
+* :bdg-secondary:`physicalDevice` 为之前使用 ``vkEnumeratePhysicalDevices`` 获取到的某个物理设备句柄，逻辑设备将在此物理设备上创建。
+* :bdg-secondary:`pCreateInfo` 表示逻辑设备的创建信息。
+* :bdg-secondary:`pAllocator` 内存分配器。
+* :bdg-secondary:`pDevice` 创建返回的逻辑设备 ``VkDevice`` 句柄。
+
+如果创建成功将会返回 ``VK_SUCCESS`` 。并且同一个物理设备可以创建多个逻辑设备。
+
+创建逻辑设备的 ``VkDeviceCreateInfo`` 结构体定义如下：
+
+VkDeviceCreateInfo
+------------------------
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef struct VkDeviceCreateInfo {
+       VkStructureType                    sType;
+       const void*                        pNext;
+       VkDeviceCreateFlags                flags;
+       uint32_t                           queueCreateInfoCount;
+       const VkDeviceQueueCreateInfo*     pQueueCreateInfos;
+       uint32_t                           enabledLayerCount;
+       const char* const*                 ppEnabledLayerNames;
+       uint32_t                           enabledExtensionCount;
+       const char* const*                 ppEnabledExtensionNames;
+       const VkPhysicalDeviceFeatures*    pEnabledFeatures;
+   } VkDeviceCreateInfo;
+
+* :bdg-secondary:`sType` 是该结构体的类型枚举值，必须是 ``VkStructureType::VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO`` 。
+* :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
+* :bdg-secondary:`flags` 标志位，保留为将来使用。
+* :bdg-secondary:`queueCreateInfoCount` 为 ``pQueueCreateInfos`` 数组的数量。
+* :bdg-secondary:`pQueueCreateInfos` 指向 ``VkDeviceQueueCreateInfo`` 数组指针，用于逻辑设备创建设备队列。
+* :bdg-secondary:`enabledLayerCount` 为 ``ppEnabledLayerNames`` 数组的数量。
+* :bdg-secondary:`ppEnabledLayerNames` 指向字符串数组指针，用于启用设备 ``Layer`` 。
+* :bdg-secondary:`enabledExtensionCount` 为 ``ppEnabledExtensionNames`` 数组的数量。
+* :bdg-secondary:`ppEnabledExtensionNames` 指向字符串数组指针，用于启用设备扩展。
+* :bdg-secondary:`VkPhysicalDeviceFeatures` 设置要激活的物理设备特性。
+
+此时我们主要关心数量为 ``queueCreateInfoCount`` 类型为 ``VkDeviceQueueCreateInfo`` 的 ``pQueueCreateInfos`` 数组。该数组用于在创建逻辑设备时指定创建的设备队列信息。该结构体定义如下：
+
+VkDeviceQueueCreateInfo
+------------------------
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef struct VkDeviceQueueCreateInfo {
+       VkStructureType             sType;
+       const void*                 pNext;
+       VkDeviceQueueCreateFlags    flags;
+       uint32_t                    queueFamilyIndex;
+       uint32_t                    queueCount;
+       const float*                pQueuePriorities;
+   } VkDeviceQueueCreateInfo;
+
+* :bdg-secondary:`sType` 是该结构体的类型枚举值，必须是 ``VkStructureType::VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO`` 。
+* :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
+* :bdg-secondary:`flags` 标志位。用于设置目标设备队列的行为。
+* :bdg-secondary:`queueFamilyIndex` 对应的队列族在 ``vkGetPhysicalDeviceQueueFamilyProperties`` 函数返回的 ``pQueueFamilyProperties`` 数组中的索引值。
+* :bdg-secondary:`queueCount` 在对应的队列族中创建的设备队列数量。
+* :bdg-secondary:`pQueuePriorities` 设备队列优先级。指向数量为 ``queueCount`` 类型为 ``float`` 的数组，对应设置每一个设备队列的优先级。
+
+这里 ``queueFamilyIndex`` 成员非常重要，该成员对应着使用 ``vkGetPhysicalDeviceQueueFamilyProperties`` 获取到的设备队列族在 ``pQueueFamilyProperties`` 数组中的索引值，大部分情况会去选择支持图形功能的队列族所对应的索引。
+
+这样我们就可以创建逻辑设备了，例程如下：
+
+首先获取 ``vkCreateDevice`` 函数：
+
+.. code:: c++
+
+   VkInstance instance = 之前成功创建的 VkInstance ;
+
+   PFN_vkCreateDevice vkCreateDevice = (PFN_vkCreateDevice)vkGetInstanceProcAddr(instance, "vkCreateDevice");
+
+之后就可以调用 ``vkCreateDevice`` 创建逻辑设备了：
+
+.. code:: c++
+
+   VkPhysicalDevice physical_device = 之前获取到的物理设备句柄;
+   uint32_t support_graphics_queue_family_index = physical_device 中找到的支持图形功能的队列族索引;
+
+   float queue_prioritie = 0;
+
+   VkDeviceQueueCreateInfo device_queue_create_info = {};
+   device_queue_create_info.sType = VkStructureType::VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+   device_queue_create_info.pNext = nullptr;
+   device_queue_create_info.flags = 0;
+   device_queue_create_info.queueFamilyIndex = support_graphics_queue_family_index;
+   device_queue_create_info.queueCount = 1;
+   device_queue_create_info.pQueuePriorities = &queue_prioritie;
+
+   VkDeviceCreateInfo device_create_info = {};
+   device_create_info.sType = VkStructureType::VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+   device_create_info.pNext = nullptr;
+   device_create_info.flags = 0;
+   device_create_info.queueCreateInfoCount = 1;
+   device_create_info.pQueueCreateInfos = &device_queue_create_info;
+   device_create_info.enabledLayerCount = 0;
+   device_create_info.ppEnabledLayerNames = nullptr;
+   device_create_info.enabledExtensionCount = 0;
+   device_create_info.ppEnabledExtensionNames = nullptr;
+   device_create_info.pEnabledFeatures = nullptr;
+
+   VkDevice device = VK_NULL_HANDLE;
+
+   VkResult result = vkCreateDevice(physical_device, &device_create_info, nullptr, &device);
+
+   assert(result == VkResult::VK_SUCCESS) //是否创建成功
+
 ..
    创建逻辑设备（设备队列）
 
