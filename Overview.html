@@ -292,6 +292,10 @@
 <li><p class="sd-card-text">2023/6/29 增加 <code class="docutils literal notranslate"><span class="pre">VkQueueFamilyProperties</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/6/29 增加 <code class="docutils literal notranslate"><span class="pre">VkQueueFlags</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/6/29 增加 <code class="docutils literal notranslate"><span class="pre">VkQueueFlagBits</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/30 更新 <code class="docutils literal notranslate"><span class="pre">加载</span> <span class="pre">Vulkan</span> <span class="pre">动态库</span></code> 章节，增加 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">的静态库</span></code> 说明</p></li>
+<li><p class="sd-card-text">2023/6/30 增加 <code class="docutils literal notranslate"><span class="pre">逻辑设备</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/30 增加 <code class="docutils literal notranslate"><span class="pre">创建逻辑设备</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/30 增加 <code class="docutils literal notranslate"><span class="pre">vkCreateDevice</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p>由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 比较复杂，为了更好的入门 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> ，还是大致过一遍 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的核心思路，这对以后的学习很有帮助。</p>
@@ -320,8 +324,21 @@
 <h3>加载 Vulkan 动态库<a class="headerlink" href="#id5" title="此标题的永久链接">#</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中提供了 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 进行 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准实现接口的获取。根据前文介绍我们知道 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 对应着 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的动态库，所以我们第一步就是加载 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的动态库。</p>
 <div class="note admonition">
-<p class="admonition-title"><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的动态库</p>
+<p class="admonition-title">Vulkan 的动态库</p>
 <p><code class="docutils literal notranslate"><span class="pre">Windows</span></code> 操作系统上 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的动态库为 <code class="docutils literal notranslate"><span class="pre">vulkan-1.dll</span></code> ，而 <code class="docutils literal notranslate"><span class="pre">Linux</span></code> 上的为 <code class="docutils literal notranslate"><span class="pre">libvulkan.so.1</span></code> 或 <code class="docutils literal notranslate"><span class="pre">libvulkan.so</span></code> 。</p>
+</div>
+<div class="hint admonition">
+<p class="admonition-title">Vulkan 的静态库</p>
+<p>为什么不是用 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的静态库呢？最主要的原因来源于 <a class="reference external" href="https://github.com/KhronosGroup/Vulkan-Loader/blob/main/docs/LoaderApplicationInterface.md#static-linking">Vulkan Loader 的 Static Linking</a> 文档：</p>
+<blockquote>
+<div><p>In previous versions of the loader, it was possible to statically link the loader. This was removed and is no longer possible. The decision to remove static linking was because of changes to the driver which made older applications that statically linked unable to find newer drivers.</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">Loader</span></code> 之前的版本中，是可以静态链接 <code class="docutils literal notranslate"><span class="pre">Loader</span></code> 的。这将会在不久的将来移除。这是由于之前静态链接的老程序无法找到新的驱动。</p>
+</div></blockquote>
+<p>此外静态链接有如下问题：</p>
+<ul class="simple">
+<li><p>除非重编译链接原工程否则永远得不到新 <code class="docutils literal notranslate"><span class="pre">Loader</span></code> 内容</p></li>
+<li><p>包含的两个库可能会链接了不同版本的 <code class="docutils literal notranslate"><span class="pre">Loader</span></code></p></li>
+</ul>
 </div>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
@@ -1067,6 +1084,17 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </section>
 </section>
 </section>
+<section id="id12">
+<h2>逻辑设备<a class="headerlink" href="#id12" title="此标题的永久链接">#</a></h2>
+<p>在获得了物理设备句柄之后，我们需要在某个物理设备上创建逻辑设备，之后所有的操作都应用于此逻辑设备上。 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中使用 <code class="docutils literal notranslate"><span class="pre">VkDevice</span></code> 句柄表示一个逻辑设备。</p>
+<section id="id13">
+<h3>创建逻辑设备<a class="headerlink" href="#id13" title="此标题的永久链接">#</a></h3>
+<p>首先需要使用 <code class="docutils literal notranslate"><span class="pre">vkCreateDevice</span></code> 创建逻辑设备。</p>
+<section id="vkcreatedevice">
+<h4>vkCreateDevice<a class="headerlink" href="#vkcreatedevice" title="此标题的永久链接">#</a></h4>
+</section>
+</section>
+</section>
 </section>
 
         </article>
@@ -1179,6 +1207,13 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <li><a class="reference internal" href="#vkqueuefamilyproperties">VkQueueFamilyProperties</a></li>
 <li><a class="reference internal" href="#vkqueueflags">VkQueueFlags</a></li>
 <li><a class="reference internal" href="#vkqueueflagbits">VkQueueFlagBits</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id12">逻辑设备</a><ul>
+<li><a class="reference internal" href="#id13">创建逻辑设备</a><ul>
+<li><a class="reference internal" href="#vkcreatedevice">vkCreateDevice</a></li>
 </ul>
 </li>
 </ul>
