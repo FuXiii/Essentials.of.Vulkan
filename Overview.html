@@ -296,6 +296,9 @@
 <li><p class="sd-card-text">2023/6/30 增加 <code class="docutils literal notranslate"><span class="pre">逻辑设备</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/6/30 增加 <code class="docutils literal notranslate"><span class="pre">创建逻辑设备</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/6/30 增加 <code class="docutils literal notranslate"><span class="pre">vkCreateDevice</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/30 增加 <code class="docutils literal notranslate"><span class="pre">VkDeviceCreateInfo</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/30 增加 <code class="docutils literal notranslate"><span class="pre">VkDeviceQueueCreateInfo</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/6/30 更新 <code class="docutils literal notranslate"><span class="pre">获取设备队列（族）信息</span></code> 章节。修改 <code class="docutils literal notranslate"><span class="pre">例程</span></code> 的错误</p></li>
 </ul>
 </div>
 </details><p>由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 比较复杂，为了更好的入门 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> ，还是大致过一遍 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的核心思路，这对以后的学习很有帮助。</p>
@@ -1056,11 +1059,13 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 <p>之后就可以调用 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceQueueFamilyProperties</span></code> 获取相应的设备队列（族）属性了：</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">queue_family_count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-<span class="n">vkGetPhysicalDeviceQueueFamilyProperties</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">queue_family_count</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkPhysicalDevice</span><span class="w"> </span><span class="n">physical_device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前获取到的物理设备句柄</span><span class="p">;</span>
+
+<span class="kt">uint32_t</span><span class="w"> </span><span class="n">queue_family_count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="n">vkGetPhysicalDeviceQueueFamilyProperties</span><span class="p">(</span><span class="n">physical_device</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">queue_family_count</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
 
 <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">VkQueueFamilyProperties</span><span class="o">&gt;</span><span class="w"> </span><span class="n">queue_familys</span><span class="p">(</span><span class="n">queue_family_count</span><span class="p">);</span>
-<span class="n">vkGetPhysicalDeviceQueueFamilyProperties</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">queue_family_count</span><span class="p">,</span><span class="w"> </span><span class="n">queue_familys</span><span class="p">.</span><span class="n">data</span><span class="p">());</span>
+<span class="n">vkGetPhysicalDeviceQueueFamilyProperties</span><span class="p">(</span><span class="n">physical_device</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">queue_family_count</span><span class="p">,</span><span class="w"> </span><span class="n">queue_familys</span><span class="p">.</span><span class="n">data</span><span class="p">());</span>
 
 <span class="kt">uint32_t</span><span class="w"> </span><span class="n">uint32_max</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">numeric_limits</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;::</span><span class="n">max</span><span class="p">();</span>
 <span class="kt">uint32_t</span><span class="w"> </span><span class="n">support_graphics_queue_family_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">uint32_max</span><span class="p">;</span>
@@ -1078,6 +1083,10 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 <div class="note admonition">
+<p class="admonition-title">support_graphics_queue_family_index</p>
+<p>需要获取存储对应设备队列族在 <code class="docutils literal notranslate"><span class="pre">VkQueueFamilyProperties</span></code> 数组中的索引值，这会在之后使用到。</p>
+</div>
+<div class="note admonition">
 <p class="admonition-title">VK_QUEUE_GRAPHICS_BIT</p>
 <p>我们一般倾向于需要支持 <code class="docutils literal notranslate"><span class="pre">VK_QUEUE_GRAPHICS_BIT</span></code> 图形功能的队列族，这是因为大部分设备队列族如果支持图形功能的话，其他的计算、转移和稀疏绑定功能也会同时支持。</p>
 </div>
@@ -1092,6 +1101,116 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <p>首先需要使用 <code class="docutils literal notranslate"><span class="pre">vkCreateDevice</span></code> 创建逻辑设备。</p>
 <section id="vkcreatedevice">
 <h4>vkCreateDevice<a class="headerlink" href="#vkcreatedevice" title="此标题的永久链接">#</a></h4>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="n">VkResult</span><span class="w"> </span><span class="nf">vkCreateDevice</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkPhysicalDevice</span><span class="w">                            </span><span class="n">physicalDevice</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkDeviceCreateInfo</span><span class="o">*</span><span class="w">                   </span><span class="n">pCreateInfo</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkAllocationCallbacks</span><span class="o">*</span><span class="w">                </span><span class="n">pAllocator</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkDevice</span><span class="o">*</span><span class="w">                                   </span><span class="n">pDevice</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">physicalDevice</span> 为之前使用 <code class="docutils literal notranslate"><span class="pre">vkEnumeratePhysicalDevices</span></code> 获取到的某个物理设备句柄，逻辑设备将在此物理设备上创建。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pCreateInfo</span> 表示逻辑设备的创建信息。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pAllocator</span> 内存分配器。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pDevice</span> 创建返回的逻辑设备 <code class="docutils literal notranslate"><span class="pre">VkDevice</span></code> 句柄。</p></li>
+</ul>
+<p>如果创建成功将会返回 <code class="docutils literal notranslate"><span class="pre">VK_SUCCESS</span></code> 。并且同一个物理设备可以创建多个逻辑设备。</p>
+<p>创建逻辑设备的 <code class="docutils literal notranslate"><span class="pre">VkDeviceCreateInfo</span></code> 结构体定义如下：</p>
+</section>
+<section id="vkdevicecreateinfo">
+<h4>VkDeviceCreateInfo<a class="headerlink" href="#vkdevicecreateinfo" title="此标题的永久链接">#</a></h4>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkDeviceCreateInfo</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VkStructureType</span><span class="w">                    </span><span class="n">sType</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w">                        </span><span class="n">pNext</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkDeviceCreateFlags</span><span class="w">                </span><span class="n">flags</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                           </span><span class="n">queueCreateInfoCount</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkDeviceQueueCreateInfo</span><span class="o">*</span><span class="w">     </span><span class="n">pQueueCreateInfos</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                           </span><span class="n">enabledLayerCount</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="k">const</span><span class="o">*</span><span class="w">                 </span><span class="n">ppEnabledLayerNames</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                           </span><span class="n">enabledExtensionCount</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="k">const</span><span class="o">*</span><span class="w">                 </span><span class="n">ppEnabledExtensionNames</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkPhysicalDeviceFeatures</span><span class="o">*</span><span class="w">    </span><span class="n">pEnabledFeatures</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkDeviceCreateInfo</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 是该结构体的类型枚举值，必须是 <code class="docutils literal notranslate"><span class="pre">VkStructureType::VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pNext</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向其他结构体来扩展该结构体。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">flags</span> 标志位，保留为将来使用。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">queueCreateInfoCount</span> 为 <code class="docutils literal notranslate"><span class="pre">pQueueCreateInfos</span></code> 数组的数量。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pQueueCreateInfos</span> 指向 <code class="docutils literal notranslate"><span class="pre">VkDeviceQueueCreateInfo</span></code> 数组指针，用于逻辑设备创建设备队列。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">enabledLayerCount</span> 为 <code class="docutils literal notranslate"><span class="pre">ppEnabledLayerNames</span></code> 数组的数量。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">ppEnabledLayerNames</span> 指向字符串数组指针，用于启用设备 <code class="docutils literal notranslate"><span class="pre">Layer</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">enabledExtensionCount</span> 为 <code class="docutils literal notranslate"><span class="pre">ppEnabledExtensionNames</span></code> 数组的数量。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">ppEnabledExtensionNames</span> 指向字符串数组指针，用于启用设备扩展。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VkPhysicalDeviceFeatures</span> 设置要激活的物理设备特性。</p></li>
+</ul>
+<p>此时我们主要关心数量为 <code class="docutils literal notranslate"><span class="pre">queueCreateInfoCount</span></code> 类型为 <code class="docutils literal notranslate"><span class="pre">VkDeviceQueueCreateInfo</span></code> 的 <code class="docutils literal notranslate"><span class="pre">pQueueCreateInfos</span></code> 数组。该数组用于在创建逻辑设备时指定创建的设备队列信息。该结构体定义如下：</p>
+</section>
+<section id="vkdevicequeuecreateinfo">
+<h4>VkDeviceQueueCreateInfo<a class="headerlink" href="#vkdevicequeuecreateinfo" title="此标题的永久链接">#</a></h4>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkDeviceQueueCreateInfo</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VkStructureType</span><span class="w">             </span><span class="n">sType</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w">                 </span><span class="n">pNext</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkDeviceQueueCreateFlags</span><span class="w">    </span><span class="n">flags</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                    </span><span class="n">queueFamilyIndex</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                    </span><span class="n">queueCount</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="o">*</span><span class="w">                </span><span class="n">pQueuePriorities</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkDeviceQueueCreateInfo</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 是该结构体的类型枚举值，必须是 <code class="docutils literal notranslate"><span class="pre">VkStructureType::VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pNext</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向其他结构体来扩展该结构体。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">flags</span> 标志位。用于设置目标设备队列的行为。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">queueFamilyIndex</span> 对应的队列族在 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceQueueFamilyProperties</span></code> 函数返回的 <code class="docutils literal notranslate"><span class="pre">pQueueFamilyProperties</span></code> 数组中的索引值。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">queueCount</span> 在对应的队列族中创建的设备队列数量。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pQueuePriorities</span> 设备队列优先级。指向数量为 <code class="docutils literal notranslate"><span class="pre">queueCount</span></code> 类型为 <code class="docutils literal notranslate"><span class="pre">float</span></code> 的数组，对应设置每一个设备队列的优先级。</p></li>
+</ul>
+<p>这里 <code class="docutils literal notranslate"><span class="pre">queueFamilyIndex</span></code> 成员非常重要，该成员对应着使用 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceQueueFamilyProperties</span></code> 获取到的设备队列族在 <code class="docutils literal notranslate"><span class="pre">pQueueFamilyProperties</span></code> 数组中的索引值，大部分情况会去选择支持图形功能的队列族所对应的索引。</p>
+<p>这样我们就可以创建逻辑设备了，例程如下：</p>
+<p>首先获取 <code class="docutils literal notranslate"><span class="pre">vkCreateDevice</span></code> 函数：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkInstance</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前成功创建的</span><span class="w"> </span><span class="n">VkInstance</span><span class="w"> </span><span class="p">;</span>
+
+<span class="n">PFN_vkCreateDevice</span><span class="w"> </span><span class="n">vkCreateDevice</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">PFN_vkCreateDevice</span><span class="p">)</span><span class="n">vkGetInstanceProcAddr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;vkCreateDevice&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>之后就可以调用 <code class="docutils literal notranslate"><span class="pre">vkCreateDevice</span></code> 创建逻辑设备了：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkPhysicalDevice</span><span class="w"> </span><span class="n">physical_device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前获取到的物理设备句柄</span><span class="p">;</span>
+<span class="kt">uint32_t</span><span class="w"> </span><span class="n">support_graphics_queue_family_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">physical_device</span><span class="w"> </span><span class="n">中找到的支持图形功能的队列族索引</span><span class="p">;</span>
+
+<span class="kt">float</span><span class="w"> </span><span class="n">queue_prioritie</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="n">VkDeviceQueueCreateInfo</span><span class="w"> </span><span class="n">device_queue_create_info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
+<span class="n">device_queue_create_info</span><span class="p">.</span><span class="n">sType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VkStructureType</span><span class="o">::</span><span class="n">VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO</span><span class="p">;</span>
+<span class="n">device_queue_create_info</span><span class="p">.</span><span class="n">pNext</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="n">device_queue_create_info</span><span class="p">.</span><span class="n">flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="n">device_queue_create_info</span><span class="p">.</span><span class="n">queueFamilyIndex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">support_graphics_queue_family_index</span><span class="p">;</span>
+<span class="n">device_queue_create_info</span><span class="p">.</span><span class="n">queueCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="n">device_queue_create_info</span><span class="p">.</span><span class="n">pQueuePriorities</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">queue_prioritie</span><span class="p">;</span>
+
+<span class="n">VkDeviceCreateInfo</span><span class="w"> </span><span class="n">device_create_info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
+<span class="n">device_create_info</span><span class="p">.</span><span class="n">sType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VkStructureType</span><span class="o">::</span><span class="n">VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO</span><span class="p">;</span>
+<span class="n">device_create_info</span><span class="p">.</span><span class="n">pNext</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="n">device_create_info</span><span class="p">.</span><span class="n">flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="n">device_create_info</span><span class="p">.</span><span class="n">queueCreateInfoCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="n">device_create_info</span><span class="p">.</span><span class="n">pQueueCreateInfos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">device_queue_create_info</span><span class="p">;</span>
+<span class="n">device_create_info</span><span class="p">.</span><span class="n">enabledLayerCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="n">device_create_info</span><span class="p">.</span><span class="n">ppEnabledLayerNames</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="n">device_create_info</span><span class="p">.</span><span class="n">enabledExtensionCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="n">device_create_info</span><span class="p">.</span><span class="n">ppEnabledExtensionNames</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="n">device_create_info</span><span class="p">.</span><span class="n">pEnabledFeatures</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+
+<span class="n">VkDevice</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_NULL_HANDLE</span><span class="p">;</span>
+
+<span class="n">VkResult</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vkCreateDevice</span><span class="p">(</span><span class="n">physical_device</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">device_create_info</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">device</span><span class="p">);</span>
+
+<span class="n">assert</span><span class="p">(</span><span class="n">result</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">VkResult</span><span class="o">::</span><span class="n">VK_SUCCESS</span><span class="p">)</span><span class="w"> </span><span class="c1">//是否创建成功</span>
+</pre></div>
+</div>
 </section>
 </section>
 </section>
@@ -1214,6 +1333,8 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <li><a class="reference internal" href="#id12">逻辑设备</a><ul>
 <li><a class="reference internal" href="#id13">创建逻辑设备</a><ul>
 <li><a class="reference internal" href="#vkcreatedevice">vkCreateDevice</a></li>
+<li><a class="reference internal" href="#vkdevicecreateinfo">VkDeviceCreateInfo</a></li>
+<li><a class="reference internal" href="#vkdevicequeuecreateinfo">VkDeviceQueueCreateInfo</a></li>
 </ul>
 </li>
 </ul>
