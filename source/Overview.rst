@@ -51,6 +51,13 @@
    * 2023/6/30 增加 ``VkDeviceCreateInfo`` 章节
    * 2023/6/30 增加 ``VkDeviceQueueCreateInfo`` 章节
    * 2023/6/30 更新 ``获取设备队列（族）信息`` 章节。修改 ``例程`` 的错误
+   * 2023/6/30 增加 ``获取设备队列（族）信息`` 章节
+   * 2023/7/2 增加 ``获取设备队列`` 章节
+   * 2023/7/2 增加 ``vkGetDeviceQueue`` 章节
+   * 2023/7/2 增加 ``获取 Device 域函数`` 章节
+   * 2023/7/2 增加 ``vkGetDeviceProcAddr`` 章节
+   * 2023/7/2 更新 ``vkGetPhysicalDeviceProperties`` 章节，增加 ``PhysicalDevice 域函数`` 说明
+   * 2023/7/2 更新 ``Vulkan 函数分类`` 章节，增加 ``PhysicalDevice 域函数特殊性`` 说明，修正分类说明，删除 ``PhysicalDevice 域函数`` 说明
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -142,10 +149,12 @@ Vulkan 函数分类
 * :bdg-secondary:`PhysicalDevice 域函数` 主要是通过 ``vkGetInstanceProcAddr`` 函数接口获，该类函数大部分与 ``VkPhysicalDevice`` 进行交互。主要是一些获取硬件设备相关信息的函数。
 * :bdg-secondary:`Device 域函数` 主要是通过 ``vkGetDeviceProcAddr`` 函数接口获，该类函数大部分与 ``VkDevice`` 进行交互。主要是获取一些与硬件设备相关的功能函数。
 
-.. admonition:: PhysicalDevice 域函数
+.. admonition:: PhysicalDevice 域函数特殊性
    :class: note
 
-   在 ``Vulkan`` 标准中并没有所谓的 ``PhysicalDevice`` 域函数，在 ``Vulkan`` 标准中只分为 ``Instance`` 域函数和 ``Device`` 域函数，但是在实际使用中由于 ``PhysicalDevice`` 域函数的特殊性是确确实实可以单独拎出来的，只不过在 ``Vulkan`` 标准中 ``PhysicalDevice`` 域函数归到了 ``Instance`` 域函数中。
+   在 ``Vulkan`` 文档中 `4.1.1 Extending Physical Device Core Functionality <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#_extending_physical_device_core_functionality>`_ 中有相关 ``Vulkan`` 核心 ``PhysicalDevice 域函数`` 的描述。
+
+      当物理设备支持的 ``Vulkan`` 版本等于或高于对应函数发布时的 ``Vulkan`` 版本的话，用户可以使用对应函数。换句话就是，如果在创建 ``Vulkan`` 环境时（创建 ``VkInstance`` 时）使用了较低版本，但是物理设备支持的版本高于此版本（ ``vkGetPhysicalDeviceProperties`` ），并且 ``PhysicalDevice 域函数`` 在物理设备支持的高版本中被定义并实现，则可以获取高版本的 ``PhysicalDevice 域函数`` 使用。
 
 .. admonition:: vkGetInstanceProcAddr 和 Device 域函数
    :class: note
@@ -594,6 +603,8 @@ vkGetPhysicalDeviceProperties
 
 * :bdg-secondary:`physicalDevice` 对应要获取属性的物理设备的句柄。
 * :bdg-secondary:`pProperties` 对应返回的物理设备属性。
+
+.. note:: ``vkGetPhysicalDeviceProperties`` 在此为 ``PhysicalDevice 域函数`` 。
 
 ``VkPhysicalDeviceProperties`` 定义如下：
 
@@ -1052,9 +1063,98 @@ VkDeviceQueueCreateInfo
 
    assert(result == VkResult::VK_SUCCESS) //是否创建成功
 
-..
-   创建逻辑设备（设备队列）
+获取 Device 域函数
+############################
 
+在创建完逻辑设备 ``VkDevice`` 之后，与 ``VkDevice`` 及其产生的子对象（句柄）的所有交互函数都属于 ``Device 域函数`` 。我们通过 ``Vulkan`` 提供的 ``vkGetDeviceProcAddr`` 函数获取 ``Device`` 域函数。
+
+vkGetDeviceProcAddr
+********************************
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   PFN_vkVoidFunction vkGetDeviceProcAddr(
+       VkDevice                                    device,
+       const char*                                 pName);
+
+* :bdg-secondary:`device` 对应的 ``VkDevice`` 逻辑设备句柄。
+* :bdg-secondary:`pName` 要获取的逻辑设备对应的 ``Vulkan`` 函数驱动实现。
+
+该函数就是用于获取不同设备驱动实现的 ``Vulkan`` 函数接口，不同的 ``device`` 支持的 ``Vulkan`` 扩展函数不尽相同，但是如果支持 ``Vulkan`` 特定版本的话（ ``VkPhysicalDeviceProperties::apiVersion`` ）则一定能够获取 ``Vulkan`` 核心标准中的函数实现。
+
+如果获取 ``device`` 对应驱动中没有实现的函数的话，将会返回 ``NULL`` 。
+
+该函数的返回值与 ``vkGetInstanceProcAddr`` 一样为 ``PFN_vkVoidFunction`` ，与 ``vkGetInstanceProcAddr`` 一样， ``vkGetDeviceProcAddr`` 在获取驱动中某一有效函数后需要强制转换成对应函数。
+
+获取 ``vkGetDeviceProcAddr`` 函数指针如下：
+
+.. code:: c++
+
+   VkInstance instance = 之前成功创建的 VkInstance ;
+
+   PFN_vkGetDeviceProcAddr vkGetDeviceProcAddr = (PFN_vkGetDeviceProcAddr)vkGetInstanceProcAddr(instance, "vkGetDeviceProcAddr");
+
+之后就可以使用 ``vkGetDeviceProcAddr`` 获取 ``Device`` 域的函数了：
+
+.. code:: c++
+
+   VkDevice device = 之前成功创建的 VkDevice ;
+
+   PFN_vk{Device 域函数名} vk{Device 域函数名} = (PFN_vk{Device 域函数名})vkGetDeviceProcAddr(device, "vk{Device 域函数名}");
+
+.. note:: 在创建完 ``VkDevice`` 之后，由于所有要调用的函数都作用在某一具体逻辑设备上，所以之后所有函数都是 ``Device`` 域函数。
+
+获取设备队列
+############################
+
+我们在创建逻辑设备时指定了需要使用的设备队列信息， ``vkCreateDevice`` 创建过程中会为我们创建对应的设备队列，之后我们需要通过 ``vkGetDeviceQueue`` 函数获取设备队列 ``VkQueue`` 句柄。
+
+vkGetDeviceQueue
+********************************
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   void vkGetDeviceQueue(
+       VkDevice                                    device,
+       uint32_t                                    queueFamilyIndex,
+       uint32_t                                    queueIndex,
+       VkQueue*                                    pQueue);
+
+* :bdg-secondary:`device` 创建设备队列时对应的 ``VkDevice`` 逻辑设备句柄。
+* :bdg-secondary:`queueFamilyIndex` 创建设备队列时对应的队列族索引。
+* :bdg-secondary:`queueIndex` 对应着队列族中设备队列的索引。
+* :bdg-secondary:`pQueue` 将会返回 ``queueFamilyIndex`` 索引对应的队列族中，设备队列索引值为 ``queueIndex`` 的索引句柄。
+
+由于一个队列族中可能有多个设备队列，并且在创建逻辑设备时可以同时创建多个设备队列，索引此时需要用户指定 ``queueFamilyIndex`` 和 ``queueIndex`` 来获取对应的设备队列（句柄）。
+
+在使用 ``vkGetDeviceQueue`` 获取设备队列句柄之前，需要先获取 ``vkGetDeviceQueue`` 函数指针：
+
+.. code:: c++
+
+   VkDevice device = 之前成功创建的 VkDevice ;
+
+   PFN_vkGetDeviceQueue vkGetDeviceQueue = (PFN_vkGetDeviceQueue)vkGetDeviceProcAddr(device, "vkGetDeviceQueue");
+
+.. note:: 获取 ``vkGetDeviceQueue`` 函数时使用 ``vkGetDeviceProcAddr`` 获取，其为 ``Device`` 域函数。
+
+之后我们就可以使用 ``vkGetDeviceQueue`` 获取对应的设备队列句柄了：
+
+.. code:: c++
+
+   VkDevice device = 之前成功创建的 VkDevice ;
+   uint32_t support_graphics_queue_family_index = physical_device 中找到的支持图形功能的队列族索引;
+
+   VkQueue queue = VK_NULL_HANDLE;
+
+   vkGetDeviceQueue(device, support_graphics_queue_family_index, 0, &queue);
+
+.. note:: 由于在创建 ``VkDevice`` 代码示例中只指定了一个支持图形的队列，所以这里：
+   
+   * ``queueFamilyIndex`` 为之前获取的 ``support_graphics_queue_family_index``
+   * ``queueIndex`` 为 ``0``
+..
    获得设备队列
 
    内存
