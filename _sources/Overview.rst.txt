@@ -58,6 +58,7 @@
    * 2023/7/2 增加 ``vkGetDeviceProcAddr`` 章节
    * 2023/7/2 更新 ``vkGetPhysicalDeviceProperties`` 章节，增加 ``PhysicalDevice 域函数`` 说明
    * 2023/7/2 更新 ``Vulkan 函数分类`` 章节，增加 ``PhysicalDevice 域函数特殊性`` 说明，修正分类说明，删除 ``PhysicalDevice 域函数`` 说明
+   * 2023/7/2 更新 ``vkGetPhysicalDeviceQueueFamilyProperties`` 章节，增加 ``PhysicalDevice 域函数`` 说明
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -605,7 +606,7 @@ vkGetPhysicalDeviceProperties
 * :bdg-secondary:`physicalDevice` 对应要获取属性的物理设备的句柄。
 * :bdg-secondary:`pProperties` 对应返回的物理设备属性。
 
-.. note:: ``vkGetPhysicalDeviceProperties`` 在此为 ``PhysicalDevice 域函数`` 。
+.. note:: ``vkGetPhysicalDeviceProperties`` 为 ``PhysicalDevice 域函数`` 。
 
 ``VkPhysicalDeviceProperties`` 定义如下：
 
@@ -747,6 +748,8 @@ vkGetPhysicalDeviceQueueFamilyProperties
 如果 ``pQueueFamilyProperties`` 是 ``NULL`` 的话 ``vkGetPhysicalDeviceQueueFamilyProperties`` 函数将会将查询到的设备队列族数量写入 ``pQueueFamilyPropertyCount`` 所指向的内存中，所以 ``pQueueFamilyPropertyCount`` 必须是一个有效指针。
 
 如果 ``pQueueFamilyProperties`` 不是 ``NULL`` 的话 ``vkGetPhysicalDeviceQueueFamilyProperties`` 函数将会将 ``pQueueFamilyPropertyCount`` 数量的 ``VkQueueFamilyProperties`` 数据依次写入 ``pQueueFamilyProperties`` 指向的数组中。如果 ``pQueueFamilyPropertyCount`` 指定的数量小于支持 ``Vulkan`` 的设备队列数量的话， ``vkGetPhysicalDeviceQueueFamilyProperties`` 将会写入 ``pQueueFamilyPropertyCount`` 个设备队列族信息。
+
+.. note:: ``vkGetPhysicalDeviceQueueFamilyProperties`` 为 ``PhysicalDevice 域函数`` 。
 
 .. admonition:: 队列族
    :class: note
