@@ -224,7 +224,8 @@ vkGetInstanceProcAddr
 
 .. note:: 对于获取 ``PhysicalDevice`` 域函数和 ``Device`` 域函数将会在后文有所体现。
 
-.. note:: 句柄
+.. admonition:: 句柄
+   :class: note
 
    英文为 ``Handle`` ，一般认为句柄与唯一识别号作用相同，一个句柄代表一个具体对象，函数作用在句柄上，内部是在修改句柄背后对应的那个对象。
 
