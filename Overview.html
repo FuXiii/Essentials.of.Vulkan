@@ -299,6 +299,13 @@
 <li><p class="sd-card-text">2023/6/30 增加 <code class="docutils literal notranslate"><span class="pre">VkDeviceCreateInfo</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/6/30 增加 <code class="docutils literal notranslate"><span class="pre">VkDeviceQueueCreateInfo</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/6/30 更新 <code class="docutils literal notranslate"><span class="pre">获取设备队列（族）信息</span></code> 章节。修改 <code class="docutils literal notranslate"><span class="pre">例程</span></code> 的错误</p></li>
+<li><p class="sd-card-text">2023/6/30 增加 <code class="docutils literal notranslate"><span class="pre">获取设备队列（族）信息</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/7/2 增加 <code class="docutils literal notranslate"><span class="pre">获取设备队列</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/7/2 增加 <code class="docutils literal notranslate"><span class="pre">vkGetDeviceQueue</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/7/2 增加 <code class="docutils literal notranslate"><span class="pre">获取</span> <span class="pre">Device</span> <span class="pre">域函数</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/7/2 增加 <code class="docutils literal notranslate"><span class="pre">vkGetDeviceProcAddr</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/7/2 更新 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceProperties</span></code> 章节，增加 <code class="docutils literal notranslate"><span class="pre">PhysicalDevice</span> <span class="pre">域函数</span></code> 说明</p></li>
+<li><p class="sd-card-text">2023/7/2 更新 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">函数分类</span></code> 章节，增加 <code class="docutils literal notranslate"><span class="pre">PhysicalDevice</span> <span class="pre">域函数特殊性</span></code> 说明，修正分类说明，删除 <code class="docutils literal notranslate"><span class="pre">PhysicalDevice</span> <span class="pre">域函数</span></code> 说明</p></li>
 </ul>
 </div>
 </details><p>由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 比较复杂，为了更好的入门 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> ，还是大致过一遍 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的核心思路，这对以后的学习很有帮助。</p>
@@ -392,8 +399,11 @@ Linux 加载</label><div class="sd-tab-content docutils">
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">Device 域函数</span> 主要是通过 <code class="docutils literal notranslate"><span class="pre">vkGetDeviceProcAddr</span></code> 函数接口获，该类函数大部分与 <code class="docutils literal notranslate"><span class="pre">VkDevice</span></code> 进行交互。主要是获取一些与硬件设备相关的功能函数。</p></li>
 </ul>
 <div class="note admonition">
-<p class="admonition-title">PhysicalDevice 域函数</p>
-<p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准中并没有所谓的 <code class="docutils literal notranslate"><span class="pre">PhysicalDevice</span></code> 域函数，在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准中只分为 <code class="docutils literal notranslate"><span class="pre">Instance</span></code> 域函数和 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 域函数，但是在实际使用中由于 <code class="docutils literal notranslate"><span class="pre">PhysicalDevice</span></code> 域函数的特殊性是确确实实可以单独拎出来的，只不过在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准中 <code class="docutils literal notranslate"><span class="pre">PhysicalDevice</span></code> 域函数归到了 <code class="docutils literal notranslate"><span class="pre">Instance</span></code> 域函数中。</p>
+<p class="admonition-title">PhysicalDevice 域函数特殊性</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 文档中 <a class="reference external" href="https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#_extending_physical_device_core_functionality">4.1.1 Extending Physical Device Core Functionality</a> 中有相关 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 核心 <code class="docutils literal notranslate"><span class="pre">PhysicalDevice</span> <span class="pre">域函数</span></code> 的描述。</p>
+<blockquote>
+<div><p>当物理设备支持的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本等于或高于对应函数发布时的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本的话，用户可以使用对应函数。换句话就是，如果在创建 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 环境时（创建 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 时）使用了较低版本，但是物理设备支持的版本高于此版本（ <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceProperties</span></code> ），并且 <code class="docutils literal notranslate"><span class="pre">PhysicalDevice</span> <span class="pre">域函数</span></code> 在物理设备支持的高版本中被定义并实现，则可以获取高版本的 <code class="docutils literal notranslate"><span class="pre">PhysicalDevice</span> <span class="pre">域函数</span></code> 使用。</p>
+</div></blockquote>
 </div>
 <div class="note admonition">
 <p class="admonition-title">vkGetInstanceProcAddr 和 Device 域函数</p>
@@ -803,6 +813,10 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">physicalDevice</span> 对应要获取属性的物理设备的句柄。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pProperties</span> 对应返回的物理设备属性。</p></li>
 </ul>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p><code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceProperties</span></code> 在此为 <code class="docutils literal notranslate"><span class="pre">PhysicalDevice</span> <span class="pre">域函数</span></code> 。</p>
+</div>
 <p><code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceProperties</span></code> 定义如下：</p>
 </section>
 <section id="vkphysicaldeviceproperties">
@@ -1214,6 +1228,91 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </section>
 </section>
 </section>
+<section id="device">
+<h2>获取 Device 域函数<a class="headerlink" href="#device" title="此标题的永久链接">#</a></h2>
+<p>在创建完逻辑设备 <code class="docutils literal notranslate"><span class="pre">VkDevice</span></code> 之后，与 <code class="docutils literal notranslate"><span class="pre">VkDevice</span></code> 及其产生的子对象（句柄）的所有交互函数都属于 <code class="docutils literal notranslate"><span class="pre">Device</span> <span class="pre">域函数</span></code> 。我们通过 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 提供的 <code class="docutils literal notranslate"><span class="pre">vkGetDeviceProcAddr</span></code> 函数获取 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 域函数。</p>
+<section id="vkgetdeviceprocaddr">
+<h3>vkGetDeviceProcAddr<a class="headerlink" href="#vkgetdeviceprocaddr" title="此标题的永久链接">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="n">PFN_vkVoidFunction</span><span class="w"> </span><span class="nf">vkGetDeviceProcAddr</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w">                                 </span><span class="n">pName</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">device</span> 对应的 <code class="docutils literal notranslate"><span class="pre">VkDevice</span></code> 逻辑设备句柄。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pName</span> 要获取的逻辑设备对应的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 函数驱动实现。</p></li>
+</ul>
+<p>该函数就是用于获取不同设备驱动实现的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 函数接口，不同的 <code class="docutils literal notranslate"><span class="pre">device</span></code> 支持的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 扩展函数不尽相同，但是如果支持 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 特定版本的话（ <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceProperties::apiVersion</span></code> ）则一定能够获取 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 核心标准中的函数实现。</p>
+<p>如果获取 <code class="docutils literal notranslate"><span class="pre">device</span></code> 对应驱动中没有实现的函数的话，将会返回 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 。</p>
+<p>该函数的返回值与 <code class="docutils literal notranslate"><span class="pre">vkGetInstanceProcAddr</span></code> 一样为 <code class="docutils literal notranslate"><span class="pre">PFN_vkVoidFunction</span></code> ，与 <code class="docutils literal notranslate"><span class="pre">vkGetInstanceProcAddr</span></code> 一样， <code class="docutils literal notranslate"><span class="pre">vkGetDeviceProcAddr</span></code> 在获取驱动中某一有效函数后需要强制转换成对应函数。</p>
+<p>获取 <code class="docutils literal notranslate"><span class="pre">vkGetDeviceProcAddr</span></code> 函数指针如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkInstance</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前成功创建的</span><span class="w"> </span><span class="n">VkInstance</span><span class="w"> </span><span class="p">;</span>
+
+<span class="n">PFN_vkGetDeviceProcAddr</span><span class="w"> </span><span class="n">vkGetDeviceProcAddr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">PFN_vkGetDeviceProcAddr</span><span class="p">)</span><span class="n">vkGetInstanceProcAddr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;vkGetDeviceProcAddr&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>之后就可以使用 <code class="docutils literal notranslate"><span class="pre">vkGetDeviceProcAddr</span></code> 获取 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 域的函数了：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkDevice</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前成功创建的</span><span class="w"> </span><span class="n">VkDevice</span><span class="w"> </span><span class="p">;</span>
+
+<span class="n">PFN_vk</span><span class="p">{</span><span class="n">Device</span><span class="w"> </span><span class="n">域函数名</span><span class="p">}</span><span class="w"> </span><span class="n">vk</span><span class="p">{</span><span class="n">Device</span><span class="w"> </span><span class="n">域函数名</span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">PFN_vk</span><span class="p">{</span><span class="n">Device</span><span class="w"> </span><span class="n">域函数名</span><span class="p">})</span><span class="n">vkGetDeviceProcAddr</span><span class="p">(</span><span class="n">device</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;vk{Device 域函数名}&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>在创建完 <code class="docutils literal notranslate"><span class="pre">VkDevice</span></code> 之后，由于所有要调用的函数都作用在某一具体逻辑设备上，所以之后所有函数都是 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 域函数。</p>
+</div>
+</section>
+</section>
+<section id="id14">
+<h2>获取设备队列<a class="headerlink" href="#id14" title="此标题的永久链接">#</a></h2>
+<p>我们在创建逻辑设备时指定了需要使用的设备队列信息， <code class="docutils literal notranslate"><span class="pre">vkCreateDevice</span></code> 创建过程中会为我们创建对应的设备队列，之后我们需要通过 <code class="docutils literal notranslate"><span class="pre">vkGetDeviceQueue</span></code> 函数获取设备队列 <code class="docutils literal notranslate"><span class="pre">VkQueue</span></code> 句柄。</p>
+<section id="vkgetdevicequeue">
+<h3>vkGetDeviceQueue<a class="headerlink" href="#vkgetdevicequeue" title="此标题的永久链接">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">vkGetDeviceQueue</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                                    </span><span class="n">queueFamilyIndex</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                                    </span><span class="n">queueIndex</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkQueue</span><span class="o">*</span><span class="w">                                    </span><span class="n">pQueue</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">device</span> 创建设备队列时对应的 <code class="docutils literal notranslate"><span class="pre">VkDevice</span></code> 逻辑设备句柄。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">queueFamilyIndex</span> 创建设备队列时对应的队列族索引。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">queueIndex</span> 对应着队列族中设备队列的索引。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pQueue</span> 将会返回 <code class="docutils literal notranslate"><span class="pre">queueFamilyIndex</span></code> 索引对应的队列族中，设备队列索引值为 <code class="docutils literal notranslate"><span class="pre">queueIndex</span></code> 的索引句柄。</p></li>
+</ul>
+<p>由于一个队列族中可能有多个设备队列，并且在创建逻辑设备时可以同时创建多个设备队列，索引此时需要用户指定 <code class="docutils literal notranslate"><span class="pre">queueFamilyIndex</span></code> 和 <code class="docutils literal notranslate"><span class="pre">queueIndex</span></code> 来获取对应的设备队列（句柄）。</p>
+<p>在使用 <code class="docutils literal notranslate"><span class="pre">vkGetDeviceQueue</span></code> 获取设备队列句柄之前，需要先获取 <code class="docutils literal notranslate"><span class="pre">vkGetDeviceQueue</span></code> 函数指针：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkDevice</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前成功创建的</span><span class="w"> </span><span class="n">VkDevice</span><span class="w"> </span><span class="p">;</span>
+
+<span class="n">PFN_vkGetDeviceQueue</span><span class="w"> </span><span class="n">vkGetDeviceQueue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">PFN_vkGetDeviceQueue</span><span class="p">)</span><span class="n">vkGetDeviceProcAddr</span><span class="p">(</span><span class="n">device</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;vkGetDeviceQueue&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>获取 <code class="docutils literal notranslate"><span class="pre">vkGetDeviceQueue</span></code> 函数时使用 <code class="docutils literal notranslate"><span class="pre">vkGetDeviceProcAddr</span></code> 获取，其为 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 域函数。</p>
+</div>
+<p>之后我们就可以使用 <code class="docutils literal notranslate"><span class="pre">vkGetDeviceQueue</span></code> 获取对应的设备队列句柄了：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkDevice</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前成功创建的</span><span class="w"> </span><span class="n">VkDevice</span><span class="w"> </span><span class="p">;</span>
+<span class="kt">uint32_t</span><span class="w"> </span><span class="n">support_graphics_queue_family_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">physical_device</span><span class="w"> </span><span class="n">中找到的支持图形功能的队列族索引</span><span class="p">;</span>
+
+<span class="n">VkQueue</span><span class="w"> </span><span class="n">queue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_NULL_HANDLE</span><span class="p">;</span>
+
+<span class="n">vkGetDeviceQueue</span><span class="p">(</span><span class="n">device</span><span class="p">,</span><span class="w"> </span><span class="n">support_graphics_queue_family_index</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">queue</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>由于在创建 <code class="docutils literal notranslate"><span class="pre">VkDevice</span></code> 代码示例中只指定了一个支持图形的队列，所以这里：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">queueFamilyIndex</span></code> 为之前获取的 <code class="docutils literal notranslate"><span class="pre">support_graphics_queue_family_index</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">queueIndex</span></code> 为 <code class="docutils literal notranslate"><span class="pre">0</span></code></p></li>
+</ul>
+</div>
+</section>
+</section>
 </section>
 
         </article>
@@ -1337,6 +1436,14 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <li><a class="reference internal" href="#vkdevicequeuecreateinfo">VkDeviceQueueCreateInfo</a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li><a class="reference internal" href="#device">获取 Device 域函数</a><ul>
+<li><a class="reference internal" href="#vkgetdeviceprocaddr">vkGetDeviceProcAddr</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id14">获取设备队列</a><ul>
+<li><a class="reference internal" href="#vkgetdevicequeue">vkGetDeviceQueue</a></li>
 </ul>
 </li>
 </ul>
