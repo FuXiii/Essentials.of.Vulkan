@@ -22,6 +22,7 @@ VK_KHR_buffer_device_address
     * 2023/6/21 增加 ``依赖`` 章节
     * 2023/6/21 增加 ``新增函数`` 章节
     * 2023/6/21 增加 ``新增特性`` 章节
+    * 2023/7/4 更新 ``VkBufferDeviceAddressInfoKHR`` 章节。增加 ``VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT`` 说明
 
 该扩展属于 :bdg-info:`device扩展` :bdg-warning:`在Vulkan 1.2中被纳入核心`
 
@@ -134,6 +135,11 @@ VkBufferDeviceAddressInfoKHR
 
    * 如果缓存是非稀疏并且没有使用 ``VK_BUFFER_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT`` 标志位创建的话，则其必须绑定到一个完整且连续的 ``VkDeviceMemory`` 对象上。
    * ``buffer`` 必须使用 ``VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT`` 创建。
+
+.. admonition:: VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT
+    :class: important
+
+    ``buffer`` 对应绑定的内存必须使用 ``VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT`` 分配。（该点 `14.3. Physical Storage Buffer Access <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap14.html#descriptorsets-physical-storage-buffer>`_ 章节中并没有说明，而是在内存章节）
 
 vkGetBufferOpaqueCaptureAddress
 *************************************
