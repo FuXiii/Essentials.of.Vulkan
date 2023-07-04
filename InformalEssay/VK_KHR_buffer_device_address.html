@@ -270,6 +270,7 @@
 <li><p class="sd-card-text">2023/6/21 增加 <code class="docutils literal notranslate"><span class="pre">依赖</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/6/21 增加 <code class="docutils literal notranslate"><span class="pre">新增函数</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/6/21 增加 <code class="docutils literal notranslate"><span class="pre">新增特性</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/7/4 更新 <code class="docutils literal notranslate"><span class="pre">VkBufferDeviceAddressInfoKHR</span></code> 章节。增加 <code class="docutils literal notranslate"><span class="pre">VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT</span></code> 说明</p></li>
 </ul>
 </div>
 </details><p>该扩展属于 <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">device扩展</span> <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">在Vulkan 1.2中被纳入核心</span></p>
@@ -379,6 +380,10 @@
 <li><p>如果缓存是非稀疏并且没有使用 <code class="docutils literal notranslate"><span class="pre">VK_BUFFER_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT</span></code> 标志位创建的话，则其必须绑定到一个完整且连续的 <code class="docutils literal notranslate"><span class="pre">VkDeviceMemory</span></code> 对象上。</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">buffer</span></code> 必须使用 <code class="docutils literal notranslate"><span class="pre">VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT</span></code> 创建。</p></li>
 </ul>
+</div>
+<div class="important admonition">
+<p class="admonition-title">VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT</p>
+<p><code class="docutils literal notranslate"><span class="pre">buffer</span></code> 对应绑定的内存必须使用 <code class="docutils literal notranslate"><span class="pre">VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT</span></code> 分配。（该点 <a class="reference external" href="https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap14.html#descriptorsets-physical-storage-buffer">14.3. Physical Storage Buffer Access</a> 章节中并没有说明，而是在内存章节）</p>
 </div>
 </section>
 <section id="vkgetbufferopaquecaptureaddress">
