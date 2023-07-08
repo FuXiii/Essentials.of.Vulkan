@@ -62,6 +62,7 @@
    * 2023/7/8 增加 ``内存`` 章节
    * 2023/7/8 增加 ``内存分类`` 章节
    * 2023/7/8 增加 ``分配内存`` 章节
+   * 2023/7/8 更新 ``Vulkan 函数分类`` 章节中的 ``PhysicalDevice 域函数特殊性`` 说明
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -159,6 +160,8 @@ Vulkan 函数分类
    在 ``Vulkan`` 文档中 `4.1.1 Extending Physical Device Core Functionality <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#_extending_physical_device_core_functionality>`_ 中有相关 ``Vulkan`` 核心 ``PhysicalDevice 域函数`` 的描述。
 
       当物理设备支持的 ``Vulkan`` 版本等于或高于对应函数发布时的 ``Vulkan`` 版本的话，用户可以使用对应函数。换句话就是，如果在创建 ``Vulkan`` 环境时（创建 ``VkInstance`` 时）使用了较低版本，但是物理设备支持的版本高于此版本（ ``vkGetPhysicalDeviceProperties`` ），并且 ``PhysicalDevice 域函数`` 在物理设备支持的高版本中被定义并实现，则可以获取高版本的 ``PhysicalDevice 域函数`` 使用。
+
+   一般可以认为 ``PhysicalDevice`` 域函数为特殊的 ``Instance`` 域函数。
 
 .. admonition:: vkGetInstanceProcAddr 和 Device 域函数
    :class: note
