@@ -59,6 +59,9 @@
    * 2023/7/2 更新 ``vkGetPhysicalDeviceProperties`` 章节，增加 ``PhysicalDevice 域函数`` 说明
    * 2023/7/2 更新 ``Vulkan 函数分类`` 章节，增加 ``PhysicalDevice 域函数特殊性`` 说明，修正分类说明，删除 ``PhysicalDevice 域函数`` 说明
    * 2023/7/2 更新 ``vkGetPhysicalDeviceQueueFamilyProperties`` 章节，增加 ``PhysicalDevice 域函数`` 说明
+   * 2023/7/8 增加 ``内存`` 章节
+   * 2023/7/8 增加 ``内存分类`` 章节
+   * 2023/7/8 增加 ``分配内存`` 章节
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -1158,9 +1161,59 @@ vkGetDeviceQueue
    
    * ``queueFamilyIndex`` 为之前获取的 ``support_graphics_queue_family_index``
    * ``queueIndex`` 为 ``0``
-..
-   获得设备队列
 
+内存
+############################
+
+内存分类
+********************************
+
+在 ``Vulkan`` 中函数主要分为两类：
+
+* ``Instance`` 域函数
+* ``Device`` 域函数
+
+``Instance`` 域函数中主要在 ``CPU`` 能够访问的（主板上）内存中进行分配和访问。比如在调用 ``vkCreateInstance`` 函数创建 ``VkInstance`` 时需要指定 ``const VkAllocationCallbacks* pAllocator`` 内存分配回调（一般使用 ``new`` 或 ``malloc`` 进行分配）。这一部分的内存称为 ``Instance`` 端内存。
+
+``Device`` 域函数中主要在 ``GPU`` 能够访问的内存（显存）中行内存分配和访问。这一部分内存称为 ``Device`` 端内存。
+
+由此引出了 ``Vulkan`` 中的两个内存分类：
+
+* ``Host`` 端内存（ ``Instance`` 端内存）
+* ``Device`` 端内存
+
+.. note:: 在 ``Vulkan`` 标准中称 ``Instance`` 域内存为 ``Host`` 端内存，这里我们与 ``Vulkan`` 标准保持一致。
+
+这里可以看出（主板上）内存和 ``GPU`` 上的显存都属于 ``Vulkan`` 可访问的内存范畴。
+
+在 ``Vulkan`` 中我们往往在 ``Host`` 端将数据准备好，之后打算使用 ``GPU`` 设备访问该数据进行计算。然而 ``Host`` 端准备的数据只有 ``CPU`` 能够访问， ``GPU`` 设备并不能直接访问 ``Host`` 端内存，为此 ``Vulkan`` 标准中为我们提供了可被 ``GPU`` 访问的 ``Host`` 端内存。
+也就是说这一部分内存既可以被 ``Host`` 端访问也可以被 ``Device`` 端访问。一般来说，我们会先将 ``Host`` 端的数据拷贝至可以被 ``Host`` 端访问也可以被 ``Device`` 端访问的内存中，之后通过再将这部分数据拷贝至 ``Device`` 端内存中被 ``GPU`` 访问使用。
+
+.. mermaid::
+
+   flowchart LR
+
+      Host["Host 端\n（使用 new 或 malloc 分配内存）"]
+      HostAndDevice["Host 端与 Device 都可访问的内存"]
+      Device["Device 端内存"]
+
+      Host--拷贝-->HostAndDevice--"（总线）拷贝"-->Device
+
+.. admonition:: 既然数据在 ``Host`` 端与 ``Device`` 端都可以访问的内存中，为什么还需要拷贝至 ``Device`` 端中？
+   :class: tip
+
+   在硬件层面 ``Host`` 端与 ``Device`` 端都可以访问的内存一般为内存条上的一部分内存，而这一部分内存结构对于 ``CPU`` 这种处理连续内存非常友好，而像 ``GPU`` 这种大量并行计算的设备来说就不尽人意了，拷贝至 ``Device`` 端中的目的是将这一步分数据转换成设备友好的内存结构，提高内存读写性能。
+
+最终可得出 ``Vulkan`` 中的内存分类：
+
+* ``Host`` 端内存
+* ``Device`` 端内存
+* ``Host`` 端与 ``Device`` 端内存
+
+分配内存
+********************************
+
+..
    内存
 
    Buffer 缓存

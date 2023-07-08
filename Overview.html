@@ -307,6 +307,9 @@
 <li><p class="sd-card-text">2023/7/2 更新 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceProperties</span></code> 章节，增加 <code class="docutils literal notranslate"><span class="pre">PhysicalDevice</span> <span class="pre">域函数</span></code> 说明</p></li>
 <li><p class="sd-card-text">2023/7/2 更新 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">函数分类</span></code> 章节，增加 <code class="docutils literal notranslate"><span class="pre">PhysicalDevice</span> <span class="pre">域函数特殊性</span></code> 说明，修正分类说明，删除 <code class="docutils literal notranslate"><span class="pre">PhysicalDevice</span> <span class="pre">域函数</span></code> 说明</p></li>
 <li><p class="sd-card-text">2023/7/2 更新 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceQueueFamilyProperties</span></code> 章节，增加 <code class="docutils literal notranslate"><span class="pre">PhysicalDevice</span> <span class="pre">域函数</span></code> 说明</p></li>
+<li><p class="sd-card-text">2023/7/8 增加 <code class="docutils literal notranslate"><span class="pre">内存</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/7/8 增加 <code class="docutils literal notranslate"><span class="pre">内存分类</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/7/8 增加 <code class="docutils literal notranslate"><span class="pre">分配内存</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p>由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 比较复杂，为了更好的入门 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> ，还是大致过一遍 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的核心思路，这对以后的学习很有帮助。</p>
@@ -1317,6 +1320,52 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </div>
 </section>
 </section>
+<section id="id15">
+<h2>内存<a class="headerlink" href="#id15" title="此标题的永久链接">#</a></h2>
+<section id="id16">
+<h3>内存分类<a class="headerlink" href="#id16" title="此标题的永久链接">#</a></h3>
+<p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中函数主要分为两类：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Instance</span></code> 域函数</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Device</span></code> 域函数</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">Instance</span></code> 域函数中主要在 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 能够访问的（主板上）内存中进行分配和访问。比如在调用 <code class="docutils literal notranslate"><span class="pre">vkCreateInstance</span></code> 函数创建 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 时需要指定 <code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">VkAllocationCallbacks*</span> <span class="pre">pAllocator</span></code> 内存分配回调（一般使用 <code class="docutils literal notranslate"><span class="pre">new</span></code> 或 <code class="docutils literal notranslate"><span class="pre">malloc</span></code> 进行分配）。这一部分的内存称为 <code class="docutils literal notranslate"><span class="pre">Instance</span></code> 端内存。</p>
+<p><code class="docutils literal notranslate"><span class="pre">Device</span></code> 域函数中主要在 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 能够访问的内存（显存）中行内存分配和访问。这一部分内存称为 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端内存。</p>
+<p>由此引出了 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中的两个内存分类：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Host</span></code> 端内存（ <code class="docutils literal notranslate"><span class="pre">Instance</span></code> 端内存）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Device</span></code> 端内存</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准中称 <code class="docutils literal notranslate"><span class="pre">Instance</span></code> 域内存为 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端内存，这里我们与 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准保持一致。</p>
+</div>
+<p>这里可以看出（主板上）内存和 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 上的显存都属于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 可访问的内存范畴。</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中我们往往在 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端将数据准备好，之后打算使用 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 设备访问该数据进行计算。然而 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端准备的数据只有 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 能够访问， <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 设备并不能直接访问 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端内存，为此 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准中为我们提供了可被 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 访问的 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端内存。
+也就是说这一部分内存既可以被 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端访问也可以被 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端访问。一般来说，我们会先将 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端的数据拷贝至可以被 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端访问也可以被 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端访问的内存中，之后通过再将这部分数据拷贝至 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端内存中被 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 访问使用。</p>
+<div class="mermaid">
+            flowchart LR
+
+   Host[&quot;Host 端\n（使用 new 或 malloc 分配内存）&quot;]
+   HostAndDevice[&quot;Host 端与 Device 都可访问的内存&quot;]
+   Device[&quot;Device 端内存&quot;]
+
+   Host--拷贝--&gt;HostAndDevice--&quot;（总线）拷贝&quot;--&gt;Device
+        </div><div class="tip admonition">
+<p class="admonition-title">既然数据在 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端与 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端都可以访问的内存中，为什么还需要拷贝至 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端中？</p>
+<p>在硬件层面 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端与 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端都可以访问的内存一般为内存条上的一部分内存，而这一部分内存结构对于 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 这种处理连续内存非常友好，而像 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 这种大量并行计算的设备来说就不尽人意了，拷贝至 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端中的目的是将这一步分数据转换成设备友好的内存结构，提高内存读写性能。</p>
+</div>
+<p>最终可得出 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中的内存分类：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Host</span></code> 端内存</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Device</span></code> 端内存</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Host</span></code> 端与 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端内存</p></li>
+</ul>
+</section>
+<section id="id17">
+<h3>分配内存<a class="headerlink" href="#id17" title="此标题的永久链接">#</a></h3>
+</section>
+</section>
 </section>
 
         </article>
@@ -1448,6 +1497,11 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </li>
 <li><a class="reference internal" href="#id14">获取设备队列</a><ul>
 <li><a class="reference internal" href="#vkgetdevicequeue">vkGetDeviceQueue</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id15">内存</a><ul>
+<li><a class="reference internal" href="#id16">内存分类</a></li>
+<li><a class="reference internal" href="#id17">分配内存</a></li>
 </ul>
 </li>
 </ul>
