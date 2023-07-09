@@ -319,6 +319,7 @@
 <li><p class="sd-card-text">2023/7/9 修正 <code class="docutils literal notranslate"><span class="pre">内存分类</span></code> 章节中的一些错误，优化调理，增加新的说明。</p></li>
 <li><p class="sd-card-text">2023/7/9 增加 <code class="docutils literal notranslate"><span class="pre">VkMemoryHeap</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/7/9 增加 <code class="docutils literal notranslate"><span class="pre">VkMemoryHeapFlagBits</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/7/9 增加 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties</span> <span class="pre">结构图</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p>由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 比较复杂，为了更好的入门 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> ，还是大致过一遍 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的核心思路，这对以后的学习很有帮助。</p>
@@ -1498,9 +1499,59 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </ul>
 <p>常用的为 <code class="docutils literal notranslate"><span class="pre">VK_MEMORY_HEAP_DEVICE_LOCAL_BIT</span></code> 标志位。</p>
 </section>
-</section>
 <section id="id18">
-<h3>分配缓存<a class="headerlink" href="#id18" title="此标题的永久链接">#</a></h3>
+<h4>VkPhysicalDeviceMemoryProperties 结构图<a class="headerlink" href="#id18" title="此标题的永久链接">#</a></h4>
+<p>为了更清晰的理解 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties</span></code> ，在此给出一张 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties</span></code> 结构参考图：</p>
+<div class="mermaid">
+            flowchart TB
+   subgraph memoryTypes[&quot;VkPhysicalDeviceMemoryProperties::memoryTypes&quot;]
+   direction LR
+      subgraph VkMemoryType0[&quot;VkMemoryType 0&quot;]
+      direction TB
+          VkMemoryType0_PropertyFlags[&quot;VkMemoryPropertyFlags propertyFlags&quot;] -.- VkMemoryType0_HeapIndex[&quot;uint32_t heapIndex&quot;]
+      end
+      subgraph VkMemoryType1[&quot;VkMemoryType 1&quot;]
+      direction TB
+          VkMemoryType1_PropertyFlags[&quot;VkMemoryPropertyFlags propertyFlags&quot;] -.- VkMemoryType1_HeapIndex[&quot;uint32_t heapIndex&quot;]
+      end
+      subgraph VkMemoryType2[&quot;VkMemoryType 2&quot;]
+      direction TB
+          VkMemoryType2_PropertyFlags[&quot;VkMemoryPropertyFlags propertyFlags&quot;] -.- VkMemoryType2_HeapIndex[&quot;uint32_t heapIndex&quot;]
+      end
+      subgraph VkMemoryTypeEtc[&quot;...&quot;]
+      end
+
+      VkMemoryType0 -.- VkMemoryType1 -.- VkMemoryType2 -.- VkMemoryTypeEtc
+   end
+
+   subgraph memoryHeaps[&quot;VkPhysicalDeviceMemoryProperties::memoryHeaps&quot;]
+   direction LR
+      subgraph VkMemoryHeap0[&quot;VkMemoryHeap 0&quot;]
+      direction TB
+          VkMemoryHeap0_Size[&quot;VkDeviceSize size&quot;] -.- VkMemoryHeap0_Flags[&quot;VkMemoryHeapFlags flags&quot;]
+      end
+      subgraph VkMemoryHeap1[&quot;VkMemoryHeap 1&quot;]
+      direction TB
+          VkMemoryHeap1_Size[&quot;VkDeviceSize size&quot;] -.- VkMemoryHeap1_Flags[&quot;VkMemoryHeapFlags flags&quot;]
+      end
+      subgraph VkMemoryHeap2[&quot;VkMemoryHeap 2&quot;]
+      direction TB
+          VkMemoryHeap2_Size[&quot;VkDeviceSize size&quot;] -.- VkMemoryHeap2_Flags[&quot;VkMemoryHeapFlags flags&quot;]
+      end
+      subgraph VkMemoryHeapEtc[&quot;...&quot;]
+      end
+
+      VkMemoryHeap0 -.- VkMemoryHeap1 -.- VkMemoryHeap2 -.- VkMemoryHeapEtc
+
+   end
+
+   VkMemoryType0_HeapIndex--&gt;VkMemoryHeap2
+   VkMemoryType1_HeapIndex--&gt;VkMemoryHeap0
+   VkMemoryType2_HeapIndex--&gt;VkMemoryHeap1
+        </div></section>
+</section>
+<section id="id19">
+<h3>分配缓存<a class="headerlink" href="#id19" title="此标题的永久链接">#</a></h3>
 </section>
 </section>
 </section>
@@ -1645,9 +1696,10 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <li><a class="reference internal" href="#vkmemorypropertyflagbits">VkMemoryPropertyFlagBits</a></li>
 <li><a class="reference internal" href="#vkmemoryheap">VkMemoryHeap</a></li>
 <li><a class="reference internal" href="#vkmemoryheapflagbits">VkMemoryHeapFlagBits</a></li>
+<li><a class="reference internal" href="#id18">VkPhysicalDeviceMemoryProperties 结构图</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id18">分配缓存</a></li>
+<li><a class="reference internal" href="#id19">分配缓存</a></li>
 </ul>
 </li>
 </ul>
