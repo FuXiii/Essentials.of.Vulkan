@@ -71,6 +71,7 @@
    * 2023/7/9 修正 ``内存分类`` 章节中的一些错误，优化调理，增加新的说明。
    * 2023/7/9 增加 ``VkMemoryHeap`` 章节
    * 2023/7/9 增加 ``VkMemoryHeapFlagBits`` 章节
+   * 2023/7/9 增加 ``VkPhysicalDeviceMemoryProperties 结构图`` 章节
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -1362,6 +1363,73 @@ VkMemoryHeapFlagBits
 * :bdg-secondary:`VK_MEMORY_HEAP_MULTI_INSTANCE_BIT` 由于逻辑设备可以包含多个物理设备，此标志位表示该堆对应多个物理设备上的内存堆，对该堆的操作将会在每个物理设备的内存堆上进行相同的操作。
 
 常用的为 ``VK_MEMORY_HEAP_DEVICE_LOCAL_BIT`` 标志位。
+
+VkPhysicalDeviceMemoryProperties 结构图
+------------------------------------------
+
+为了更清晰的理解 ``VkPhysicalDeviceMemoryProperties`` ，在此给出一张 ``VkPhysicalDeviceMemoryProperties`` 结构参考图：
+
+..
+      typedef struct VkPhysicalDeviceMemoryProperties {
+     uint32_t                                         memoryTypeCount;
+     VkMemoryType                                     memoryTypes[VK_MAX_MEMORY_TYPES];
+     uint32_t                                         memoryHeapCount;
+     VkMemoryHeap                                     memoryHeaps[VK_MAX_MEMORY_HEAPS];
+   } VkPhysicalDeviceMemoryProperties;
+
+   VkMemoryPropertyFlags          propertyFlags;
+     uint32_t                       heapIndex;
+
+     VkDeviceSize                   size;
+     VkMemoryHeapFlags              flags;
+
+.. mermaid::
+
+   flowchart TB
+      subgraph memoryTypes["VkPhysicalDeviceMemoryProperties::memoryTypes"]
+      direction LR
+         subgraph VkMemoryType0["VkMemoryType 0"]
+         direction TB
+             VkMemoryType0_PropertyFlags["VkMemoryPropertyFlags propertyFlags"] -.- VkMemoryType0_HeapIndex["uint32_t heapIndex"]
+         end
+         subgraph VkMemoryType1["VkMemoryType 1"]
+         direction TB
+             VkMemoryType1_PropertyFlags["VkMemoryPropertyFlags propertyFlags"] -.- VkMemoryType1_HeapIndex["uint32_t heapIndex"]
+         end
+         subgraph VkMemoryType2["VkMemoryType 2"]
+         direction TB
+             VkMemoryType2_PropertyFlags["VkMemoryPropertyFlags propertyFlags"] -.- VkMemoryType2_HeapIndex["uint32_t heapIndex"]
+         end
+         subgraph VkMemoryTypeEtc["..."]
+         end
+   
+         VkMemoryType0 -.- VkMemoryType1 -.- VkMemoryType2 -.- VkMemoryTypeEtc
+      end
+      
+      subgraph memoryHeaps["VkPhysicalDeviceMemoryProperties::memoryHeaps"]
+      direction LR
+         subgraph VkMemoryHeap0["VkMemoryHeap 0"]
+         direction TB
+             VkMemoryHeap0_Size["VkDeviceSize size"] -.- VkMemoryHeap0_Flags["VkMemoryHeapFlags flags"]
+         end
+         subgraph VkMemoryHeap1["VkMemoryHeap 1"]
+         direction TB
+             VkMemoryHeap1_Size["VkDeviceSize size"] -.- VkMemoryHeap1_Flags["VkMemoryHeapFlags flags"]
+         end
+         subgraph VkMemoryHeap2["VkMemoryHeap 2"]
+         direction TB
+             VkMemoryHeap2_Size["VkDeviceSize size"] -.- VkMemoryHeap2_Flags["VkMemoryHeapFlags flags"]
+         end
+         subgraph VkMemoryHeapEtc["..."]
+         end
+   
+         VkMemoryHeap0 -.- VkMemoryHeap1 -.- VkMemoryHeap2 -.- VkMemoryHeapEtc
+         
+      end
+   
+      VkMemoryType0_HeapIndex-->VkMemoryHeap2
+      VkMemoryType1_HeapIndex-->VkMemoryHeap0
+      VkMemoryType2_HeapIndex-->VkMemoryHeap1
 
 分配缓存
 ********************************
