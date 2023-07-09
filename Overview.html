@@ -311,6 +311,14 @@
 <li><p class="sd-card-text">2023/7/8 增加 <code class="docutils literal notranslate"><span class="pre">内存分类</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/7/8 增加 <code class="docutils literal notranslate"><span class="pre">分配内存</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/7/8 更新 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">函数分类</span></code> 章节中的 <code class="docutils literal notranslate"><span class="pre">PhysicalDevice</span> <span class="pre">域函数特殊性</span></code> 说明</p></li>
+<li><p class="sd-card-text">2023/7/9 更新 <code class="docutils literal notranslate"><span class="pre">分配内存</span></code> 章节更名为 <code class="docutils literal notranslate"><span class="pre">分配缓存</span></code></p></li>
+<li><p class="sd-card-text">2023/7/9 增加 <code class="docutils literal notranslate"><span class="pre">获取</span> <span class="pre">Vulkan</span> <span class="pre">支持的缓存</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/7/9 增加 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/7/9 增加 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/7/9 增加 <code class="docutils literal notranslate"><span class="pre">VkMemoryType</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/7/9 修正 <code class="docutils literal notranslate"><span class="pre">内存分类</span></code> 章节中的一些错误，优化调理，增加新的说明。</p></li>
+<li><p class="sd-card-text">2023/7/9 增加 <code class="docutils literal notranslate"><span class="pre">VkMemoryHeap</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/7/9 增加 <code class="docutils literal notranslate"><span class="pre">VkMemoryHeapFlagBits</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p>由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 比较复杂，为了更好的入门 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> ，还是大致过一遍 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的核心思路，这对以后的学习很有帮助。</p>
@@ -1331,18 +1339,21 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <li><p><code class="docutils literal notranslate"><span class="pre">Instance</span></code> 域函数</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Device</span></code> 域函数</p></li>
 </ul>
-<p><code class="docutils literal notranslate"><span class="pre">Instance</span></code> 域函数中主要在 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 能够访问的（主板上）内存中进行分配和访问。比如在调用 <code class="docutils literal notranslate"><span class="pre">vkCreateInstance</span></code> 函数创建 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 时需要指定 <code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">VkAllocationCallbacks*</span> <span class="pre">pAllocator</span></code> 内存分配回调（一般使用 <code class="docutils literal notranslate"><span class="pre">new</span></code> 或 <code class="docutils literal notranslate"><span class="pre">malloc</span></code> 进行分配）。这一部分的内存称为 <code class="docutils literal notranslate"><span class="pre">Instance</span></code> 端内存。</p>
-<p><code class="docutils literal notranslate"><span class="pre">Device</span></code> 域函数中主要在 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 能够访问的内存（显存）中行内存分配和访问。这一部分内存称为 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端内存。</p>
-<p>由此引出了 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中的两个内存分类：</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">Host</span></code> 端内存（ <code class="docutils literal notranslate"><span class="pre">Instance</span></code> 端内存）</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Device</span></code> 端内存</p></li>
-</ul>
-<div class="admonition note">
-<p class="admonition-title">备注</p>
-<p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准中称 <code class="docutils literal notranslate"><span class="pre">Instance</span></code> 域内存为 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端内存，这里我们与 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准保持一致。</p>
+<p><code class="docutils literal notranslate"><span class="pre">Instance</span></code> 域函数中主要在 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 能够访问的（主板上）内存中进行分配和访问。比如在调用 <code class="docutils literal notranslate"><span class="pre">vkCreateInstance</span></code> 函数创建 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 时需要指定 <code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">VkAllocationCallbacks*</span> <span class="pre">pAllocator</span></code> 内存分配回调（一般回调内部使用 <code class="docutils literal notranslate"><span class="pre">new</span></code> 或 <code class="docutils literal notranslate"><span class="pre">malloc</span></code> 等进行分配）。 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中可以被 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 访问的内存一般称为 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端内存。</p>
+<p><code class="docutils literal notranslate"><span class="pre">Device</span></code> 域函数中主要在 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 能够访问的内存（显存）中进行内存分配和访问。这一部分内存称为 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端内存。</p>
+<div class="important admonition">
+<p class="admonition-title">const VkAllocationCallbacks* pAllocator</p>
+<p>使用 <code class="docutils literal notranslate"><span class="pre">VkAllocationCallbacks</span></code> 内存分配回调分配的内存将会存储在内存条中，该部分内存属于特殊的 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端内存，确切的说使用 <code class="docutils literal notranslate"><span class="pre">new</span></code> 或 <code class="docutils literal notranslate"><span class="pre">malloc</span></code> 等分配的内存，在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准中不属于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 管理的范畴。这里仅仅为了引出 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端做的简要引子。</p>
+<p>有关 <code class="docutils literal notranslate"><span class="pre">VkAllocationCallbacks</span></code> 的具体用法将会在之后单独的章节中进行讲解。</p>
 </div>
-<p>这里可以看出（主板上）内存和 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 上的显存都属于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 可访问的内存范畴。</p>
+<p>由此引出了 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中的两个端分类：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Host</span></code> 端</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Device</span></code> 端</p></li>
+</ul>
+<p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端一般是指 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 可以访问的那部分资源（内存），而该部分资源可能存储在 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 设备上的内存中也可能存储在内存条上的内存中。只不过这部分资源可以被 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 访问到并归为 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 管理范畴。</p>
+<p><code class="docutils literal notranslate"><span class="pre">Device</span></code> 端表示 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 设备可访问的的专属资源（内存）。</p>
+<p>这里可以看出内存条上的内存和 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 上的显存都属于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 可访问的内存范畴。</p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中我们往往在 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端将数据准备好，之后打算使用 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 设备访问该数据进行计算。然而 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端准备的数据只有 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 能够访问， <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 设备并不能直接访问 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端内存，为此 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准中为我们提供了可被 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 访问的 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端内存。
 也就是说这一部分内存既可以被 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端访问也可以被 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端访问。一般来说，我们会先将 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端的数据拷贝至可以被 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端访问也可以被 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端访问的内存中，之后通过再将这部分数据拷贝至 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端内存中被 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 访问使用。</p>
 <div class="mermaid">
@@ -1355,7 +1366,8 @@ Linux 获取</label><div class="sd-tab-content docutils">
    Host--拷贝--&gt;HostAndDevice--&quot;（总线）拷贝&quot;--&gt;Device
         </div><div class="tip admonition">
 <p class="admonition-title">既然数据在 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端与 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端都可以访问的内存中，为什么还需要拷贝至 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端中？</p>
-<p>在硬件层面 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端与 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端都可以访问的内存一般为内存条上的一部分内存，而这一部分内存结构对于 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 这种处理连续内存非常友好，而像 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 这种大量并行计算的设备来说就不尽人意了，拷贝至 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端中的目的是将这一步分数据转换成设备友好的内存结构，提高内存读写性能。</p>
+<p>在硬件层面 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端与 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端都可以访问的内存，这类内存对于 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 这种处理连续内存非常友好，而像 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 这种大量并行计算的设备来说就不尽人意了，拷贝至 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端中的目的是将这一步分数据转换成设备友好的内存结构，提高内存读写性能。</p>
+<p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中可以在 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 设备上直接访问 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端与 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 都可访问的内存。只不过我们经常将这部分内存数据拷贝至 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 专属内存中提高性能。</p>
 </div>
 <p>最终可得出 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中的内存分类：</p>
 <ul class="simple">
@@ -1363,9 +1375,132 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <li><p><code class="docutils literal notranslate"><span class="pre">Device</span></code> 端内存</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Host</span></code> 端与 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端内存</p></li>
 </ul>
+<div class="important admonition">
+<p class="admonition-title">Vulkan 内存</p>
+<p>其实在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准看来，所有的内存都属于 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端内存，只不过有些 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端内存可以被 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端访问。有些 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端内存为 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 专属内存。</p>
+</div>
 </section>
 <section id="id17">
-<h3>分配内存<a class="headerlink" href="#id17" title="此标题的永久链接">#</a></h3>
+<h3>获取 Vulkan 支持的缓存<a class="headerlink" href="#id17" title="此标题的永久链接">#</a></h3>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中与内存相关的英文为 <code class="docutils literal notranslate"><span class="pre">Buffer</span></code> ，翻译成 <code class="docutils literal notranslate"><span class="pre">缓存</span></code> 更加贴合 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准，这里与 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准保持一致。</p>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 所有的缓存信息都可以通过 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties</span></code> 函数获取，其定义如下：</p>
+<section id="vkgetphysicaldevicememoryproperties">
+<h4>vkGetPhysicalDeviceMemoryProperties<a class="headerlink" href="#vkgetphysicaldevicememoryproperties" title="此标题的永久链接">#</a></h4>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">vkGetPhysicalDeviceMemoryProperties</span><span class="p">(</span>
+<span class="w">  </span><span class="n">VkPhysicalDevice</span><span class="w">                           </span><span class="n">physicalDevice</span><span class="p">,</span>
+<span class="w">  </span><span class="n">VkPhysicalDeviceMemoryProperties</span><span class="o">*</span><span class="w">          </span><span class="n">pMemoryProperties</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">physicalDevice</span> 为对应获取对应缓存信息的物理设备。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pMemoryProperties</span> 相应的缓存信息将会写入并返回。</p></li>
+</ul>
+<p>对应的 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties</span></code> 结构体描述如下：</p>
+</section>
+<section id="vkphysicaldevicememoryproperties">
+<h4>VkPhysicalDeviceMemoryProperties<a class="headerlink" href="#vkphysicaldevicememoryproperties" title="此标题的永久链接">#</a></h4>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#define VK_MAX_MEMORY_TYPES 32U</span>
+<span class="cp">#define VK_MAX_MEMORY_HEAPS 16U</span>
+
+<span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkPhysicalDeviceMemoryProperties</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">uint32_t</span><span class="w">                                         </span><span class="n">memoryTypeCount</span><span class="p">;</span>
+<span class="w">  </span><span class="n">VkMemoryType</span><span class="w">                                     </span><span class="n">memoryTypes</span><span class="p">[</span><span class="n">VK_MAX_MEMORY_TYPES</span><span class="p">];</span>
+<span class="w">  </span><span class="kt">uint32_t</span><span class="w">                                         </span><span class="n">memoryHeapCount</span><span class="p">;</span>
+<span class="w">  </span><span class="n">VkMemoryHeap</span><span class="w">                                     </span><span class="n">memoryHeaps</span><span class="p">[</span><span class="n">VK_MAX_MEMORY_HEAPS</span><span class="p">];</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkPhysicalDeviceMemoryProperties</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">memoryTypeCount</span> 内存类型的数量。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">memoryTypes</span> 对应的内存类型信息数据。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">memoryHeapCount</span> 内存堆的数量。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">memoryHeaps</span> 对应的内存堆的信息数据。</p></li>
+</ul>
+<p>对应的 <code class="docutils literal notranslate"><span class="pre">VkMemoryType</span></code> 结构体描述如下：</p>
+</section>
+<section id="vkmemorytype">
+<h4>VkMemoryType<a class="headerlink" href="#vkmemorytype" title="此标题的永久链接">#</a></h4>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkMemoryType</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">VkMemoryPropertyFlags</span><span class="w">          </span><span class="n">propertyFlags</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">uint32_t</span><span class="w">                       </span><span class="n">heapIndex</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkMemoryType</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">propertyFlags</span> 该类内存的属性信息，使用标志位存储相应信息。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">heapIndex</span> 对应的内存堆的索引，表示指向 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties::memoryHeaps[heapIndex]</span></code> 的内存堆。</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">VkMemoryPropertyFlags</span></code> 对应的各个比特位的值定义于 <code class="docutils literal notranslate"><span class="pre">VkMemoryPropertyFlagBits</span></code> 枚举中，定义如下：</p>
+</section>
+<section id="vkmemorypropertyflagbits">
+<h4>VkMemoryPropertyFlagBits<a class="headerlink" href="#vkmemorypropertyflagbits" title="此标题的永久链接">#</a></h4>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkMemoryPropertyFlagBits</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000001</span><span class="p">,</span>
+<span class="w">  </span><span class="n">VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000002</span><span class="p">,</span>
+<span class="w">  </span><span class="n">VK_MEMORY_PROPERTY_HOST_COHERENT_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000004</span><span class="p">,</span>
+<span class="w">  </span><span class="n">VK_MEMORY_PROPERTY_HOST_CACHED_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000008</span><span class="p">,</span>
+<span class="w">  </span><span class="n">VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000010</span><span class="p">,</span>
+<span class="w">  </span><span class="c1">// 由 VK_VERSION_1_1 提供</span>
+<span class="w">  </span><span class="n">VK_MEMORY_PROPERTY_PROTECTED_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000020</span><span class="p">,</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkMemoryPropertyFlagBits</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT</span> 表示这部分内存为 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 物理设备自身的内存只有物理设备自身可访问，也就是 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端内存。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT</span> 表示这部分内存为 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端可访问到的内存只有 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端自身可访问， <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端不可访问。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_MEMORY_PROPERTY_HOST_COHERENT_BIT</span> 表示这部分内存为 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端连续内存，表示对于该内存的读写可连续进行（就像 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 对于内存的修改那样）。该内存类型不需要手动进行 <code class="docutils literal notranslate"><span class="pre">刷新</span></code> 和 <code class="docutils literal notranslate"><span class="pre">失效</span></code> 操作。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_MEMORY_PROPERTY_HOST_CACHED_BIT</span> 表示这部分内存为 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端高速缓存内存，并且自带 <code class="docutils literal notranslate"><span class="pre">VK_MEMORY_PROPERTY_HOST_COHERENT_BIT</span></code> 属性。这一部分内存大小相对较小。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT</span> 表示这部分内存为可以滞后分配内存，等要使用时再分配内存。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_MEMORY_PROPERTY_PROTECTED_BIT</span> 表示这部分内存为受保护内存，并且只允许 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 硬件设备和受保护的队列（ <code class="docutils literal notranslate"><span class="pre">VK_QUEUE_PROTECTED_BIT</span></code> ）可以访问该内存。</p></li>
+</ul>
+<div class="note admonition">
+<p class="admonition-title"><code class="docutils literal notranslate"><span class="pre">刷新</span></code> 和 <code class="docutils literal notranslate"><span class="pre">失效</span></code> 操作</p>
+<p>是指使用 <code class="docutils literal notranslate"><span class="pre">vkFlushMappedMemoryRanges</span></code> 进行内存刷新，使用 <code class="docutils literal notranslate"><span class="pre">vkInvalidateMappedMemoryRanges</span></code> 使内存失效。有关详细说明将会在单独的章节中进行讲解。</p>
+</div>
+<p>我们经常会使用到 <code class="docutils literal notranslate"><span class="pre">VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT</span></code> 、 <code class="docutils literal notranslate"><span class="pre">VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT</span></code> 和 <code class="docutils literal notranslate"><span class="pre">VK_MEMORY_PROPERTY_HOST_COHERENT_BIT</span></code> 属性的内存。</p>
+<p>接下来我们来看一下 <code class="docutils literal notranslate"><span class="pre">VkMemoryType::heapIndex</span></code> 对应的 <code class="docutils literal notranslate"><span class="pre">VkMemoryHeap</span></code> 的定义：</p>
+</section>
+<section id="vkmemoryheap">
+<h4>VkMemoryHeap<a class="headerlink" href="#vkmemoryheap" title="此标题的永久链接">#</a></h4>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkMemoryHeap</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">VkDeviceSize</span><span class="w">                   </span><span class="n">size</span><span class="p">;</span>
+<span class="w">  </span><span class="n">VkMemoryHeapFlags</span><span class="w">              </span><span class="n">flags</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkMemoryHeap</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">size</span> 表示该内存堆的比特大小。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">flags</span> 表示该堆的属性标志位，各位的含义被定义在 <code class="docutils literal notranslate"><span class="pre">VkMemoryHeapFlagBits</span></code> 中。</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">VkMemoryHeapFlags</span></code> 对应的各个比特位的值定义于 <code class="docutils literal notranslate"><span class="pre">VkMemoryHeapFlagBits</span></code> 枚举中，定义如下：</p>
+</section>
+<section id="vkmemoryheapflagbits">
+<h4>VkMemoryHeapFlagBits<a class="headerlink" href="#vkmemoryheapflagbits" title="此标题的永久链接">#</a></h4>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkMemoryHeapFlagBits</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">VK_MEMORY_HEAP_DEVICE_LOCAL_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000001</span><span class="p">,</span>
+<span class="w">  </span><span class="c1">// 由 VK_VERSION_1_1 提供</span>
+<span class="w">  </span><span class="n">VK_MEMORY_HEAP_MULTI_INSTANCE_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000002</span><span class="p">,</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkMemoryHeapFlagBits</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_MEMORY_HEAP_DEVICE_LOCAL_BIT</span> 表示该内存堆为 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 专属内存。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_MEMORY_HEAP_MULTI_INSTANCE_BIT</span> 由于逻辑设备可以包含多个物理设备，此标志位表示该堆对应多个物理设备上的内存堆，对该堆的操作将会在每个物理设备的内存堆上进行相同的操作。</p></li>
+</ul>
+<p>常用的为 <code class="docutils literal notranslate"><span class="pre">VK_MEMORY_HEAP_DEVICE_LOCAL_BIT</span></code> 标志位。</p>
+</section>
+</section>
+<section id="id18">
+<h3>分配缓存<a class="headerlink" href="#id18" title="此标题的永久链接">#</a></h3>
 </section>
 </section>
 </section>
@@ -1503,7 +1638,16 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </li>
 <li><a class="reference internal" href="#id15">内存</a><ul>
 <li><a class="reference internal" href="#id16">内存分类</a></li>
-<li><a class="reference internal" href="#id17">分配内存</a></li>
+<li><a class="reference internal" href="#id17">获取 Vulkan 支持的缓存</a><ul>
+<li><a class="reference internal" href="#vkgetphysicaldevicememoryproperties">vkGetPhysicalDeviceMemoryProperties</a></li>
+<li><a class="reference internal" href="#vkphysicaldevicememoryproperties">VkPhysicalDeviceMemoryProperties</a></li>
+<li><a class="reference internal" href="#vkmemorytype">VkMemoryType</a></li>
+<li><a class="reference internal" href="#vkmemorypropertyflagbits">VkMemoryPropertyFlagBits</a></li>
+<li><a class="reference internal" href="#vkmemoryheap">VkMemoryHeap</a></li>
+<li><a class="reference internal" href="#vkmemoryheapflagbits">VkMemoryHeapFlagBits</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id18">分配缓存</a></li>
 </ul>
 </li>
 </ul>

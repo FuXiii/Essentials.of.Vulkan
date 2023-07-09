@@ -63,6 +63,14 @@
    * 2023/7/8 增加 ``内存分类`` 章节
    * 2023/7/8 增加 ``分配内存`` 章节
    * 2023/7/8 更新 ``Vulkan 函数分类`` 章节中的 ``PhysicalDevice 域函数特殊性`` 说明
+   * 2023/7/9 更新 ``分配内存`` 章节更名为 ``分配缓存``
+   * 2023/7/9 增加 ``获取 Vulkan 支持的缓存`` 章节
+   * 2023/7/9 增加 ``vkGetPhysicalDeviceMemoryProperties`` 章节
+   * 2023/7/9 增加 ``VkPhysicalDeviceMemoryProperties`` 章节
+   * 2023/7/9 增加 ``VkMemoryType`` 章节
+   * 2023/7/9 修正 ``内存分类`` 章节中的一些错误，优化调理，增加新的说明。
+   * 2023/7/9 增加 ``VkMemoryHeap`` 章节
+   * 2023/7/9 增加 ``VkMemoryHeapFlagBits`` 章节
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -1176,18 +1184,27 @@ vkGetDeviceQueue
 * ``Instance`` 域函数
 * ``Device`` 域函数
 
-``Instance`` 域函数中主要在 ``CPU`` 能够访问的（主板上）内存中进行分配和访问。比如在调用 ``vkCreateInstance`` 函数创建 ``VkInstance`` 时需要指定 ``const VkAllocationCallbacks* pAllocator`` 内存分配回调（一般使用 ``new`` 或 ``malloc`` 进行分配）。这一部分的内存称为 ``Instance`` 端内存。
+``Instance`` 域函数中主要在 ``CPU`` 能够访问的（主板上）内存中进行分配和访问。比如在调用 ``vkCreateInstance`` 函数创建 ``VkInstance`` 时需要指定 ``const VkAllocationCallbacks* pAllocator`` 内存分配回调（一般回调内部使用 ``new`` 或 ``malloc`` 等进行分配）。 ``Vulkan`` 中可以被 ``CPU`` 访问的内存一般称为 ``Host`` 端内存。
 
-``Device`` 域函数中主要在 ``GPU`` 能够访问的内存（显存）中行内存分配和访问。这一部分内存称为 ``Device`` 端内存。
+``Device`` 域函数中主要在 ``GPU`` 能够访问的内存（显存）中进行内存分配和访问。这一部分内存称为 ``Device`` 端内存。
 
-由此引出了 ``Vulkan`` 中的两个内存分类：
+.. admonition:: const VkAllocationCallbacks* pAllocator
+   :class: important
 
-* ``Host`` 端内存（ ``Instance`` 端内存）
-* ``Device`` 端内存
+   使用 ``VkAllocationCallbacks`` 内存分配回调分配的内存将会存储在内存条中，该部分内存属于特殊的 ``Host`` 端内存，确切的说使用 ``new`` 或 ``malloc`` 等分配的内存，在 ``Vulkan`` 标准中不属于 ``Vulkan`` 管理的范畴。这里仅仅为了引出 ``Host`` 端做的简要引子。
 
-.. note:: 在 ``Vulkan`` 标准中称 ``Instance`` 域内存为 ``Host`` 端内存，这里我们与 ``Vulkan`` 标准保持一致。
+   有关 ``VkAllocationCallbacks`` 的具体用法将会在之后单独的章节中进行讲解。
 
-这里可以看出（主板上）内存和 ``GPU`` 上的显存都属于 ``Vulkan`` 可访问的内存范畴。
+由此引出了 ``Vulkan`` 中的两个端分类：
+
+* ``Host`` 端
+* ``Device`` 端
+
+在 ``Vulkan`` 中 ``Host`` 端一般是指 ``CPU`` 可以访问的那部分资源（内存），而该部分资源可能存储在 ``GPU`` 设备上的内存中也可能存储在内存条上的内存中。只不过这部分资源可以被 ``CPU`` 访问到并归为 ``Vulkan`` 管理范畴。
+
+``Device`` 端表示 ``GPU`` 设备可访问的的专属资源（内存）。
+
+这里可以看出内存条上的内存和 ``GPU`` 上的显存都属于 ``Vulkan`` 可访问的内存范畴。
 
 在 ``Vulkan`` 中我们往往在 ``Host`` 端将数据准备好，之后打算使用 ``GPU`` 设备访问该数据进行计算。然而 ``Host`` 端准备的数据只有 ``CPU`` 能够访问， ``GPU`` 设备并不能直接访问 ``Host`` 端内存，为此 ``Vulkan`` 标准中为我们提供了可被 ``GPU`` 访问的 ``Host`` 端内存。
 也就是说这一部分内存既可以被 ``Host`` 端访问也可以被 ``Device`` 端访问。一般来说，我们会先将 ``Host`` 端的数据拷贝至可以被 ``Host`` 端访问也可以被 ``Device`` 端访问的内存中，之后通过再将这部分数据拷贝至 ``Device`` 端内存中被 ``GPU`` 访问使用。
@@ -1205,7 +1222,9 @@ vkGetDeviceQueue
 .. admonition:: 既然数据在 ``Host`` 端与 ``Device`` 端都可以访问的内存中，为什么还需要拷贝至 ``Device`` 端中？
    :class: tip
 
-   在硬件层面 ``Host`` 端与 ``Device`` 端都可以访问的内存一般为内存条上的一部分内存，而这一部分内存结构对于 ``CPU`` 这种处理连续内存非常友好，而像 ``GPU`` 这种大量并行计算的设备来说就不尽人意了，拷贝至 ``Device`` 端中的目的是将这一步分数据转换成设备友好的内存结构，提高内存读写性能。
+   在硬件层面 ``Host`` 端与 ``Device`` 端都可以访问的内存，这类内存对于 ``CPU`` 这种处理连续内存非常友好，而像 ``GPU`` 这种大量并行计算的设备来说就不尽人意了，拷贝至 ``Device`` 端中的目的是将这一步分数据转换成设备友好的内存结构，提高内存读写性能。
+
+   ``Vulkan`` 中可以在 ``GPU`` 设备上直接访问 ``Host`` 端与 ``Device`` 都可访问的内存。只不过我们经常将这部分内存数据拷贝至 ``GPU`` 专属内存中提高性能。
 
 最终可得出 ``Vulkan`` 中的内存分类：
 
@@ -1213,8 +1232,143 @@ vkGetDeviceQueue
 * ``Device`` 端内存
 * ``Host`` 端与 ``Device`` 端内存
 
-分配内存
+.. admonition:: Vulkan 内存
+   :class: important
+
+   其实在 ``Vulkan`` 标准看来，所有的内存都属于 ``Device`` 端内存，只不过有些 ``Device`` 端内存可以被 ``Host`` 端访问。有些 ``Device`` 端内存为 ``Device`` 专属内存。
+
+获取 Vulkan 支持的缓存
+*******************************
+
+.. note:: ``Vulkan`` 中与内存相关的英文为 ``Buffer`` ，翻译成 ``缓存`` 更加贴合 ``Vulkan`` 标准，这里与 ``Vulkan`` 标准保持一致。
+
+``Vulkan`` 所有的缓存信息都可以通过 ``vkGetPhysicalDeviceMemoryProperties`` 函数获取，其定义如下：
+
+vkGetPhysicalDeviceMemoryProperties
+------------------------------------------
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   void vkGetPhysicalDeviceMemoryProperties(
+     VkPhysicalDevice                           physicalDevice,
+     VkPhysicalDeviceMemoryProperties*          pMemoryProperties);
+
+* :bdg-secondary:`physicalDevice` 为对应获取对应缓存信息的物理设备。
+* :bdg-secondary:`pMemoryProperties` 相应的缓存信息将会写入并返回。
+
+对应的 ``VkPhysicalDeviceMemoryProperties`` 结构体描述如下：
+
+VkPhysicalDeviceMemoryProperties
+------------------------------------------
+
+.. code:: c++
+
+   #define VK_MAX_MEMORY_TYPES 32U
+   #define VK_MAX_MEMORY_HEAPS 16U
+
+   // 由 VK_VERSION_1_0 提供
+   typedef struct VkPhysicalDeviceMemoryProperties {
+     uint32_t                                         memoryTypeCount;
+     VkMemoryType                                     memoryTypes[VK_MAX_MEMORY_TYPES];
+     uint32_t                                         memoryHeapCount;
+     VkMemoryHeap                                     memoryHeaps[VK_MAX_MEMORY_HEAPS];
+   } VkPhysicalDeviceMemoryProperties;
+
+* :bdg-secondary:`memoryTypeCount` 内存类型的数量。
+* :bdg-secondary:`memoryTypes` 对应的内存类型信息数据。
+* :bdg-secondary:`memoryHeapCount` 内存堆的数量。
+* :bdg-secondary:`memoryHeaps` 对应的内存堆的信息数据。
+
+对应的 ``VkMemoryType`` 结构体描述如下：
+
+VkMemoryType
+------------------------------------------
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef struct VkMemoryType {
+     VkMemoryPropertyFlags          propertyFlags;
+     uint32_t                       heapIndex;
+   } VkMemoryType;
+
+* :bdg-secondary:`propertyFlags` 该类内存的属性信息，使用标志位存储相应信息。
+* :bdg-secondary:`heapIndex` 对应的内存堆的索引，表示指向 ``VkPhysicalDeviceMemoryProperties::memoryHeaps[heapIndex]`` 的内存堆。
+
+``VkMemoryPropertyFlags`` 对应的各个比特位的值定义于 ``VkMemoryPropertyFlagBits`` 枚举中，定义如下：
+
+VkMemoryPropertyFlagBits
+------------------------------------------
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef enum VkMemoryPropertyFlagBits {
+     VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT = 0x00000001,
+     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT = 0x00000002,
+     VK_MEMORY_PROPERTY_HOST_COHERENT_BIT = 0x00000004,
+     VK_MEMORY_PROPERTY_HOST_CACHED_BIT = 0x00000008,
+     VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT = 0x00000010,
+     // 由 VK_VERSION_1_1 提供
+     VK_MEMORY_PROPERTY_PROTECTED_BIT = 0x00000020,
+   } VkMemoryPropertyFlagBits;
+
+* :bdg-secondary:`VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT` 表示这部分内存为 ``GPU`` 物理设备自身的内存只有物理设备自身可访问，也就是 ``Device`` 端内存。
+* :bdg-secondary:`VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT` 表示这部分内存为 ``Host`` 端可访问到的内存只有 ``Host`` 端自身可访问， ``Device`` 端不可访问。
+* :bdg-secondary:`VK_MEMORY_PROPERTY_HOST_COHERENT_BIT` 表示这部分内存为 ``Host`` 端连续内存，表示对于该内存的读写可连续进行（就像 ``CPU`` 对于内存的修改那样）。该内存类型不需要手动进行 ``刷新`` 和 ``失效`` 操作。
+* :bdg-secondary:`VK_MEMORY_PROPERTY_HOST_CACHED_BIT` 表示这部分内存为 ``Host`` 端高速缓存内存，并且自带 ``VK_MEMORY_PROPERTY_HOST_COHERENT_BIT`` 属性。这一部分内存大小相对较小。
+* :bdg-secondary:`VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT` 表示这部分内存为可以滞后分配内存，等要使用时再分配内存。
+* :bdg-secondary:`VK_MEMORY_PROPERTY_PROTECTED_BIT` 表示这部分内存为受保护内存，并且只允许 ``GPU`` 硬件设备和受保护的队列（ ``VK_QUEUE_PROTECTED_BIT`` ）可以访问该内存。
+
+.. admonition:: ``刷新`` 和 ``失效`` 操作
+   :class: note
+
+   是指使用 ``vkFlushMappedMemoryRanges`` 进行内存刷新，使用 ``vkInvalidateMappedMemoryRanges`` 使内存失效。有关详细说明将会在单独的章节中进行讲解。
+
+我们经常会使用到 ``VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT`` 、 ``VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT`` 和 ``VK_MEMORY_PROPERTY_HOST_COHERENT_BIT`` 属性的内存。
+
+接下来我们来看一下 ``VkMemoryType::heapIndex`` 对应的 ``VkMemoryHeap`` 的定义：
+
+VkMemoryHeap
+------------------------------------------
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef struct VkMemoryHeap {
+     VkDeviceSize                   size;
+     VkMemoryHeapFlags              flags;
+   } VkMemoryHeap;
+
+* :bdg-secondary:`size` 表示该内存堆的比特大小。
+* :bdg-secondary:`flags` 表示该堆的属性标志位，各位的含义被定义在 ``VkMemoryHeapFlagBits`` 中。
+
+``VkMemoryHeapFlags`` 对应的各个比特位的值定义于 ``VkMemoryHeapFlagBits`` 枚举中，定义如下：
+
+VkMemoryHeapFlagBits
+------------------------------------------
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef enum VkMemoryHeapFlagBits {
+     VK_MEMORY_HEAP_DEVICE_LOCAL_BIT = 0x00000001,
+     // 由 VK_VERSION_1_1 提供
+     VK_MEMORY_HEAP_MULTI_INSTANCE_BIT = 0x00000002,
+   } VkMemoryHeapFlagBits;
+
+* :bdg-secondary:`VK_MEMORY_HEAP_DEVICE_LOCAL_BIT` 表示该内存堆为 ``GPU`` 专属内存。
+* :bdg-secondary:`VK_MEMORY_HEAP_MULTI_INSTANCE_BIT` 由于逻辑设备可以包含多个物理设备，此标志位表示该堆对应多个物理设备上的内存堆，对该堆的操作将会在每个物理设备的内存堆上进行相同的操作。
+
+常用的为 ``VK_MEMORY_HEAP_DEVICE_LOCAL_BIT`` 标志位。
+
+分配缓存
 ********************************
+
+
+
+
 
 ..
    内存
