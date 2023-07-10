@@ -1208,7 +1208,7 @@ vkGetDeviceQueue
 这里可以看出内存条上的内存和 ``GPU`` 上的显存都属于 ``Vulkan`` 可访问的内存范畴。
 
 在 ``Vulkan`` 中我们往往在 ``Host`` 端将数据准备好，之后打算使用 ``GPU`` 设备访问该数据进行计算。然而 ``Host`` 端准备的数据只有 ``CPU`` 能够访问， ``GPU`` 设备并不能直接访问 ``Host`` 端内存，为此 ``Vulkan`` 标准中为我们提供了可被 ``GPU`` 访问的 ``Host`` 端内存。
-也就是说这一部分内存既可以被 ``Host`` 端访问也可以被 ``Device`` 端访问。一般来说，我们会先将 ``Host`` 端的数据拷贝至可以被 ``Host`` 端访问也可以被 ``Device`` 端访问的内存中，之后通过再将这部分数据拷贝至 ``Device`` 端内存中被 ``GPU`` 访问使用。
+也就是说这一部分内存既可以被 ``Host`` 端访问也可以被 ``Device`` 端访问。一般来说，我们会先将 ``Host`` 端的数据拷贝至可以被 ``Host`` 端访问也可以被 ``Device`` 端访问的内存中，之后再将这部分数据拷贝至 ``Device`` 端内存中被 ``GPU`` 访问使用。
 
 .. mermaid::
 
@@ -1241,7 +1241,10 @@ vkGetDeviceQueue
 获取 Vulkan 支持的缓存
 *******************************
 
-.. note:: ``Vulkan`` 中与内存相关的英文为 ``Buffer`` ，翻译成 ``缓存`` 更加贴合 ``Vulkan`` 标准，这里与 ``Vulkan`` 标准保持一致。
+.. admonition:: 内存与缓存
+   :class: note
+
+   ``Vulkan`` 中与内存相关的英文为 ``Buffer`` ，翻译成 ``缓存`` 更加贴合 ``Vulkan`` 标准，这里与 ``Vulkan`` 标准保持一致。
 
 ``Vulkan`` 所有的缓存信息都可以通过 ``vkGetPhysicalDeviceMemoryProperties`` 函数获取，其定义如下：
 
