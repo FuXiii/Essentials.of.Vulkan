@@ -72,6 +72,7 @@
    * 2023/7/9 增加 ``VkMemoryHeap`` 章节
    * 2023/7/9 增加 ``VkMemoryHeapFlagBits`` 章节
    * 2023/7/9 增加 ``VkPhysicalDeviceMemoryProperties 结构图`` 章节
+   * 2023/7/10 增加 ``vkGetPhysicalDeviceMemoryProperties`` 函数例程
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -1261,6 +1262,8 @@ vkGetPhysicalDeviceMemoryProperties
 * :bdg-secondary:`physicalDevice` 为对应获取对应缓存信息的物理设备。
 * :bdg-secondary:`pMemoryProperties` 相应的缓存信息将会写入并返回。
 
+.. note:: ``vkGetPhysicalDeviceMemoryProperties`` 为 ``PhysicalDevice 域函数`` 。
+
 对应的 ``VkPhysicalDeviceMemoryProperties`` 结构体描述如下：
 
 VkPhysicalDeviceMemoryProperties
@@ -1372,20 +1375,6 @@ VkPhysicalDeviceMemoryProperties 结构图
 
 为了更清晰的理解 ``VkPhysicalDeviceMemoryProperties`` ，在此给出一张 ``VkPhysicalDeviceMemoryProperties`` 结构参考图：
 
-..
-      typedef struct VkPhysicalDeviceMemoryProperties {
-     uint32_t                                         memoryTypeCount;
-     VkMemoryType                                     memoryTypes[VK_MAX_MEMORY_TYPES];
-     uint32_t                                         memoryHeapCount;
-     VkMemoryHeap                                     memoryHeaps[VK_MAX_MEMORY_HEAPS];
-   } VkPhysicalDeviceMemoryProperties;
-
-   VkMemoryPropertyFlags          propertyFlags;
-     uint32_t                       heapIndex;
-
-     VkDeviceSize                   size;
-     VkMemoryHeapFlags              flags;
-
 .. mermaid::
 
    flowchart TB
@@ -1405,10 +1394,10 @@ VkPhysicalDeviceMemoryProperties 结构图
          end
          subgraph VkMemoryTypeEtc["..."]
          end
-   
+
          VkMemoryType0 -.- VkMemoryType1 -.- VkMemoryType2 -.- VkMemoryTypeEtc
       end
-      
+
       subgraph memoryHeaps["VkPhysicalDeviceMemoryProperties::memoryHeaps"]
       direction LR
          subgraph VkMemoryHeap0["VkMemoryHeap 0"]
@@ -1425,14 +1414,61 @@ VkPhysicalDeviceMemoryProperties 结构图
          end
          subgraph VkMemoryHeapEtc["..."]
          end
-   
+
          VkMemoryHeap0 -.- VkMemoryHeap1 -.- VkMemoryHeap2 -.- VkMemoryHeapEtc
-         
+
       end
-   
+
       VkMemoryType0_HeapIndex-->VkMemoryHeap2
       VkMemoryType1_HeapIndex-->VkMemoryHeap0
       VkMemoryType2_HeapIndex-->VkMemoryHeap1
+
+接下来就能够通过 ``vkGetPhysicalDeviceMemoryProperties`` 获取内存信息了，和之前很多函数一样，首先获取 ``vkGetPhysicalDeviceMemoryProperties`` 函数实现：
+
+.. code:: c++
+
+   VkInstance instance = 之前成功创建的 VkInstance ;
+
+   PFN_vkGetPhysicalDeviceMemoryProperties vkGetPhysicalDeviceMemoryProperties = (PFN_vkGetPhysicalDeviceMemoryProperties)vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceMemoryProperties");
+
+
+之后就可以通过调用 ``vkGetPhysicalDeviceMemoryProperties`` 获得内存相关信息了：
+
+.. code:: c++
+
+   VkPhysicalDevice physical_device = 之前获取到的物理设备句柄;
+
+   VkPhysicalDeviceMemoryProperties physical_device_memory_properties = {};
+
+   vkGetPhysicalDeviceMemoryProperties(physical_device, &physical_device_memory_properties);
+
+   for(uint32_t memory_type_index = 0; memory_type_index < physical_device_memory_properties.memoryTypeCount; memory_type_index++)
+   {
+      VkMemoryType memory_type = physical_device_memory_properties.memoryTypes[memory_type_index];
+
+      if((memory_type.propertyFlags & VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT) == VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
+      {
+         std::cout << "Supprt DEVICE_LOCAL" << std::endl;
+      }
+      if((memory_type.propertyFlags & VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) == VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT)
+      {
+         std::cout << "Supprt HOST_VISIBLE" << std::endl;
+      }
+      if((memory_type.propertyFlags & VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT) == VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
+      {
+         std::cout << "Supprt HOST_COHERENT" << std::endl;
+      }
+
+      uint32_t heap_index = memory_type.heapIndex;
+
+      VkMemoryHeap memory_heap = physical_device_memory_properties.memoryHeaps[heap_index];
+
+      std::cout << "heap " << heap_index <<":"<< (memory_heap.size)/(1024 * 1024 * 1024) << " GB" << std::endl;
+      if((memory_heap.flags & VkMemoryHeapFlagBits::VK_MEMORY_HEAP_DEVICE_LOCAL_BIT) == VkMemoryHeapFlagBits::VK_MEMORY_HEAP_DEVICE_LOCAL_BIT)
+      {
+         std::cout << "\t DEVICE_LOCAL" << std::endl;
+      }
+   }
 
 分配缓存
 ********************************
