@@ -270,6 +270,7 @@
 <li><p class="sd-card-text">2023/6/23 增加 <code class="docutils literal notranslate"><span class="pre">Include</span> <span class="pre">与</span> <span class="pre">Lib</span> <span class="pre">和</span> <span class="pre">Lib32</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/6/23 增加 <code class="docutils literal notranslate"><span class="pre">Templates</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/6/29 更新 <code class="docutils literal notranslate"><span class="pre">安装</span> <span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 章节，改成 <code class="docutils literal notranslate"><span class="pre">Tab</span></code> 标签呈现</p></li>
+<li><p class="sd-card-text">2023/7/10 增加 <code class="docutils literal notranslate"><span class="pre">查看</span> <span class="pre">Vulkan</span> <span class="pre">所有相关信息</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p><code class="docutils literal notranslate"><span class="pre">Khronos</span></code> 这次推出了 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 官方的软件开发工具包 <a class="reference external" href="https://vulkan.lunarg.com/home/welcome">Vulkan SDK</a> ，这避免了像 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 开发环境混乱的情形再次上演。</p>
@@ -414,10 +415,10 @@ Linux 安装</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 <p>你将会看到一个旋转的方盒子，说明安装配置成功。</p>
-<figure class="align-default" id="id11">
+<figure class="align-default" id="id12">
 <img alt="_images/vkcube.png" src="_images/vkcube.png" />
 <figcaption>
-<p><span class="caption-text">vkcube</span><a class="headerlink" href="#id11" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">vkcube</span><a class="headerlink" href="#id12" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 </section>
@@ -793,16 +794,27 @@ Linux 安装</label><div class="sd-tab-content docutils">
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">{Version}</span> <code class="docutils literal notranslate"><span class="pre">VisualStudio</span></code> 的版本。</p></li>
 </ul>
 <p>之后打开相应版本的 <code class="docutils literal notranslate"><span class="pre">VisualStudio</span></code> ，新建项目就会有如图新增选项：</p>
-<figure class="align-default" id="id12">
+<figure class="align-default" id="id13">
 <img alt="_images/VulkanSDKTemplates.png" src="_images/VulkanSDKTemplates.png" />
 <figcaption>
-<p><span class="caption-text">VisualStudio 工程模板</span><a class="headerlink" href="#id12" title="此图像的永久链接">#</a></p>
+<p><span class="caption-text">VisualStudio 工程模板</span><a class="headerlink" href="#id13" title="此图像的永久链接">#</a></p>
 </figcaption>
 </figure>
 </section>
 </section>
 <section id="id9">
-<h2>Vulkan SDK 最佳实践<a class="headerlink" href="#id9" title="此标题的永久链接">#</a></h2>
+<h2>查看 Vulkan 所有相关信息<a class="headerlink" href="#id9" title="此标题的永久链接">#</a></h2>
+<p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 的安装目录的 <code class="docutils literal notranslate"><span class="pre">Bin</span></code> 下有一个 <code class="docutils literal notranslate"><span class="pre">vkconfig.exe</span></code> 可执行程序。</p>
+<p>执行 <code class="docutils literal notranslate"><span class="pre">vkconfig.exe</span></code> 并点击菜单栏的 <span class="menuselection">Tools ‣ Vulkan Info</span> 将会弹出 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Info</span></code> 窗口，该窗口可以查看 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的所有相关信息。</p>
+<figure class="align-default" id="id14">
+<img alt="_images/vkInfo.png" src="_images/vkInfo.png" />
+<figcaption>
+<p><span class="caption-text">Vulkan 所有相关信息界面</span><a class="headerlink" href="#id14" title="此图像的永久链接">#</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="id10">
+<h2>Vulkan SDK 最佳实践<a class="headerlink" href="#id10" title="此标题的永久链接">#</a></h2>
 <p>对于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 的最佳实践就是 <code class="docutils literal notranslate"><span class="pre">不使用</span></code> <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 。是的，不使用安装的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 中的头文件和静态库。</p>
 <ul>
 <li><p>对于库</p>
@@ -913,7 +925,8 @@ Linux 安装</label><div class="sd-tab-content docutils">
 <li><a class="reference internal" href="#templates">Templates</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id9">Vulkan SDK 最佳实践</a></li>
+<li><a class="reference internal" href="#id9">查看 Vulkan 所有相关信息</a></li>
+<li><a class="reference internal" href="#id10">Vulkan SDK 最佳实践</a></li>
 </ul>
 </li>
 </ul>
