@@ -320,6 +320,7 @@
 <li><p class="sd-card-text">2023/7/9 增加 <code class="docutils literal notranslate"><span class="pre">VkMemoryHeap</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/7/9 增加 <code class="docutils literal notranslate"><span class="pre">VkMemoryHeapFlagBits</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/7/9 增加 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties</span> <span class="pre">结构图</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/7/10 增加 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties</span></code> 函数例程</p></li>
 </ul>
 </div>
 </details><p>由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 比较复杂，为了更好的入门 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> ，还是大致过一遍 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的核心思路，这对以后的学习很有帮助。</p>
@@ -1356,7 +1357,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <p><code class="docutils literal notranslate"><span class="pre">Device</span></code> 端表示 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 设备可访问的的专属资源（内存）。</p>
 <p>这里可以看出内存条上的内存和 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 上的显存都属于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 可访问的内存范畴。</p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中我们往往在 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端将数据准备好，之后打算使用 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 设备访问该数据进行计算。然而 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端准备的数据只有 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 能够访问， <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 设备并不能直接访问 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端内存，为此 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准中为我们提供了可被 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 访问的 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端内存。
-也就是说这一部分内存既可以被 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端访问也可以被 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端访问。一般来说，我们会先将 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端的数据拷贝至可以被 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端访问也可以被 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端访问的内存中，之后通过再将这部分数据拷贝至 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端内存中被 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 访问使用。</p>
+也就是说这一部分内存既可以被 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端访问也可以被 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端访问。一般来说，我们会先将 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端的数据拷贝至可以被 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端访问也可以被 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端访问的内存中，之后再将这部分数据拷贝至 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端内存中被 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 访问使用。</p>
 <div class="mermaid">
             flowchart LR
 
@@ -1383,8 +1384,8 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </section>
 <section id="id17">
 <h3>获取 Vulkan 支持的缓存<a class="headerlink" href="#id17" title="此标题的永久链接">#</a></h3>
-<div class="admonition note">
-<p class="admonition-title">备注</p>
+<div class="note admonition">
+<p class="admonition-title">内存与缓存</p>
 <p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中与内存相关的英文为 <code class="docutils literal notranslate"><span class="pre">Buffer</span></code> ，翻译成 <code class="docutils literal notranslate"><span class="pre">缓存</span></code> 更加贴合 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准，这里与 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准保持一致。</p>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 所有的缓存信息都可以通过 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties</span></code> 函数获取，其定义如下：</p>
@@ -1400,6 +1401,10 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">physicalDevice</span> 为对应获取对应缓存信息的物理设备。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pMemoryProperties</span> 相应的缓存信息将会写入并返回。</p></li>
 </ul>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p><code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties</span></code> 为 <code class="docutils literal notranslate"><span class="pre">PhysicalDevice</span> <span class="pre">域函数</span></code> 。</p>
+</div>
 <p>对应的 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties</span></code> 结构体描述如下：</p>
 </section>
 <section id="vkphysicaldevicememoryproperties">
@@ -1548,7 +1553,49 @@ Linux 获取</label><div class="sd-tab-content docutils">
    VkMemoryType0_HeapIndex--&gt;VkMemoryHeap2
    VkMemoryType1_HeapIndex--&gt;VkMemoryHeap0
    VkMemoryType2_HeapIndex--&gt;VkMemoryHeap1
-        </div></section>
+        </div><p>接下来就能够通过 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties</span></code> 获取内存信息了，和之前很多函数一样，首先获取 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties</span></code> 函数实现：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkInstance</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前成功创建的</span><span class="w"> </span><span class="n">VkInstance</span><span class="w"> </span><span class="p">;</span>
+
+<span class="n">PFN_vkGetPhysicalDeviceMemoryProperties</span><span class="w"> </span><span class="n">vkGetPhysicalDeviceMemoryProperties</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">PFN_vkGetPhysicalDeviceMemoryProperties</span><span class="p">)</span><span class="n">vkGetInstanceProcAddr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;vkGetPhysicalDeviceMemoryProperties&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>之后就可以通过调用 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties</span></code> 获得内存相关信息了：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkPhysicalDevice</span><span class="w"> </span><span class="n">physical_device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前获取到的物理设备句柄</span><span class="p">;</span>
+
+<span class="n">VkPhysicalDeviceMemoryProperties</span><span class="w"> </span><span class="n">physical_device_memory_properties</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
+
+<span class="n">vkGetPhysicalDeviceMemoryProperties</span><span class="p">(</span><span class="n">physical_device</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">physical_device_memory_properties</span><span class="p">);</span>
+
+<span class="k">for</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">memory_type_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">memory_type_index</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">physical_device_memory_properties</span><span class="p">.</span><span class="n">memoryTypeCount</span><span class="p">;</span><span class="w"> </span><span class="n">memory_type_index</span><span class="o">++</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="n">VkMemoryType</span><span class="w"> </span><span class="n">memory_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">physical_device_memory_properties</span><span class="p">.</span><span class="n">memoryTypes</span><span class="p">[</span><span class="n">memory_type_index</span><span class="p">];</span>
+
+<span class="w">   </span><span class="k">if</span><span class="p">((</span><span class="n">memory_type</span><span class="p">.</span><span class="n">propertyFlags</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">VkMemoryPropertyFlagBits</span><span class="o">::</span><span class="n">VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">VkMemoryPropertyFlagBits</span><span class="o">::</span><span class="n">VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT</span><span class="p">)</span>
+<span class="w">   </span><span class="p">{</span>
+<span class="w">      </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Supprt DEVICE_LOCAL&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="w">   </span><span class="k">if</span><span class="p">((</span><span class="n">memory_type</span><span class="p">.</span><span class="n">propertyFlags</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">VkMemoryPropertyFlagBits</span><span class="o">::</span><span class="n">VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">VkMemoryPropertyFlagBits</span><span class="o">::</span><span class="n">VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT</span><span class="p">)</span>
+<span class="w">   </span><span class="p">{</span>
+<span class="w">      </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Supprt HOST_VISIBLE&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="w">   </span><span class="k">if</span><span class="p">((</span><span class="n">memory_type</span><span class="p">.</span><span class="n">propertyFlags</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">VkMemoryPropertyFlagBits</span><span class="o">::</span><span class="n">VK_MEMORY_PROPERTY_HOST_COHERENT_BIT</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">VkMemoryPropertyFlagBits</span><span class="o">::</span><span class="n">VK_MEMORY_PROPERTY_HOST_COHERENT_BIT</span><span class="p">)</span>
+<span class="w">   </span><span class="p">{</span>
+<span class="w">      </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Supprt HOST_COHERENT&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">   </span><span class="p">}</span>
+
+<span class="w">   </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">heap_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">memory_type</span><span class="p">.</span><span class="n">heapIndex</span><span class="p">;</span>
+
+<span class="w">   </span><span class="n">VkMemoryHeap</span><span class="w"> </span><span class="n">memory_heap</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">physical_device_memory_properties</span><span class="p">.</span><span class="n">memoryHeaps</span><span class="p">[</span><span class="n">heap_index</span><span class="p">];</span>
+
+<span class="w">   </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;heap &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">heap_index</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="s">&quot;:&quot;</span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="n">memory_heap</span><span class="p">.</span><span class="n">size</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">1024</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1024</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1024</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; GB&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">   </span><span class="k">if</span><span class="p">((</span><span class="n">memory_heap</span><span class="p">.</span><span class="n">flags</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">VkMemoryHeapFlagBits</span><span class="o">::</span><span class="n">VK_MEMORY_HEAP_DEVICE_LOCAL_BIT</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">VkMemoryHeapFlagBits</span><span class="o">::</span><span class="n">VK_MEMORY_HEAP_DEVICE_LOCAL_BIT</span><span class="p">)</span>
+<span class="w">   </span><span class="p">{</span>
+<span class="w">      </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\t</span><span class="s"> DEVICE_LOCAL&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
 </section>
 <section id="id19">
 <h3>分配缓存<a class="headerlink" href="#id19" title="此标题的永久链接">#</a></h3>
