@@ -22,6 +22,7 @@
    * 2023/6/23 增加 ``Include 与 Lib 和 Lib32`` 章节
    * 2023/6/23 增加 ``Templates`` 章节
    * 2023/6/29 更新 ``安装 Vulkan SDK`` 章节，改成 ``Tab`` 标签呈现
+   * 2023/7/10 增加 ``查看 Vulkan 所有相关信息`` 章节
 
 ``Khronos`` 这次推出了 ``Vulkan`` 官方的软件开发工具包 `Vulkan SDK <https://vulkan.lunarg.com/home/welcome>`_ ，这避免了像 ``OpenGL`` 开发环境混乱的情形再次上演。
 
@@ -567,6 +568,17 @@ Templates
 
    VisualStudio 工程模板
 
+查看 Vulkan 所有相关信息
+########################
+
+在 ``Vulkan SDK`` 的安装目录的 ``Bin`` 下有一个 ``vkconfig.exe`` 可执行程序。
+
+执行 ``vkconfig.exe`` 并点击菜单栏的 :menuselection:`Tools --> Vulkan Info` 将会弹出 ``Vulkan Info`` 窗口，该窗口可以查看 ``Vulkan`` 的所有相关信息。
+
+.. figure:: _static/vkInfo.png
+
+   Vulkan 所有相关信息界面
+
 Vulkan SDK 最佳实践
 ######################
 
@@ -589,4 +601,3 @@ Vulkan SDK 最佳实践
    :class: caution
 
    理论上来说是不需要依赖 ``Vulkan SDK`` 的，但是如果使用一些第三方库，这些第三方库可能会依赖  ``Vulkan SDK`` ，比如 `VulkanMemoryAllocator <https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator>`_ 。此时 ``Vulkan SDK`` 还是需要的。
-
