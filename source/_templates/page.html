@@ -1,4 +1,30 @@
 {% extends "!page.html" %}
+
+{% block left_sidebar %}
+<div class="sidebar-sticky" >
+  {%- for sidebar_section in sidebars %}
+    {%- include sidebar_section %}
+  {%- endfor %}
+</div>
+{% endblock left_sidebar %}
+
+{% block right_sidebar %}
+{% if not furo_hide_toc %}
+<div class="toc-sticky toc-scroll" style="width: 500px;">
+    <div class="toc-title-container" style="width: 500px;">
+        <span class="toc-title" style="width: 500px;">
+            {{ _("On this page") }}
+        </span>
+    </div>
+    <div class="toc-tree-container" style="width: 500px;">
+        <div class="toc-tree" style="width: 500px;">
+            {{ toc }}
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock right_sidebar %}
+
 {% block footer %}
 <div class="related-pages">
     {% if next -%}
@@ -63,7 +89,8 @@
         </div>
         {%- endif %}
         <div>
-            {% trans %} <span id="busuanzi_container_site_uv" style='display:none'>site view <span id="busuanzi_value_site_uv"></span></span> {% endtrans %}
+            {% trans %} <span id="busuanzi_container_site_uv" style='display:none'>site view <span
+                    id="busuanzi_value_site_uv"></span></span> {% endtrans %}
         </div>
     </div>
     <div class="right-details">
@@ -99,7 +126,8 @@
         </div>
         {%- endif %}
         <div class="left-details">
-            {% trans %} <span id="busuanzi_container_page_pv" style='display:none'>page view <span id="busuanzi_value_page_pv"></span></span> {% endtrans %}
+            {% trans %} <span id="busuanzi_container_page_pv" style='display:none'>page view <span
+                    id="busuanzi_value_page_pv"></span></span> {% endtrans %}
         </div>
     </div>
 </div>
