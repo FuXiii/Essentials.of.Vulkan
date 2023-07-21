@@ -262,6 +262,8 @@
 <li><p class="sd-card-text">2023/7/17 增加 <code class="docutils literal notranslate"><span class="pre">新增属性</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/7/17 增加 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceRayTracingPipelineFeaturesKHR</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/7/17 增加 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceRayTracingPipelinePropertiesKHR</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/7/21 增加 <code class="docutils literal notranslate"><span class="pre">vkCreateRayTracingPipelinesKHR</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/7/21 增加 <code class="docutils literal notranslate"><span class="pre">VkRayTracingPipelineCreateInfoKHR</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p>该扩展属于 <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">device扩展</span>。</p>
@@ -407,6 +409,83 @@
 </ul>
 <p>如果 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceRayTracingPipelinePropertiesKHR</span></code> 结构体通过 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceProperties2</span></code> 在 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceProperties2::pNext</span></code> 扩展链中指定，将会将对应的属性信息写入。</p>
 </section>
+<section id="id6">
+<h2>vkCreateRayTracingPipelinesKHR<a class="headerlink" href="#id6" title="此标题的永久链接">#</a></h2>
+<p>创建光追管线调用 <code class="docutils literal notranslate"><span class="pre">vkCreateRayTracingPipelinesKHR</span></code> 函数：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_ray_tracing_pipeline 提供</span>
+<span class="n">VkResult</span><span class="w"> </span><span class="nf">vkCreateRayTracingPipelinesKHR</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkDeferredOperationKHR</span><span class="w">                      </span><span class="n">deferredOperation</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkPipelineCache</span><span class="w">                             </span><span class="n">pipelineCache</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                                    </span><span class="n">createInfoCount</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkRayTracingPipelineCreateInfoKHR</span><span class="o">*</span><span class="w">    </span><span class="n">pCreateInfos</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkAllocationCallbacks</span><span class="o">*</span><span class="w">                </span><span class="n">pAllocator</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkPipeline</span><span class="o">*</span><span class="w">                                 </span><span class="n">pPipelines</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">device</span> 创建该光追管线的逻辑设备句柄。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">deferredOperation</span> 配置创建光追管线是否为延迟操作（需要开启 <code class="docutils literal notranslate"><span class="pre">VK_KHR_deferred_host_operations</span></code> 扩展）。要么是 <code class="docutils literal notranslate"><span class="pre">VK_NULL_HANDLE</span></code> 要么是 <code class="docutils literal notranslate"><span class="pre">VkDeferredOperationKHR</span></code> 有效句柄则表示进行延迟操作。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pipelineCache</span> 要么是 <code class="docutils literal notranslate"><span class="pre">VK_NULL_HANDLE</span></code> 要么是 <code class="docutils literal notranslate"><span class="pre">VkPipelineCache</span></code> 有效句柄则表示进行管线缓存。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">createInfoCount</span> 表示 <code class="docutils literal notranslate"><span class="pre">pCreateInfos</span></code> 数组中的元素数量。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pCreateInfos</span> 表示数量为 <code class="docutils literal notranslate"><span class="pre">createInfoCount</span></code> 类型为 <code class="docutils literal notranslate"><span class="pre">VkRayTracingPipelineCreateInfoKHR</span></code> 的数组，用于一次性创建多个光追管线。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pPipelines</span> 表示数量为 <code class="docutils literal notranslate"><span class="pre">createInfoCount</span></code> 类型为 <code class="docutils literal notranslate"><span class="pre">VkPipeline</span></code> 的数组，用于保存创建多个光追管线句柄。</p></li>
+</ul>
+<p>如果 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceRayTracingPipelineFeaturesKHR::rayTracingPipelineShaderGroupHandleCaptureReplay</span></code> 特性被激活，但是驱动不支持重复使用 <code class="docutils literal notranslate"><span class="pre">VkRayTracingPipelineCreateInfoKHR</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">VkRayTracingShaderGroupCreateInfoKHR::pShaderGroupCaptureReplayHandle</span></code> 的话将会返回 <code class="docutils literal notranslate"><span class="pre">VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS</span></code> 错误。</p>
+<div class="note admonition">
+<p class="admonition-title">正确用法</p>
+<ul class="simple">
+<li><p>如果 <code class="docutils literal notranslate"><span class="pre">pCreateInfos</span></code> 中任意一个元素的 <code class="docutils literal notranslate"><span class="pre">flags</span></code> 包含 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_DERIVATIVE_BIT</span></code> 标志位的话，则对应的元素的 <code class="docutils literal notranslate"><span class="pre">basePipelineIndex</span></code> 不为 <code class="docutils literal notranslate"><span class="pre">-1</span></code> 的话，则 <code class="docutils literal notranslate"><span class="pre">basePipelineIndex</span></code> 所表示的索引值必须小于 <code class="docutils literal notranslate"><span class="pre">pCreateInfos</span></code> 数组元素数量。</p></li>
+<li><p>如果 <code class="docutils literal notranslate"><span class="pre">pCreateInfos</span></code> 中任意一个元素的 <code class="docutils literal notranslate"><span class="pre">flags</span></code> 包含 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_DERIVATIVE_BIT</span></code> 标志位的话，则对应的基础管线必须使用 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT</span></code> 创建。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flags</span></code> 一定不能包含 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_DISPATCH_BASE</span></code> 标志位。</p></li>
+<li><p>如果 <code class="docutils literal notranslate"><span class="pre">pipelineCache</span></code> 使用 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CACHE_CREATE_EXTERNALLY_SYNCHRONIZED_BIT</span></code> 创建的话， <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端访问 <code class="docutils literal notranslate"><span class="pre">pipelineCache</span></code> 必须外部同步。</p></li>
+<li><p>如果 <code class="docutils literal notranslate"><span class="pre">deferredOperation</span></code> 不为 <code class="docutils literal notranslate"><span class="pre">VK_NULL_HANDLE</span></code> 的话， 他必须是一个 <code class="docutils literal notranslate"><span class="pre">VkDeferredOperationKHR</span></code> 有效句柄。</p></li>
+<li><p>任何与 <code class="docutils literal notranslate"><span class="pre">deferredOperation</span></code> 有关的前置操作都需要完成。</p></li>
+<li><p>必须激活 <code class="docutils literal notranslate"><span class="pre">rayTracingPipeline</span></code> 有特性。</p></li>
+<li><p>如果 <code class="docutils literal notranslate"><span class="pre">deferredOperation</span></code> 不为 <code class="docutils literal notranslate"><span class="pre">VK_NULL_HANDLE</span></code> 的话，对应的 <code class="docutils literal notranslate"><span class="pre">flags</span></code> 中一定不能包含 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_EARLY_RETURN_ON_FAILURE_BIT</span></code> 标志位。</p></li>
+</ul>
+</div>
+</section>
+<section id="vkraytracingpipelinecreateinfokhr">
+<h2>VkRayTracingPipelineCreateInfoKHR<a class="headerlink" href="#vkraytracingpipelinecreateinfokhr" title="此标题的永久链接">#</a></h2>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_ray_tracing_pipeline 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkRayTracingPipelineCreateInfoKHR</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VkStructureType</span><span class="w">                                      </span><span class="n">sType</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w">                                          </span><span class="n">pNext</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkPipelineCreateFlags</span><span class="w">                                </span><span class="n">flags</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                                             </span><span class="n">stageCount</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkPipelineShaderStageCreateInfo</span><span class="o">*</span><span class="w">               </span><span class="n">pStages</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                                             </span><span class="n">groupCount</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkRayTracingShaderGroupCreateInfoKHR</span><span class="o">*</span><span class="w">          </span><span class="n">pGroups</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                                             </span><span class="n">maxPipelineRayRecursionDepth</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkPipelineLibraryCreateInfoKHR</span><span class="o">*</span><span class="w">                </span><span class="n">pLibraryInfo</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkRayTracingPipelineInterfaceCreateInfoKHR</span><span class="o">*</span><span class="w">    </span><span class="n">pLibraryInterface</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkPipelineDynamicStateCreateInfo</span><span class="o">*</span><span class="w">              </span><span class="n">pDynamicState</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkPipelineLayout</span><span class="w">                                     </span><span class="n">layout</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkPipeline</span><span class="w">                                           </span><span class="n">basePipelineHandle</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int32_t</span><span class="w">                                              </span><span class="n">basePipelineIndex</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkRayTracingPipelineCreateInfoKHR</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 该结构体的类型，必须为 <code class="docutils literal notranslate"><span class="pre">VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_KHR</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pNext</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向其他结构体来扩展该结构体。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">flags</span> 用于指定的创建光追管线的额外参数。对应 <code class="docutils literal notranslate"><span class="pre">VkPipelineCreateFlagBits</span></code> 中各位域值。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">stageCount</span> 表示 <code class="docutils literal notranslate"><span class="pre">pStages</span></code> 中的元素个数。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pStages</span> 个数为 <code class="docutils literal notranslate"><span class="pre">stageCount</span></code> 类型为 <code class="docutils literal notranslate"><span class="pre">VkPipelineShaderStageCreateInfo</span></code> 的数组。用于描述该管线中的着色器。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">groupCount</span> 表示 <code class="docutils literal notranslate"><span class="pre">pGroups</span></code> 中的元素个数。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pGroups</span> 个数为 <code class="docutils literal notranslate"><span class="pre">groupCount</span></code> 类型为 <code class="docutils literal notranslate"><span class="pre">VkRayTracingShaderGroupCreateInfoKHR</span></code> 的数组。用于描述该管线中的每个着色器组中包含的着色器。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">maxPipelineRayRecursionDepth</span> 为管线着色器的最大递归深度。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pLibraryInfo</span> 指向 <code class="docutils literal notranslate"><span class="pre">VkPipelineLibraryCreateInfoKHR</span></code> 用于定义包含的管线库。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pLibraryInterface</span> 指向 <code class="docutils literal notranslate"><span class="pre">VkRayTracingPipelineInterfaceCreateInfoKHR</span></code> 用于定义当时用管线库的额外信息。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pDynamicState</span> 指向 <code class="docutils literal notranslate"><span class="pre">VkPipelineDynamicStateCreateInfo</span></code> 用于定义管线的动态属性哪些可以单独动态改变。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">layout</span> 表示该管线对应绑定的描述符集所对应的位置。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">basePipelineHandle</span> 要派生的父管线句柄。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">basePipelineIndex</span> 表示要从 <code class="docutils literal notranslate"><span class="pre">pCreateInfos</span></code> 中对应的索引中派生。</p></li>
+</ul>
+<p>如果设置了 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_LIBRARY_BIT_KHR</span></code> 标志位的话，该管线定义的管线库不能直接作为光追管线进行绑定。而是通过管线库定义通用的着色器和着色器组用于之后的管线创建。</p>
+<p>如果 <code class="docutils literal notranslate"><span class="pre">pLibraryInfo</span></code> 中包含管线库的话，该管线库中定义的着色器们将会被认为是 <code class="docutils literal notranslate"><span class="pre">pStages</span></code> 的额外项。</p>
+</section>
 </section>
 
         </article>
@@ -498,6 +577,8 @@
 <li><a class="reference internal" href="#id5">新增属性</a></li>
 <li><a class="reference internal" href="#vkphysicaldeviceraytracingpipelinefeatureskhr">VkPhysicalDeviceRayTracingPipelineFeaturesKHR</a></li>
 <li><a class="reference internal" href="#vkphysicaldeviceraytracingpipelinepropertieskhr">VkPhysicalDeviceRayTracingPipelinePropertiesKHR</a></li>
+<li><a class="reference internal" href="#id6">vkCreateRayTracingPipelinesKHR</a></li>
+<li><a class="reference internal" href="#vkraytracingpipelinecreateinfokhr">VkRayTracingPipelineCreateInfoKHR</a></li>
 </ul>
 </li>
 </ul>

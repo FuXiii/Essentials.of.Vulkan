@@ -13,6 +13,8 @@ VK_KHR_ray_tracing_pipeline
    * 2023/7/17 增加 ``新增属性`` 章节
    * 2023/7/17 增加 ``VkPhysicalDeviceRayTracingPipelineFeaturesKHR`` 章节
    * 2023/7/17 增加 ``VkPhysicalDeviceRayTracingPipelinePropertiesKHR`` 章节
+   * 2023/7/21 增加 ``vkCreateRayTracingPipelinesKHR`` 章节
+   * 2023/7/21 增加 ``VkRayTracingPipelineCreateInfoKHR`` 章节
 
 该扩展属于 :bdg-info:`device扩展`。
 
@@ -141,3 +143,83 @@ VkPhysicalDeviceRayTracingPipelinePropertiesKHR
 * :bdg-secondary:`maxRayHitAttributeSize` 光线属性结构体的最大比特大小。
 
 如果 ``VkPhysicalDeviceRayTracingPipelinePropertiesKHR`` 结构体通过 ``vkGetPhysicalDeviceProperties2`` 在 ``VkPhysicalDeviceProperties2::pNext`` 扩展链中指定，将会将对应的属性信息写入。
+
+vkCreateRayTracingPipelinesKHR
+***************************************************
+
+创建光追管线调用 ``vkCreateRayTracingPipelinesKHR`` 函数：
+
+.. code:: c++
+
+   // 由 VK_KHR_ray_tracing_pipeline 提供
+   VkResult vkCreateRayTracingPipelinesKHR(
+       VkDevice                                    device,
+       VkDeferredOperationKHR                      deferredOperation,
+       VkPipelineCache                             pipelineCache,
+       uint32_t                                    createInfoCount,
+       const VkRayTracingPipelineCreateInfoKHR*    pCreateInfos,
+       const VkAllocationCallbacks*                pAllocator,
+       VkPipeline*                                 pPipelines);
+
+* :bdg-secondary:`device` 创建该光追管线的逻辑设备句柄。
+* :bdg-secondary:`deferredOperation` 配置创建光追管线是否为延迟操作（需要开启 ``VK_KHR_deferred_host_operations`` 扩展）。要么是 ``VK_NULL_HANDLE`` 要么是 ``VkDeferredOperationKHR`` 有效句柄则表示进行延迟操作。
+* :bdg-secondary:`pipelineCache` 要么是 ``VK_NULL_HANDLE`` 要么是 ``VkPipelineCache`` 有效句柄则表示进行管线缓存。
+* :bdg-secondary:`createInfoCount` 表示 ``pCreateInfos`` 数组中的元素数量。
+* :bdg-secondary:`pCreateInfos` 表示数量为 ``createInfoCount`` 类型为 ``VkRayTracingPipelineCreateInfoKHR`` 的数组，用于一次性创建多个光追管线。
+* :bdg-secondary:`pPipelines` 表示数量为 ``createInfoCount`` 类型为 ``VkPipeline`` 的数组，用于保存创建多个光追管线句柄。
+
+如果 ``VkPhysicalDeviceRayTracingPipelineFeaturesKHR::rayTracingPipelineShaderGroupHandleCaptureReplay`` 特性被激活，但是驱动不支持重复使用 ``VkRayTracingPipelineCreateInfoKHR`` 中的 ``VkRayTracingShaderGroupCreateInfoKHR::pShaderGroupCaptureReplayHandle`` 的话将会返回 ``VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS`` 错误。
+
+.. admonition:: 正确用法
+   :class: note
+
+   * 如果 ``pCreateInfos`` 中任意一个元素的 ``flags`` 包含 ``VK_PIPELINE_CREATE_DERIVATIVE_BIT`` 标志位的话，则对应的元素的 ``basePipelineIndex`` 不为 ``-1`` 的话，则 ``basePipelineIndex`` 所表示的索引值必须小于 ``pCreateInfos`` 数组元素数量。
+   * 如果 ``pCreateInfos`` 中任意一个元素的 ``flags`` 包含 ``VK_PIPELINE_CREATE_DERIVATIVE_BIT`` 标志位的话，则对应的基础管线必须使用 ``VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT`` 创建。
+   * ``flags`` 一定不能包含 ``VK_PIPELINE_CREATE_DISPATCH_BASE`` 标志位。
+   * 如果 ``pipelineCache`` 使用 ``VK_PIPELINE_CACHE_CREATE_EXTERNALLY_SYNCHRONIZED_BIT`` 创建的话， ``Host`` 端访问 ``pipelineCache`` 必须外部同步。
+   * 如果 ``deferredOperation`` 不为 ``VK_NULL_HANDLE`` 的话， 他必须是一个 ``VkDeferredOperationKHR`` 有效句柄。
+   * 任何与 ``deferredOperation`` 有关的前置操作都需要完成。
+   * 必须激活 ``rayTracingPipeline`` 有特性。
+   * 如果 ``deferredOperation`` 不为 ``VK_NULL_HANDLE`` 的话，对应的 ``flags`` 中一定不能包含 ``VK_PIPELINE_CREATE_EARLY_RETURN_ON_FAILURE_BIT`` 标志位。
+
+VkRayTracingPipelineCreateInfoKHR
+***************************************************
+
+.. code:: c++
+
+   // 由 VK_KHR_ray_tracing_pipeline 提供
+   typedef struct VkRayTracingPipelineCreateInfoKHR {
+       VkStructureType                                      sType;
+       const void*                                          pNext;
+       VkPipelineCreateFlags                                flags;
+       uint32_t                                             stageCount;
+       const VkPipelineShaderStageCreateInfo*               pStages;
+       uint32_t                                             groupCount;
+       const VkRayTracingShaderGroupCreateInfoKHR*          pGroups;
+       uint32_t                                             maxPipelineRayRecursionDepth;
+       const VkPipelineLibraryCreateInfoKHR*                pLibraryInfo;
+       const VkRayTracingPipelineInterfaceCreateInfoKHR*    pLibraryInterface;
+       const VkPipelineDynamicStateCreateInfo*              pDynamicState;
+       VkPipelineLayout                                     layout;
+       VkPipeline                                           basePipelineHandle;
+       int32_t                                              basePipelineIndex;
+   } VkRayTracingPipelineCreateInfoKHR;
+
+* :bdg-secondary:`sType` 该结构体的类型，必须为 ``VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_KHR`` 。
+* :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
+* :bdg-secondary:`flags` 用于指定的创建光追管线的额外参数。对应 ``VkPipelineCreateFlagBits`` 中各位域值。
+* :bdg-secondary:`stageCount` 表示 ``pStages`` 中的元素个数。
+* :bdg-secondary:`pStages` 个数为 ``stageCount`` 类型为 ``VkPipelineShaderStageCreateInfo`` 的数组。用于描述该管线中的着色器。
+* :bdg-secondary:`groupCount` 表示 ``pGroups`` 中的元素个数。
+* :bdg-secondary:`pGroups` 个数为 ``groupCount`` 类型为 ``VkRayTracingShaderGroupCreateInfoKHR`` 的数组。用于描述该管线中的每个着色器组中包含的着色器。
+* :bdg-secondary:`maxPipelineRayRecursionDepth` 为管线着色器的最大递归深度。
+* :bdg-secondary:`pLibraryInfo` 指向 ``VkPipelineLibraryCreateInfoKHR`` 用于定义包含的管线库。
+* :bdg-secondary:`pLibraryInterface` 指向 ``VkRayTracingPipelineInterfaceCreateInfoKHR`` 用于定义当时用管线库的额外信息。
+* :bdg-secondary:`pDynamicState` 指向 ``VkPipelineDynamicStateCreateInfo`` 用于定义管线的动态属性哪些可以单独动态改变。
+* :bdg-secondary:`layout` 表示该管线对应绑定的描述符集所对应的位置。
+* :bdg-secondary:`basePipelineHandle` 要派生的父管线句柄。
+* :bdg-secondary:`basePipelineIndex` 表示要从 ``pCreateInfos`` 中对应的索引中派生。
+
+如果设置了 ``VK_PIPELINE_CREATE_LIBRARY_BIT_KHR`` 标志位的话，该管线定义的管线库不能直接作为光追管线进行绑定。而是通过管线库定义通用的着色器和着色器组用于之后的管线创建。
+
+如果 ``pLibraryInfo`` 中包含管线库的话，该管线库中定义的着色器们将会被认为是 ``pStages`` 的额外项。
