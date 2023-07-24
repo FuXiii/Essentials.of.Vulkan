@@ -4,6 +4,12 @@
 此更新日志为纵览更新，对于具体文章的更新位于每个文章的开头的 `更新记录` 中。
 ```
 
+## 2023/7/24
+
+>* 增加`WebGPU`文件夹，用于存储`WebGPU`的可执行文件
+>* `WebGPU`增加`ImGuiTest`文件夹，用于存储`WebGPU`的`ImGui`可执行文件
+>* 增加`WebGPU ImGui`文档，用于跳转`WebGPU ImGui`页面
+
 ## 2023/7/21
 
 >* 更新`VK_KHR_ray_tracing_pipeline`文档
