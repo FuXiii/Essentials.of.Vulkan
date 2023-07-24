@@ -8,7 +8,9 @@
 
 >* 增加`WebGPU`文件夹，用于存储`WebGPU`的可执行文件
 >* `WebGPU`增加`ImGuiTest`文件夹，用于存储`WebGPU`的`ImGui`可执行文件
+>* `WebGPU`增加`HelloTriangle`文件夹，用于存储`WebGPU`的`HelloTriangle`可执行文件
 >* 增加`WebGPU ImGui`文档，用于跳转`WebGPU ImGui`页面
+>* 增加`WebGPU Hello Triangle`文档，用于跳转`WebGPU ImGui`页面
 
 ## 2023/7/21
 
