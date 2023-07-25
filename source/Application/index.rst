@@ -15,3 +15,4 @@
     VolumetricCloud.md
     WebGPUImGui.rst
     WebGPUHelloTriangle.rst
+    WebGPUShaderCompiler.rst

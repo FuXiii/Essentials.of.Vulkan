@@ -21,7 +21,7 @@ extensions = [
     'sphinx_inline_tabs',
     ##'sphinx_last_updated_by_git',
     'sphinx_design',
-    'sphinx_comments'
+    'sphinx_comments',
     ]
 
 comments_config = {
