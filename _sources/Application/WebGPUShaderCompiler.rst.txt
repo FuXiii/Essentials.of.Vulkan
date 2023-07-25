@@ -33,7 +33,10 @@ WebGPU Shader Compiler
       :class: seealso
 
       1. 首先将着色器代码选中后 :kbd:`Ctrl+V` 粘贴至剪贴板。
-      2. 进入 `PureCCppWebShaderCompiler <../_static/WebGPU/ShaderCompiler/WasmShaderCompiler.html>`_ 页面
+      2. 进入 `PureCCppWebShaderCompiler <../_static/WebGPU/ShaderCompiler/WasmShaderCompiler.html>`_ 页面。如果是第一次进入会弹出 ``允许访问剪贴板`` 的弹窗，点击 ``允许`` 。
+
+         .. figure:: ../_static/WebGPU/ShaderCompiler/allow_browser_clipboard.png
+
       3. 依次点击 :menuselection:`Edit --> Paste` 将代码粘贴至编译器页面中
 
          .. figure:: ../_static/WebGPU/ShaderCompiler/paste_shader_code.png
@@ -41,7 +44,8 @@ WebGPU Shader Compiler
          .. admonition:: 存在的问题
             :class: warning
 
-            必须进行 :menuselection:`Edit --> Paste` 操作才能将代码粘贴至编译器中，直接在编译器中 :kbd:`Ctrl+V` 没有反应。
+            * 必须进行 :menuselection:`Edit --> Paste` 操作才能将代码粘贴至编译器中，直接在编译器中 :kbd:`Ctrl+V` 没有反应。
+            * 考虑如何设置引用着色器的 ``include`` 头文件。
 
       4. 配置着色器语言 ``Language`` 选项（ ``GLSL`` 或 ``HLSL`` ），配置 ``Shader Type`` 选项（ ``顶点着色器`` 还是 ``片元着色器`` 等）
 
@@ -67,3 +71,4 @@ WebGPU Shader Compiler
       2. 提供 ``SPIR-V`` 输出为文件的功能
       3. 提供 ``SPIR-V`` 输出为可阅读的文本格式
       4. 提供 ``WGSL`` 着色器支持
+      5. 提供对于头文件的支持
