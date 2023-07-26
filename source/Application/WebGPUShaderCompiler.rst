@@ -8,6 +8,7 @@ WebGPU Shader Compiler
    * 2023/7/25 增加该文档
    * 2023/7/25 增加 ``源码说明`` 文档
    * 2023/7/25 增加 ``发布 0.1`` 文档
+   * 2023/7/26 增加 ``发布 0.2`` 文档
 
 `WebGPU Shader Compiler <../_static/WebGPU/ShaderCompiler/WasmShaderCompiler.html>`_ ``在线着色器编译器`` 可在线浏览。
 
@@ -17,6 +18,19 @@ WebGPU Shader Compiler
    该项目的源码位于 `Turbo <https://github.com/FuXiii/Turbo>`_ 的 `PureCCppWebShaderCompiler <https://github.com/FuXiii/Turbo/tree/dev/samples/PureCCppWebShaderCompiler>`_ 中。
 
    该项目是一个工具项目，并没有打算做的多精美，所以这个工具代码写的就像 ``依托答辩`` ，请谨慎阅览。
+
+.. dropdown:: 发布 0.2
+   :color: primary
+   :icon: checklist
+   :open:
+
+   .. article-info::
+    :avatar-outline: muted
+    :author: WebShader Compiler
+    :date: July 26, 2023 发布
+    :class-container: sd-p-2 sd-outline-muted sd-rounded-1
+
+   * 增大可视大小，之前的太小了。
 
 .. dropdown:: 发布 0.1
    :color: primary

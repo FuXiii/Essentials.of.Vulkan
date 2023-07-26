@@ -6,6 +6,10 @@
 
 ## 2023/7/25
 
+>* 更新`WebGPU Shader Compiler`文档
+
+## 2023/7/25
+
 >* 增加`WebGPU`文件夹，用于存储`WebGPU`的可执行文件
 >* `WebGPU`增加`ShaderCompiler`文件夹，用于存储网页版在线着色器编译器可执行文件
 >* 增加`WebGPU Shader Compiler`文档
