@@ -9,8 +9,12 @@ WebGPU Shader Compiler
    * 2023/7/25 增加 ``源码说明`` 文档
    * 2023/7/25 增加 ``发布 0.1`` 文档
    * 2023/7/26 增加 ``发布 0.2`` 文档
+   * 2023/7/26 将跳转链接更改成卡片样式
 
-`WebGPU Shader Compiler <../_static/WebGPU/ShaderCompiler/WasmShaderCompiler.html>`_ ``在线着色器编译器`` 可在线浏览。
+.. card:: 在线着色器编译器
+   :link: ../_static/WebGPU/ShaderCompiler/WasmShaderCompiler.html
+
+   您可以点击该卡片跳转至 `Shader Compiler <../_static/WebGPU/ShaderCompiler/WasmShaderCompiler.html>`_
 
 .. admonition:: 源码说明
    :class: important
