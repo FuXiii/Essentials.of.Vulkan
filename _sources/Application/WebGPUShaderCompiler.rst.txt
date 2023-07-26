@@ -31,6 +31,7 @@ WebGPU Shader Compiler
     :class-container: sd-p-2 sd-outline-muted sd-rounded-1
 
    * 增大可视大小，之前的太小了。
+   * 增加对于 :kbd:`Ctrl+V` 快捷键的支持。现可以通过该快捷键将 ``Shader`` 代码直接粘贴进代码编辑器中。
 
 .. dropdown:: 发布 0.1
    :color: primary
