@@ -54,7 +54,7 @@ WebGPU Shader Compiler
       :class: seealso
 
       1. 首先将着色器代码选中后 :kbd:`Ctrl+V` 粘贴至剪贴板。
-      2. 进入 `PureCCppWebShaderCompiler <../_static/WebGPU/ShaderCompiler/WasmShaderCompiler.html>`_ 页面。如果是第一次进入会弹出 ``允许访问剪贴板`` 的弹窗，点击 ``允许`` 。
+      2. 进入 `在线着色器编译器 <../_static/WebGPU/ShaderCompiler/WasmShaderCompiler.html>`_ 页面。如果是第一次进入会弹出 ``允许访问剪贴板`` 的弹窗，点击 ``允许`` 。
 
          .. figure:: ../_static/WebGPU/ShaderCompiler/allow_browser_clipboard.png
 
