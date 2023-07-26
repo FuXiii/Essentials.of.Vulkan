@@ -14,6 +14,7 @@ WebGPU Shader Compiler
 .. card:: 在线着色器编译器
    :link: ../_static/WebGPU/ShaderCompiler/WasmShaderCompiler.html
    :shadow: md
+   :text-align: center
 
    您可以点击该卡片跳转至 `Shader Compiler <../_static/WebGPU/ShaderCompiler/WasmShaderCompiler.html>`_
 
