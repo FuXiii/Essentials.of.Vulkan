@@ -4,6 +4,14 @@
 此更新日志为纵览更新，对于具体文章的更新位于每个文章的开头的 `更新记录` 中。
 ```
 
+## 2023/7/27
+
+>* 更新`WebGPU Shader Compiler`文档
+
+## 2023/7/26
+
+>* 更新`WebGPU Shader Compiler`文档
+
 ## 2023/7/25
 
 >* 更新`WebGPU Shader Compiler`文档
