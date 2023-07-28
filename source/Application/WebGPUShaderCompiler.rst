@@ -11,6 +11,7 @@ WebGPU Shader Compiler
    * 2023/7/26 增加 ``发布 0.2`` 文档
    * 2023/7/26 将跳转链接更改成卡片样式
    * 2023/7/27 增加 ``发布 0.3`` 文档
+   * 2023/7/28 增加 ``发布 0.4`` 文档
 
 .. card:: 在线着色器编译器
    :link: ../_static/WebGPU/ShaderCompiler/WasmShaderCompiler.html
@@ -19,12 +20,44 @@ WebGPU Shader Compiler
 
    您可以点击该卡片跳转至 `Shader Compiler <../_static/WebGPU/ShaderCompiler/WasmShaderCompiler.html>`_
 
+.. figure:: ../_static/WebGPU/ShaderCompiler/ConvertMap.drawio.svg
+
+   编译示意图
+
 .. admonition:: 源码说明
    :class: important
 
    该项目的源码位于 `Turbo <https://github.com/FuXiii/Turbo>`_ 的 `PureCCppWebShaderCompiler <https://github.com/FuXiii/Turbo/tree/dev/samples/PureCCppWebShaderCompiler>`_ 中。
 
    该项目是一个工具项目，并没有打算做的多精美，所以这个工具代码写的就像 ``依托答辩`` ，请谨慎阅览。
+
+.. dropdown:: 发布 0.4
+   :color: primary
+   :icon: checklist
+   :open:
+
+   .. article-info::
+    :avatar-outline: muted
+    :author: WebShader Compiler
+    :date: July 28, 2023 发布
+    :class-container: sd-p-2 sd-outline-muted sd-rounded-1
+
+   .. admonition:: 重要功能
+      :class: important
+
+      * 提供 ``SPIR-V`` 代码的编译功能。
+
+   .. admonition:: 更新记录
+      :class: note
+
+      * ``Language`` 窗口选项中增加 :menuselection:`SPIR-V Binary` 和 :menuselection:`SPIR-V Disassemble` 选项。
+
+      .. figure:: ../_static/WebGPU/ShaderCompiler/ver04_language_add_spirv.png
+
+   .. admonition:: 存在的问题
+      :class: warning
+
+      * ``SPIR-V Binary`` 与 ``SPIR-V Disassemble`` 之间转换时没有做语法检查。这是应为该编译器底层使用的 `SPIRV-Tools <https://github.com/KhronosGroup/SPIRV-Tools>`_ 进行的 ``SPIR-V`` 序列化和反序列化，该库中对于 ``SPIR-V`` 的验证功能还在建设中。
 
 .. dropdown:: 发布 0.3
    :color: primary
