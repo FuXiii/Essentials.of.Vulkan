@@ -57,7 +57,7 @@ WebGPU Shader Compiler
    .. admonition:: 存在的问题
       :class: warning
 
-      * ``SPIR-V Binary`` 与 ``SPIR-V Disassemble`` 之间转换时没有做语法检查。这是应为该编译器底层使用的 `SPIRV-Tools <https://github.com/KhronosGroup/SPIRV-Tools>`_ 进行的 ``SPIR-V`` 序列化和反序列化，该库中对于 ``SPIR-V`` 的验证功能还在建设中。
+      * ``SPIR-V Binary`` 与 ``SPIR-V Disassemble`` 之间转换时没有做完整性检查（有基本错误检查）。这是应为该编译器底层使用的 `SPIRV-Tools <https://github.com/KhronosGroup/SPIRV-Tools>`_ 进行的 ``SPIR-V`` 序列化和反序列化，该库中对于 ``SPIR-V`` 的验证功能还在建设中。
 
 .. dropdown:: 发布 0.3
    :color: primary
