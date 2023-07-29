@@ -12,6 +12,7 @@ WebGPU Shader Compiler
    * 2023/7/26 将跳转链接更改成卡片样式
    * 2023/7/27 增加 ``发布 0.3`` 文档
    * 2023/7/28 增加 ``发布 0.4`` 文档
+   * 2023/7/29 增加 ``发布 0.5`` 文档
 
 .. card:: 在线着色器编译器
    :link: ../_static/WebGPU/ShaderCompiler/WasmShaderCompiler.html
@@ -24,12 +25,51 @@ WebGPU Shader Compiler
 
    编译示意图
 
+.. admonition:: 图示说明
+   :class: tip
+
+   * :bdg-light:`表示编译器支持的着色器语言`
+   * :bdg-success:`表示编译器支持的编译路径`
+   * :bdg-secondary:`表示编译器不支持的编译路径`
+   * :bdg-warning:`表示源码中对应调用的函数`
+
 .. admonition:: 源码说明
    :class: important
 
    该项目的源码位于 `Turbo <https://github.com/FuXiii/Turbo>`_ 的 `PureCCppWebShaderCompiler <https://github.com/FuXiii/Turbo/tree/dev/samples/PureCCppWebShaderCompiler>`_ 中。
 
    该项目是一个工具项目，并没有打算做的多精美，所以这个工具代码写的就像 ``依托答辩`` ，请谨慎阅览。
+
+.. dropdown:: 发布 0.5
+   :color: primary
+   :icon: checklist
+   :open:
+
+   .. article-info::
+    :avatar-outline: muted
+    :author: WebShader Compiler
+    :date: July 29, 2023 发布
+    :class-container: sd-p-2 sd-outline-muted sd-rounded-1
+
+   .. admonition:: 重要功能
+      :class: important
+
+      * 提供编译到 ``GLSL`` 功能。
+      * 提供编译到 ``HLSL`` 功能。
+      * 提供编译到 ``MSL`` 功能。
+      * 提供编译到 ``C++`` 功能。
+      * 提供编译到 ``Reflection`` 功能。
+
+   .. admonition:: 更新记录
+      :class: note
+
+      * :menuselection:`Convert` 菜单选项中增加 :menuselection:`GLSL` 子菜单。
+      * :menuselection:`Convert` 菜单选项中增加 :menuselection:`HLSL` 子菜单。
+      * :menuselection:`Convert` 菜单选项中增加 :menuselection:`MSL` 子菜单。
+      * :menuselection:`Convert` 菜单选项中增加 :menuselection:`C++` 子菜单。
+      * :menuselection:`Convert` 菜单选项中增加 :menuselection:`Reflection` 子菜单。
+
+      .. figure:: ../_static/WebGPU/ShaderCompiler/v05_convert_to_etc.png
 
 .. dropdown:: 发布 0.4
    :color: primary
