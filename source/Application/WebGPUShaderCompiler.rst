@@ -13,6 +13,7 @@ WebGPU Shader Compiler
    * 2023/7/27 增加 ``发布 0.3`` 文档
    * 2023/7/28 增加 ``发布 0.4`` 文档
    * 2023/7/29 增加 ``发布 0.5`` 文档
+   * 2023/7/31 增加 ``发布 0.6`` 文档
 
 .. card:: 在线着色器编译器
    :link: ../_static/WebGPU/ShaderCompiler/WasmShaderCompiler.html
@@ -39,6 +40,30 @@ WebGPU Shader Compiler
    该项目的源码位于 `Turbo <https://github.com/FuXiii/Turbo>`_ 的 `PureCCppWebShaderCompiler <https://github.com/FuXiii/Turbo/tree/dev/samples/PureCCppWebShaderCompiler>`_ 中。
 
    该项目是一个工具项目，并没有打算做的多精美，所以这个工具代码写的就像 ``依托答辩`` ，请谨慎阅览。
+
+.. dropdown:: 发布 0.6
+   :color: primary
+   :icon: checklist
+   :open:
+
+   .. article-info::
+    :avatar-outline: muted
+    :author: WebShader Compiler
+    :date: July 31, 2023 发布
+    :class-container: sd-p-2 sd-outline-muted sd-rounded-1
+
+   .. admonition:: 更新记录
+      :class: note
+
+      * 修正将 ``Miss`` ， ``Callable`` ， ``Task`` 和 ``Mesh`` 着色器识别成 ``Vertex`` 着色器的 ``Bug``
+      * 修正成功编译 ``HLSL`` ， ``MSL`` ， ``C++`` ， ``Reflection`` 时输出的文字提示错误
+
+   .. admonition:: 存在的问题
+      :class: warning
+
+      * ``Tessellation Control`` ， ``Tessellation Evaluation`` ， ``Geometry`` ， ``Compute`` 着色器转成 ``HLSL`` 时会导致异常。
+      * 对于光线追踪着色器转成 ``HLSL`` 或 ``MSL`` 时会导致异常。
+
 
 .. dropdown:: 发布 0.5
    :color: primary
