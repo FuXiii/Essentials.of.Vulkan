@@ -4,6 +4,10 @@
 此更新日志为纵览更新，对于具体文章的更新位于每个文章的开头的 `更新记录` 中。
 ```
 
+## 2023/8/1
+
+>* 更新`VK_KHR_ray_tracing_pipeline`文档
+
 ## 2023/7/31
 
 >* 更新`WebGPU Shader Compiler`文档

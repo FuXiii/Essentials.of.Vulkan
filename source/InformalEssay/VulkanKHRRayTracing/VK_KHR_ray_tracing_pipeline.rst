@@ -15,6 +15,7 @@ VK_KHR_ray_tracing_pipeline
    * 2023/7/17 增加 ``VkPhysicalDeviceRayTracingPipelinePropertiesKHR`` 章节
    * 2023/7/21 增加 ``vkCreateRayTracingPipelinesKHR`` 章节
    * 2023/7/21 增加 ``VkRayTracingPipelineCreateInfoKHR`` 章节
+   * 2023/8/1 更新 ``VkRayTracingPipelineCreateInfoKHR`` 章节
 
 该扩展属于 :bdg-info:`device扩展`。
 
@@ -223,3 +224,29 @@ VkRayTracingPipelineCreateInfoKHR
 如果设置了 ``VK_PIPELINE_CREATE_LIBRARY_BIT_KHR`` 标志位的话，该管线定义的管线库不能直接作为光追管线进行绑定。而是通过管线库定义通用的着色器和着色器组用于之后的管线创建。
 
 如果 ``pLibraryInfo`` 中包含管线库的话，该管线库中定义的着色器们将会被认为是 ``pStages`` 的额外项。
+
+如果 ``VK_DYNAMIC_STATE_RAY_TRACING_PIPELINE_STACK_SIZE_KHR`` 没有设置的话，管线的默认栈大小是按照 `Ray Tracing Pipeline Stack <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap40.html#ray-tracing-pipeline-stack>`_ 计算得出。
+
+如果 ``VkPipelineCreateFlags2CreateInfoKHR`` 存在于 ``pNext`` 扩展链中，将会忽略该结构体中的 ``flags`` 转而使用 ``VkPipelineCreateFlags2CreateInfoKHR::flags`` 。
+
+.. admonition:: 正确用法
+   :class: note
+
+   * 如果 ``flags`` 包含 ``VK_PIPELINE_CREATE_DERIVATIVE_BIT`` 标志位的话，并且 ``basePipelineIndex`` 不为 ``-1`` 的话，则 ``basePipelineHandle`` 必须是一个有效的光追管线。
+   * 如果 ``flags`` 包含 ``VK_PIPELINE_CREATE_DERIVATIVE_BIT`` 标志位的话，并且 ``basePipelineHandle`` 是 ``VK_NULL_HANDLE`` 的话，则 ``basePipelineIndex`` 必须是一个有效的索引值。
+   * 如果 ``flags`` 包含 ``VK_PIPELINE_CREATE_DERIVATIVE_BIT`` 标志位的话， ``basePipelineIndex`` 必须是 ``-1`` 或 ``basePipelineHandle`` 为 ``VK_NULL_HANDLE``。
+   * 如果 ``flags`` 一定不能包含 ``VK_PIPELINE_CREATE_INDIRECT_BINDABLE_BIT_NV`` 标志位。
+   * 如果 `pipelineCreationCacheControl <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap46.html#features-pipelineCreationCacheControl>`_ 特性没有开启 ``flags`` 一定不能包含 ``VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT`` 或 ``VK_PIPELINE_CREATE_EARLY_RETURN_ON_FAILURE_BIT`` 标志位。
+   * 如果 ``flags`` 不包含 ``VK_PIPELINE_CREATE_LIBRARY_BIT_KHR`` 标志位的话， ``pStages`` 最起码其中一个 ``VK_SHADER_STAGE_RAYGEN_BIT_KHR`` 元素隐式的加入到 ``pLibraryInfo`` 中。
+   * 如果 ``flags`` 包含 ``VK_PIPELINE_CREATE_LIBRARY_BIT_KHR`` 标志位的话， ``pLibraryInterface`` 一定不能为 ``NULL`` 。
+   * ``pLibraryInfo->pLibraries`` 中的每一个元素的 ``maxPipelineRayRecursionDepth`` 都必须与该管线相等。
+   * 如果 ``pLibraryInfo`` 不为 ``NULL`` ，其中的每一个元素的 ``layout`` 都必须与该管线的 ``layout`` 兼容。
+   * 如果 ``pLibraryInfo`` 不为 ``NULL`` ，其中的每一个元素的 ``pLibraryInterface`` 成员中的 ``maxPipelineRayPayloadSize`` 和 ``maxPipelineRayHitAttributeSize`` 都必须与该管线的相等。
+   * 如果 ``flags`` 包含 ``VK_PIPELINE_CREATE_RAY_TRACING_SHADER_GROUP_HANDLE_CAPTURE_REPLAY_BIT_KHR`` 标志位的话， ``pLibraryInfo->pLibraries`` 的每一个元素都需要使用 ``VK_PIPELINE_CREATE_RAY_TRACING_SHADER_GROUP_HANDLE_CAPTURE_REPLAY_BIT_KHR`` 创建。
+   * 如果 ``flags`` 包含 ``VK_PIPELINE_CREATE_RAY_TRACING_SKIP_AABBS_BIT_KHR`` 标志位的话， ``pLibraryInfo->pLibraries`` 的每一个元素都需要使用 ``VK_PIPELINE_CREATE_RAY_TRACING_SKIP_AABBS_BIT_KHR`` 创建。
+   * 如果 ``flags`` 包含 ``VK_PIPELINE_CREATE_RAY_TRACING_SKIP_TRIANGLES_BIT_KHR`` 标志位的话， ``pLibraryInfo->pLibraries`` 的每一个元素都需要使用 ``VK_PIPELINE_CREATE_RAY_TRACING_SKIP_TRIANGLES_BIT_KHR`` 创建。
+   * 如果 ``flags`` 包含 ``VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_ANY_HIT_SHADERS_BIT_KHR`` 标志位的话， ``pLibraryInfo->pLibraries`` 的每一个元素都需要使用 ``VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_ANY_HIT_SHADERS_BIT_KHR`` 创建。
+   * 如果 ``flags`` 包含 ``VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_CLOSEST_HIT_SHADERS_BIT_KHR`` 标志位的话， ``pLibraryInfo->pLibraries`` 的每一个元素都需要使用 ``VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_CLOSEST_HIT_SHADERS_BIT_KHR`` 创建。
+   * 如果 ``flags`` 包含 ``VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_INTERSECTION_SHADERS_BIT_KHR`` 标志位的话， ``pLibraryInfo->pLibraries`` 的每一个元素都需要使用 ``VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_INTERSECTION_SHADERS_BIT_KHR`` 创建。
+   * 如果 ``flags`` 包含 ``VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_MISS_SHADERS_BIT_KHR`` 标志位的话， ``pLibraryInfo->pLibraries`` 的每一个元素都需要使用 ``VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_MISS_SHADERS_BIT_KHR`` 创建。
+   * 如果不支持 `VK_KHR_pipeline_library <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap55.html#VK_KHR_pipeline_library>`_ 扩展的话， ``pLibraryInfo`` 和 ``pLibraryInterface`` 必须为 ``NULL`` 。
