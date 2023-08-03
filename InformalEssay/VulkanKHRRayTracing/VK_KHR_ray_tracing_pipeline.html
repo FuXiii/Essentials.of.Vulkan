@@ -6,7 +6,7 @@
 <link rel="index" title="索引" href="../../genindex.html" /><link rel="search" title="搜索" href="../../search.html" /><link rel="next" title="VK_KHR_deferred_host_operations" href="VK_KHR_deferred_host_operations.html" /><link rel="prev" title="VK_KHR_acceleration_structure" href="VK_KHR_acceleration_structure.html" />
         <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/InformalEssay/VulkanKHRRayTracing/VK_KHR_ray_tracing_pipeline.html" />
 
-    <link rel="shortcut icon" href="../../_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.1.1 and Furo 2023.07.26 -->
+    <link rel="shortcut icon" href="../../_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.1.2 and Furo 2023.07.26 -->
         <title>VK_KHR_ray_tracing_pipeline - Vulkan入门精要</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=e15ddae3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
@@ -268,6 +268,12 @@
 <li><p class="sd-card-text">2023/7/21 增加 <code class="docutils literal notranslate"><span class="pre">vkCreateRayTracingPipelinesKHR</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/7/21 增加 <code class="docutils literal notranslate"><span class="pre">VkRayTracingPipelineCreateInfoKHR</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/8/1 更新 <code class="docutils literal notranslate"><span class="pre">VkRayTracingPipelineCreateInfoKHR</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/8/3 增加 <code class="docutils literal notranslate"><span class="pre">VkRayTracingShaderGroupCreateInfoKHR</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/8/3 增加 <code class="docutils literal notranslate"><span class="pre">VkRayTracingShaderGroupTypeKHR</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/8/3 增加 <code class="docutils literal notranslate"><span class="pre">VkRayTracingPipelineInterfaceCreateInfoKHR</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/8/3 增加 <code class="docutils literal notranslate"><span class="pre">vkGetRayTracingShaderGroupHandlesKHR</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/8/3 增加 <code class="docutils literal notranslate"><span class="pre">vkGetRayTracingCaptureReplayShaderGroupHandlesKHR</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/8/3 增加 <code class="docutils literal notranslate"><span class="pre">vkGetRayTracingShaderGroupStackSizeKHR</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p>该扩展属于 <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">device扩展</span>。</p>
@@ -516,7 +522,7 @@
 <li><p>如果 <code class="docutils literal notranslate"><span class="pre">flags</span></code> 包含 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_CLOSEST_HIT_SHADERS_BIT_KHR</span></code> 标志位的话， 对于 <code class="docutils literal notranslate"><span class="pre">pGroups</span></code> 中的每一个 <code class="docutils literal notranslate"><span class="pre">type</span></code> 为 <code class="docutils literal notranslate"><span class="pre">VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR</span></code> 或 <code class="docutils literal notranslate"><span class="pre">VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR</span></code> 元素所对应 <code class="docutils literal notranslate"><span class="pre">closestHitShader</span></code> 元素一定不能为 <code class="docutils literal notranslate"><span class="pre">VK_SHADER_UNUSED_KHR</span></code>。</p></li>
 <li><p>如果 <a class="reference external" href="https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap46.html#features-rayTraversalPrimitiveCulling">rayTraversalPrimitiveCulling</a> 特性没有激活， <code class="docutils literal notranslate"><span class="pre">flags</span></code> 一定不能包括 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_RAY_TRACING_SKIP_AABBS_BIT_KHR</span></code> 标志位。</p></li>
 <li><p>如果 <a class="reference external" href="https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap46.html#features-rayTraversalPrimitiveCulling">rayTraversalPrimitiveCulling</a> 特性没有激活， <code class="docutils literal notranslate"><span class="pre">flags</span></code> 一定不能包括 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_RAY_TRACING_SKIP_TRIANGLES_BIT_KHR</span></code> 标志位。</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">flags</span></code> 一定不能同时包含 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_RAY_TRACING_SKIP_TRIANGLES_BIT_KHR</span> <span class="pre">``</span> <span class="pre">和</span> <span class="pre">``VK_PIPELINE_CREATE_RAY_TRACING_SKIP_AABBS_BIT_KHR</span></code> 标志位。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flags</span></code> 一定不能同时包含 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_RAY_TRACING_SKIP_TRIANGLES_BIT_KHR</span></code> 和 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_RAY_TRACING_SKIP_AABBS_BIT_KHR</span></code> 标志位。</p></li>
 <li><p>如果 <code class="docutils literal notranslate"><span class="pre">flags</span></code> 包含 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_RAY_TRACING_SHADER_GROUP_HANDLE_CAPTURE_REPLAY_BIT_KHR</span></code> 标志位的话 <a class="reference external" href="https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap46.html#features-rayTracingPipelineShaderGroupHandleCaptureReplay">rayTracingPipelineShaderGroupHandleCaptureReplay</a> 必须激活。</p></li>
 <li><p>如果 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceRayTracingPipelineFeaturesKHR::rayTracingPipelineShaderGroupHandleCaptureReplay</span></code> 为 <code class="docutils literal notranslate"><span class="pre">VK_TRUE</span></code> 并且 <code class="docutils literal notranslate"><span class="pre">pGroups</span></code> 任意一个元素的 <code class="docutils literal notranslate"><span class="pre">pShaderGroupCaptureReplayHandle</span></code> 不为 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 的话， <code class="docutils literal notranslate"><span class="pre">flags</span></code> 必须包含 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_RAY_TRACING_SHADER_GROUP_HANDLE_CAPTURE_REPLAY_BIT_KHR</span></code> 标志位。</p></li>
 <li><p>如果 <code class="docutils literal notranslate"><span class="pre">pLibraryInfo</span></code> 为 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 或 <code class="docutils literal notranslate"><span class="pre">libraryCount</span></code> 为 <code class="docutils literal notranslate"><span class="pre">0</span></code> 的话， <code class="docutils literal notranslate"><span class="pre">stageCount</span></code> 一定不能为 <code class="docutils literal notranslate"><span class="pre">0</span></code>。</p></li>
@@ -526,6 +532,196 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">pStages</span></code> 的所有元素必须为 <code class="docutils literal notranslate"><span class="pre">VK_SHADER_STAGE_RAYGEN_BIT_KHR</span></code> ， <code class="docutils literal notranslate"><span class="pre">VK_SHADER_STAGE_ANY_HIT_BIT_KHR</span></code> ， <code class="docutils literal notranslate"><span class="pre">VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR</span></code> ， <code class="docutils literal notranslate"><span class="pre">VK_SHADER_STAGE_MISS_BIT_KHR</span></code> ， <code class="docutils literal notranslate"><span class="pre">VK_SHADER_STAGE_INTERSECTION_BIT_KHR</span></code> 或 <code class="docutils literal notranslate"><span class="pre">VK_SHADER_STAGE_CALLABLE_BIT_KHR</span></code> 之一。</p></li>
 <li><p>如果 <code class="docutils literal notranslate"><span class="pre">flags</span></code> 包括 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_RAY_TRACING_OPACITY_MICROMAP_BIT_EXT</span></code> 的话，则 <code class="docutils literal notranslate"><span class="pre">pLibraryInfo-&gt;pLibraries</span></code> 中的每一个元素必须使用 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_RAY_TRACING_OPACITY_MICROMAP_BIT_EXT</span></code> 标志位创建。</p></li>
 <li><p>如果 <code class="docutils literal notranslate"><span class="pre">flags</span></code> 包括 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_RAY_TRACING_DISPLACEMENT_MICROMAP_BIT_NV</span></code> 的话，则 <code class="docutils literal notranslate"><span class="pre">pLibraryInfo-&gt;pLibraries</span></code> 中的每一个元素必须使用 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_RAY_TRACING_DISPLACEMENT_MICROMAP_BIT_NV</span></code> 标志位创建。</p></li>
+</ul>
+</div>
+</section>
+<section id="vkraytracingshadergroupcreateinfokhr">
+<h2>VkRayTracingShaderGroupCreateInfoKHR<a class="headerlink" href="#vkraytracingshadergroupcreateinfokhr" title="此标题的永久链接">#</a></h2>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_ray_tracing_pipeline 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkRayTracingShaderGroupCreateInfoKHR</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VkStructureType</span><span class="w">                   </span><span class="n">sType</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w">                       </span><span class="n">pNext</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkRayTracingShaderGroupTypeKHR</span><span class="w">    </span><span class="n">type</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                          </span><span class="n">generalShader</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                          </span><span class="n">closestHitShader</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                          </span><span class="n">anyHitShader</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                          </span><span class="n">intersectionShader</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w">                       </span><span class="n">pShaderGroupCaptureReplayHandle</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkRayTracingShaderGroupCreateInfoKHR</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 该结构体的类型，必须为 <code class="docutils literal notranslate"><span class="pre">VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pNext</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向其他结构体来扩展该结构体。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">type</span> 表示命中组的类型。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">generalShader</span> 如果该着色器组的 <code class="docutils literal notranslate"><span class="pre">type</span></code> 中包含 <code class="docutils literal notranslate"><span class="pre">VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR</span></code> 的话，则 <code class="docutils literal notranslate"><span class="pre">generalShader</span></code> 表示位于 <code class="docutils literal notranslate"><span class="pre">VkRayTracingPipelineCreateInfoKHR::pStages</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">ray</span> <span class="pre">generation</span></code> ， <code class="docutils literal notranslate"><span class="pre">miss</span></code> 或 <code class="docutils literal notranslate"><span class="pre">callable</span></code> 着色器的索引值。否则为 <code class="docutils literal notranslate"><span class="pre">VK_SHADER_UNUSED_KHR</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">closestHitShader</span> 如果该着色器组的 <code class="docutils literal notranslate"><span class="pre">type</span></code> 中包含 <code class="docutils literal notranslate"><span class="pre">VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR</span></code> 或 <code class="docutils literal notranslate"><span class="pre">VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR</span></code> 的话，则 <code class="docutils literal notranslate"><span class="pre">closestHitShader</span></code> 表示位于 <code class="docutils literal notranslate"><span class="pre">VkRayTracingPipelineCreateInfoKHR::pStages</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">closest</span> <span class="pre">hit</span></code> 着色器的索引值。否则为 <code class="docutils literal notranslate"><span class="pre">VK_SHADER_UNUSED_KHR</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">anyHitShader</span> 如果该着色器组的 <code class="docutils literal notranslate"><span class="pre">type</span></code> 中包含 <code class="docutils literal notranslate"><span class="pre">VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR</span></code> 或 <code class="docutils literal notranslate"><span class="pre">VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR</span></code> 的话，则 <code class="docutils literal notranslate"><span class="pre">anyHitShader</span></code> 表示位于 <code class="docutils literal notranslate"><span class="pre">VkRayTracingPipelineCreateInfoKHR::pStages</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">any-hit</span></code> 着色器的索引值。否则为 <code class="docutils literal notranslate"><span class="pre">VK_SHADER_UNUSED_KHR</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">intersectionShader</span> 如果该着色器组的 <code class="docutils literal notranslate"><span class="pre">type</span></code> 中包含 <code class="docutils literal notranslate"><span class="pre">VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR</span></code> 的话，则 <code class="docutils literal notranslate"><span class="pre">intersectionShader</span></code> 表示位于 <code class="docutils literal notranslate"><span class="pre">VkRayTracingPipelineCreateInfoKHR::pStages</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">intersection</span></code> 着色器的索引值。否则为 <code class="docutils literal notranslate"><span class="pre">VK_SHADER_UNUSED_KHR</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pShaderGroupCaptureReplayHandle</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> ，要么是从 <code class="docutils literal notranslate"><span class="pre">vkGetRayTracingCaptureReplayShaderGroupHandlesKHR</span></code> 中获取到的回放信息指针。如果 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceRayTracingPipelineFeaturesKHR::rayTracingPipelineShaderGroupHandleCaptureReplay</span></code> 为 <code class="docutils literal notranslate"><span class="pre">VK_FALSE</span></code> 的话，将会忽略该成员。</p></li>
+</ul>
+<p>如果管线使用 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_LIBRARY_BIT_KHR</span></code> 创建并且激活了 <a class="reference external" href="https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap46.html#features-pipelineLibraryGroupHandles">pipelineLibraryGroupHandles</a> 特性了的话， 所有链接到该管线的管线都会继承 <code class="docutils literal notranslate"><span class="pre">pShaderGroupCaptureReplayHandle</span></code> 并且引用该管线库的管线都会按位相同。</p>
+<div class="note admonition">
+<p class="admonition-title">正确用法</p>
+<ul class="simple">
+<li><p>如果 <code class="docutils literal notranslate"><span class="pre">type</span></code> 是 <code class="docutils literal notranslate"><span class="pre">VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR</span></code> 的话 <code class="docutils literal notranslate"><span class="pre">generalShader</span></code> 必须为引用 <code class="docutils literal notranslate"><span class="pre">VkRayTracingPipelineCreateInfoKHR::pStages</span></code> 中着色器为 <code class="docutils literal notranslate"><span class="pre">VK_SHADER_STAGE_RAYGEN_BIT_KHR</span></code> ， <code class="docutils literal notranslate"><span class="pre">VK_SHADER_STAGE_MISS_BIT_KHR</span></code> 或 <code class="docutils literal notranslate"><span class="pre">VK_SHADER_STAGE_CALLABLE_BIT_KHR</span></code> 所对应的索引。</p></li>
+<li><p>如果 <code class="docutils literal notranslate"><span class="pre">type</span></code> 是 <code class="docutils literal notranslate"><span class="pre">VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR</span></code> 的话 <code class="docutils literal notranslate"><span class="pre">closestHitShader</span></code> ， <code class="docutils literal notranslate"><span class="pre">anyHitShader</span></code> 和 <code class="docutils literal notranslate"><span class="pre">intersectionShader</span></code> 必须是 <code class="docutils literal notranslate"><span class="pre">VK_SHADER_UNUSED_KHR</span></code> 。</p></li>
+<li><p>如果 <code class="docutils literal notranslate"><span class="pre">type</span></code> 是 <code class="docutils literal notranslate"><span class="pre">VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR</span></code> 的话 <code class="docutils literal notranslate"><span class="pre">intersectionShader</span></code> 必须为引用 <code class="docutils literal notranslate"><span class="pre">VkRayTracingPipelineCreateInfoKHR::pStages</span></code> 中着色器为 <code class="docutils literal notranslate"><span class="pre">VK_SHADER_STAGE_INTERSECTION_BIT_KHR</span></code> 所对应的索引。</p></li>
+<li><p>如果 <code class="docutils literal notranslate"><span class="pre">type</span></code> 是 <code class="docutils literal notranslate"><span class="pre">VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR</span></code> 的话 <code class="docutils literal notranslate"><span class="pre">intersectionShader</span></code> 必须为 <code class="docutils literal notranslate"><span class="pre">VK_SHADER_UNUSED_KHR</span></code> 。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">closestHitShader</span></code> 必须为引用 <code class="docutils literal notranslate"><span class="pre">VkRayTracingPipelineCreateInfoKHR::pStages</span></code> 中着色器为 <code class="docutils literal notranslate"><span class="pre">VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR</span></code> 的索引否则为 <code class="docutils literal notranslate"><span class="pre">VK_SHADER_UNUSED_KHR</span></code> 。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">anyHitShader</span></code> 必须为引用 <code class="docutils literal notranslate"><span class="pre">VkRayTracingPipelineCreateInfoKHR::pStages</span></code> 中着色器为 <code class="docutils literal notranslate"><span class="pre">VK_SHADER_STAGE_ANY_HIT_BIT_KHR</span></code> 的索引否则为 <code class="docutils literal notranslate"><span class="pre">VK_SHADER_UNUSED_KHR</span></code> 。</p></li>
+<li><p>如果 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceRayTracingPipelineFeaturesKHR::rayTracingPipelineShaderGroupHandleCaptureReplayMixed</span></code> 是 <code class="docutils literal notranslate"><span class="pre">VK_FALSE</span></code> 的话调用者必须确保在运行带有 <code class="docutils literal notranslate"><span class="pre">pShaderGroupCaptureReplayHandle</span></code> 的光追管线和运行不带有 <code class="docutils literal notranslate"><span class="pre">pShaderGroupCaptureReplayHandle</span></code> 时，不会同时混合运行。</p></li>
+</ul>
+</div>
+</section>
+<section id="vkraytracingshadergrouptypekhr">
+<h2>VkRayTracingShaderGroupTypeKHR<a class="headerlink" href="#vkraytracingshadergrouptypekhr" title="此标题的永久链接">#</a></h2>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_ray_tracing_pipeline 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkRayTracingShaderGroupTypeKHR</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">  </span><span class="c1">// Provided by VK_NV_ray_tracing</span>
+<span class="w">    </span><span class="n">VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_NV</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR</span><span class="p">,</span>
+<span class="w">  </span><span class="c1">// Provided by VK_NV_ray_tracing</span>
+<span class="w">    </span><span class="n">VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_NV</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR</span><span class="p">,</span>
+<span class="w">  </span><span class="c1">// Provided by VK_NV_ray_tracing</span>
+<span class="w">    </span><span class="n">VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_NV</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR</span><span class="p">,</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkRayTracingShaderGroupTypeKHR</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR</span> 表示该着色器组中有单个 <code class="docutils literal notranslate"><span class="pre">VK_SHADER_STAGE_RAYGEN_BIT_KHR</span></code>  ， <code class="docutils literal notranslate"><span class="pre">VK_SHADER_STAGE_MISS_BIT_KHR</span></code> 或 <code class="docutils literal notranslate"><span class="pre">VK_SHADER_STAGE_CALLABLE_BIT_KHR</span></code> 着色器在其中。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR</span> 表示该着色器组只会命中三角形并且不能包含 <code class="docutils literal notranslate"><span class="pre">intersection</span></code> 着色器，只能包含 <code class="docutils literal notranslate"><span class="pre">closest</span> <span class="pre">hit</span></code> 和 <code class="docutils literal notranslate"><span class="pre">any-hit</span></code> 着色器。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR</span> 表示该着色器组只会命中自定义几何体，并且必须包含 <code class="docutils literal notranslate"><span class="pre">intersection</span></code> 着色器，并可以包含 <code class="docutils literal notranslate"><span class="pre">closest</span> <span class="pre">hit</span></code> 和 <code class="docutils literal notranslate"><span class="pre">any-hit</span></code> 着色器。</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>对于当前的组类型，可以通过是否存在 <code class="docutils literal notranslate"><span class="pre">intersection</span></code> 着色器推断是否为命中组（ <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">group</span></code> ），但是我们为没有该属性的未来命中组显式地提供了类型。</p>
+</div>
+</section>
+<section id="vkraytracingpipelineinterfacecreateinfokhr">
+<h2>VkRayTracingPipelineInterfaceCreateInfoKHR<a class="headerlink" href="#vkraytracingpipelineinterfacecreateinfokhr" title="此标题的永久链接">#</a></h2>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_ray_tracing_pipeline 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkRayTracingPipelineInterfaceCreateInfoKHR</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VkStructureType</span><span class="w">    </span><span class="n">sType</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w">        </span><span class="n">pNext</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">           </span><span class="n">maxPipelineRayPayloadSize</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">           </span><span class="n">maxPipelineRayHitAttributeSize</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkRayTracingPipelineInterfaceCreateInfoKHR</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 该结构体的类型，必须为 <code class="docutils literal notranslate"><span class="pre">VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_INTERFACE_CREATE_INFO_KHR</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pNext</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向其他结构体来扩展该结构体。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">maxPipelineRayPayloadSize</span> 表示该管线中的任意管线使用的最大负载（ <code class="docutils literal notranslate"><span class="pre">payload</span></code> ）比特大小。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">maxPipelineRayHitAttributeSize</span> 表示该管线中的任意管线使用的最大属性结构体（ <code class="docutils literal notranslate"><span class="pre">attribute</span> <span class="pre">structure</span></code> ）大小。</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">maxPipelineRayPayloadSize</span></code> 为在 <code class="docutils literal notranslate"><span class="pre">RayPayloadKHR</span></code> 或 <code class="docutils literal notranslate"><span class="pre">IncomingRayPayloadKHR</span></code> 存储类声明使用的块的最大比特大小。 <code class="docutils literal notranslate"><span class="pre">maxPipelineRayHitAttributeSize</span></code> 为在 <code class="docutils literal notranslate"><span class="pre">HitAttributeKHR</span></code> 存储类声明使用的块的最大比特大小。由于这些存储类没有显示的偏移量，
+每个变量大小需要按照中的任意块中的最大对齐成员进行对齐。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p><code class="docutils literal notranslate"><span class="pre">maxPipelineRayPayloadSize</span></code> 没有明确规定其上限，但是一般来说保持越小越好。与调用本地内存类似，对于每个着色器调用都需要单独分配并且对于支持大量并行调度的设备来说，这种存储可能会迅速耗尽，从而导致故障。</p>
+</div>
+<div class="note admonition">
+<p class="admonition-title">正确用法</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">maxPipelineRayHitAttributeSize</span></code> 必须小于等于 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceRayTracingPipelinePropertiesKHR::maxRayHitAttributeSize</span></code>。</p></li>
+</ul>
+</div>
+</section>
+<section id="id8">
+<h2>vkGetRayTracingShaderGroupHandlesKHR<a class="headerlink" href="#id8" title="此标题的永久链接">#</a></h2>
+<p>获取光追管线中着色器组中的着色器们，调用：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_ray_tracing_pipeline 提供</span>
+<span class="n">VkResult</span><span class="w"> </span><span class="nf">vkGetRayTracingShaderGroupHandlesKHR</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkPipeline</span><span class="w">                                  </span><span class="n">pipeline</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                                    </span><span class="n">firstGroup</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                                    </span><span class="n">groupCount</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">size_t</span><span class="w">                                      </span><span class="n">dataSize</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">void</span><span class="o">*</span><span class="w">                                       </span><span class="n">pData</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">device</span> 包含该光追管线的逻辑设备。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pipeline</span> 包含该着色器的光追管线。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">firstGroup</span> 从 <code class="docutils literal notranslate"><span class="pre">VkRayTracingPipelineCreateInfoKHR::pGroups</span></code> 或 <code class="docutils literal notranslate"><span class="pre">VkRayTracingPipelineCreateInfoNV::pGroups</span></code> 数组中获取着色器组的第一个索引。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">groupCount</span> 要获取的着色器句柄数量。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">dataSize</span> 表示 <code class="docutils literal notranslate"><span class="pre">pData</span></code> 所对应的缓存比特数量。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pData</span> 为用户自分配的缓存，用于写入结果。</p></li>
+</ul>
+<p>如果 <code class="docutils literal notranslate"><span class="pre">pipeline</span></code> 使用 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_LIBRARY_BIT_KHR</span></code> 创建并且开启 <a class="reference external" href="https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap46.html#features-pipelineLibraryGroupHandles">pipelineLibraryGroupHandles</a> 的话，应用可以从该管线中获取一组句柄，就算管线是一个库并且没有绑定到任何命令缓存（ <code class="docutils literal notranslate"><span class="pre">command</span> <span class="pre">buffer</span></code> ）。这组句柄与任何引用该管线库的管线都具有相同的比特位。组索引的分配就好似管线是不使用 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_LIBRARY_BIT_KHR</span></code> 创建似的。</p>
+<div class="note admonition">
+<p class="admonition-title">正确用法</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">pipeline</span></code> 必须是光追管线。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">firstGroup</span></code> 必须小于 <code class="docutils literal notranslate"><span class="pre">pipeline</span></code> 中的着色器组的数量。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">firstGroup</span></code> 和 <code class="docutils literal notranslate"><span class="pre">groupCount</span></code> 的总和必须小于等于 <code class="docutils literal notranslate"><span class="pre">pipeline</span></code> 中的着色器组的数量。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dataSize</span></code> 必须小于 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceRayTracingPipelinePropertiesKHR::shaderGroupHandleSize</span></code> <span class="math notranslate nohighlight">\(\times\)</span> <code class="docutils literal notranslate"><span class="pre">groupCount</span></code> 。</p></li>
+<li><p>如果 <a class="reference external" href="https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap46.html#features-pipelineLibraryGroupHandles">pipelineLibraryGroupHandles</a> 特性没有开启， <code class="docutils literal notranslate"><span class="pre">pipeline</span></code> 一定不能使用 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_LIBRARY_BIT_KHR</span></code> 创建。</p></li>
+</ul>
+</div>
+</section>
+<section id="id11">
+<h2>vkGetRayTracingCaptureReplayShaderGroupHandlesKHR<a class="headerlink" href="#id11" title="此标题的永久链接">#</a></h2>
+<p>获取光追管线中着色器组的捕获数据，调用：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_ray_tracing_pipeline 提供</span>
+<span class="n">VkResult</span><span class="w"> </span><span class="nf">vkGetRayTracingCaptureReplayShaderGroupHandlesKHR</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkPipeline</span><span class="w">                                  </span><span class="n">pipeline</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                                    </span><span class="n">firstGroup</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                                    </span><span class="n">groupCount</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">size_t</span><span class="w">                                      </span><span class="n">dataSize</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">void</span><span class="o">*</span><span class="w">                                       </span><span class="n">pData</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">device</span> 包含该光追管线的逻辑设备。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pipeline</span> 包含该着色器的光追管线。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">firstGroup</span> 从 <code class="docutils literal notranslate"><span class="pre">VkRayTracingPipelineCreateInfoKHR::pGroups</span></code> 或 <code class="docutils literal notranslate"><span class="pre">VkRayTracingPipelineCreateInfoNV::pGroups</span></code> 数组中获取着色器组的第一个索引。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">groupCount</span> 要获取的着色器句柄数量。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">dataSize</span> 表示 <code class="docutils literal notranslate"><span class="pre">pData</span></code> 所对应的缓存比特数量。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pData</span> 为用户自分配的缓存，用于写入结果。</p></li>
+</ul>
+<p>该数据可以在管线的创建时期获取使用 <code class="docutils literal notranslate"><span class="pre">VkRayTracingShaderGroupCreateInfoKHR::pShaderGroupCaptureReplayHandle</span></code> ，在 <a class="reference external" href="https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap40.html#ray-tracing-capture-replay">Ray Tracing Capture Replay</a> 中有详细描述。</p>
+<p>如果 <code class="docutils literal notranslate"><span class="pre">pipeline</span></code> 使用 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_LIBRARY_BIT_KHR</span></code> 创建并且开启 <a class="reference external" href="https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap46.html#features-pipelineLibraryGroupHandles">pipelineLibraryGroupHandles</a> 的话，应用可以从该管线中捕获回放组句柄。这捕获回放句柄与任何引用该管线库的管线都具有相同的比特位。组索引的分配就好似管线是不使用 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_LIBRARY_BIT_KHR</span></code> 创建似的。</p>
+<div class="note admonition">
+<p class="admonition-title">正确用法</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">pipeline</span></code> 必须是光追管线。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">firstGroup</span></code> 必须小于 <code class="docutils literal notranslate"><span class="pre">pipeline</span></code> 中的着色器组的数量。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">firstGroup</span></code> 和 <code class="docutils literal notranslate"><span class="pre">groupCount</span></code> 的总和必须小于等于 <code class="docutils literal notranslate"><span class="pre">pipeline</span></code> 中的着色器组的数量。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dataSize</span></code> 必须小于 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceRayTracingPipelinePropertiesKHR::shaderGroupHandleCaptureReplaySize</span></code> <span class="math notranslate nohighlight">\(\times\)</span> <code class="docutils literal notranslate"><span class="pre">groupCount</span></code> 。</p></li>
+<li><p>调用此函数前必须激活 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceRayTracingPipelineFeaturesKHR::rayTracingPipelineShaderGroupHandleCaptureReplay</span></code> 特性。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pipeline</span></code> 创建时 <code class="docutils literal notranslate"><span class="pre">flags</span></code> 必须包含 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_RAY_TRACING_SHADER_GROUP_HANDLE_CAPTURE_REPLAY_BIT_KHR</span></code> 。</p></li>
+<li><p>如果 <a class="reference external" href="https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap46.html#features-pipelineLibraryGroupHandles">pipelineLibraryGroupHandles</a> 特性没有开启， <code class="docutils literal notranslate"><span class="pre">pipeline</span></code> 一定不能使用 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_LIBRARY_BIT_KHR</span></code> 创建。</p></li>
+</ul>
+</div>
+</section>
+<section id="id14">
+<h2>vkGetRayTracingShaderGroupStackSizeKHR<a class="headerlink" href="#id14" title="此标题的永久链接">#</a></h2>
+<p>获取光追管线中的着色器组中的着色器们的栈大小，调用：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_ray_tracing_pipeline 提供</span>
+<span class="n">VkDeviceSize</span><span class="w"> </span><span class="nf">vkGetRayTracingShaderGroupStackSizeKHR</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkPipeline</span><span class="w">                                  </span><span class="n">pipeline</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                                    </span><span class="n">group</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkShaderGroupShaderKHR</span><span class="w">                      </span><span class="n">groupShader</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">device</span> 包含该光追管线的逻辑设备。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pipeline</span> 包含该着色器的光追管线。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">group</span> 表示要查询着色器组的索引。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">groupShader</span> 要从着色器组获取的着色器类型。</p></li>
+</ul>
+<div class="note admonition">
+<p class="admonition-title">正确用法</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">pipeline</span></code> 必须是光追管线。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">group</span></code> 必须小于 <code class="docutils literal notranslate"><span class="pre">pipeline</span></code> 中的着色器组的数量。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">groupShader</span></code> 对应的 <code class="docutils literal notranslate"><span class="pre">group</span></code> 中一定不能是 <code class="docutils literal notranslate"><span class="pre">VK_SHADER_UNUSED_KHR</span></code> 。</p></li>
 </ul>
 </div>
 </section>
@@ -622,6 +818,12 @@
 <li><a class="reference internal" href="#vkphysicaldeviceraytracingpipelinepropertieskhr">VkPhysicalDeviceRayTracingPipelinePropertiesKHR</a></li>
 <li><a class="reference internal" href="#id6">vkCreateRayTracingPipelinesKHR</a></li>
 <li><a class="reference internal" href="#vkraytracingpipelinecreateinfokhr">VkRayTracingPipelineCreateInfoKHR</a></li>
+<li><a class="reference internal" href="#vkraytracingshadergroupcreateinfokhr">VkRayTracingShaderGroupCreateInfoKHR</a></li>
+<li><a class="reference internal" href="#vkraytracingshadergrouptypekhr">VkRayTracingShaderGroupTypeKHR</a></li>
+<li><a class="reference internal" href="#vkraytracingpipelineinterfacecreateinfokhr">VkRayTracingPipelineInterfaceCreateInfoKHR</a></li>
+<li><a class="reference internal" href="#id8">vkGetRayTracingShaderGroupHandlesKHR</a></li>
+<li><a class="reference internal" href="#id11">vkGetRayTracingCaptureReplayShaderGroupHandlesKHR</a></li>
+<li><a class="reference internal" href="#id14">vkGetRayTracingShaderGroupStackSizeKHR</a></li>
 </ul>
 </li>
 </ul>
@@ -643,6 +845,8 @@
     <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
     <script src="../../_static/translations.js?v=beaddf03"></script>
     <script src="../../_static/design-tabs.js?v=36754332"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
     </body>
 </html>
