@@ -16,6 +16,12 @@ VK_KHR_ray_tracing_pipeline
    * 2023/7/21 增加 ``vkCreateRayTracingPipelinesKHR`` 章节
    * 2023/7/21 增加 ``VkRayTracingPipelineCreateInfoKHR`` 章节
    * 2023/8/1 更新 ``VkRayTracingPipelineCreateInfoKHR`` 章节
+   * 2023/8/3 增加 ``VkRayTracingShaderGroupCreateInfoKHR`` 章节
+   * 2023/8/3 增加 ``VkRayTracingShaderGroupTypeKHR`` 章节
+   * 2023/8/3 增加 ``VkRayTracingPipelineInterfaceCreateInfoKHR`` 章节
+   * 2023/8/3 增加 ``vkGetRayTracingShaderGroupHandlesKHR`` 章节
+   * 2023/8/3 增加 ``vkGetRayTracingCaptureReplayShaderGroupHandlesKHR`` 章节
+   * 2023/8/3 增加 ``vkGetRayTracingShaderGroupStackSizeKHR`` 章节
 
 该扩展属于 :bdg-info:`device扩展`。
 
@@ -254,7 +260,7 @@ VkRayTracingPipelineCreateInfoKHR
    * 如果 ``flags`` 包含 ``VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_CLOSEST_HIT_SHADERS_BIT_KHR`` 标志位的话， 对于 ``pGroups`` 中的每一个 ``type`` 为 ``VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR`` 或 ``VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR`` 元素所对应 ``closestHitShader`` 元素一定不能为 ``VK_SHADER_UNUSED_KHR``。
    * 如果 `rayTraversalPrimitiveCulling <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap46.html#features-rayTraversalPrimitiveCulling>`_ 特性没有激活， ``flags`` 一定不能包括 ``VK_PIPELINE_CREATE_RAY_TRACING_SKIP_AABBS_BIT_KHR`` 标志位。
    * 如果 `rayTraversalPrimitiveCulling <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap46.html#features-rayTraversalPrimitiveCulling>`_ 特性没有激活， ``flags`` 一定不能包括 ``VK_PIPELINE_CREATE_RAY_TRACING_SKIP_TRIANGLES_BIT_KHR`` 标志位。
-   * ``flags`` 一定不能同时包含 ``VK_PIPELINE_CREATE_RAY_TRACING_SKIP_TRIANGLES_BIT_KHR `` 和 ``VK_PIPELINE_CREATE_RAY_TRACING_SKIP_AABBS_BIT_KHR`` 标志位。
+   * ``flags`` 一定不能同时包含 ``VK_PIPELINE_CREATE_RAY_TRACING_SKIP_TRIANGLES_BIT_KHR`` 和 ``VK_PIPELINE_CREATE_RAY_TRACING_SKIP_AABBS_BIT_KHR`` 标志位。
    * 如果 ``flags`` 包含 ``VK_PIPELINE_CREATE_RAY_TRACING_SHADER_GROUP_HANDLE_CAPTURE_REPLAY_BIT_KHR`` 标志位的话 `rayTracingPipelineShaderGroupHandleCaptureReplay <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap46.html#features-rayTracingPipelineShaderGroupHandleCaptureReplay>`_ 必须激活。
    * 如果 ``VkPhysicalDeviceRayTracingPipelineFeaturesKHR::rayTracingPipelineShaderGroupHandleCaptureReplay`` 为 ``VK_TRUE`` 并且 ``pGroups`` 任意一个元素的 ``pShaderGroupCaptureReplayHandle`` 不为 ``NULL`` 的话， ``flags`` 必须包含 ``VK_PIPELINE_CREATE_RAY_TRACING_SHADER_GROUP_HANDLE_CAPTURE_REPLAY_BIT_KHR`` 标志位。
    * 如果 ``pLibraryInfo`` 为 ``NULL`` 或 ``libraryCount`` 为 ``0`` 的话， ``stageCount`` 一定不能为 ``0``。
@@ -264,3 +270,192 @@ VkRayTracingPipelineCreateInfoKHR
    * ``pStages`` 的所有元素必须为 ``VK_SHADER_STAGE_RAYGEN_BIT_KHR`` ， ``VK_SHADER_STAGE_ANY_HIT_BIT_KHR`` ， ``VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR`` ， ``VK_SHADER_STAGE_MISS_BIT_KHR`` ， ``VK_SHADER_STAGE_INTERSECTION_BIT_KHR`` 或 ``VK_SHADER_STAGE_CALLABLE_BIT_KHR`` 之一。
    * 如果 ``flags`` 包括 ``VK_PIPELINE_CREATE_RAY_TRACING_OPACITY_MICROMAP_BIT_EXT`` 的话，则 ``pLibraryInfo->pLibraries`` 中的每一个元素必须使用 ``VK_PIPELINE_CREATE_RAY_TRACING_OPACITY_MICROMAP_BIT_EXT`` 标志位创建。
    * 如果 ``flags`` 包括 ``VK_PIPELINE_CREATE_RAY_TRACING_DISPLACEMENT_MICROMAP_BIT_NV`` 的话，则 ``pLibraryInfo->pLibraries`` 中的每一个元素必须使用 ``VK_PIPELINE_CREATE_RAY_TRACING_DISPLACEMENT_MICROMAP_BIT_NV`` 标志位创建。
+
+VkRayTracingShaderGroupCreateInfoKHR
+***************************************************
+
+.. code:: c++
+
+   // 由 VK_KHR_ray_tracing_pipeline 提供
+   typedef struct VkRayTracingShaderGroupCreateInfoKHR {
+       VkStructureType                   sType;
+       const void*                       pNext;
+       VkRayTracingShaderGroupTypeKHR    type;
+       uint32_t                          generalShader;
+       uint32_t                          closestHitShader;
+       uint32_t                          anyHitShader;
+       uint32_t                          intersectionShader;
+       const void*                       pShaderGroupCaptureReplayHandle;
+   } VkRayTracingShaderGroupCreateInfoKHR;
+
+* :bdg-secondary:`sType` 该结构体的类型，必须为 ``VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR`` 。
+* :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
+* :bdg-secondary:`type` 表示命中组的类型。
+* :bdg-secondary:`generalShader` 如果该着色器组的 ``type`` 中包含 ``VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR`` 的话，则 ``generalShader`` 表示位于 ``VkRayTracingPipelineCreateInfoKHR::pStages`` 中的 ``ray generation`` ， ``miss`` 或 ``callable`` 着色器的索引值。否则为 ``VK_SHADER_UNUSED_KHR`` 。
+* :bdg-secondary:`closestHitShader` 如果该着色器组的 ``type`` 中包含 ``VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR`` 或 ``VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR`` 的话，则 ``closestHitShader`` 表示位于 ``VkRayTracingPipelineCreateInfoKHR::pStages`` 中的 ``closest hit`` 着色器的索引值。否则为 ``VK_SHADER_UNUSED_KHR`` 。
+* :bdg-secondary:`anyHitShader` 如果该着色器组的 ``type`` 中包含 ``VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR`` 或 ``VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR`` 的话，则 ``anyHitShader`` 表示位于 ``VkRayTracingPipelineCreateInfoKHR::pStages`` 中的 ``any-hit`` 着色器的索引值。否则为 ``VK_SHADER_UNUSED_KHR`` 。
+* :bdg-secondary:`intersectionShader` 如果该着色器组的 ``type`` 中包含 ``VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR`` 的话，则 ``intersectionShader`` 表示位于 ``VkRayTracingPipelineCreateInfoKHR::pStages`` 中的 ``intersection`` 着色器的索引值。否则为 ``VK_SHADER_UNUSED_KHR`` 。
+* :bdg-secondary:`pShaderGroupCaptureReplayHandle` 要么是 ``NULL`` ，要么是从 ``vkGetRayTracingCaptureReplayShaderGroupHandlesKHR`` 中获取到的回放信息指针。如果 ``VkPhysicalDeviceRayTracingPipelineFeaturesKHR::rayTracingPipelineShaderGroupHandleCaptureReplay`` 为 ``VK_FALSE`` 的话，将会忽略该成员。
+
+如果管线使用 ``VK_PIPELINE_CREATE_LIBRARY_BIT_KHR`` 创建并且激活了 `pipelineLibraryGroupHandles <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap46.html#features-pipelineLibraryGroupHandles>`_ 特性了的话， 所有链接到该管线的管线都会继承 ``pShaderGroupCaptureReplayHandle`` 并且引用该管线库的管线都会按位相同。
+
+.. admonition:: 正确用法
+   :class: note
+
+   * 如果 ``type`` 是 ``VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR`` 的话 ``generalShader`` 必须为引用 ``VkRayTracingPipelineCreateInfoKHR::pStages`` 中着色器为 ``VK_SHADER_STAGE_RAYGEN_BIT_KHR`` ， ``VK_SHADER_STAGE_MISS_BIT_KHR`` 或 ``VK_SHADER_STAGE_CALLABLE_BIT_KHR`` 所对应的索引。
+   * 如果 ``type`` 是 ``VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR`` 的话 ``closestHitShader`` ， ``anyHitShader`` 和 ``intersectionShader`` 必须是 ``VK_SHADER_UNUSED_KHR`` 。
+   * 如果 ``type`` 是 ``VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR`` 的话 ``intersectionShader`` 必须为引用 ``VkRayTracingPipelineCreateInfoKHR::pStages`` 中着色器为 ``VK_SHADER_STAGE_INTERSECTION_BIT_KHR`` 所对应的索引。
+   * 如果 ``type`` 是 ``VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR`` 的话 ``intersectionShader`` 必须为 ``VK_SHADER_UNUSED_KHR`` 。
+   * ``closestHitShader`` 必须为引用 ``VkRayTracingPipelineCreateInfoKHR::pStages`` 中着色器为 ``VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR`` 的索引否则为 ``VK_SHADER_UNUSED_KHR`` 。
+   * ``anyHitShader`` 必须为引用 ``VkRayTracingPipelineCreateInfoKHR::pStages`` 中着色器为 ``VK_SHADER_STAGE_ANY_HIT_BIT_KHR`` 的索引否则为 ``VK_SHADER_UNUSED_KHR`` 。
+   * 如果 ``VkPhysicalDeviceRayTracingPipelineFeaturesKHR::rayTracingPipelineShaderGroupHandleCaptureReplayMixed`` 是 ``VK_FALSE`` 的话调用者必须确保在运行带有 ``pShaderGroupCaptureReplayHandle`` 的光追管线和运行不带有 ``pShaderGroupCaptureReplayHandle`` 时，不会同时混合运行。
+
+VkRayTracingShaderGroupTypeKHR
+***************************************************
+
+.. code:: c++
+
+   // 由 VK_KHR_ray_tracing_pipeline 提供
+   typedef enum VkRayTracingShaderGroupTypeKHR {
+       VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR = 0,
+       VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR = 1,
+       VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR = 2,
+     // Provided by VK_NV_ray_tracing
+       VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_NV = VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR,
+     // Provided by VK_NV_ray_tracing
+       VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_NV = VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR,
+     // Provided by VK_NV_ray_tracing
+       VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_NV = VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR,
+   } VkRayTracingShaderGroupTypeKHR;
+
+* :bdg-secondary:`VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR` 表示该着色器组中有单个 ``VK_SHADER_STAGE_RAYGEN_BIT_KHR``  ， ``VK_SHADER_STAGE_MISS_BIT_KHR`` 或 ``VK_SHADER_STAGE_CALLABLE_BIT_KHR`` 着色器在其中。
+* :bdg-secondary:`VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR` 表示该着色器组只会命中三角形并且不能包含 ``intersection`` 着色器，只能包含 ``closest hit`` 和 ``any-hit`` 着色器。
+* :bdg-secondary:`VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR` 表示该着色器组只会命中自定义几何体，并且必须包含 ``intersection`` 着色器，并可以包含 ``closest hit`` 和 ``any-hit`` 着色器。
+
+.. note:: 对于当前的组类型，可以通过是否存在 ``intersection`` 着色器推断是否为命中组（ ``git group`` ），但是我们为没有该属性的未来命中组显式地提供了类型。
+
+VkRayTracingPipelineInterfaceCreateInfoKHR
+***************************************************
+
+.. code:: c++
+
+   // 由 VK_KHR_ray_tracing_pipeline 提供
+   typedef struct VkRayTracingPipelineInterfaceCreateInfoKHR {
+       VkStructureType    sType;
+       const void*        pNext;
+       uint32_t           maxPipelineRayPayloadSize;
+       uint32_t           maxPipelineRayHitAttributeSize;
+   } VkRayTracingPipelineInterfaceCreateInfoKHR;
+
+* :bdg-secondary:`sType` 该结构体的类型，必须为 ``VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_INTERFACE_CREATE_INFO_KHR`` 。
+* :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
+* :bdg-secondary:`maxPipelineRayPayloadSize` 表示该管线中的任意管线使用的最大负载（ ``payload`` ）比特大小。
+* :bdg-secondary:`maxPipelineRayHitAttributeSize` 表示该管线中的任意管线使用的最大属性结构体（ ``attribute structure`` ）大小。
+
+``maxPipelineRayPayloadSize`` 为在 ``RayPayloadKHR`` 或 ``IncomingRayPayloadKHR`` 存储类声明使用的块的最大比特大小。 ``maxPipelineRayHitAttributeSize`` 为在 ``HitAttributeKHR`` 存储类声明使用的块的最大比特大小。由于这些存储类没有显示的偏移量，
+每个变量大小需要按照中的任意块中的最大对齐成员进行对齐。
+
+.. note:: ``maxPipelineRayPayloadSize`` 没有明确规定其上限，但是一般来说保持越小越好。与调用本地内存类似，对于每个着色器调用都需要单独分配并且对于支持大量并行调度的设备来说，这种存储可能会迅速耗尽，从而导致故障。
+
+.. admonition:: 正确用法
+   :class: note
+
+   * ``maxPipelineRayHitAttributeSize`` 必须小于等于 ``VkPhysicalDeviceRayTracingPipelinePropertiesKHR::maxRayHitAttributeSize``。
+
+vkGetRayTracingShaderGroupHandlesKHR
+***************************************************
+
+获取光追管线中着色器组中的着色器们，调用：
+
+.. code:: c++
+
+   // 由 VK_KHR_ray_tracing_pipeline 提供
+   VkResult vkGetRayTracingShaderGroupHandlesKHR(
+       VkDevice                                    device,
+       VkPipeline                                  pipeline,
+       uint32_t                                    firstGroup,
+       uint32_t                                    groupCount,
+       size_t                                      dataSize,
+       void*                                       pData);
+
+* :bdg-secondary:`device` 包含该光追管线的逻辑设备。
+* :bdg-secondary:`pipeline` 包含该着色器的光追管线。
+* :bdg-secondary:`firstGroup` 从 ``VkRayTracingPipelineCreateInfoKHR::pGroups`` 或 ``VkRayTracingPipelineCreateInfoNV::pGroups`` 数组中获取着色器组的第一个索引。
+* :bdg-secondary:`groupCount` 要获取的着色器句柄数量。
+* :bdg-secondary:`dataSize` 表示 ``pData`` 所对应的缓存比特数量。
+* :bdg-secondary:`pData` 为用户自分配的缓存，用于写入结果。
+
+如果 ``pipeline`` 使用 ``VK_PIPELINE_CREATE_LIBRARY_BIT_KHR`` 创建并且开启 `pipelineLibraryGroupHandles <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap46.html#features-pipelineLibraryGroupHandles>`_ 的话，应用可以从该管线中获取一组句柄，就算管线是一个库并且没有绑定到任何命令缓存（ ``command buffer`` ）。这组句柄与任何引用该管线库的管线都具有相同的比特位。组索引的分配就好似管线是不使用 ``VK_PIPELINE_CREATE_LIBRARY_BIT_KHR`` 创建似的。
+
+.. admonition:: 正确用法
+   :class: note
+
+   * ``pipeline`` 必须是光追管线。
+   * ``firstGroup`` 必须小于 ``pipeline`` 中的着色器组的数量。
+   * ``firstGroup`` 和 ``groupCount`` 的总和必须小于等于 ``pipeline`` 中的着色器组的数量。
+   * ``dataSize`` 必须小于 ``VkPhysicalDeviceRayTracingPipelinePropertiesKHR::shaderGroupHandleSize`` :math:`\times` ``groupCount`` 。
+   * 如果 `pipelineLibraryGroupHandles <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap46.html#features-pipelineLibraryGroupHandles>`_ 特性没有开启， ``pipeline`` 一定不能使用 ``VK_PIPELINE_CREATE_LIBRARY_BIT_KHR`` 创建。
+
+vkGetRayTracingCaptureReplayShaderGroupHandlesKHR
+***************************************************
+
+获取光追管线中着色器组的捕获数据，调用：
+
+.. code:: c++
+
+   // 由 VK_KHR_ray_tracing_pipeline 提供
+   VkResult vkGetRayTracingCaptureReplayShaderGroupHandlesKHR(
+       VkDevice                                    device,
+       VkPipeline                                  pipeline,
+       uint32_t                                    firstGroup,
+       uint32_t                                    groupCount,
+       size_t                                      dataSize,
+       void*                                       pData);
+
+* :bdg-secondary:`device` 包含该光追管线的逻辑设备。
+* :bdg-secondary:`pipeline` 包含该着色器的光追管线。
+* :bdg-secondary:`firstGroup` 从 ``VkRayTracingPipelineCreateInfoKHR::pGroups`` 或 ``VkRayTracingPipelineCreateInfoNV::pGroups`` 数组中获取着色器组的第一个索引。
+* :bdg-secondary:`groupCount` 要获取的着色器句柄数量。
+* :bdg-secondary:`dataSize` 表示 ``pData`` 所对应的缓存比特数量。
+* :bdg-secondary:`pData` 为用户自分配的缓存，用于写入结果。
+
+该数据可以在管线的创建时期获取使用 ``VkRayTracingShaderGroupCreateInfoKHR::pShaderGroupCaptureReplayHandle`` ，在 `Ray Tracing Capture Replay <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap40.html#ray-tracing-capture-replay>`_ 中有详细描述。
+
+如果 ``pipeline`` 使用 ``VK_PIPELINE_CREATE_LIBRARY_BIT_KHR`` 创建并且开启 `pipelineLibraryGroupHandles <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap46.html#features-pipelineLibraryGroupHandles>`_ 的话，应用可以从该管线中捕获回放组句柄。这捕获回放句柄与任何引用该管线库的管线都具有相同的比特位。组索引的分配就好似管线是不使用 ``VK_PIPELINE_CREATE_LIBRARY_BIT_KHR`` 创建似的。
+
+.. admonition:: 正确用法
+   :class: note
+
+   * ``pipeline`` 必须是光追管线。
+   * ``firstGroup`` 必须小于 ``pipeline`` 中的着色器组的数量。
+   * ``firstGroup`` 和 ``groupCount`` 的总和必须小于等于 ``pipeline`` 中的着色器组的数量。
+   * ``dataSize`` 必须小于 ``VkPhysicalDeviceRayTracingPipelinePropertiesKHR::shaderGroupHandleCaptureReplaySize`` :math:`\times` ``groupCount`` 。
+   * 调用此函数前必须激活 ``VkPhysicalDeviceRayTracingPipelineFeaturesKHR::rayTracingPipelineShaderGroupHandleCaptureReplay`` 特性。
+   * ``pipeline`` 创建时 ``flags`` 必须包含 ``VK_PIPELINE_CREATE_RAY_TRACING_SHADER_GROUP_HANDLE_CAPTURE_REPLAY_BIT_KHR`` 。
+   * 如果 `pipelineLibraryGroupHandles <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap46.html#features-pipelineLibraryGroupHandles>`_ 特性没有开启， ``pipeline`` 一定不能使用 ``VK_PIPELINE_CREATE_LIBRARY_BIT_KHR`` 创建。
+
+vkGetRayTracingShaderGroupStackSizeKHR
+***************************************************
+
+获取光追管线中的着色器组中的着色器们的栈大小，调用：
+
+.. code:: c++
+
+   // 由 VK_KHR_ray_tracing_pipeline 提供
+   VkDeviceSize vkGetRayTracingShaderGroupStackSizeKHR(
+       VkDevice                                    device,
+       VkPipeline                                  pipeline,
+       uint32_t                                    group,
+       VkShaderGroupShaderKHR                      groupShader);
+
+* :bdg-secondary:`device` 包含该光追管线的逻辑设备。
+* :bdg-secondary:`pipeline` 包含该着色器的光追管线。
+* :bdg-secondary:`group` 表示要查询着色器组的索引。
+* :bdg-secondary:`groupShader` 要从着色器组获取的着色器类型。
+
+.. admonition:: 正确用法
+   :class: note
+
+   * ``pipeline`` 必须是光追管线。
+   * ``group`` 必须小于 ``pipeline`` 中的着色器组的数量。
+   * ``groupShader`` 对应的 ``group`` 中一定不能是 ``VK_SHADER_UNUSED_KHR`` 。
