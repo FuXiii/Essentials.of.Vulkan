@@ -22,6 +22,9 @@ VK_KHR_ray_tracing_pipeline
    * 2023/8/3 增加 ``vkGetRayTracingShaderGroupHandlesKHR`` 章节
    * 2023/8/3 增加 ``vkGetRayTracingCaptureReplayShaderGroupHandlesKHR`` 章节
    * 2023/8/3 增加 ``vkGetRayTracingShaderGroupStackSizeKHR`` 章节
+   * 2023/8/4 增加 ``VkShaderGroupShaderKHR`` 章节
+   * 2023/8/4 增加 ``vkCmdSetRayTracingPipelineStackSizeKHR`` 章节
+   * 2023/8/4 增加 ``VkPipelineLibraryCreateInfoKHR`` 章节
 
 该扩展属于 :bdg-info:`device扩展`。
 
@@ -334,6 +337,46 @@ VkRayTracingShaderGroupTypeKHR
 
 .. note:: 对于当前的组类型，可以通过是否存在 ``intersection`` 着色器推断是否为命中组（ ``git group`` ），但是我们为没有该属性的未来命中组显式地提供了类型。
 
+VkPipelineLibraryCreateInfoKHR
+***************************************************
+
+管线库是一个使用 ``VK_PIPELINE_CREATE_LIBRARY_BIT_KHR`` 创建的特殊管线并且不能用于绑定，而是定义了一系列可以链接进其他管线的管线状态。对于光追管线这包括着色器和着色器组。对于图形管线这包括一些定义在 `VkGraphicsPipelineLibraryFlagBitsEXT <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap10.html#VkGraphicsPipelineLibraryFlagBitsEXT>`_ 中的确切的库类型。
+应用必须根据链接到该管线库的管线来维护该管线库的生命周期。
+
+这种链接是通过在适当的创建机制中使用 ``VkPipelineLibraryCreateInfoKHR`` 结构来实现的。
+
+``VkPipelineLibraryCreateInfoKHR`` 结构体定义如下：
+
+.. code:: c++
+
+   // 由 VK_KHR_ray_tracing_pipeline 提供
+   typedef struct VkPipelineLibraryCreateInfoKHR {
+       VkStructureType      sType;
+       const void*          pNext;
+       uint32_t             libraryCount;
+       const VkPipeline*    pLibraries;
+   } VkPipelineLibraryCreateInfoKHR;
+
+* :bdg-secondary:`sType` 该结构体的类型，必须为 ``VK_STRUCTURE_TYPE_PIPELINE_LIBRARY_CREATE_INFO_KHR`` 。
+* :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
+* :bdg-secondary:`libraryCount` 表示 ``pLibraries`` 中的管线库数量。
+* :bdg-secondary:`pLibraries` 指向一个 ``VkPipeline`` 数组用于创建管线时指定的管线库。
+
+.. admonition:: 正确用法
+   :class: note
+
+   * ``pLibraries`` 中的每个元素都必须使用 ``VK_PIPELINE_CREATE_LIBRARY_BIT_KHR`` 创建。
+   * ``pLibraries`` 中的任意一个元素使用的 `VkPipelineShaderStageModuleIdentifierCreateInfoEXT <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap10.html#VkPipelineShaderStageModuleIdentifierCreateInfoEXT>`_ 着色器状态创建并且 ``identifierSize`` 不为 ``0`` 的话，该管线必须使用 ``VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT`` 创建。
+   * ``pLibraries`` 中的任意一个元素使用的 ``VK_PIPELINE_CREATE_DESCRIPTOR_BUFFER_BIT_EXT`` 创建的话，所有元素必须使用 ``VK_PIPELINE_CREATE_DESCRIPTOR_BUFFER_BIT_EXT`` 创建。
+   * 如果 ``pipeline`` 使用 ``VK_PIPELINE_CREATE_NO_PROTECTED_ACCESS_BIT_EXT`` 创建的话， ``pLibraries`` 中所有元素必须使用 ``VK_PIPELINE_CREATE_NO_PROTECTED_ACCESS_BIT_EXT`` 创建。
+   * 如果 ``pipeline`` 没有使用 ``VK_PIPELINE_CREATE_NO_PROTECTED_ACCESS_BIT_EXT`` 创建的话， ``pLibraries`` 中所有元素必须都不使用 ``VK_PIPELINE_CREATE_NO_PROTECTED_ACCESS_BIT_EXT`` 创建。
+   * 如果 ``pipeline`` 使用 ``VK_PIPELINE_CREATE_PROTECTED_ACCESS_ONLY_BIT_EXT`` 创建的话， ``pLibraries`` 中所有元素必须使用 ``VK_PIPELINE_CREATE_PROTECTED_ACCESS_ONLY_BIT_EXT`` 创建。
+   * 如果 ``pipeline`` 没有使用 ``VK_PIPELINE_CREATE_PROTECTED_ACCESS_ONLY_BIT_EXT`` 创建的话， ``pLibraries`` 中所有元素必须都不使用 ``VK_PIPELINE_CREATE_PROTECTED_ACCESS_ONLY_BIT_EXT`` 创建。
+
+当管线使用 ``VK_PIPELINE_CREATE_LIBRARY_BIT_KHR`` 管线库创建时可以在 ``VkPipelineLibraryCreateInfoKHR`` 中指定依赖的外部管线库。
+
+只要其中一个链接管线处于使用状态，就认为管线库处于使用状态。如果管线库包含其他管线库，则这将递归地应用下去。
+
 VkRayTracingPipelineInterfaceCreateInfoKHR
 ***************************************************
 
@@ -459,3 +502,40 @@ vkGetRayTracingShaderGroupStackSizeKHR
    * ``pipeline`` 必须是光追管线。
    * ``group`` 必须小于 ``pipeline`` 中的着色器组的数量。
    * ``groupShader`` 对应的 ``group`` 中一定不能是 ``VK_SHADER_UNUSED_KHR`` 。
+
+VkShaderGroupShaderKHR
+***************************************************
+
+``vkGetRayTracingShaderGroupStackSizeKHR`` 中的 ``groupShader`` 的可能值为：
+
+.. code:: c++
+
+   // 由 VK_KHR_ray_tracing_pipeline 提供
+   typedef enum VkShaderGroupShaderKHR {
+       VK_SHADER_GROUP_SHADER_GENERAL_KHR = 0,
+       VK_SHADER_GROUP_SHADER_CLOSEST_HIT_KHR = 1,
+       VK_SHADER_GROUP_SHADER_ANY_HIT_KHR = 2,
+       VK_SHADER_GROUP_SHADER_INTERSECTION_KHR = 3,
+   } VkShaderGroupShaderKHR;
+
+* :bdg-secondary:`VK_SHADER_GROUP_SHADER_GENERAL_KHR` 表示使用 ``VkRayTracingShaderGroupCreateInfoKHR::generalShader`` 对应着色器组中的着色器。
+* :bdg-secondary:`VK_SHADER_GROUP_SHADER_CLOSEST_HIT_KHR` 表示使用 ``VkRayTracingShaderGroupCreateInfoKHR::closestHitShader`` 对应着色器组中的着色器。
+* :bdg-secondary:`VK_SHADER_GROUP_SHADER_ANY_HIT_KHR` 表示使用 ``VkRayTracingShaderGroupCreateInfoKHR::anyHitShader`` 对应着色器组中的着色器。
+* :bdg-secondary:`VK_SHADER_GROUP_SHADER_INTERSECTION_KHR` 表示使用 ``VkRayTracingShaderGroupCreateInfoKHR::intersectionShader`` 对应着色器组中的着色器。
+
+vkCmdSetRayTracingPipelineStackSizeKHR
+***************************************************
+
+动态设置光追管线的栈大小，调用：
+
+.. code:: c++
+
+   // 由 VK_KHR_ray_tracing_pipeline 提供
+   void vkCmdSetRayTracingPipelineStackSizeKHR(
+       VkCommandBuffer                             commandBuffer,
+       uint32_t                                    pipelineStackSize);
+
+* :bdg-secondary:`commandBuffer` 对应记录该指令的命令缓存。
+* :bdg-secondary:`pipelineStackSize` 表示要设置的光追管线栈大小。
+
+该函数只有在创建光追管线时 ``VkPipelineDynamicStateCreateInfo::pDynamicStates`` 中包含 ``VK_DYNAMIC_STATE_RAY_TRACING_PIPELINE_STACK_SIZE_KHR`` 才进行动态设置，否则栈大小的将根据 `光追管线栈 <https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap40.html#ray-tracing-pipeline-stack>`_ 计算。

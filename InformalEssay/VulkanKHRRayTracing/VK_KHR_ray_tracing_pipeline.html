@@ -274,6 +274,9 @@
 <li><p class="sd-card-text">2023/8/3 增加 <code class="docutils literal notranslate"><span class="pre">vkGetRayTracingShaderGroupHandlesKHR</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/8/3 增加 <code class="docutils literal notranslate"><span class="pre">vkGetRayTracingCaptureReplayShaderGroupHandlesKHR</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/8/3 增加 <code class="docutils literal notranslate"><span class="pre">vkGetRayTracingShaderGroupStackSizeKHR</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/8/4 增加 <code class="docutils literal notranslate"><span class="pre">VkShaderGroupShaderKHR</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/8/4 增加 <code class="docutils literal notranslate"><span class="pre">vkCmdSetRayTracingPipelineStackSizeKHR</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/8/4 增加 <code class="docutils literal notranslate"><span class="pre">VkPipelineLibraryCreateInfoKHR</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p>该扩展属于 <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">device扩展</span>。</p>
@@ -600,6 +603,42 @@
 <p>对于当前的组类型，可以通过是否存在 <code class="docutils literal notranslate"><span class="pre">intersection</span></code> 着色器推断是否为命中组（ <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">group</span></code> ），但是我们为没有该属性的未来命中组显式地提供了类型。</p>
 </div>
 </section>
+<section id="vkpipelinelibrarycreateinfokhr">
+<h2>VkPipelineLibraryCreateInfoKHR<a class="headerlink" href="#vkpipelinelibrarycreateinfokhr" title="此标题的永久链接">#</a></h2>
+<p>管线库是一个使用 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_LIBRARY_BIT_KHR</span></code> 创建的特殊管线并且不能用于绑定，而是定义了一系列可以链接进其他管线的管线状态。对于光追管线这包括着色器和着色器组。对于图形管线这包括一些定义在 <a class="reference external" href="https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap10.html#VkGraphicsPipelineLibraryFlagBitsEXT">VkGraphicsPipelineLibraryFlagBitsEXT</a> 中的确切的库类型。
+应用必须根据链接到该管线库的管线来维护该管线库的生命周期。</p>
+<p>这种链接是通过在适当的创建机制中使用 <code class="docutils literal notranslate"><span class="pre">VkPipelineLibraryCreateInfoKHR</span></code> 结构来实现的。</p>
+<p><code class="docutils literal notranslate"><span class="pre">VkPipelineLibraryCreateInfoKHR</span></code> 结构体定义如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_ray_tracing_pipeline 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkPipelineLibraryCreateInfoKHR</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VkStructureType</span><span class="w">      </span><span class="n">sType</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w">          </span><span class="n">pNext</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">             </span><span class="n">libraryCount</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkPipeline</span><span class="o">*</span><span class="w">    </span><span class="n">pLibraries</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkPipelineLibraryCreateInfoKHR</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 该结构体的类型，必须为 <code class="docutils literal notranslate"><span class="pre">VK_STRUCTURE_TYPE_PIPELINE_LIBRARY_CREATE_INFO_KHR</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pNext</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向其他结构体来扩展该结构体。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">libraryCount</span> 表示 <code class="docutils literal notranslate"><span class="pre">pLibraries</span></code> 中的管线库数量。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pLibraries</span> 指向一个 <code class="docutils literal notranslate"><span class="pre">VkPipeline</span></code> 数组用于创建管线时指定的管线库。</p></li>
+</ul>
+<div class="note admonition">
+<p class="admonition-title">正确用法</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">pLibraries</span></code> 中的每个元素都必须使用 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_LIBRARY_BIT_KHR</span></code> 创建。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pLibraries</span></code> 中的任意一个元素使用的 <a class="reference external" href="https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap10.html#VkPipelineShaderStageModuleIdentifierCreateInfoEXT">VkPipelineShaderStageModuleIdentifierCreateInfoEXT</a> 着色器状态创建并且 <code class="docutils literal notranslate"><span class="pre">identifierSize</span></code> 不为 <code class="docutils literal notranslate"><span class="pre">0</span></code> 的话，该管线必须使用 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT</span></code> 创建。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pLibraries</span></code> 中的任意一个元素使用的 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_DESCRIPTOR_BUFFER_BIT_EXT</span></code> 创建的话，所有元素必须使用 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_DESCRIPTOR_BUFFER_BIT_EXT</span></code> 创建。</p></li>
+<li><p>如果 <code class="docutils literal notranslate"><span class="pre">pipeline</span></code> 使用 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_NO_PROTECTED_ACCESS_BIT_EXT</span></code> 创建的话， <code class="docutils literal notranslate"><span class="pre">pLibraries</span></code> 中所有元素必须使用 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_NO_PROTECTED_ACCESS_BIT_EXT</span></code> 创建。</p></li>
+<li><p>如果 <code class="docutils literal notranslate"><span class="pre">pipeline</span></code> 没有使用 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_NO_PROTECTED_ACCESS_BIT_EXT</span></code> 创建的话， <code class="docutils literal notranslate"><span class="pre">pLibraries</span></code> 中所有元素必须都不使用 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_NO_PROTECTED_ACCESS_BIT_EXT</span></code> 创建。</p></li>
+<li><p>如果 <code class="docutils literal notranslate"><span class="pre">pipeline</span></code> 使用 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_PROTECTED_ACCESS_ONLY_BIT_EXT</span></code> 创建的话， <code class="docutils literal notranslate"><span class="pre">pLibraries</span></code> 中所有元素必须使用 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_PROTECTED_ACCESS_ONLY_BIT_EXT</span></code> 创建。</p></li>
+<li><p>如果 <code class="docutils literal notranslate"><span class="pre">pipeline</span></code> 没有使用 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_PROTECTED_ACCESS_ONLY_BIT_EXT</span></code> 创建的话， <code class="docutils literal notranslate"><span class="pre">pLibraries</span></code> 中所有元素必须都不使用 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_PROTECTED_ACCESS_ONLY_BIT_EXT</span></code> 创建。</p></li>
+</ul>
+</div>
+<p>当管线使用 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_LIBRARY_BIT_KHR</span></code> 管线库创建时可以在 <code class="docutils literal notranslate"><span class="pre">VkPipelineLibraryCreateInfoKHR</span></code> 中指定依赖的外部管线库。</p>
+<p>只要其中一个链接管线处于使用状态，就认为管线库处于使用状态。如果管线库包含其他管线库，则这将递归地应用下去。</p>
+</section>
 <section id="vkraytracingpipelineinterfacecreateinfokhr">
 <h2>VkRayTracingPipelineInterfaceCreateInfoKHR<a class="headerlink" href="#vkraytracingpipelineinterfacecreateinfokhr" title="此标题的永久链接">#</a></h2>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_ray_tracing_pipeline 提供</span>
@@ -725,6 +764,40 @@
 </ul>
 </div>
 </section>
+<section id="vkshadergroupshaderkhr">
+<h2>VkShaderGroupShaderKHR<a class="headerlink" href="#vkshadergroupshaderkhr" title="此标题的永久链接">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">vkGetRayTracingShaderGroupStackSizeKHR</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">groupShader</span></code> 的可能值为：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_ray_tracing_pipeline 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkShaderGroupShaderKHR</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VK_SHADER_GROUP_SHADER_GENERAL_KHR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_SHADER_GROUP_SHADER_CLOSEST_HIT_KHR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_SHADER_GROUP_SHADER_ANY_HIT_KHR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_SHADER_GROUP_SHADER_INTERSECTION_KHR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkShaderGroupShaderKHR</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_SHADER_GROUP_SHADER_GENERAL_KHR</span> 表示使用 <code class="docutils literal notranslate"><span class="pre">VkRayTracingShaderGroupCreateInfoKHR::generalShader</span></code> 对应着色器组中的着色器。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_SHADER_GROUP_SHADER_CLOSEST_HIT_KHR</span> 表示使用 <code class="docutils literal notranslate"><span class="pre">VkRayTracingShaderGroupCreateInfoKHR::closestHitShader</span></code> 对应着色器组中的着色器。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_SHADER_GROUP_SHADER_ANY_HIT_KHR</span> 表示使用 <code class="docutils literal notranslate"><span class="pre">VkRayTracingShaderGroupCreateInfoKHR::anyHitShader</span></code> 对应着色器组中的着色器。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_SHADER_GROUP_SHADER_INTERSECTION_KHR</span> 表示使用 <code class="docutils literal notranslate"><span class="pre">VkRayTracingShaderGroupCreateInfoKHR::intersectionShader</span></code> 对应着色器组中的着色器。</p></li>
+</ul>
+</section>
+<section id="id15">
+<h2>vkCmdSetRayTracingPipelineStackSizeKHR<a class="headerlink" href="#id15" title="此标题的永久链接">#</a></h2>
+<p>动态设置光追管线的栈大小，调用：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_ray_tracing_pipeline 提供</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">vkCmdSetRayTracingPipelineStackSizeKHR</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkCommandBuffer</span><span class="w">                             </span><span class="n">commandBuffer</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                                    </span><span class="n">pipelineStackSize</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">commandBuffer</span> 对应记录该指令的命令缓存。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pipelineStackSize</span> 表示要设置的光追管线栈大小。</p></li>
+</ul>
+<p>该函数只有在创建光追管线时 <code class="docutils literal notranslate"><span class="pre">VkPipelineDynamicStateCreateInfo::pDynamicStates</span></code> 中包含 <code class="docutils literal notranslate"><span class="pre">VK_DYNAMIC_STATE_RAY_TRACING_PIPELINE_STACK_SIZE_KHR</span></code> 才进行动态设置，否则栈大小的将根据 <a class="reference external" href="https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap40.html#ray-tracing-pipeline-stack">光追管线栈</a> 计算。</p>
+</section>
 </section>
 
         </article>
@@ -820,10 +893,13 @@
 <li><a class="reference internal" href="#vkraytracingpipelinecreateinfokhr">VkRayTracingPipelineCreateInfoKHR</a></li>
 <li><a class="reference internal" href="#vkraytracingshadergroupcreateinfokhr">VkRayTracingShaderGroupCreateInfoKHR</a></li>
 <li><a class="reference internal" href="#vkraytracingshadergrouptypekhr">VkRayTracingShaderGroupTypeKHR</a></li>
+<li><a class="reference internal" href="#vkpipelinelibrarycreateinfokhr">VkPipelineLibraryCreateInfoKHR</a></li>
 <li><a class="reference internal" href="#vkraytracingpipelineinterfacecreateinfokhr">VkRayTracingPipelineInterfaceCreateInfoKHR</a></li>
 <li><a class="reference internal" href="#id8">vkGetRayTracingShaderGroupHandlesKHR</a></li>
 <li><a class="reference internal" href="#id11">vkGetRayTracingCaptureReplayShaderGroupHandlesKHR</a></li>
 <li><a class="reference internal" href="#id14">vkGetRayTracingShaderGroupStackSizeKHR</a></li>
+<li><a class="reference internal" href="#vkshadergroupshaderkhr">VkShaderGroupShaderKHR</a></li>
+<li><a class="reference internal" href="#id15">vkCmdSetRayTracingPipelineStackSizeKHR</a></li>
 </ul>
 </li>
 </ul>
