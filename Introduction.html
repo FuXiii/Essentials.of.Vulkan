@@ -1,14 +1,14 @@
 <!doctype html>
-<html class="no-js" lang="zh-CN">
+<html class="no-js" lang="zh-CN" data-content_root="./">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="索引" href="genindex.html" /><link rel="search" title="搜索" href="search.html" /><link rel="next" title="开始于 Vulkan SDK" href="StartFromVulkanSDK.html" /><link rel="prev" title="欢迎来到 Vulkan 入门精要" href="index.html" />
         <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/Introduction.html" />
 
-    <link rel="shortcut icon" href="_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.1.2 and Furo 2023.07.26 -->
+    <link rel="shortcut icon" href="_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.2.2 and Furo 2023.08.19 -->
         <title>介绍 - Vulkan入门精要</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=e15ddae3" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b20cc3f5" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/tabs.css?v=4c969af8" />
@@ -248,7 +248,7 @@
         </div>
         <article role="main">
           <section id="id1">
-<h1>介绍<a class="headerlink" href="#id1" title="此标题的永久链接">#</a></h1>
+<h1>介绍<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header sd-bg-muted sd-bg-text-muted">
 <span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-history" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M1.643 3.143L.427 1.927A.25.25 0 000 2.104V5.75c0 .138.112.25.25.25h3.646a.25.25 0 00.177-.427L2.715 4.215a6.5 6.5 0 11-1.18 4.458.75.75 0 10-1.493.154 8.001 8.001 0 101.6-5.684zM7.75 4a.75.75 0 01.75.75v2.992l2.028.812a.75.75 0 01-.557 1.392l-2.5-1A.75.75 0 017 8.25v-3.5A.75.75 0 017.75 4z"></path></svg></span>更新记录<div class="sd-summary-down docutils">
@@ -267,7 +267,7 @@
 </ul>
 </div>
 </details><section id="id2">
-<h2>计算机图形学<a class="headerlink" href="#id2" title="此标题的永久链接">#</a></h2>
+<h2>计算机图形学<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
 <p>计算机图形学的主要研究内容就是研究如何在计算机中表示图形、以及利用计算机进行图形的计算、处理和显示的相关原理与算法。（来源于 <a class="reference external" href="https://baike.baidu.com/item/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/279486">百度百科</a> ，说的不错）。</p>
 <p>目前计算机中对于图形应用的开发一般有三种途径：</p>
 <ol class="arabic simple">
@@ -278,7 +278,7 @@
 <p>每一种都有自己的特色和应用领域。</p>
 </section>
 <section id="id4">
-<h2>实时渲染和离线渲染<a class="headerlink" href="#id4" title="此标题的永久链接">#</a></h2>
+<h2>实时渲染和离线渲染<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
 <p>基于 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 的实时渲染，所谓 <code class="docutils literal notranslate"><span class="pre">实时</span></code> 目的是在尽可能短的时间里（一般小于1秒）对相应数据的输入，给出及时的反馈，其多为性能敏感。多见于游戏的画面渲染。而厂家为了用户使用自家显卡设备，都会推出设备对应的图形接口供用户访问使用。</p>
 <p>基于 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 的离线渲染，多见于影视照片级别的光线追踪渲染中，像电影特效、逼真、震撼的影视场景一般都属于离线渲染。其多为计算密集型，计算一幅图像所需要的时间往往是巨大的（可能需要三天甚至更多时间渲染一幅图像）。</p>
 <p>基于 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 的软光栅，多见于开发者学习 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 的实时渲染原理，并使用 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 来实现相关工作，优点是开发者可随心探索底层原理，缺点是性能堪忧，效果有限，不够灵活。多用于学习探索的目的，基本没有用此方法开发产品的。</p>
@@ -289,7 +289,7 @@
 </div>
 </section>
 <section id="id5">
-<h2>图形接口<a class="headerlink" href="#id5" title="此标题的永久链接">#</a></h2>
+<h2>图形接口<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
 <p>图形接口，也称图形 <code class="docutils literal notranslate"><span class="pre">API</span></code> ，其目的是定义一套规范用于与图形功能硬件设备进行沟通。由于市面上硬件设备产品众多每一家都可以定义一套自己设备的图形接口，这就会导致设备使用用户需要每一个设备单独适配，其工作了繁重重复不稳定，
 所以硬件设备生产商联合起来定一个统一的图形接口，使用此接口可以与任何支持该接口的设备进行沟通。当今天下有四套图形标准：</p>
 <ol class="arabic simple">
@@ -300,13 +300,13 @@
 </ol>
 </section>
 <section id="khronos">
-<h2>Khronos组织<a class="headerlink" href="#khronos" title="此标题的永久链接">#</a></h2>
+<h2>Khronos组织<a class="headerlink" href="#khronos" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">Khronos</span></code> 原本指代的是古希腊神话传说中掌管时间的神祗 <code class="docutils literal notranslate"><span class="pre">克罗诺斯</span></code> ，是俄耳甫斯教（ <code class="docutils literal notranslate"><span class="pre">Orphism</span></code> ）的原始神，此神祗经常与宙斯他爹 <code class="docutils literal notranslate"><span class="pre">克洛诺斯</span></code> ( <code class="docutils literal notranslate"><span class="pre">Kronos</span></code> ) 搞混，因为发音基本没区别。
 虽然克罗诺斯和克洛诺斯都属于古希腊神话体系，但不是同一派别（可能类似于道教中的全真和正一）。在俄耳甫斯教中克罗诺斯被称为宇宙第一因或宇宙的源头（类似道家中的道生一）。</p>
 <p>扯远了。 <a class="reference external" href="https://www.khronos.org/">Khronos组织</a> 是一家非常著名的开源标准规范组织，像大家熟知的 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 、 <code class="docutils literal notranslate"><span class="pre">OpenCL</span></code> 、 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 、 <code class="docutils literal notranslate"><span class="pre">WebGL</span></code> 还有 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准都是出自该组织。</p>
 </section>
 <section id="opengl">
-<h2>OpenGL<a class="headerlink" href="#opengl" title="此标题的永久链接">#</a></h2>
+<h2>OpenGL<a class="headerlink" href="#opengl" title="Link to this heading">#</a></h2>
 <p>作为跨平台跨设备的图形 <code class="docutils literal notranslate"><span class="pre">API</span></code> ， <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 应该算是元老级别的了， <code class="docutils literal notranslate"><span class="pre">OpenGL</span> <span class="pre">1.0</span></code> 最早发布于 <code class="docutils literal notranslate"><span class="pre">1992年1月</span></code>，当时的图形接口只支持固定管线，并没有提供可编程的着色器特性，直到后来在 <code class="docutils literal notranslate"><span class="pre">DirectX</span></code> 中提供了可编程管线的功能，
 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 在其逼迫下，于 <code class="docutils literal notranslate"><span class="pre">2004年9月7日</span></code> 发布了 <code class="docutils literal notranslate"><span class="pre">OpenGL</span> <span class="pre">2.0</span></code> 支持可编程管线，并支持将片元着色器的输出结果输出到多个帧缓存（ <code class="docutils literal notranslate"><span class="pre">framebuffer</span></code> ）中。随着时代的发展和硬件设备能力的提升 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 也随之进步，截止本文创作， <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 最新版本为
 <code class="docutils literal notranslate"><span class="pre">OpenGL</span> <span class="pre">4.6</span></code> 于 <code class="docutils literal notranslate"><span class="pre">2017年7月31日</span></code> 发布， <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 是一种基于环境上下文（ <code class="docutils literal notranslate"><span class="pre">context</span></code> ）的架构，所谓环境上下文的意思是下一步的操作是基于上一步的内容继续的，比如此时拿一张白纸，上一步是将白纸涂满红色，下一步是中间画一个绿色矩形，当这个上下文执行结束
@@ -316,7 +316,7 @@
 本人也有幸于 <code class="docutils literal notranslate"><span class="pre">2018</span></code> 年开始研究 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 。</p>
 </section>
 <section id="vulkan">
-<h2>Vulkan<a class="headerlink" href="#vulkan" title="此标题的永久链接">#</a></h2>
+<h2>Vulkan<a class="headerlink" href="#vulkan" title="Link to this heading">#</a></h2>
 <p>作为新一代的图形 <code class="docutils literal notranslate"><span class="pre">API</span></code> ，可以说完全重新设计了架构，摒弃了 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 的基于上下文的架构执行指令，而是使用基于 <code class="docutils literal notranslate"><span class="pre">CommandBuffer</span></code> 指令缓存推送到设备工作 <code class="docutils literal notranslate"><span class="pre">Queue</span></code> 队列的方式，进行指令执行。支持 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 不支持的多线程和硬件光线追踪。在 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 中对于函数的获取，
 有的用 <code class="docutils literal notranslate"><span class="pre">GLEW</span></code> 有的用 <code class="docutils literal notranslate"><span class="pre">GLAD</span></code> 有的函数获取在某些平台甚至都是么棱两可的， <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中规避了该诟病，使用统一的接口获取所有接口函数。明确绘制结果如何呈现，而不是像 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 那样有默认的颜色、深度缓存。等等，可以说 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 和 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 是完全不一样的，
 硬要说 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 与 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 之间是什么关系，可以说 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 是将 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 中的很多原本由驱动负责的任务，现在将其开放出来由 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 开发者自己管理，这也就是为什么很多人觉得 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 困难的原因，使用 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 开发总有一种开发 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 驱动的感觉，但好处是架构清晰，性能优良，完全可以基于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 去
@@ -426,9 +426,9 @@
 
     </aside>
   </div>
-</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=babeb00e"></script>
+</div><script src="_static/documentation_options.js?v=7d86a446"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
-    <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="_static/copybutton.js?v=f281be69"></script>

@@ -1,14 +1,14 @@
 <!doctype html>
-<html class="no-js" lang="zh-CN">
+<html class="no-js" lang="zh-CN" data-content_root="../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="搜索" href="../search.html" /><link rel="next" title="应用" href="../Application/index.html" /><link rel="prev" title="VK_KHR_deferred_host_operations" href="VulkanKHRRayTracing/VK_KHR_deferred_host_operations.html" />
         <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/InformalEssay/VK_KHR_buffer_device_address.html" />
 
-    <link rel="shortcut icon" href="../_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.1.2 and Furo 2023.07.26 -->
+    <link rel="shortcut icon" href="../_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.2.2 and Furo 2023.08.19 -->
         <title>VK_KHR_buffer_device_address - Vulkan入门精要</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e15ddae3" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b20cc3f5" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
@@ -248,7 +248,7 @@
         </div>
         <article role="main">
           <section id="vk-khr-buffer-device-address">
-<h1>VK_KHR_buffer_device_address<a class="headerlink" href="#vk-khr-buffer-device-address" title="此标题的永久链接">#</a></h1>
+<h1>VK_KHR_buffer_device_address<a class="headerlink" href="#vk-khr-buffer-device-address" title="Link to this heading">#</a></h1>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header sd-bg-muted sd-bg-text-muted">
 <span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-history" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M1.643 3.143L.427 1.927A.25.25 0 000 2.104V5.75c0 .138.112.25.25.25h3.646a.25.25 0 00.177-.427L2.715 4.215a6.5 6.5 0 11-1.18 4.458.75.75 0 10-1.493.154 8.001 8.001 0 101.6-5.684zM7.75 4a.75.75 0 01.75.75v2.992l2.028.812a.75.75 0 01-.557 1.392l-2.5-1A.75.75 0 017 8.25v-3.5A.75.75 0 017.75 4z"></path></svg></span>更新记录<div class="sd-summary-down docutils">
@@ -279,7 +279,7 @@
 </div>
 </details><p>该扩展属于 <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">device扩展</span> <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">在Vulkan 1.2中被纳入核心</span></p>
 <section id="id1">
-<h2>依赖<a class="headerlink" href="#id1" title="此标题的永久链接">#</a></h2>
+<h2>依赖<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Vulkan 1.1</p></li>
 </ul>
@@ -296,7 +296,7 @@
 </ul>
 </section>
 <section id="id2">
-<h2>新增函数<a class="headerlink" href="#id2" title="此标题的永久链接">#</a></h2>
+<h2>新增函数<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p><a class="reference external" href="https://registry.khronos.org/vulkan/specs/1.3-khr-extensions/html/chap14.html#vkGetBufferDeviceAddressKHR">vkGetBufferDeviceAddressKHR</a></p></li>
 <li><p><a class="reference external" href="https://registry.khronos.org/vulkan/specs/1.3-khr-extensions/html/chap14.html#vkGetBufferOpaqueCaptureAddressKHR">vkGetBufferOpaqueCaptureAddressKHR</a></p></li>
@@ -304,7 +304,7 @@
 </ul>
 </section>
 <section id="id3">
-<h2>新增特性<a class="headerlink" href="#id3" title="此标题的永久链接">#</a></h2>
+<h2>新增特性<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p><a class="reference external" href="https://registry.khronos.org/vulkan/specs/1.3-khr-extensions/html/chap38.html#VkPhysicalDeviceBufferDeviceAddressFeaturesKHR">VkPhysicalDeviceBufferDeviceAddressFeaturesKHR</a></p></li>
 </ul>
@@ -318,10 +318,10 @@
 </div>
 </section>
 <section id="id4">
-<h2>访问物理存储缓存<a class="headerlink" href="#id4" title="此标题的永久链接">#</a></h2>
+<h2>访问物理存储缓存<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
 <p>查询获取着色器可访问的 <code class="docutils literal notranslate"><span class="pre">64</span></code> 比特的设备缓存地址，调用：</p>
 <section id="vkgetbufferdeviceaddress">
-<h3>vkGetBufferDeviceAddress<a class="headerlink" href="#vkgetbufferdeviceaddress" title="此标题的永久链接">#</a></h3>
+<h3>vkGetBufferDeviceAddress<a class="headerlink" href="#vkgetbufferdeviceaddress" title="Link to this heading">#</a></h3>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_2 提供</span>
 <span class="n">VkDeviceAddress</span><span class="w"> </span><span class="nf">vkGetBufferDeviceAddress</span><span class="p">(</span>
 <span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
@@ -331,7 +331,7 @@
 <p>或是与之等价的</p>
 </section>
 <section id="id5">
-<h3>vkGetBufferDeviceAddressKHR<a class="headerlink" href="#id5" title="此标题的永久链接">#</a></h3>
+<h3>vkGetBufferDeviceAddressKHR<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_buffer_device_address 提供</span>
 <span class="n">VkDeviceAddress</span><span class="w"> </span><span class="nf">vkGetBufferDeviceAddressKHR</span><span class="p">(</span>
 <span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
@@ -356,7 +356,7 @@
 </div>
 </section>
 <section id="vkbufferdeviceaddressinfo">
-<h3>VkBufferDeviceAddressInfo<a class="headerlink" href="#vkbufferdeviceaddressinfo" title="此标题的永久链接">#</a></h3>
+<h3>VkBufferDeviceAddressInfo<a class="headerlink" href="#vkbufferdeviceaddressinfo" title="Link to this heading">#</a></h3>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_2 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkBufferDeviceAddressInfo</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">VkStructureType</span><span class="w">    </span><span class="n">sType</span><span class="p">;</span>
@@ -368,7 +368,7 @@
 <p>或是与之等价的</p>
 </section>
 <section id="vkbufferdeviceaddressinfokhr">
-<h3>VkBufferDeviceAddressInfoKHR<a class="headerlink" href="#vkbufferdeviceaddressinfokhr" title="此标题的永久链接">#</a></h3>
+<h3>VkBufferDeviceAddressInfoKHR<a class="headerlink" href="#vkbufferdeviceaddressinfokhr" title="Link to this heading">#</a></h3>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_buffer_device_address 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="n">VkBufferDeviceAddressInfo</span><span class="w"> </span><span class="n">VkBufferDeviceAddressInfoKHR</span><span class="p">;</span>
 </pre></div>
@@ -391,7 +391,7 @@
 </div>
 </section>
 <section id="vkgetbufferopaquecaptureaddress">
-<h3>vkGetBufferOpaqueCaptureAddress<a class="headerlink" href="#vkgetbufferopaquecaptureaddress" title="此标题的永久链接">#</a></h3>
+<h3>vkGetBufferOpaqueCaptureAddress<a class="headerlink" href="#vkgetbufferopaquecaptureaddress" title="Link to this heading">#</a></h3>
 <p>获取 <code class="docutils literal notranslate"><span class="pre">64</span></code> 位不透明缓存捕获地址，调用：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_2 提供</span>
 <span class="kt">uint64_t</span><span class="w"> </span><span class="nf">vkGetBufferOpaqueCaptureAddress</span><span class="p">(</span>
@@ -402,7 +402,7 @@
 <p>或是与之等价的</p>
 </section>
 <section id="id6">
-<h3>vkGetBufferOpaqueCaptureAddressKHR<a class="headerlink" href="#id6" title="此标题的永久链接">#</a></h3>
+<h3>vkGetBufferOpaqueCaptureAddressKHR<a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_buffer_device_address 提供</span>
 <span class="kt">uint64_t</span><span class="w"> </span><span class="nf">vkGetBufferOpaqueCaptureAddressKHR</span><span class="p">(</span>
 <span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
@@ -425,9 +425,9 @@
 </section>
 </section>
 <section id="id7">
-<h2>查询不透明捕获地址<a class="headerlink" href="#id7" title="此标题的永久链接">#</a></h2>
+<h2>查询不透明捕获地址<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
 <section id="vkgetdevicememoryopaquecaptureaddress">
-<h3>vkGetDeviceMemoryOpaqueCaptureAddress<a class="headerlink" href="#vkgetdevicememoryopaquecaptureaddress" title="此标题的永久链接">#</a></h3>
+<h3>vkGetDeviceMemoryOpaqueCaptureAddress<a class="headerlink" href="#vkgetdevicememoryopaquecaptureaddress" title="Link to this heading">#</a></h3>
 <p>从内存对象中查询 <code class="docutils literal notranslate"><span class="pre">64</span></code> 为不透明捕获地址，调用：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_2 提供</span>
 <span class="kt">uint64_t</span><span class="w"> </span><span class="nf">vkGetDeviceMemoryOpaqueCaptureAddress</span><span class="p">(</span>
@@ -438,7 +438,7 @@
 <p>或是与之等价的</p>
 </section>
 <section id="id8">
-<h3>vkGetDeviceMemoryOpaqueCaptureAddressKHR<a class="headerlink" href="#id8" title="此标题的永久链接">#</a></h3>
+<h3>vkGetDeviceMemoryOpaqueCaptureAddressKHR<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_buffer_device_address 提供</span>
 <span class="kt">uint64_t</span><span class="w"> </span><span class="nf">vkGetDeviceMemoryOpaqueCaptureAddressKHR</span><span class="p">(</span>
 <span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
@@ -464,7 +464,7 @@
 </div>
 </section>
 <section id="vkdevicememoryopaquecaptureaddressinfo">
-<h3>VkDeviceMemoryOpaqueCaptureAddressInfo<a class="headerlink" href="#vkdevicememoryopaquecaptureaddressinfo" title="此标题的永久链接">#</a></h3>
+<h3>VkDeviceMemoryOpaqueCaptureAddressInfo<a class="headerlink" href="#vkdevicememoryopaquecaptureaddressinfo" title="Link to this heading">#</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">VkDeviceMemoryOpaqueCaptureAddressInfo</span></code> 结构体定义如下：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_2 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkDeviceMemoryOpaqueCaptureAddressInfo</span><span class="w"> </span><span class="p">{</span>
@@ -477,7 +477,7 @@
 <p>或是与之等价的</p>
 </section>
 <section id="vkdevicememoryopaquecaptureaddressinfokhr">
-<h3>VkDeviceMemoryOpaqueCaptureAddressInfoKHR<a class="headerlink" href="#vkdevicememoryopaquecaptureaddressinfokhr" title="此标题的永久链接">#</a></h3>
+<h3>VkDeviceMemoryOpaqueCaptureAddressInfoKHR<a class="headerlink" href="#vkdevicememoryopaquecaptureaddressinfokhr" title="Link to this heading">#</a></h3>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_buffer_device_address 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="n">VkDeviceMemoryOpaqueCaptureAddressInfo</span><span class="w"> </span><span class="n">VkDeviceMemoryOpaqueCaptureAddressInfoKHR</span><span class="p">;</span>
 </pre></div>
@@ -602,9 +602,9 @@
 
     </aside>
   </div>
-</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=babeb00e"></script>
+</div><script src="../_static/documentation_options.js?v=7d86a446"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>

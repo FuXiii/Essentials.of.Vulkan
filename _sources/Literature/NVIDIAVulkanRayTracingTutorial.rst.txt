@@ -70,8 +70,19 @@ NVIDIA Vulkan 光线追踪教程
     * 2023/6/4 增加 ``14.4 raytrace.rchit`` 章节
     * 2023/6/4 增加 ``15 拓展延伸`` 章节
     * 2023/6/4 初步翻译完成
+    * 2023/8/23 提供 ``Turbo`` 实现开源示例
 
 `文献源`_
+
+.. admonition:: Turbo 引擎中对该教程的实现示例
+    :class: note
+
+    ``Turbo`` 引擎对该教程进行了实现，具体如下：
+
+    * `VulkanKHRRayTracingTest <https://github.com/FuXiii/Turbo/blob/master/samples/VulkanKHRRayTracingTest.cpp>`_ ：提供光栅化和实时光追两种渲染方式切换。 `示例视频 <https://www.bilibili.com/video/BV1Wu411779G/?spm_id_from=333.999.0.0>`_
+    * `VulkanKHRRayTracingTestForLighting <https://github.com/FuXiii/Turbo/blob/master/samples/VulkanKHRRayTracingTestForLighting.cpp>`_ ：提供实时光追的 ``Phong`` 光照模型渲染。 `示例视频 <https://www.bilibili.com/video/BV1rm4y1H7EE/?spm_id_from=333.999.0.0>`_
+    * `VulkanKHRRayTracingTestForLightingShadow <https://github.com/FuXiii/Turbo/blob/master/samples/VulkanKHRRayTracingTestForLightingShadow.cpp>`_ ：提供实时光追光照中的阴影渲染。 `示例视频 <https://www.bilibili.com/video/BV1gu4y1i7Kx/?spm_id_from=333.999.0.0>`_
+    * `VulkanKHRRayTracingTestForLightingShadowWithTexture <https://github.com/FuXiii/Turbo/blob/master/samples/VulkanKHRRayTracingTestForLightingShadowWithTexture.cpp>`_ ：提供实时光追光照中的纹理采样。 `示例视频 <https://www.bilibili.com/video/BV1qu41177B9/?spm_id_from=333.999.0.0>`_
 
 .. _文献源: https://nvpro-samples.github.io/vk_raytracing_tutorial_KHR/
 

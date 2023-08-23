@@ -1,14 +1,14 @@
 <!doctype html>
-<html class="no-js" lang="zh-CN">
+<html class="no-js" lang="zh-CN" data-content_root="./">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="索引" href="genindex.html" /><link rel="search" title="搜索" href="search.html" /><link rel="next" title="文献" href="Literature/index.html" /><link rel="prev" title="开始于 Vulkan SDK" href="StartFromVulkanSDK.html" />
         <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/Overview.html" />
 
-    <link rel="shortcut icon" href="_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.1.2 and Furo 2023.07.26 -->
+    <link rel="shortcut icon" href="_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.2.2 and Furo 2023.08.19 -->
         <title>纵览 - Vulkan入门精要</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=e15ddae3" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b20cc3f5" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/tabs.css?v=4c969af8" />
@@ -248,7 +248,7 @@
         </div>
         <article role="main">
           <section id="id1">
-<h1>纵览<a class="headerlink" href="#id1" title="此标题的永久链接">#</a></h1>
+<h1>纵览<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header sd-bg-muted sd-bg-text-muted">
 <span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-history" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M1.643 3.143L.427 1.927A.25.25 0 000 2.104V5.75c0 .138.112.25.25.25h3.646a.25.25 0 00.177-.427L2.715 4.215a6.5 6.5 0 11-1.18 4.458.75.75 0 10-1.493.154 8.001 8.001 0 101.6-5.684zM7.75 4a.75.75 0 01.75.75v2.992l2.028.812a.75.75 0 01-.557 1.392l-2.5-1A.75.75 0 017 8.25v-3.5A.75.75 0 017.75 4z"></path></svg></span>更新记录<div class="sd-summary-down docutils">
@@ -329,7 +329,7 @@
 </div>
 </details><p>由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 比较复杂，为了更好的入门 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> ，还是大致过一遍 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的核心思路，这对以后的学习很有帮助。</p>
 <section id="vulkan">
-<h2>Vulkan 能为我们做什么<a class="headerlink" href="#vulkan" title="此标题的永久链接">#</a></h2>
+<h2>Vulkan 能为我们做什么<a class="headerlink" href="#vulkan" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 最主要的任务就是为我们提供了 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 并行计算的接口。是的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 仅仅只是规定了一套接口，其并没有接口的具体实现，而实现是需要硬件厂商自己适配实现，所以市面上并不是所有硬件设备都支持 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 。像 <code class="docutils literal notranslate"><span class="pre">NVIDIA</span></code> 、 <code class="docutils literal notranslate"><span class="pre">AMD</span></code> 和 <code class="docutils literal notranslate"><span class="pre">Intel</span></code> 等国际大厂基本提供了完整的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>
 核心标准接口。而像国产的后起之秀 <a class="reference external" href="https://www.mthreads.com/">摩尔线程</a> 也在努力适配 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准（ <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">景嘉微你要加油啊</span>）。由于标准的实现都是自家的，所以每家厂商都可以根据自家设备的特点进行优化和扩展，这样在提供 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 核心功能的基础上也推出了自家的扩展功能，而扩展功能往往是该设备的卖点（比如硬件实时光线追踪扩展功能）。</p>
 <p>而在使用 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 时，相比于标准，我们往往更关注于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 所提供的功能，主要的功能如下：</p>
@@ -342,15 +342,15 @@
 <p>其中 <code class="docutils literal notranslate"><span class="pre">光栅化渲染</span></code> 应该是最主要的功能了（同时也是 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的核心功能）。该章节也主要以 <code class="docutils literal notranslate"><span class="pre">光栅化渲染</span></code> 为核心进行纵览。</p>
 </section>
 <section id="id3">
-<h2>Vulkan 的接口<a class="headerlink" href="#id3" title="此标题的永久链接">#</a></h2>
+<h2>Vulkan 的接口<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的接口，也就是 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 函数，最开始是使用 <code class="docutils literal notranslate"><span class="pre">C</span></code> 语言发布的，有些繁琐，后来推出了 <code class="docutils literal notranslate"><span class="pre">C++</span></code> 版本的接口，现在 <code class="docutils literal notranslate"><span class="pre">Python</span></code> 、 <code class="docutils literal notranslate"><span class="pre">Java</span></code> 和 <code class="docutils literal notranslate"><span class="pre">C#</span></code> 等高级语言也陆续支持开发 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> ，支持 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的家族也在慢慢壮大。</p>
 <p>本教程主要是用最原始的 <code class="docutils literal notranslate"><span class="pre">C</span></code> 语言版本进行讲解。</p>
 </section>
 <section id="id4">
-<h2>获取 Vulkan 接口<a class="headerlink" href="#id4" title="此标题的永久链接">#</a></h2>
+<h2>获取 Vulkan 接口<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
 <p>由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 只是一套标准，具体的实现都在硬件驱动中，为了能够使用 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 驱动硬件设备，我们需要获取驱动中 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准实现的接口。</p>
 <section id="id5">
-<h3>加载 Vulkan 动态库<a class="headerlink" href="#id5" title="此标题的永久链接">#</a></h3>
+<h3>加载 Vulkan 动态库<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中提供了 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 进行 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准实现接口的获取。根据前文介绍我们知道 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 对应着 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的动态库，所以我们第一步就是加载 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的动态库。</p>
 <div class="note admonition">
 <p class="admonition-title">Vulkan 的动态库</p>
@@ -395,7 +395,7 @@ Linux 加载</label><div class="sd-tab-content docutils">
 </div>
 </section>
 <section id="id6">
-<h3>Vulkan 函数分类<a class="headerlink" href="#id6" title="此标题的永久链接">#</a></h3>
+<h3>Vulkan 函数分类<a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
 <p>之后我们就可以从加载的动态库中获取 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的函数了，但是在获取 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 函数前我们需要先介绍一下 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中函数的分类：</p>
 <ul class="simple">
 <li><dl class="simple">
@@ -431,7 +431,7 @@ Linux 加载</label><div class="sd-tab-content docutils">
 </div>
 </section>
 <section id="vkgetinstanceprocaddr">
-<h3>vkGetInstanceProcAddr<a class="headerlink" href="#vkgetinstanceprocaddr" title="此标题的永久链接">#</a></h3>
+<h3>vkGetInstanceProcAddr<a class="headerlink" href="#vkgetinstanceprocaddr" title="Link to this heading">#</a></h3>
 <p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中获取 <code class="docutils literal notranslate"><span class="pre">Instance</span></code> 域函数，提供了统一的 <code class="docutils literal notranslate"><span class="pre">vkGetInstanceProcAddr</span></code> 函数获取接口，如下：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="n">VKAPI_PTR</span><span class="w"> </span><span class="o">*</span><span class="n">PFN_vkVoidFunction</span><span class="p">)(</span><span class="kt">void</span><span class="p">);</span>
@@ -495,7 +495,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </section>
 </section>
 <section id="vulkan-vkinstance">
-<h2>Vulkan 最初之物 VkInstance<a class="headerlink" href="#vulkan-vkinstance" title="此标题的永久链接">#</a></h2>
+<h2>Vulkan 最初之物 VkInstance<a class="headerlink" href="#vulkan-vkinstance" title="Link to this heading">#</a></h2>
 <p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中首先要创建的就是 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 对象。该对象包含了用户设置的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 环境信息，包括使用的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的版本信息等，用于初始化 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 环境，并构建出 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 这个繁杂的系统根基。 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 定义如下：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#define VK_DEFINE_HANDLE(object) typedef struct object##_T* object;</span>
 
@@ -517,9 +517,9 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <section id="vkinstance">
-<h3>创建 VkInstance<a class="headerlink" href="#vkinstance" title="此标题的永久链接">#</a></h3>
+<h3>创建 VkInstance<a class="headerlink" href="#vkinstance" title="Link to this heading">#</a></h3>
 <section id="vkcreateinstance">
-<h4>vkCreateInstance<a class="headerlink" href="#vkcreateinstance" title="此标题的永久链接">#</a></h4>
+<h4>vkCreateInstance<a class="headerlink" href="#vkcreateinstance" title="Link to this heading">#</a></h4>
 <p>我们通过之前获取到的 <code class="docutils literal notranslate"><span class="pre">vkCreateInstance</span></code> 函数创建 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 。相关声明如下：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="n">VkResult</span><span class="w"> </span><span class="nf">vkCreateInstance</span><span class="p">(</span>
@@ -566,7 +566,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </div>
 </section>
 <section id="vkinstancecreateinfo">
-<h4>VkInstanceCreateInfo<a class="headerlink" href="#vkinstancecreateinfo" title="此标题的永久链接">#</a></h4>
+<h4>VkInstanceCreateInfo<a class="headerlink" href="#vkinstancecreateinfo" title="Link to this heading">#</a></h4>
 <p>来看一下 <code class="docutils literal notranslate"><span class="pre">VkInstanceCreateInfo</span></code> 的定义：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkInstanceCreateInfo</span><span class="w"> </span><span class="p">{</span>
@@ -643,7 +643,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </div>
 </section>
 <section id="vkapplicationinfo">
-<h4>VkApplicationInfo<a class="headerlink" href="#vkapplicationinfo" title="此标题的永久链接">#</a></h4>
+<h4>VkApplicationInfo<a class="headerlink" href="#vkapplicationinfo" title="Link to this heading">#</a></h4>
 <p>目前我们只需要关注 <code class="docutils literal notranslate"><span class="pre">VkApplicationInfo</span></code> 就好，其定义如下：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkApplicationInfo</span><span class="w"> </span><span class="p">{</span>
@@ -717,7 +717,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </section>
 </section>
 <section id="id7">
-<h2>获取支持的 Vulkan 版本<a class="headerlink" href="#id7" title="此标题的永久链接">#</a></h2>
+<h2>获取支持的 Vulkan 版本<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
 <p>由于历史原因 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.0</span></code> 标准在设计时并没有考虑到获取 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本，只有获取驱动支持的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本。在 <code class="docutils literal notranslate"><span class="pre">开始于</span> <span class="pre">Vulkan</span> <span class="pre">SDK</span></code> 中我们知道 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本有两个版本，一个是系统端支持的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本，一个是驱动支持的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本。为什么会有两个版本？</p>
 <p>这是由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的函数分为不同域。系统端支持的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本主要是用于配置系统支持的功能、 <code class="docutils literal notranslate"><span class="pre">layer</span></code> 和扩展，不同版本支持的功能、 <code class="docutils literal notranslate"><span class="pre">layer</span></code> 和扩展不尽相同。驱动支持的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本主要是用于配置硬件设备支持的功能和扩展，不同版本支持的功能和扩展不尽相同。</p>
 <p>之后在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.1</span></code> 标准中，推出了 <code class="docutils literal notranslate"><span class="pre">vkEnumerateInstanceVersion</span></code> 接口来获取支持的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本。</p>
@@ -737,7 +737,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
    IsNull--是--&gt;SupportVulkan_1_0
    IsNull--否--&gt;SupportVulkanFromvkEnumerateInstanceVersion
         </div><section id="vkenumerateinstanceversion">
-<h3>vkEnumerateInstanceVersion<a class="headerlink" href="#vkenumerateinstanceversion" title="此标题的永久链接">#</a></h3>
+<h3>vkEnumerateInstanceVersion<a class="headerlink" href="#vkenumerateinstanceversion" title="Link to this heading">#</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">vkEnumerateInstanceVersion</span></code> 函数定义如下：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_1 提供</span>
 <span class="n">VkResult</span><span class="w"> </span><span class="nf">vkEnumerateInstanceVersion</span><span class="p">(</span>
@@ -773,10 +773,10 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </section>
 </section>
 <section id="id8">
-<h2>获取物理硬件设备<a class="headerlink" href="#id8" title="此标题的永久链接">#</a></h2>
+<h2>获取物理硬件设备<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 具有能够发现连接在主板上支持 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 设备的能力。通过 <code class="docutils literal notranslate"><span class="pre">vkEnumeratePhysicalDevices</span></code> 函数获取支持 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的设备。</p>
 <section id="vkenumeratephysicaldevices">
-<h3>vkEnumeratePhysicalDevices<a class="headerlink" href="#vkenumeratephysicaldevices" title="此标题的永久链接">#</a></h3>
+<h3>vkEnumeratePhysicalDevices<a class="headerlink" href="#vkenumeratephysicaldevices" title="Link to this heading">#</a></h3>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="n">VkResult</span><span class="w"> </span><span class="nf">vkEnumeratePhysicalDevices</span><span class="p">(</span>
 <span class="w">    </span><span class="n">VkInstance</span><span class="w">                                  </span><span class="n">instance</span><span class="p">,</span>
@@ -818,10 +818,10 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </section>
 </section>
 <section id="id9">
-<h2>获取物理设备属性<a class="headerlink" href="#id9" title="此标题的永久链接">#</a></h2>
+<h2>获取物理设备属性<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
 <p>当获取到物理设备 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDevice</span></code> 句柄之后，可以通过 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceProperties</span></code> 函数获取对应物理设备的属性。</p>
 <section id="vkgetphysicaldeviceproperties">
-<h3>vkGetPhysicalDeviceProperties<a class="headerlink" href="#vkgetphysicaldeviceproperties" title="此标题的永久链接">#</a></h3>
+<h3>vkGetPhysicalDeviceProperties<a class="headerlink" href="#vkgetphysicaldeviceproperties" title="Link to this heading">#</a></h3>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">vkGetPhysicalDeviceProperties</span><span class="p">(</span>
 <span class="w">    </span><span class="n">VkPhysicalDevice</span><span class="w">                            </span><span class="n">physicalDevice</span><span class="p">,</span>
@@ -839,7 +839,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <p><code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceProperties</span></code> 定义如下：</p>
 </section>
 <section id="vkphysicaldeviceproperties">
-<h3>VkPhysicalDeviceProperties<a class="headerlink" href="#vkphysicaldeviceproperties" title="此标题的永久链接">#</a></h3>
+<h3>VkPhysicalDeviceProperties<a class="headerlink" href="#vkphysicaldeviceproperties" title="Link to this heading">#</a></h3>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkPhysicalDeviceProperties</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="kt">uint32_t</span><span class="w">                            </span><span class="n">apiVersion</span><span class="p">;</span>
@@ -877,7 +877,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <p><code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceType</span></code> 枚举值定义如下：</p>
 </section>
 <section id="vkphysicaldevicetype">
-<h3>VkPhysicalDeviceType<a class="headerlink" href="#vkphysicaldevicetype" title="此标题的永久链接">#</a></h3>
+<h3>VkPhysicalDeviceType<a class="headerlink" href="#vkphysicaldevicetype" title="Link to this heading">#</a></h3>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkPhysicalDeviceType</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">VK_PHYSICAL_DEVICE_TYPE_OTHER</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
@@ -922,7 +922,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </section>
 </section>
 <section id="id10">
-<h2>设备队列<a class="headerlink" href="#id10" title="此标题的永久链接">#</a></h2>
+<h2>设备队列<a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
 <p>接下来简单介绍一下 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中的设备队列。</p>
 <p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中的每一个 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDevice</span></code> 物理设备上都有一到多个设备队列。设备队列用于执行所有的用户任务指令，包括渲染、计算、查询、剔除和构建等等各种任务指令。</p>
 <p>每个设备队列支持一到多个功能域，这些功能域分为如下 <code class="docutils literal notranslate"><span class="pre">5</span></code> 种：</p>
@@ -939,10 +939,10 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <p>每个物理设备上支持一到多个设备队列，每个设备队列支持一到多个功能域。这里很有可能多个设备队列支持相同的功能域。比如同一物理设备上的设备队列 <code class="docutils literal notranslate"><span class="pre">A</span></code> 和 <code class="docutils literal notranslate"><span class="pre">B</span></code> 都支持图形和计算功能。</p>
 </div>
 <section id="id11">
-<h3>获取设备队列（族）信息<a class="headerlink" href="#id11" title="此标题的永久链接">#</a></h3>
+<h3>获取设备队列（族）信息<a class="headerlink" href="#id11" title="Link to this heading">#</a></h3>
 <p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中是通过 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceQueueFamilyProperties</span></code> 函数获取：</p>
 <section id="vkgetphysicaldevicequeuefamilyproperties">
-<h4>vkGetPhysicalDeviceQueueFamilyProperties<a class="headerlink" href="#vkgetphysicaldevicequeuefamilyproperties" title="此标题的永久链接">#</a></h4>
+<h4>vkGetPhysicalDeviceQueueFamilyProperties<a class="headerlink" href="#vkgetphysicaldevicequeuefamilyproperties" title="Link to this heading">#</a></h4>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">vkGetPhysicalDeviceQueueFamilyProperties</span><span class="p">(</span>
 <span class="w">    </span><span class="n">VkPhysicalDevice</span><span class="w">                            </span><span class="n">physicalDevice</span><span class="p">,</span>
@@ -1021,7 +1021,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <p>设备队列族 <code class="docutils literal notranslate"><span class="pre">VkQueueFamilyProperties</span></code> 定义如下：</p>
 </section>
 <section id="vkqueuefamilyproperties">
-<h4>VkQueueFamilyProperties<a class="headerlink" href="#vkqueuefamilyproperties" title="此标题的永久链接">#</a></h4>
+<h4>VkQueueFamilyProperties<a class="headerlink" href="#vkqueuefamilyproperties" title="Link to this heading">#</a></h4>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkQueueFamilyProperties</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">VkQueueFlags</span><span class="w">    </span><span class="n">queueFlags</span><span class="p">;</span>
@@ -1041,7 +1041,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <p><code class="docutils literal notranslate"><span class="pre">queueFlags</span></code> 为 <code class="docutils literal notranslate"><span class="pre">VkQueueFlags</span></code> 类型，其定义如下：</p>
 </section>
 <section id="vkqueueflags">
-<h4>VkQueueFlags<a class="headerlink" href="#vkqueueflags" title="此标题的永久链接">#</a></h4>
+<h4>VkQueueFlags<a class="headerlink" href="#vkqueueflags" title="Link to this heading">#</a></h4>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">VkFlags</span><span class="p">;</span>
 <span class="k">typedef</span><span class="w"> </span><span class="n">VkFlags</span><span class="w"> </span><span class="n">VkQueueFlags</span><span class="p">;</span>
 </pre></div>
@@ -1069,7 +1069,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <p><code class="docutils literal notranslate"><span class="pre">VkQueueFlags</span></code> 对应位域的 <code class="docutils literal notranslate"><span class="pre">VkQueueFlagBits</span></code> 定义如下:</p>
 </section>
 <section id="vkqueueflagbits">
-<h4>VkQueueFlagBits<a class="headerlink" href="#vkqueueflagbits" title="此标题的永久链接">#</a></h4>
+<h4>VkQueueFlagBits<a class="headerlink" href="#vkqueueflagbits" title="Link to this heading">#</a></h4>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkQueueFlagBits</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">VK_QUEUE_GRAPHICS_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000001</span><span class="p">,</span>
@@ -1131,13 +1131,13 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </section>
 </section>
 <section id="id12">
-<h2>逻辑设备<a class="headerlink" href="#id12" title="此标题的永久链接">#</a></h2>
+<h2>逻辑设备<a class="headerlink" href="#id12" title="Link to this heading">#</a></h2>
 <p>在获得了物理设备句柄之后，我们需要在某个物理设备上创建逻辑设备，之后所有的操作都应用于此逻辑设备上。 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中使用 <code class="docutils literal notranslate"><span class="pre">VkDevice</span></code> 句柄表示一个逻辑设备。</p>
 <section id="id13">
-<h3>创建逻辑设备<a class="headerlink" href="#id13" title="此标题的永久链接">#</a></h3>
+<h3>创建逻辑设备<a class="headerlink" href="#id13" title="Link to this heading">#</a></h3>
 <p>首先需要使用 <code class="docutils literal notranslate"><span class="pre">vkCreateDevice</span></code> 创建逻辑设备。</p>
 <section id="vkcreatedevice">
-<h4>vkCreateDevice<a class="headerlink" href="#vkcreatedevice" title="此标题的永久链接">#</a></h4>
+<h4>vkCreateDevice<a class="headerlink" href="#vkcreatedevice" title="Link to this heading">#</a></h4>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="n">VkResult</span><span class="w"> </span><span class="nf">vkCreateDevice</span><span class="p">(</span>
 <span class="w">    </span><span class="n">VkPhysicalDevice</span><span class="w">                            </span><span class="n">physicalDevice</span><span class="p">,</span>
@@ -1156,7 +1156,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <p>创建逻辑设备的 <code class="docutils literal notranslate"><span class="pre">VkDeviceCreateInfo</span></code> 结构体定义如下：</p>
 </section>
 <section id="vkdevicecreateinfo">
-<h4>VkDeviceCreateInfo<a class="headerlink" href="#vkdevicecreateinfo" title="此标题的永久链接">#</a></h4>
+<h4>VkDeviceCreateInfo<a class="headerlink" href="#vkdevicecreateinfo" title="Link to this heading">#</a></h4>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkDeviceCreateInfo</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">VkStructureType</span><span class="w">                    </span><span class="n">sType</span><span class="p">;</span>
@@ -1187,7 +1187,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <p>此时我们主要关心数量为 <code class="docutils literal notranslate"><span class="pre">queueCreateInfoCount</span></code> 类型为 <code class="docutils literal notranslate"><span class="pre">VkDeviceQueueCreateInfo</span></code> 的 <code class="docutils literal notranslate"><span class="pre">pQueueCreateInfos</span></code> 数组。该数组用于在创建逻辑设备时指定创建的设备队列信息。该结构体定义如下：</p>
 </section>
 <section id="vkdevicequeuecreateinfo">
-<h4>VkDeviceQueueCreateInfo<a class="headerlink" href="#vkdevicequeuecreateinfo" title="此标题的永久链接">#</a></h4>
+<h4>VkDeviceQueueCreateInfo<a class="headerlink" href="#vkdevicequeuecreateinfo" title="Link to this heading">#</a></h4>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkDeviceQueueCreateInfo</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">VkStructureType</span><span class="w">             </span><span class="n">sType</span><span class="p">;</span>
@@ -1252,10 +1252,10 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </section>
 </section>
 <section id="device">
-<h2>获取 Device 域函数<a class="headerlink" href="#device" title="此标题的永久链接">#</a></h2>
+<h2>获取 Device 域函数<a class="headerlink" href="#device" title="Link to this heading">#</a></h2>
 <p>在创建完逻辑设备 <code class="docutils literal notranslate"><span class="pre">VkDevice</span></code> 之后，与 <code class="docutils literal notranslate"><span class="pre">VkDevice</span></code> 及其产生的子对象（句柄）的所有交互函数都属于 <code class="docutils literal notranslate"><span class="pre">Device</span> <span class="pre">域函数</span></code> 。我们通过 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 提供的 <code class="docutils literal notranslate"><span class="pre">vkGetDeviceProcAddr</span></code> 函数获取 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 域函数。</p>
 <section id="vkgetdeviceprocaddr">
-<h3>vkGetDeviceProcAddr<a class="headerlink" href="#vkgetdeviceprocaddr" title="此标题的永久链接">#</a></h3>
+<h3>vkGetDeviceProcAddr<a class="headerlink" href="#vkgetdeviceprocaddr" title="Link to this heading">#</a></h3>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="n">PFN_vkVoidFunction</span><span class="w"> </span><span class="nf">vkGetDeviceProcAddr</span><span class="p">(</span>
 <span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
@@ -1288,10 +1288,10 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </section>
 </section>
 <section id="id14">
-<h2>获取设备队列<a class="headerlink" href="#id14" title="此标题的永久链接">#</a></h2>
+<h2>获取设备队列<a class="headerlink" href="#id14" title="Link to this heading">#</a></h2>
 <p>我们在创建逻辑设备时指定了需要使用的设备队列信息， <code class="docutils literal notranslate"><span class="pre">vkCreateDevice</span></code> 创建过程中会为我们创建对应的设备队列，之后我们需要通过 <code class="docutils literal notranslate"><span class="pre">vkGetDeviceQueue</span></code> 函数获取设备队列 <code class="docutils literal notranslate"><span class="pre">VkQueue</span></code> 句柄。</p>
 <section id="vkgetdevicequeue">
-<h3>vkGetDeviceQueue<a class="headerlink" href="#vkgetdevicequeue" title="此标题的永久链接">#</a></h3>
+<h3>vkGetDeviceQueue<a class="headerlink" href="#vkgetdevicequeue" title="Link to this heading">#</a></h3>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">vkGetDeviceQueue</span><span class="p">(</span>
 <span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
@@ -1337,9 +1337,9 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </section>
 </section>
 <section id="id15">
-<h2>内存<a class="headerlink" href="#id15" title="此标题的永久链接">#</a></h2>
+<h2>内存<a class="headerlink" href="#id15" title="Link to this heading">#</a></h2>
 <section id="id16">
-<h3>内存分类<a class="headerlink" href="#id16" title="此标题的永久链接">#</a></h3>
+<h3>内存分类<a class="headerlink" href="#id16" title="Link to this heading">#</a></h3>
 <p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中函数主要分为两类：</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Instance</span></code> 域函数</p></li>
@@ -1387,14 +1387,14 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </div>
 </section>
 <section id="id17">
-<h3>获取 Vulkan 支持的缓存<a class="headerlink" href="#id17" title="此标题的永久链接">#</a></h3>
+<h3>获取 Vulkan 支持的缓存<a class="headerlink" href="#id17" title="Link to this heading">#</a></h3>
 <div class="note admonition">
 <p class="admonition-title">内存与缓存</p>
 <p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中与内存相关的英文为 <code class="docutils literal notranslate"><span class="pre">Buffer</span></code> ，翻译成 <code class="docutils literal notranslate"><span class="pre">缓存</span></code> 更加贴合 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准，这里与 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准保持一致。</p>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 所有的缓存信息都可以通过 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties</span></code> 函数获取，其定义如下：</p>
 <section id="vkgetphysicaldevicememoryproperties">
-<h4>vkGetPhysicalDeviceMemoryProperties<a class="headerlink" href="#vkgetphysicaldevicememoryproperties" title="此标题的永久链接">#</a></h4>
+<h4>vkGetPhysicalDeviceMemoryProperties<a class="headerlink" href="#vkgetphysicaldevicememoryproperties" title="Link to this heading">#</a></h4>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">vkGetPhysicalDeviceMemoryProperties</span><span class="p">(</span>
 <span class="w">  </span><span class="n">VkPhysicalDevice</span><span class="w">                           </span><span class="n">physicalDevice</span><span class="p">,</span>
@@ -1412,7 +1412,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <p>对应的 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties</span></code> 结构体描述如下：</p>
 </section>
 <section id="vkphysicaldevicememoryproperties">
-<h4>VkPhysicalDeviceMemoryProperties<a class="headerlink" href="#vkphysicaldevicememoryproperties" title="此标题的永久链接">#</a></h4>
+<h4>VkPhysicalDeviceMemoryProperties<a class="headerlink" href="#vkphysicaldevicememoryproperties" title="Link to this heading">#</a></h4>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#define VK_MAX_MEMORY_TYPES 32U</span>
 <span class="cp">#define VK_MAX_MEMORY_HEAPS 16U</span>
 
@@ -1434,7 +1434,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <p>对应的 <code class="docutils literal notranslate"><span class="pre">VkMemoryType</span></code> 结构体描述如下：</p>
 </section>
 <section id="vkmemorytype">
-<h4>VkMemoryType<a class="headerlink" href="#vkmemorytype" title="此标题的永久链接">#</a></h4>
+<h4>VkMemoryType<a class="headerlink" href="#vkmemorytype" title="Link to this heading">#</a></h4>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkMemoryType</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="n">VkMemoryPropertyFlags</span><span class="w">          </span><span class="n">propertyFlags</span><span class="p">;</span>
@@ -1449,7 +1449,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <p><code class="docutils literal notranslate"><span class="pre">VkMemoryPropertyFlags</span></code> 对应的各个比特位的值定义于 <code class="docutils literal notranslate"><span class="pre">VkMemoryPropertyFlagBits</span></code> 枚举中，定义如下：</p>
 </section>
 <section id="vkmemorypropertyflagbits">
-<h4>VkMemoryPropertyFlagBits<a class="headerlink" href="#vkmemorypropertyflagbits" title="此标题的永久链接">#</a></h4>
+<h4>VkMemoryPropertyFlagBits<a class="headerlink" href="#vkmemorypropertyflagbits" title="Link to this heading">#</a></h4>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkMemoryPropertyFlagBits</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="n">VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000001</span><span class="p">,</span>
@@ -1478,7 +1478,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <p>接下来我们来看一下 <code class="docutils literal notranslate"><span class="pre">VkMemoryType::heapIndex</span></code> 对应的 <code class="docutils literal notranslate"><span class="pre">VkMemoryHeap</span></code> 的定义：</p>
 </section>
 <section id="vkmemoryheap">
-<h4>VkMemoryHeap<a class="headerlink" href="#vkmemoryheap" title="此标题的永久链接">#</a></h4>
+<h4>VkMemoryHeap<a class="headerlink" href="#vkmemoryheap" title="Link to this heading">#</a></h4>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkMemoryHeap</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="n">VkDeviceSize</span><span class="w">                   </span><span class="n">size</span><span class="p">;</span>
@@ -1493,7 +1493,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <p><code class="docutils literal notranslate"><span class="pre">VkMemoryHeapFlags</span></code> 对应的各个比特位的值定义于 <code class="docutils literal notranslate"><span class="pre">VkMemoryHeapFlagBits</span></code> 枚举中，定义如下：</p>
 </section>
 <section id="vkmemoryheapflagbits">
-<h4>VkMemoryHeapFlagBits<a class="headerlink" href="#vkmemoryheapflagbits" title="此标题的永久链接">#</a></h4>
+<h4>VkMemoryHeapFlagBits<a class="headerlink" href="#vkmemoryheapflagbits" title="Link to this heading">#</a></h4>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkMemoryHeapFlagBits</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="n">VK_MEMORY_HEAP_DEVICE_LOCAL_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000001</span><span class="p">,</span>
@@ -1509,7 +1509,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <p>常用的为 <code class="docutils literal notranslate"><span class="pre">VK_MEMORY_HEAP_DEVICE_LOCAL_BIT</span></code> 标志位。</p>
 </section>
 <section id="id18">
-<h4>VkPhysicalDeviceMemoryProperties 结构图<a class="headerlink" href="#id18" title="此标题的永久链接">#</a></h4>
+<h4>VkPhysicalDeviceMemoryProperties 结构图<a class="headerlink" href="#id18" title="Link to this heading">#</a></h4>
 <p>为了更清晰的理解 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties</span></code> ，在此给出一张 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties</span></code> 结构参考图：</p>
 <div class="mermaid">
             flowchart TB
@@ -1602,7 +1602,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </section>
 </section>
 <section id="id19">
-<h3>分配缓存<a class="headerlink" href="#id19" title="此标题的永久链接">#</a></h3>
+<h3>分配缓存<a class="headerlink" href="#id19" title="Link to this heading">#</a></h3>
 </section>
 </section>
 </section>
@@ -1766,9 +1766,9 @@ Linux 获取</label><div class="sd-tab-content docutils">
 
     </aside>
   </div>
-</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=babeb00e"></script>
+</div><script src="_static/documentation_options.js?v=7d86a446"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
-    <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="_static/copybutton.js?v=f281be69"></script>
