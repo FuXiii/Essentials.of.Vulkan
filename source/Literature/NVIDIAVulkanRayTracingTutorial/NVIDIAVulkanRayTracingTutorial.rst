@@ -71,6 +71,8 @@ NVIDIA Vulkan 光线追踪教程
     * 2023/6/4 增加 ``15 拓展延伸`` 章节
     * 2023/6/4 初步翻译完成
     * 2023/8/23 提供 ``Turbo`` 实现开源示例
+    * 2023/8/24 增加 ``任意命中着色器（Any Hit Shaders）教程`` 扩展文档
+    * 2023/8/24 增加 ``相机抖动抗锯齿教程`` 扩展文档
 
 `文献源`_
 
@@ -89,7 +91,7 @@ NVIDIA Vulkan 光线追踪教程
 本文所提供的的代码和文档聚焦于使用 `VK_KHR_ray_tracing_pipeline <https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/vkspec.html#VK_KHR_ray_tracing_pipeline>`_ 扩展展示一个基础光追示例。
 该教程从一个基于 ``Vulkan`` 开发的基础程序开始，并且提供一步步的介绍去修改和增加函数和功能。
 
-.. figure:: ../_static/resultRaytraceShadowMedieval.png
+.. figure:: ../../_static/resultRaytraceShadowMedieval.png
 
     最终结果
 
@@ -162,7 +164,7 @@ NVIDIA Vulkan 光线追踪教程
 该示例将会是此教程的示例起点。这是一个用于加载 ``OBJ`` 文件并使用 ``Vulkan`` 光栅化渲染他们的小框架。您可以通过阅读 `Base Overview <https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/blob/master/ray_tracing__before/README.md#nvidia-vulkan-ray-tracing-tutorial>`_ 来纵观该示例是如何实现的。
 我们将使用这个框架加载几何体并且渲染场景来实现光线追踪。
 
-.. figure:: ../_static/resultRasterCube.png
+.. figure:: ../../_static/resultRasterCube.png
 
     首次执行
 
@@ -250,7 +252,7 @@ NVIDIA Vulkan 光线追踪教程
 
 顶层加速结构可以包含多个物体的实体（ ``instance`` ），每一个实体都会有自己的变换矩阵并且引用一个具体的底层加速结构。我们将会从一个底层加速结构和一个单位矩阵的顶层加速结构实例开始实现。
 
-.. figure:: ../_static/AccelerationStructure.svg
+.. figure:: ../../_static/AccelerationStructure.svg
 
     加速结构
 
@@ -1196,7 +1198,7 @@ NVIDIA Vulkan 光线追踪教程
   目前我们仅采用该 ``Vulkan`` 光追扩展内置好的光线-三角相交测试，该测试将会返回 ``2`` 个浮点类型坐标值，用于表示位于三角形表面上相交点的 ``(u,v)`` 质心坐标（ ``barycentric coordinates`` ），对于一个由点 ``v0`` ， ``v1`` ， ``v2`` 构成的三角形，
   质心坐标用于定义该交点相对于三角形三个顶点的权重：
 
-.. figure:: ../_static/barycentric_coordinates_weight.svg
+.. figure:: ../../_static/barycentric_coordinates_weight.svg
 
 .. admonition:: 质心坐标与交点坐标
     :class: note
@@ -1221,7 +1223,7 @@ NVIDIA Vulkan 光线追踪教程
 
     任意命中着色器主要用于筛选相交着色器返回的交点的。
 
-.. figure:: ../_static/ShaderPipeline.svg
+.. figure:: ../../_static/ShaderPipeline.svg
 
     光线追踪管线
 
@@ -1468,7 +1470,7 @@ NVIDIA Vulkan 光线追踪教程
 
 缓存的结构如下所示，之后将会在调用 ``vkCmdTraceRaysKHR`` 时使用。
 
-.. image:: ../_static/sbt_0.png
+.. image:: ../../_static/sbt_0.png
    :align: center
 
 我们需要确保所有组的开头地址都与 ``shaderGroupBaseAlignment`` 进行内存对齐，并且组内的每一个元素与 ``shaderGroupHandleAlignment`` 进行内存对其。所有组的元素都与 ``shaderGroupHandleAlignment`` 进行对其。
@@ -1779,11 +1781,11 @@ NVIDIA Vulkan 光线追踪教程
 
 我们现在可以在光栅化和光线追踪之间切换了。然后现在光线追踪的渲染结果仅仅渲染一个灰色图片：最简单的光线生成着色器现在还没有追踪任何光线，所以仅仅返回一个固定颜色。
 
-+--------------------------------------------+-----+---------------------------------------------------+
-| 光栅化                                     |     | 光线追踪                                          |
-+============================================+=====+===================================================+
-| .. image:: ../_static/resultRasterCube.png |  ↔  | .. image:: ../_static/resultRaytraceEmptyCube.png |
-+--------------------------------------------+-----+---------------------------------------------------+
++-----------------------------------------------+-----+------------------------------------------------------+
+| 光栅化                                        |     | 光线追踪                                             |
++===============================================+=====+======================================================+
+| .. image:: ../../_static/resultRasterCube.png |  ↔  | .. image:: ../../_static/resultRaytraceEmptyCube.png |
++-----------------------------------------------+-----+------------------------------------------------------+
 
 11 相机矩阵
 ####################
@@ -1936,11 +1938,11 @@ NVIDIA Vulkan 光线追踪教程
         imageStore(image, ivec2(gl_LaunchIDEXT.xy), vec4(prd.hitValue, 1.0));
     }
 
-+--------------------------------------------+-----+---------------------------------------------------+
-| 光栅化                                     |     | 光线追踪                                          |
-+============================================+=====+===================================================+
-| .. image:: ../_static/resultRasterCube.png |  ↔  | .. image:: ../_static/resultRaytraceFlatCube.png  |
-+--------------------------------------------+-----+---------------------------------------------------+
+=============================================== === =====================================================
+ 光栅化                                                 光线追踪
+=============================================== === =====================================================
+ .. image:: ../../_static/resultRasterCube.png   ↔   .. image:: ../../_static/resultRaytraceFlatCube.png
+=============================================== === =====================================================
 
 .. admonition:: rayPayloadEXT 的 locations
     :class: note
@@ -2113,7 +2115,7 @@ NVIDIA Vulkan 光线追踪教程
       L = normalize(pcRay.lightPosition);
     }
 
-.. figure:: ../_static/resultRaytraceLightGreyCube.png
+.. figure:: ../../_static/resultRaytraceLightGreyCube.png
 
 13 简单材质
 ##############
@@ -2203,7 +2205,7 @@ NVIDIA Vulkan 光线追踪教程
 
     prd.hitValue = vec3(lightIntensity * (diffuse + specular));
 
-.. figure:: ../_static/resultRaytraceLightMatCube.png
+.. figure:: ../../_static/resultRaytraceLightMatCube.png
 
 13.2 main
 ******************************************
@@ -2221,7 +2223,7 @@ NVIDIA Vulkan 光线追踪教程
 
     CameraManip.setLookat(nvmath::vec3f(4, 4, 4), nvmath::vec3f(0, 1, 0), nvmath::vec3f(0, 1, 0));
 
-.. figure:: ../_static/resultRaytraceLightMatMedieval.png
+.. figure:: ../../_static/resultRaytraceLightMatMedieval.png
 
 14 阴影
 ##########
@@ -2307,7 +2309,7 @@ NVIDIA Vulkan 光线追踪教程
 
 新加入的未命中着色器组改变了我们着色器绑定表的结构，现在其结构如下：
 
-.. figure:: ../_static/sbt_1.png
+.. figure:: ../../_static/sbt_1.png
 
 因此我们需要修改 ``HelloVulkan::createRtShaderBindingTable`` 函数，指定我们有两个未命中着色器，其中的一个是我们新加入的，另一个是原来的。
 
@@ -2397,7 +2399,7 @@ NVIDIA Vulkan 光线追踪教程
 
     prd.hitValue = vec3(lightIntensity * attenuation * (diffuse + specular));
 
-.. figure:: ../_static/resultRaytraceShadowMedieval.png
+.. figure:: ../../_static/resultRaytraceShadowMedieval.png
 
 最终的工程可以在 `ray_tracing__simple <https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing__simple>`_ 文件夹下找到。
 
@@ -2405,3 +2407,9 @@ NVIDIA Vulkan 光线追踪教程
 ################
 
 从此时起，您可以继续创建自己的光线类型和着色器，并尝试更高级的光线跟踪算法。
+
+.. toctree::
+   :maxdepth: 2
+
+   extensions/JitterCamera.rst
+   extensions/AnyHitShaders.rst

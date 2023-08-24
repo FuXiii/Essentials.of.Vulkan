@@ -16,6 +16,6 @@
 
    VulkanRayTracingFinalSpecificationRelease.md
    Vulkan-GuideRayTracing.rst
-   NVIDIAVulkanRayTracingTutorial.rst
+   NVIDIAVulkanRayTracingTutorial/NVIDIAVulkanRayTracingTutorial.rst
    vk_mini_path_tracer.rst
    TheRTXShaderBindingTableThreeWays.rst
