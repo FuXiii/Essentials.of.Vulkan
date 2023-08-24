@@ -1,19 +1,19 @@
 <!doctype html>
-<html class="no-js" lang="zh-CN" data-content_root="../">
+<html class="no-js" lang="zh-CN" data-content_root="../../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="搜索" href="../search.html" /><link rel="next" title="Vulkan迷你路径追踪" href="vk_mini_path_tracer.html" /><link rel="prev" title="光线追踪" href="Vulkan-GuideRayTracing.html" />
-        <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/Literature/NVIDIAVulkanRayTracingTutorial.html" />
+<link rel="index" title="索引" href="../../genindex.html" /><link rel="search" title="搜索" href="../../search.html" /><link rel="next" title="相机抖动抗锯齿教程" href="extensions/JitterCamera.html" /><link rel="prev" title="光线追踪" href="../Vulkan-GuideRayTracing.html" />
+        <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/Literature/NVIDIAVulkanRayTracingTutorial/NVIDIAVulkanRayTracingTutorial.html" />
 
-    <link rel="shortcut icon" href="../_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.2.2 and Furo 2023.08.19 -->
+    <link rel="shortcut icon" href="../../_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.2.3 and Furo 2023.08.19 -->
         <title>NVIDIA Vulkan 光线追踪教程 - Vulkan入门精要</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b20cc3f5" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
-    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b20cc3f5" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=36a5483c" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
     
     
@@ -128,7 +128,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Vulkan入门精要</div></a>
+      <a href="../../index.html"><div class="brand">Vulkan入门精要</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -148,15 +148,15 @@
   <aside class="sidebar-drawer">
     <div class="sidebar-container">
       
-<div class="sidebar-sticky" ><a class="sidebar-brand" href="../index.html">
+<div class="sidebar-sticky" ><a class="sidebar-brand" href="../../index.html">
   
   <div class="sidebar-logo-container">
-    <img class="sidebar-logo" src="../_static/Vulkan.png" alt="Logo"/>
+    <img class="sidebar-logo" src="../../_static/Vulkan.png" alt="Logo"/>
   </div>
   
   <span class="sidebar-brand-text">Vulkan入门精要</span>
   
-</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+</a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="搜索" name="q" aria-label="搜索">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -164,47 +164,51 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">入门精要</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../Introduction.html">介绍</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../StartFromVulkanSDK.html">开始于 Vulkan SDK</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Overview.html">纵览</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Introduction.html">介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../StartFromVulkanSDK.html">开始于 Vulkan SDK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Overview.html">纵览</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">文献翻译</span></p>
 <ul class="current">
-<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">文献</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of 文献</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="VulkanRayTracingFinalSpecificationRelease.html">Vulkan 光线追踪最终标准发布</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Vulkan-GuideRayTracing.html">光线追踪</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">NVIDIA Vulkan 光线追踪教程</a></li>
-<li class="toctree-l2"><a class="reference internal" href="vk_mini_path_tracer.html">Vulkan迷你路径追踪</a></li>
-<li class="toctree-l2"><a class="reference internal" href="TheRTXShaderBindingTableThreeWays.html">RTX 着色器绑定表的三种方式</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../index.html">文献</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of 文献</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../VulkanRayTracingFinalSpecificationRelease.html">Vulkan 光线追踪最终标准发布</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Vulkan-GuideRayTracing.html">光线追踪</a></li>
+<li class="toctree-l2 current has-children current-page"><a class="current reference internal" href="#">NVIDIA Vulkan 光线追踪教程</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of NVIDIA Vulkan 光线追踪教程</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="extensions/JitterCamera.html">相机抖动抗锯齿教程</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions/AnyHitShaders.html">任意命中着色器（Any Hit Shaders）教程</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../vk_mini_path_tracer.html">Vulkan迷你路径追踪</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../TheRTXShaderBindingTableThreeWays.html">RTX 着色器绑定表的三种方式</a></li>
 </ul>
 </li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">随笔</span></p>
 <ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../InformalEssay/index.html">Vulkan 标准</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Vulkan 标准</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../InformalEssay/VulkanKHRRayTracing/VulkanKHRRayTracing.html">Vulkan KHR 光线追踪标准</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Vulkan KHR 光线追踪标准</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../InformalEssay/VulkanKHRRayTracing/VK_KHR_acceleration_structure.html">VK_KHR_acceleration_structure</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../InformalEssay/VulkanKHRRayTracing/VK_KHR_ray_tracing_pipeline.html">VK_KHR_ray_tracing_pipeline</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../InformalEssay/VulkanKHRRayTracing/VK_KHR_deferred_host_operations.html">VK_KHR_deferred_host_operations</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../InformalEssay/index.html">Vulkan 标准</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Vulkan 标准</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../InformalEssay/VulkanKHRRayTracing/VulkanKHRRayTracing.html">Vulkan KHR 光线追踪标准</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of Vulkan KHR 光线追踪标准</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../InformalEssay/VulkanKHRRayTracing/VK_KHR_acceleration_structure.html">VK_KHR_acceleration_structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../InformalEssay/VulkanKHRRayTracing/VK_KHR_ray_tracing_pipeline.html">VK_KHR_ray_tracing_pipeline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../InformalEssay/VulkanKHRRayTracing/VK_KHR_deferred_host_operations.html">VK_KHR_deferred_host_operations</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../InformalEssay/VK_KHR_buffer_device_address.html">VK_KHR_buffer_device_address</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../InformalEssay/VK_KHR_buffer_device_address.html">VK_KHR_buffer_device_address</a></li>
 </ul>
 </li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">工程应用</span></p>
 <ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../Application/index.html">应用</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of 应用</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../Application/VolumetricCloud.html">体积云</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../Application/WebGPUImGui.html">WebGPU ImGui</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../Application/WebGPUHelloTriangle.html">WebGPU Hello Triangle</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../Application/WebGPUShaderCompiler.html">WebGPU Shader Compiler</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../Application/index.html">应用</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of 应用</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../Application/VolumetricCloud.html">体积云</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Application/WebGPUImGui.html">WebGPU ImGui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Application/WebGPUHelloTriangle.html">WebGPU Hello Triangle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Application/WebGPUShaderCompiler.html">WebGPU Shader Compiler</a></li>
 </ul>
 </li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">更新日志</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../Changelog.html">更新日志</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Changelog.html">更新日志</a></li>
 </ul>
 
 </div>
@@ -225,7 +229,7 @@
         </a>
         <div class="content-icon-container">
           <div class="edit-this-page">
-  <a class="muted-link" href="https://github.com/FuXiii/Essentials.of.Vulkan/edit/main/source/Literature/NVIDIAVulkanRayTracingTutorial.rst" title="Edit this page">
+  <a class="muted-link" href="https://github.com/FuXiii/Essentials.of.Vulkan/edit/main/source/Literature/NVIDIAVulkanRayTracingTutorial/NVIDIAVulkanRayTracingTutorial.rst" title="Edit this page">
     <svg aria-hidden="true" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
@@ -323,6 +327,8 @@
 <li><p class="sd-card-text">2023/6/4 增加 <code class="docutils literal notranslate"><span class="pre">15</span> <span class="pre">拓展延伸</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/6/4 初步翻译完成</p></li>
 <li><p class="sd-card-text">2023/8/23 提供 <code class="docutils literal notranslate"><span class="pre">Turbo</span></code> 实现开源示例</p></li>
+<li><p class="sd-card-text">2023/8/24 增加 <code class="docutils literal notranslate"><span class="pre">任意命中着色器（Any</span> <span class="pre">Hit</span> <span class="pre">Shaders）教程</span></code> 扩展文档</p></li>
+<li><p class="sd-card-text">2023/8/24 增加 <code class="docutils literal notranslate"><span class="pre">相机抖动抗锯齿教程</span></code> 扩展文档</p></li>
 </ul>
 </div>
 </details><p><a class="reference external" href="https://nvpro-samples.github.io/vk_raytracing_tutorial_KHR/">文献源</a></p>
@@ -339,7 +345,7 @@
 <p>本文所提供的的代码和文档聚焦于使用 <a class="reference external" href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/vkspec.html#VK_KHR_ray_tracing_pipeline">VK_KHR_ray_tracing_pipeline</a> 扩展展示一个基础光追示例。
 该教程从一个基于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 开发的基础程序开始，并且提供一步步的介绍去修改和增加函数和功能。</p>
 <figure class="align-default" id="id41">
-<img alt="../_images/resultRaytraceShadowMedieval.png" src="../_images/resultRaytraceShadowMedieval.png" />
+<img alt="../../_images/resultRaytraceShadowMedieval.png" src="../../_images/resultRaytraceShadowMedieval.png" />
 <figcaption>
 <p><span class="caption-text">最终结果</span><a class="headerlink" href="#id41" title="Link to this image">#</a></p>
 </figcaption>
@@ -399,7 +405,7 @@
 <p>该示例将会是此教程的示例起点。这是一个用于加载 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 文件并使用 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 光栅化渲染他们的小框架。您可以通过阅读 <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/blob/master/ray_tracing__before/README.md#nvidia-vulkan-ray-tracing-tutorial">Base Overview</a> 来纵观该示例是如何实现的。
 我们将使用这个框架加载几何体并且渲染场景来实现光线追踪。</p>
 <figure class="align-default" id="id42">
-<img alt="../_images/resultRasterCube.png" src="../_images/resultRasterCube.png" />
+<img alt="../../_images/resultRasterCube.png" src="../../_images/resultRasterCube.png" />
 <figcaption>
 <p><span class="caption-text">首次执行</span><a class="headerlink" href="#id42" title="Link to this image">#</a></p>
 </figcaption>
@@ -473,7 +479,7 @@
 </div>
 <p>顶层加速结构可以包含多个物体的实体（ <code class="docutils literal notranslate"><span class="pre">instance</span></code> ），每一个实体都会有自己的变换矩阵并且引用一个具体的底层加速结构。我们将会从一个底层加速结构和一个单位矩阵的顶层加速结构实例开始实现。</p>
 <figure class="align-default" id="id43">
-<img alt="../_images/AccelerationStructure.svg" src="../_images/AccelerationStructure.svg" /><figcaption>
+<img alt="../../_images/AccelerationStructure.svg" src="../../_images/AccelerationStructure.svg" /><figcaption>
 <p><span class="caption-text">加速结构</span><a class="headerlink" href="#id43" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
@@ -1300,7 +1306,7 @@
 质心坐标用于定义该交点相对于三角形三个顶点的权重：</p></li>
 </ul>
 <figure class="align-default">
-<img alt="../_images/barycentric_coordinates_weight.svg" src="../_images/barycentric_coordinates_weight.svg" /></figure>
+<img alt="../../_images/barycentric_coordinates_weight.svg" src="../../_images/barycentric_coordinates_weight.svg" /></figure>
 <div class="note admonition">
 <p class="admonition-title">质心坐标与交点坐标</p>
 <p>一般获取到质心坐标之后需要计算出所在三角形上的交点坐标，该交点坐标计算可参考如下：</p>
@@ -1322,7 +1328,7 @@
 <p>任意命中着色器主要用于筛选相交着色器返回的交点的。</p>
 </div>
 <figure class="align-default" id="id44">
-<img alt="../_images/ShaderPipeline.svg" src="../_images/ShaderPipeline.svg" /><figcaption>
+<img alt="../../_images/ShaderPipeline.svg" src="../../_images/ShaderPipeline.svg" /><figcaption>
 <p><span class="caption-text">光线追踪管线</span><a class="headerlink" href="#id44" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
@@ -1526,7 +1532,7 @@
 <h3>8.1 句柄<a class="headerlink" href="#id26" title="Link to this heading">#</a></h3>
 <p>着色器绑定表是最多四个数组的集合，用于存储光线追踪管线着色器组句柄，分别对应：管线生成着色器组，未命中着色器组，最近命中着色器组合和可调用着色器组。在本示例中我们将创建一个缓存用于存储前三组数组。就目前，每个着色器类型我们只有一个着色器，所以每个数组中只有一个句柄组成着色器组。</p>
 <p>缓存的结构如下所示，之后将会在调用 <code class="docutils literal notranslate"><span class="pre">vkCmdTraceRaysKHR</span></code> 时使用。</p>
-<img alt="../_images/sbt_0.png" class="align-center" src="../_images/sbt_0.png" />
+<img alt="../../_images/sbt_0.png" class="align-center" src="../../_images/sbt_0.png" />
 <p>我们需要确保所有组的开头地址都与 <code class="docutils literal notranslate"><span class="pre">shaderGroupBaseAlignment</span></code> 进行内存对齐，并且组内的每一个元素与 <code class="docutils literal notranslate"><span class="pre">shaderGroupHandleAlignment</span></code> 进行内存对其。所有组的元素都与 <code class="docutils literal notranslate"><span class="pre">shaderGroupHandleAlignment</span></code> 进行对其。</p>
 <div class="warning admonition">
 <p class="admonition-title">内存大小和对齐</p>
@@ -1786,10 +1792,10 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><img alt="../_images/resultRasterCube.png" src="../_images/resultRasterCube.png" />
+<tr class="row-even"><td><img alt="../../_images/resultRasterCube.png" src="../../_images/resultRasterCube.png" />
 </td>
 <td><p>↔</p></td>
-<td><img alt="../_images/resultRaytraceEmptyCube.png" src="../_images/resultRaytraceEmptyCube.png" />
+<td><img alt="../../_images/resultRaytraceEmptyCube.png" src="../../_images/resultRaytraceEmptyCube.png" />
 </td>
 </tr>
 </tbody>
@@ -1929,10 +1935,10 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><img alt="../_images/resultRasterCube.png" src="../_images/resultRasterCube.png" />
+<tr class="row-even"><td><img alt="../../_images/resultRasterCube.png" src="../../_images/resultRasterCube.png" />
 </td>
 <td><p>↔</p></td>
-<td><img alt="../_images/resultRaytraceFlatCube.png" src="../_images/resultRaytraceFlatCube.png" />
+<td><img alt="../../_images/resultRaytraceFlatCube.png" src="../../_images/resultRaytraceFlatCube.png" />
 </td>
 </tr>
 </tbody>
@@ -2086,7 +2092,7 @@
 </pre></div>
 </div>
 <figure class="align-default">
-<img alt="../_images/resultRaytraceLightGreyCube.png" src="../_images/resultRaytraceLightGreyCube.png" />
+<img alt="../../_images/resultRaytraceLightGreyCube.png" src="../../_images/resultRaytraceLightGreyCube.png" />
 </figure>
 </section>
 </section>
@@ -2160,7 +2166,7 @@
 </pre></div>
 </div>
 <figure class="align-default">
-<img alt="../_images/resultRaytraceLightMatCube.png" src="../_images/resultRaytraceLightMatCube.png" />
+<img alt="../../_images/resultRaytraceLightMatCube.png" src="../../_images/resultRaytraceLightMatCube.png" />
 </figure>
 </section>
 <section id="id37">
@@ -2175,7 +2181,7 @@
 </pre></div>
 </div>
 <figure class="align-default">
-<img alt="../_images/resultRaytraceLightMatMedieval.png" src="../_images/resultRaytraceLightMatMedieval.png" />
+<img alt="../../_images/resultRaytraceLightMatMedieval.png" src="../../_images/resultRaytraceLightMatMedieval.png" />
 </figure>
 </section>
 </section>
@@ -2245,7 +2251,7 @@
 <h3>14.2 createRtShaderBindingTable<a class="headerlink" href="#creatertshaderbindingtable" title="Link to this heading">#</a></h3>
 <p>新加入的未命中着色器组改变了我们着色器绑定表的结构，现在其结构如下：</p>
 <figure class="align-default">
-<img alt="../_images/sbt_1.png" src="../_images/sbt_1.png" />
+<img alt="../../_images/sbt_1.png" src="../../_images/sbt_1.png" />
 </figure>
 <p>因此我们需要修改 <code class="docutils literal notranslate"><span class="pre">HelloVulkan::createRtShaderBindingTable</span></code> 函数，指定我们有两个未命中着色器，其中的一个是我们新加入的，另一个是原来的。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">missCount</span><span class="p">{</span><span class="mi">2</span><span class="p">};</span>
@@ -2322,7 +2328,7 @@
 </pre></div>
 </div>
 <figure class="align-default">
-<img alt="../_images/resultRaytraceShadowMedieval.png" src="../_images/resultRaytraceShadowMedieval.png" />
+<img alt="../../_images/resultRaytraceShadowMedieval.png" src="../../_images/resultRaytraceShadowMedieval.png" />
 </figure>
 <p>最终的工程可以在 <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing__simple">ray_tracing__simple</a> 文件夹下找到。</p>
 </section>
@@ -2330,6 +2336,26 @@
 <section id="id40">
 <h2>15 拓展延伸<a class="headerlink" href="#id40" title="Link to this heading">#</a></h2>
 <p>从此时起，您可以继续创建自己的光线类型和着色器，并尝试更高级的光线跟踪算法。</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="extensions/JitterCamera.html">相机抖动抗锯齿教程</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extensions/AnyHitShaders.html">任意命中着色器（Any Hit Shaders）教程</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="extensions/AnyHitShaders.html#id2">教程</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions/AnyHitShaders.html#id4">任意命中着色器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions/AnyHitShaders.html#id6">负载</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions/AnyHitShaders.html#id7">将任意命中着色器加入光追管线中</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions/AnyHitShaders.html#id8">配置任意命中着色器中访问的缓存</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions/AnyHitShaders.html#id9">不透明标志位</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions/AnyHitShaders.html#id10">光线生成着色器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions/AnyHitShaders.html#id12">最近命中着色器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions/AnyHitShaders.html#id13">场景和模型</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions/AnyHitShaders.html#obj">OBJ 材质</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions/AnyHitShaders.html#id14">累积</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions/AnyHitShaders.html#id16">修正管线</a></li>
+</ul>
+</li>
+</ul>
+</div>
 </section>
 </section>
 
@@ -2338,18 +2364,18 @@
       <footer>
         
 <div class="related-pages">
-    <a class="next-page" href="vk_mini_path_tracer.html">
+    <a class="next-page" href="extensions/JitterCamera.html">
         <div class="page-info">
             <div class="context">
                 <span>Next</span>
             </div>
-            <div class="title">Vulkan迷你路径追踪</div>
+            <div class="title">相机抖动抗锯齿教程</div>
         </div>
         <svg class="furo-related-icon">
             <use href="#svg-arrow-right"></use>
         </svg>
     </a>
-    <a class="prev-page" href="Vulkan-GuideRayTracing.html">
+    <a class="prev-page" href="../Vulkan-GuideRayTracing.html">
         <svg class="furo-related-icon">
             <use href="#svg-arrow-right"></use>
         </svg>
@@ -2489,16 +2515,16 @@
 
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=7d86a446"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
-    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
-    <script src="../_static/copybutton.js?v=f281be69"></script>
-    <script src="../_static/tabs.js?v=3ee01567"></script>
+</div><script src="../../_static/documentation_options.js?v=7d86a446"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/tabs.js?v=3ee01567"></script>
     <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
-    <script src="../_static/translations.js?v=beaddf03"></script>
-    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script src="../../_static/translations.js?v=beaddf03"></script>
+    <script src="../../_static/design-tabs.js?v=36754332"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>

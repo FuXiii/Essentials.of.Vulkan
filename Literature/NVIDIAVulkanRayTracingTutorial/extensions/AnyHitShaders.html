@@ -1,0 +1,576 @@
+<!doctype html>
+<html class="no-js" lang="zh-CN" data-content_root="../../../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="索引" href="../../../genindex.html" /><link rel="search" title="搜索" href="../../../search.html" /><link rel="next" title="Vulkan迷你路径追踪" href="../../vk_mini_path_tracer.html" /><link rel="prev" title="相机抖动抗锯齿教程" href="JitterCamera.html" />
+        <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/Literature/NVIDIAVulkanRayTracingTutorial/extensions/AnyHitShaders.html" />
+
+    <link rel="shortcut icon" href="../../../_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.2.3 and Furo 2023.08.19 -->
+        <title>任意命中着色器（Any Hit Shaders）教程 - Vulkan入门精要</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b20cc3f5" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=36a5483c" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../index.html"><div class="brand">Vulkan入门精要</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+<div class="sidebar-sticky" ><a class="sidebar-brand" href="../../../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../../../_static/Vulkan.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">Vulkan入门精要</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="搜索" name="q" aria-label="搜索">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">入门精要</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Introduction.html">介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../StartFromVulkanSDK.html">开始于 Vulkan SDK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Overview.html">纵览</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">文献翻译</span></p>
+<ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../../index.html">文献</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of 文献</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../VulkanRayTracingFinalSpecificationRelease.html">Vulkan 光线追踪最终标准发布</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Vulkan-GuideRayTracing.html">光线追踪</a></li>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="../NVIDIAVulkanRayTracingTutorial.html">NVIDIA Vulkan 光线追踪教程</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of NVIDIA Vulkan 光线追踪教程</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="JitterCamera.html">相机抖动抗锯齿教程</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">任意命中着色器（Any Hit Shaders）教程</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../vk_mini_path_tracer.html">Vulkan迷你路径追踪</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TheRTXShaderBindingTableThreeWays.html">RTX 着色器绑定表的三种方式</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">随笔</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../InformalEssay/index.html">Vulkan 标准</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Vulkan 标准</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../InformalEssay/VulkanKHRRayTracing/VulkanKHRRayTracing.html">Vulkan KHR 光线追踪标准</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of Vulkan KHR 光线追踪标准</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../InformalEssay/VulkanKHRRayTracing/VK_KHR_acceleration_structure.html">VK_KHR_acceleration_structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../InformalEssay/VulkanKHRRayTracing/VK_KHR_ray_tracing_pipeline.html">VK_KHR_ray_tracing_pipeline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../InformalEssay/VulkanKHRRayTracing/VK_KHR_deferred_host_operations.html">VK_KHR_deferred_host_operations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../InformalEssay/VK_KHR_buffer_device_address.html">VK_KHR_buffer_device_address</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">工程应用</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../Application/index.html">应用</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of 应用</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../Application/VolumetricCloud.html">体积云</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../Application/WebGPUImGui.html">WebGPU ImGui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../Application/WebGPUHelloTriangle.html">WebGPU Hello Triangle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../Application/WebGPUShaderCompiler.html">WebGPU Shader Compiler</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">更新日志</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Changelog.html">更新日志</a></li>
+</ul>
+
+</div>
+</div>
+
+</div>
+
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/FuXiii/Essentials.of.Vulkan/edit/main/source/Literature/NVIDIAVulkanRayTracingTutorial/extensions/AnyHitShaders.rst" title="Edit this page">
+    <svg aria-hidden="true" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
+      <line x1="13.5" y1="6.5" x2="17.5" y2="10.5" />
+    </svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="any-hit-shaders">
+<h1>任意命中着色器（Any Hit Shaders）教程<a class="headerlink" href="#any-hit-shaders" title="Link to this heading">#</a></h1>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header sd-bg-muted sd-bg-text-muted">
+<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-history" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M1.643 3.143L.427 1.927A.25.25 0 000 2.104V5.75c0 .138.112.25.25.25h3.646a.25.25 0 00.177-.427L2.715 4.215a6.5 6.5 0 11-1.18 4.458.75.75 0 10-1.493.154 8.001 8.001 0 101.6-5.684zM7.75 4a.75.75 0 01.75.75v2.992l2.028.812a.75.75 0 01-.557 1.392l-2.5-1A.75.75 0 017 8.25v-3.5A.75.75 0 017.75 4z"></path></svg></span>更新记录<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<ul class="simple">
+<li><p class="sd-card-text">2023/8/24 增加该扩展文档</p></li>
+<li><p class="sd-card-text">2023/8/24 增加 <code class="docutils literal notranslate"><span class="pre">教程</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/8/24 增加 <code class="docutils literal notranslate"><span class="pre">任意命中着色器</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/8/24 增加 <code class="docutils literal notranslate"><span class="pre">负载</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/8/24 增加 <code class="docutils literal notranslate"><span class="pre">将任意命中着色器加入光追管线中</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/8/24 增加 <code class="docutils literal notranslate"><span class="pre">配置任意命中着色器中访问的缓存</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/8/24 增加 <code class="docutils literal notranslate"><span class="pre">不透明标志位</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/8/24 增加 <code class="docutils literal notranslate"><span class="pre">光线生成着色器</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/8/24 增加 <code class="docutils literal notranslate"><span class="pre">最近命中着色器</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/8/24 增加 <code class="docutils literal notranslate"><span class="pre">场景和模型</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/8/24 增加 <code class="docutils literal notranslate"><span class="pre">OBJ</span> <span class="pre">材质</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/8/24 增加 <code class="docutils literal notranslate"><span class="pre">累积</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/8/24 增加 <code class="docutils literal notranslate"><span class="pre">修正管线</span></code> 章节</p></li>
+</ul>
+</div>
+</details><p><a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/blob/master/ray_tracing_anyhit/README.md">文献源</a></p>
+<figure class="align-default" id="id17">
+<img alt="../../../_images/anyhit.png" src="../../../_images/anyhit.png" />
+<figcaption>
+<p><span class="caption-text">任意命中着色器结果示意图</span><a class="headerlink" href="#id17" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<section id="id2">
+<h2>教程<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<p>该教程为 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 光线追踪教程的扩展。</p>
+<p>与最近命中着色器（ <code class="docutils literal notranslate"><span class="pre">closest</span> <span class="pre">hit</span> <span class="pre">shade</span></code> ）类似，任意命中着色器在光线与几何体相交处执行，与最近命中着色器不同的是，任意命中着色器将会在沿着光线与几何体的所有交点处执行。最近命中着色器只会在最近的交点处执行。</p>
+<p>任意命中着色器对于交点的剔除很有用，比如剔除透明的交点，但也可用于进行简单的透明化操作。在本示例中我们将会展示添加该着色器类型需要做什么并实现一个透明效果。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>该示例的很多元素来源于 <a class="reference external" href="./JitterCamera.html">相机抖动抗锯齿教程</a></p>
+</div>
+</section>
+<section id="id4">
+<h2>任意命中着色器<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<p>创建一个新的着色器文件 <code class="docutils literal notranslate"><span class="pre">raytrace.rahit</span></code> 之后执行 <code class="docutils literal notranslate"><span class="pre">CMake</span></code> 使其加入到工程的解决方案中。</p>
+<p>该着色器一开始和 <code class="docutils literal notranslate"><span class="pre">raytrace.chit</span></code> 最近命中着色器相似，但使用的信息更少。</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="cp">#version 460</span>
+<span class="cp">#extension GL_EXT_ray_tracing : require</span>
+<span class="cp">#extension GL_EXT_scalar_block_layout : enable</span>
+<span class="cp">#extension GL_GOOGLE_include_directive : enable</span>
+
+<span class="cp">#extension GL_EXT_shader_explicit_arithmetic_types_int64 : require</span>
+<span class="cp">#extension GL_EXT_buffer_reference2 : require</span>
+
+<span class="cp">#include &quot;random.glsl&quot;</span>
+<span class="cp">#include &quot;raycommon.glsl&quot;</span>
+<span class="cp">#include &quot;wavefront.glsl&quot;</span>
+
+<span class="c1">// clang-format off</span>
+<span class="k">layout</span><span class="p">(</span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mo">0</span><span class="p">)</span><span class="w"> </span><span class="n">rayPayloadInEXT</span><span class="w"> </span><span class="n">hitPayload</span><span class="w"> </span><span class="n">prd</span><span class="p">;</span>
+<span class="k">layout</span><span class="p">(</span><span class="n">buffer_reference</span><span class="p">,</span><span class="w"> </span><span class="n">scalar</span><span class="p">)</span><span class="w"> </span><span class="k">buffer</span><span class="w"> </span><span class="n">Vertices</span><span class="w"> </span><span class="p">{</span><span class="n">Vertex</span><span class="w"> </span><span class="n">v</span><span class="p">[];</span><span class="w"> </span><span class="p">};</span><span class="w"> </span><span class="c1">// 物体的顶点数据</span>
+<span class="k">layout</span><span class="p">(</span><span class="n">buffer_reference</span><span class="p">,</span><span class="w"> </span><span class="n">scalar</span><span class="p">)</span><span class="w"> </span><span class="k">buffer</span><span class="w"> </span><span class="n">Indices</span><span class="w"> </span><span class="p">{</span><span class="kt">uint</span><span class="w"> </span><span class="n">i</span><span class="p">[];</span><span class="w"> </span><span class="p">};</span><span class="w"> </span><span class="c1">// 三角形索引</span>
+<span class="k">layout</span><span class="p">(</span><span class="n">buffer_reference</span><span class="p">,</span><span class="w"> </span><span class="n">scalar</span><span class="p">)</span><span class="w"> </span><span class="k">buffer</span><span class="w"> </span><span class="n">Materials</span><span class="w"> </span><span class="p">{</span><span class="n">WaveFrontMaterial</span><span class="w"> </span><span class="n">m</span><span class="p">[];</span><span class="w"> </span><span class="p">};</span><span class="w"> </span><span class="c1">// 物体中的所有材质数据</span>
+<span class="k">layout</span><span class="p">(</span><span class="n">buffer_reference</span><span class="p">,</span><span class="w"> </span><span class="n">scalar</span><span class="p">)</span><span class="w"> </span><span class="k">buffer</span><span class="w"> </span><span class="n">MatIndices</span><span class="w"> </span><span class="p">{</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">[];</span><span class="w"> </span><span class="p">};</span><span class="w"> </span><span class="c1">// 每一个三角形对应的材质信息</span>
+<span class="k">layout</span><span class="p">(</span><span class="n">set</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">binding</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">eObjDescs</span><span class="p">,</span><span class="w"> </span><span class="n">scalar</span><span class="p">)</span><span class="w"> </span><span class="k">buffer</span><span class="w"> </span><span class="n">ObjDesc_</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">ObjDesc</span><span class="w"> </span><span class="n">i</span><span class="p">[];</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="n">objDesc</span><span class="p">;</span>
+<span class="c1">// clang-format on</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p><code class="docutils literal notranslate"><span class="pre">random.glsl</span></code> 可以在 <a class="reference external" href="./JitterCamera.html">相机抖动抗锯齿教程</a> 中找到。</p>
+</div>
+<p>对于任意命中着色器，我们需要知道我们命中了哪一个材质，且该材质是否支持透明。如果材质是不透明，我们直接返回，也就是说采用该命中点为最终命中。</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="c1">// 物体数据</span>
+<span class="w">  </span><span class="n">ObjDesc</span><span class="w">    </span><span class="n">objResource</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">objDesc</span><span class="p">.</span><span class="n">i</span><span class="p">[</span><span class="nb">gl_InstanceCustomIndexEXT</span><span class="p">];</span>
+<span class="w">  </span><span class="n">MatIndices</span><span class="w"> </span><span class="n">matIndices</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">MatIndices</span><span class="p">(</span><span class="n">objResource</span><span class="p">.</span><span class="n">materialIndexAddress</span><span class="p">);</span>
+<span class="w">  </span><span class="n">Materials</span><span class="w">  </span><span class="n">materials</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="n">Materials</span><span class="p">(</span><span class="n">objResource</span><span class="p">.</span><span class="n">materialAddress</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// 物体的材质</span>
+<span class="w">  </span><span class="kt">int</span><span class="w">               </span><span class="n">matIdx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">matIndices</span><span class="p">.</span><span class="n">i</span><span class="p">[</span><span class="nb">gl_PrimitiveID</span><span class="p">];</span>
+<span class="w">  </span><span class="n">WaveFrontMaterial</span><span class="w"> </span><span class="n">mat</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">materials</span><span class="p">.</span><span class="n">m</span><span class="p">[</span><span class="n">matIdx</span><span class="p">];</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">mat</span><span class="p">.</span><span class="n">illum</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span>
+<span class="w">    </span><span class="k">return</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>现在我们开启透明：</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">mat</span><span class="p">.</span><span class="n">dissolve</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mf">0.0</span><span class="p">)</span>
+<span class="w">      </span><span class="n">ignoreIntersectionEXT</span><span class="p">();</span>
+<span class="w">  </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="p">(</span><span class="n">rnd</span><span class="p">(</span><span class="n">prd</span><span class="p">.</span><span class="n">seed</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">mat</span><span class="p">.</span><span class="n">dissolve</span><span class="p">)</span>
+<span class="w">     </span><span class="n">ignoreIntersectionEXT</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>正如你所见，我们生成一个随机数（ <code class="code docutils literal notranslate"><span class="pre">rnd(prd.seed)</span></code> ）来判断光线是否命中或忽略该物体。如果我们积累了足够多的光线的话，最终的结果将会趋向于我们希望的理想结果。</p>
+</section>
+<section id="id6">
+<h2>负载<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<p>随机 <code class="docutils literal notranslate"><span class="pre">seed</span></code> 同样需要存入光线负载中。</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">raycommon.glsl</span></code> 中，增加 <code class="docutils literal notranslate"><span class="pre">seed</span></code> 成员变量：</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="n">hitPayload</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">vec3</span><span class="w"> </span><span class="n">hitValue</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">uint</span><span class="w"> </span><span class="n">seed</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</section>
+<section id="id7">
+<h2>将任意命中着色器加入光追管线中<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<p>该任意命中着色器将会作为命中着色器组的成员。就目前为止，命中着色器组仅有一个最近命中着色器。</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">createRtPipeline()</span></code> 中，在加载 <code class="docutils literal notranslate"><span class="pre">raytrace.rchit.spv</span></code> 之后加载 <code class="docutils literal notranslate"><span class="pre">raytrace.rahit.spv</span></code> 。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">enum</span><span class="w"> </span><span class="nc">StageIndices</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="p">...</span>
+<span class="w">  </span><span class="n">eAnyHit</span><span class="p">,</span>
+<span class="w">  </span><span class="n">eShaderGroupCount</span>
+<span class="p">};</span>
+
+<span class="c1">// 命中组 - 任意命中</span>
+<span class="n">stage</span><span class="p">.</span><span class="k">module</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nvvk</span><span class="o">::</span><span class="n">createShaderModule</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">nvh</span><span class="o">::</span><span class="n">loadFile</span><span class="p">(</span><span class="s">&quot;spv/raytrace.rahit.spv&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="n">defaultSearchPaths</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">));</span>
+<span class="n">stage</span><span class="p">.</span><span class="n">stage</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_ANY_HIT_BIT_KHR</span><span class="p">;</span>
+<span class="n">stages</span><span class="p">[</span><span class="n">eAnyHit</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stage</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>任意命中着色器和最近命中着色器在同一个命中组中，所以我们需要将任意命中着色器索引加入其中并存入到相应数组中。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 最近命中着色器</span>
+<span class="c1">// 负载 0</span>
+<span class="n">group</span><span class="p">.</span><span class="n">type</span><span class="w">             </span><span class="o">=</span><span class="w"> </span><span class="n">VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR</span><span class="p">;</span>
+<span class="n">group</span><span class="p">.</span><span class="n">generalShader</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">VK_SHADER_UNUSED_KHR</span><span class="p">;</span>
+<span class="n">group</span><span class="p">.</span><span class="n">closestHitShader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">eClosestHit</span><span class="p">;</span>
+<span class="n">group</span><span class="p">.</span><span class="n">anyHitShader</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="n">eAnyHit</span><span class="p">;</span>
+<span class="n">m_rtShaderGroups</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">group</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="id8">
+<h2>配置任意命中着色器中访问的缓存<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<p>在 <code class="docutils literal notranslate"><span class="pre">createDescriptorSetLayout()</span></code> 中我们配置描述符集布局使得任意命中着色器可访问场景描述缓存。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 物体描述</span>
+<span class="n">m_descSetLayoutBind</span><span class="p">.</span><span class="n">addBinding</span><span class="p">(</span><span class="n">eObjDescs</span><span class="p">,</span><span class="w"> </span><span class="n">VK_DESCRIPTOR_TYPE_STORAGE_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">                               </span><span class="n">VK_SHADER_STAGE_VERTEX_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_FRAGMENT_BIT</span>
+<span class="w">                                   </span><span class="o">|</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_ANY_HIT_BIT_KHR</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="id9">
+<h2>不透明标志位<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
+<p>当该示例创建 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryKHR</span></code> 时，我们设置的标示位为 <code class="docutils literal notranslate"><span class="pre">VK_GEOMETRY_OPAQUE_BIT_KHR</span></code> 不透明标志位。然而该标志位会导致忽略任意命中着色器。</p>
+<p>我们可以简单的移除所有的 <code class="docutils literal notranslate"><span class="pre">VK_GEOMETRY_OPAQUE_BIT_KHR</span></code> 标志位，但这会导致另一个问题：<span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">同一个三角形可能会多次调用任意命中着色器</span> 。为了在每一个三角形上只执行一次任意命中着色器，设置 <code class="docutils literal notranslate"><span class="pre">VK_GEOMETRY_NO_DUPLICATE_ANY_HIT_INVOCATION_BIT_KHR</span></code> 标志位：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">asGeom</span><span class="p">.</span><span class="n">flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_GEOMETRY_NO_DUPLICATE_ANY_HIT_INVOCATION_BIT_KHR</span><span class="p">;</span><span class="w">  </span><span class="c1">// 避免重复命中</span>
+</pre></div>
+</div>
+</section>
+<section id="id10">
+<h2>光线生成着色器<a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
+<p>如果您已经完成了 <a class="reference external" href="./JitterCamera.html">相机抖动抗锯齿教程</a> 的话，接下来只需要稍作修改即可。</p>
+<p>首先 <code class="docutils literal notranslate"><span class="pre">seed</span></code> 需要在任意命中着色器中使用，这就是为什么我们将其加入到 <code class="docutils literal notranslate"><span class="pre">hitPayload</span></code> 结构体中。</p>
+<p>将所有 <code class="docutils literal notranslate"><span class="pre">seed</span></code> 改成 <code class="docutils literal notranslate"><span class="pre">prd.seed</span></code> 。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">prd</span><span class="p">.</span><span class="n">seed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tea</span><span class="p">(</span><span class="n">gl_LaunchIDEXT</span><span class="p">.</span><span class="n">y</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">gl_LaunchSizeEXT</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">gl_LaunchIDEXT</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">pushC</span><span class="p">.</span><span class="n">frame</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>之前为了优化，调用 <code class="docutils literal notranslate"><span class="pre">TraceRayEXT</span></code> 时使用 <code class="docutils literal notranslate"><span class="pre">gl_RayFlagsOpaqueEXT</span></code> 标志位。但这会忽略任意命中着色器，所以将其改成：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">uint</span><span class="w">  </span><span class="n">rayFlags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gl_RayFlagsNoneEXT</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<section id="id12">
+<h2>最近命中着色器<a class="headerlink" href="#id12" title="Link to this heading">#</a></h2>
+<p>类似的，在最近命中着色器中将标志位修改成 <code class="docutils literal notranslate"><span class="pre">gl_RayFlagsSkipClosestHitShaderEXT</span></code> ，目的是我们希望激活任意命中着色器和未命中着色器，但我们还不关心最近命中着色器的阴影射线。这将会开启透明阴影。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">uint</span><span class="w">  </span><span class="n">flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gl_RayFlagsSkipClosestHitShaderEXT</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<section id="id13">
+<h2>场景和模型<a class="headerlink" href="#id13" title="Link to this heading">#</a></h2>
+<p>您可以通过改变 <code class="docutils literal notranslate"><span class="pre">main()</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">helloVk.loadModel</span></code> 调用来组建更加有趣的场景：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">helloVk</span><span class="p">.</span><span class="n">loadModel</span><span class="p">(</span><span class="n">nvh</span><span class="o">::</span><span class="n">findFile</span><span class="p">(</span><span class="s">&quot;media/scenes/wuson.obj&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">defaultSearchPaths</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">));</span>
+<span class="n">helloVk</span><span class="p">.</span><span class="n">loadModel</span><span class="p">(</span><span class="n">nvh</span><span class="o">::</span><span class="n">findFile</span><span class="p">(</span><span class="s">&quot;media/scenes/sphere.obj&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">defaultSearchPaths</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">),</span>
+<span class="w">                  </span><span class="n">nvmath</span><span class="o">::</span><span class="n">scale_mat4</span><span class="p">(</span><span class="n">nvmath</span><span class="o">::</span><span class="n">vec3f</span><span class="p">(</span><span class="mf">1.5f</span><span class="p">))</span>
+<span class="w">                      </span><span class="o">*</span><span class="w"> </span><span class="n">nvmath</span><span class="o">::</span><span class="n">translation_mat4</span><span class="p">(</span><span class="n">nvmath</span><span class="o">::</span><span class="n">vec3f</span><span class="p">(</span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">)));</span>
+<span class="n">helloVk</span><span class="p">.</span><span class="n">loadModel</span><span class="p">(</span><span class="n">nvh</span><span class="o">::</span><span class="n">findFile</span><span class="p">(</span><span class="s">&quot;media/scenes/plane.obj&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">defaultSearchPaths</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">));</span>
+</pre></div>
+</div>
+</section>
+<section id="obj">
+<h2>OBJ 材质<a class="headerlink" href="#obj" title="Link to this heading">#</a></h2>
+<p>默认情况下，所有的物体都是不透明的，您需要改变材质的描述信息。</p>
+<p>修改 <code class="docutils literal notranslate"><span class="pre">media/scenes/wuson.mtl</span></code> 和 <code class="docutils literal notranslate"><span class="pre">media/scenes/sphere.mtl</span></code> 前几行使得新的光照模型为 <code class="docutils literal notranslate"><span class="pre">4</span></code> ， <code class="docutils literal notranslate"><span class="pre">dissolve</span></code> 值为 <code class="docutils literal notranslate"><span class="pre">0.5</span></code> ：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">newmtl</span><span class="w">  </span><span class="k">default</span>
+<span class="n">illum</span><span class="w"> </span><span class="mi">4</span>
+<span class="n">d</span><span class="w"> </span><span class="mf">0.5</span>
+<span class="p">...</span>
+</pre></div>
+</div>
+</section>
+<section id="id14">
+<h2>累积<a class="headerlink" href="#id14" title="Link to this heading">#</a></h2>
+<p>正如前面提到的，为了达到效果，我们需要随着时间累积每一帧，请实现 <a class="reference external" href="./JitterCamera.html">相机抖动抗锯齿教程</a> 中的：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing_jitter_cam#frame-number">Frame Number</a> <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">未翻译</span></p></li>
+<li><p><a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing_jitter_cam#storing-or-updating">Storing or Updating</a> <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">未翻译</span></p></li>
+<li><p><a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing_jitter_cam#application-frame-update">Application Frame Update</a> <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">未翻译</span></p></li>
+</ul>
+</section>
+<section id="id16">
+<h2>修正管线<a class="headerlink" href="#id16" title="Link to this heading">#</a></h2>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+<div class="related-pages">
+    <a class="next-page" href="../../vk_mini_path_tracer.html">
+        <div class="page-info">
+            <div class="context">
+                <span>Next</span>
+            </div>
+            <div class="title">Vulkan迷你路径追踪</div>
+        </div>
+        <svg class="furo-related-icon">
+            <use href="#svg-arrow-right"></use>
+        </svg>
+    </a>
+    <a class="prev-page" href="JitterCamera.html">
+        <svg class="furo-related-icon">
+            <use href="#svg-arrow-right"></use>
+        </svg>
+        <div class="page-info">
+            <div class="context">
+                <span>Previous</span>
+            </div>
+            
+            <div class="title">相机抖动抗锯齿教程</div>
+            
+        </div>
+    </a>
+</div>
+<div class="bottom-of-page">
+    <div class="left-details">
+        <div class="copyright">
+            Copyright &#169; 2023, FuXii
+        </div>
+        Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+        
+        <a href="https://github.com/pradyunsg/furo">Furo</a>
+        
+        <div>
+             <span id="busuanzi_container_site_uv" style='display:none'>site view <span
+                    id="busuanzi_value_site_uv"></span></span> 
+        </div>
+    </div>
+    <div class="right-details">
+        <div class="icons">
+            <a class="muted-link " href="https://github.com/FuXiii/Essentials.of.Vulkan" aria-label="GitHub">
+                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path>
+                </svg>
+            </a>
+            
+        </div>
+        <div class="left-details">
+             <span id="busuanzi_container_page_pv" style='display:none'>page view <span
+                    id="busuanzi_value_page_pv"></span></span> 
+        </div>
+    </div>
+</div>
+
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+
+<div class="toc-sticky toc-scroll" style="width: 500px;">
+    <div class="toc-title-container" style="width: 500px;">
+        <span class="toc-title" style="width: 500px;">
+            On this page
+        </span>
+    </div>
+    <div class="toc-tree-container" style="width: 500px;">
+        <div class="toc-tree" style="width: 500px;">
+            <ul>
+<li><a class="reference internal" href="#">任意命中着色器（Any Hit Shaders）教程</a><ul>
+<li><a class="reference internal" href="#id2">教程</a></li>
+<li><a class="reference internal" href="#id4">任意命中着色器</a></li>
+<li><a class="reference internal" href="#id6">负载</a></li>
+<li><a class="reference internal" href="#id7">将任意命中着色器加入光追管线中</a></li>
+<li><a class="reference internal" href="#id8">配置任意命中着色器中访问的缓存</a></li>
+<li><a class="reference internal" href="#id9">不透明标志位</a></li>
+<li><a class="reference internal" href="#id10">光线生成着色器</a></li>
+<li><a class="reference internal" href="#id12">最近命中着色器</a></li>
+<li><a class="reference internal" href="#id13">场景和模型</a></li>
+<li><a class="reference internal" href="#obj">OBJ 材质</a></li>
+<li><a class="reference internal" href="#id14">累积</a></li>
+<li><a class="reference internal" href="#id16">修正管线</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+    </div>
+</div>
+
+
+    </aside>
+  </div>
+</div><script src="../../../_static/documentation_options.js?v=7d86a446"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/tabs.js?v=3ee01567"></script>
+    <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
+    <script src="../../../_static/translations.js?v=beaddf03"></script>
+    <script src="../../../_static/design-tabs.js?v=36754332"></script>
+    <script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    </body>
+</html>
