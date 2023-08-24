@@ -274,13 +274,18 @@
 <li><p class="sd-card-text">2023/8/24 增加 <code class="docutils literal notranslate"><span class="pre">OBJ</span> <span class="pre">材质</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/8/24 增加 <code class="docutils literal notranslate"><span class="pre">累积</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/8/24 增加 <code class="docutils literal notranslate"><span class="pre">修正管线</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/8/24 增加 <code class="docutils literal notranslate"><span class="pre">新着色器</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/8/24 增加 <code class="docutils literal notranslate"><span class="pre">新负载</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/8/24 增加 <code class="docutils literal notranslate"><span class="pre">traceRayEXT</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/8/24 增加 <code class="docutils literal notranslate"><span class="pre">光追管线</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/8/24 初步翻译完成</p></li>
 </ul>
 </div>
 </details><p><a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/blob/master/ray_tracing_anyhit/README.md">文献源</a></p>
-<figure class="align-default" id="id17">
+<figure class="align-default" id="id20">
 <img alt="../../../_images/anyhit.png" src="../../../_images/anyhit.png" />
 <figcaption>
-<p><span class="caption-text">任意命中着色器结果示意图</span><a class="headerlink" href="#id17" title="Link to this image">#</a></p>
+<p><span class="caption-text">任意命中着色器结果示意图</span><a class="headerlink" href="#id20" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <section id="id2">
@@ -460,6 +465,153 @@
 </section>
 <section id="id16">
 <h2>修正管线<a class="headerlink" href="#id16" title="Link to this heading">#</a></h2>
+<p>至此代码已经可以工作了，但是将来就不好说了。这是因为，最近命中着色器中的阴影光线追踪 <code class="docutils literal notranslate"><span class="pre">traceRayEXT</span></code> 调用使用的是负载 <code class="docutils literal notranslate"><span class="pre">1</span></code> ，但是当光线与物体相交时，任意命中着色器使用的是负载 <code class="docutils literal notranslate"><span class="pre">0</span></code> 。在写此篇文章时，当下的驱动会将漏洞进行自动补全并保证没有副作用，但这不是一个良构。</p>
+<p>每一个 <code class="docutils literal notranslate"><span class="pre">traceRayEXT</span></code> 光线追踪调用的命中组的数量需要与负载的数量一致。对于其他示例还好，因为其他示例中我们使用了 <code class="docutils literal notranslate"><span class="pre">gl_RayFlagsSkipClosestHitShaderEXT</span></code> 标志位确保最近命中着色器（负载 <code class="docutils literal notranslate"><span class="pre">0</span></code> ）不会被调用，并且该命中组中不包含任何任意命中着色器或相交着色器。但是本示例中我们虽说忽略了
+最近命中着色器，但是存在一个任意命中着色器。</p>
+<p>为了修正此问题，我们需要增加另一个命中组。</p>
+<p>当前的着色器绑定表 （ <code class="docutils literal notranslate"><span class="pre">SBT</span></code> ）结构如下：</p>
+<figure class="align-default">
+<img alt="../../../_images/anyhit_0.png" src="../../../_images/anyhit_0.png" />
+</figure>
+<p>现在我们需要将如下结构的着色器绑定表塞入管线中，增加一个之前命中组的拷贝，用于任意命中的新负载。</p>
+<figure class="align-default">
+<img alt="../../../_images/anyhit_01.png" src="../../../_images/anyhit_01.png" />
+</figure>
+<section id="id17">
+<h3>新着色器<a class="headerlink" href="#id17" title="Link to this heading">#</a></h3>
+<p>创建两个新文件 <code class="docutils literal notranslate"><span class="pre">raytrace_0.ahit</span></code> 和 <code class="docutils literal notranslate"><span class="pre">raytrace_1.ahit</span></code> ，并将 <code class="docutils literal notranslate"><span class="pre">raytrace.ahit</span></code> 重命名为 <code class="docutils literal notranslate"><span class="pre">raytrace_ahit.glsl</span></code> 。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>需要重新执行 <code class="docutils literal notranslate"><span class="pre">CMake</span></code> 将新文件加入项目解决方案中。</p>
+</div>
+<p>在 <code class="docutils literal notranslate"><span class="pre">raytrace_0.ahit</span></code> 和 <code class="docutils literal notranslate"><span class="pre">raytrace_0.ahit</span></code> 中增加如下代码：</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="cp">#version 460</span>
+<span class="cp">#extension GL_GOOGLE_include_directive : enable</span>
+
+<span class="cp">#define PAYLOAD_0</span>
+<span class="cp">#include &quot;raytrace_rahit.glsl&quot;</span>
+</pre></div>
+</div>
+<p>之后将 <code class="docutils literal notranslate"><span class="pre">raytrace_1.ahit</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">PAYLOAD_0</span></code> 替换成 <code class="docutils literal notranslate"><span class="pre">PAYLOAD_1</span></code> ：</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="cp">#version 460</span>
+<span class="cp">#extension GL_GOOGLE_include_directive : enable</span>
+
+<span class="cp">#define PAYLOAD_1</span>
+<span class="cp">#include &quot;raytrace_rahit.glsl&quot;</span>
+</pre></div>
+</div>
+<p>之后在 <code class="docutils literal notranslate"><span class="pre">raytrace_ahit.glsl</span></code> 中移除 <code class="docutils literal notranslate"><span class="pre">#version</span> <span class="pre">460</span></code> 并增加如下代码，这样我们就有了正确的 <code class="docutils literal notranslate"><span class="pre">layout</span></code> ：</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="cp">#ifdef PAYLOAD_0</span>
+<span class="w">    </span><span class="k">layout</span><span class="p">(</span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mo">0</span><span class="p">)</span><span class="w"> </span><span class="n">rayPayloadInEXT</span><span class="w"> </span><span class="n">hitPayload</span><span class="w"> </span><span class="n">prd</span><span class="p">;</span>
+<span class="cp">#elif defined(PAYLOAD_1)</span>
+<span class="w">    </span><span class="k">layout</span><span class="p">(</span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="n">rayPayloadInEXT</span><span class="w"> </span><span class="n">shadowPayload</span><span class="w"> </span><span class="n">prd</span><span class="p">;</span>
+<span class="cp">#endif</span>
+</pre></div>
+</div>
+</section>
+<section id="id18">
+<h3>新负载<a class="headerlink" href="#id18" title="Link to this heading">#</a></h3>
+<p>在阴影光线负载中不能简单的只包含一个布尔值。我们同样需要 <code class="docutils literal notranslate"><span class="pre">seed</span></code> 用于随机函数。</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">raycommon.glsl</span></code> 文件中，增加如下结构：</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="n">shadowPayload</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">isHit</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">uint</span><span class="w"> </span><span class="n">seed</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>阴影的负载是在最近命中着色器和阴影未命中着色器中使用的。首先将 <code class="docutils literal notranslate"><span class="pre">raytraceShadow.rmiss</span></code> 修改成如下:</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="cp">#version 460</span>
+<span class="cp">#extension GL_NV_ray_tracing : require</span>
+<span class="cp">#extension GL_GOOGLE_include_directive : enable</span>
+
+<span class="cp">#include &quot;raycommon.glsl&quot;</span>
+
+<span class="k">layout</span><span class="p">(</span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="n">rayPayloadInEXT</span><span class="w"> </span><span class="n">shadowPayload</span><span class="w"> </span><span class="n">prd</span><span class="p">;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">prd</span><span class="p">.</span><span class="n">isHit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>由于最近命中着色器也需要使用该负载，所以最近命着色器也需要相应的修改负载，但任然还是在 <code class="docutils literal notranslate"><span class="pre">traceRayEXT</span></code> 中使用。</p>
+<p>将最近命中着色器中的负载替换成如下：</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="k">layout</span><span class="p">(</span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="n">rayPayloadNV</span><span class="w"> </span><span class="n">shadowPayload</span><span class="w"> </span><span class="n">prdShadow</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>之后在调用 <code class="docutils literal notranslate"><span class="pre">traceRayEXT</span></code> 之前初始化数值：</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="n">prdShadow</span><span class="p">.</span><span class="n">isHit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span>
+<span class="n">prdShadow</span><span class="p">.</span><span class="n">seed</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">prd</span><span class="p">.</span><span class="n">seed</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>之后当追踪结束后，将 <code class="docutils literal notranslate"><span class="pre">seed</span></code> 值设置回主负载中：</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="n">prd</span><span class="p">.</span><span class="n">seed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">prdShadow</span><span class="p">.</span><span class="n">seed</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>并检查追踪阴影的光线是否命中物体：</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="p">(</span><span class="n">prdShadow</span><span class="p">.</span><span class="n">isHit</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="tracerayext">
+<h3>traceRayEXT<a class="headerlink" href="#tracerayext" title="Link to this heading">#</a></h3>
+<p>当我们调用 <code class="docutils literal notranslate"><span class="pre">traceRayEXT</span></code> 时，我们使用的是负载 <code class="docutils literal notranslate"><span class="pre">1</span></code> （最后一个参数），我们同样需要追踪另一个使用负载 <code class="docutils literal notranslate"><span class="pre">1</span></code> 命中组。为此我们需要将 <code class="docutils literal notranslate"><span class="pre">sbtRecordOffset</span></code> 设置为 <code class="docutils literal notranslate"><span class="pre">1</span></code> 。</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="n">traceRayEXT</span><span class="p">(</span><span class="n">topLevelAS</span><span class="p">,</span><span class="w">  </span><span class="c1">// acceleration structure</span>
+<span class="w">  </span><span class="n">flags</span><span class="p">,</span><span class="w">       </span><span class="c1">// rayFlags</span>
+<span class="w">  </span><span class="mh">0xFF</span><span class="p">,</span><span class="w">        </span><span class="c1">// cullMask</span>
+<span class="w">  </span><span class="mi">1</span><span class="p">,</span><span class="w">           </span><span class="c1">// sbtRecordOffset</span>
+<span class="w">  </span><span class="mo">0</span><span class="p">,</span><span class="w">           </span><span class="c1">// sbtRecordStride</span>
+<span class="w">  </span><span class="mi">1</span><span class="p">,</span><span class="w">           </span><span class="c1">// missIndex</span>
+<span class="w">  </span><span class="n">origin</span><span class="p">,</span><span class="w">      </span><span class="c1">// ray origin</span>
+<span class="w">  </span><span class="n">tMin</span><span class="p">,</span><span class="w">        </span><span class="c1">// ray min range</span>
+<span class="w">  </span><span class="n">rayDir</span><span class="p">,</span><span class="w">      </span><span class="c1">// ray direction</span>
+<span class="w">  </span><span class="n">tMax</span><span class="p">,</span><span class="w">        </span><span class="c1">// ray max range</span>
+<span class="w">  </span><span class="mi">1</span><span class="w">            </span><span class="c1">// payload (location = 1)</span>
+<span class="w">  </span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="id19">
+<h3>光追管线<a class="headerlink" href="#id19" title="Link to this heading">#</a></h3>
+<p>最后一步就是通过修改 <code class="docutils literal notranslate"><span class="pre">HelloVulkan::createRtPipeline()</span></code> 增加新的命中组。我们需要加载新的任意命中着色器并且创建一个新的命中组。</p>
+<p>将 <code class="docutils literal notranslate"><span class="pre">shaders/raytrace.rahit.spv</span></code> 替换成 <code class="docutils literal notranslate"><span class="pre">shaders/raytrace_0.rahit.spv</span></code></p>
+<p>加载新的着色器：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">enum</span><span class="w"> </span><span class="nc">StageIndices</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">eRaygen</span><span class="p">,</span>
+<span class="w">  </span><span class="n">eMiss</span><span class="p">,</span>
+<span class="w">  </span><span class="n">eMiss2</span><span class="p">,</span>
+<span class="w">  </span><span class="n">eClosestHit</span><span class="p">,</span>
+<span class="w">  </span><span class="n">eAnyHit</span><span class="p">,</span>
+<span class="w">  </span><span class="n">eAnyHit2</span><span class="p">,</span>
+<span class="w">  </span><span class="n">eShaderGroupCount</span>
+<span class="p">};</span>
+
+<span class="c1">// 命中组 - 任意命中</span>
+<span class="n">stage</span><span class="p">.</span><span class="k">module</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nvvk</span><span class="o">::</span><span class="n">createShaderModule</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">nvh</span><span class="o">::</span><span class="n">loadFile</span><span class="p">(</span><span class="s">&quot;spv/raytrace_0.rahit.spv&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="n">defaultSearchPaths</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">));</span>
+<span class="n">stage</span><span class="p">.</span><span class="n">stage</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_ANY_HIT_BIT_KHR</span><span class="p">;</span>
+<span class="n">stages</span><span class="p">[</span><span class="n">eAnyHit</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stage</span><span class="p">;</span>
+<span class="c1">//</span>
+<span class="n">stage</span><span class="p">.</span><span class="k">module</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nvvk</span><span class="o">::</span><span class="n">createShaderModule</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">nvh</span><span class="o">::</span><span class="n">loadFile</span><span class="p">(</span><span class="s">&quot;spv/raytrace_1.rahit.spv&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="n">defaultSearchPaths</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">));</span>
+<span class="n">stage</span><span class="p">.</span><span class="n">stage</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_ANY_HIT_BIT_KHR</span><span class="p">;</span>
+<span class="n">stages</span><span class="p">[</span><span class="n">eAnyHit2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stage</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>在创建完第一个命中组后，创建一个使用负载 <code class="docutils literal notranslate"><span class="pre">1</span></code> 并包含任意命中着色器新的命中组。由于我盟在追踪时忽略了最近命中着色器，所以我们可以忽略在命中组中的最近命中着色器。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 负载 1</span>
+<span class="n">group</span><span class="p">.</span><span class="n">type</span><span class="w">             </span><span class="o">=</span><span class="w"> </span><span class="n">VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR</span><span class="p">;</span>
+<span class="n">group</span><span class="p">.</span><span class="n">generalShader</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">VK_SHADER_UNUSED_KHR</span><span class="p">;</span>
+<span class="n">group</span><span class="p">.</span><span class="n">closestHitShader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_SHADER_UNUSED_KHR</span><span class="p">;</span>
+<span class="n">group</span><span class="p">.</span><span class="n">anyHitShader</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="n">eAnyHit2</span><span class="p">;</span>
+<span class="n">m_rtShaderGroups</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">group</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>运行之后其结果应该如以前一样，得到正确的结果。</p>
+</div>
+</section>
 </section>
 </section>
 
@@ -549,7 +701,13 @@
 <li><a class="reference internal" href="#id13">场景和模型</a></li>
 <li><a class="reference internal" href="#obj">OBJ 材质</a></li>
 <li><a class="reference internal" href="#id14">累积</a></li>
-<li><a class="reference internal" href="#id16">修正管线</a></li>
+<li><a class="reference internal" href="#id16">修正管线</a><ul>
+<li><a class="reference internal" href="#id17">新着色器</a></li>
+<li><a class="reference internal" href="#id18">新负载</a></li>
+<li><a class="reference internal" href="#tracerayext">traceRayEXT</a></li>
+<li><a class="reference internal" href="#id19">光追管线</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

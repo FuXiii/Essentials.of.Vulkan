@@ -18,6 +18,11 @@
     * 2023/8/24 增加 ``OBJ 材质`` 章节
     * 2023/8/24 增加 ``累积`` 章节
     * 2023/8/24 增加 ``修正管线`` 章节
+    * 2023/8/24 增加 ``新着色器`` 章节
+    * 2023/8/24 增加 ``新负载`` 章节
+    * 2023/8/24 增加 ``traceRayEXT`` 章节
+    * 2023/8/24 增加 ``光追管线`` 章节
+    * 2023/8/24 初步翻译完成
 
 `文献源`_
 
@@ -237,3 +242,178 @@ OBJ 材质
 
 修正管线
 ###############################
+
+至此代码已经可以工作了，但是将来就不好说了。这是因为，最近命中着色器中的阴影光线追踪 ``traceRayEXT`` 调用使用的是负载 ``1`` ，但是当光线与物体相交时，任意命中着色器使用的是负载 ``0`` 。在写此篇文章时，当下的驱动会将漏洞进行自动补全并保证没有副作用，但这不是一个良构。
+
+每一个 ``traceRayEXT`` 光线追踪调用的命中组的数量需要与负载的数量一致。对于其他示例还好，因为其他示例中我们使用了 ``gl_RayFlagsSkipClosestHitShaderEXT`` 标志位确保最近命中着色器（负载 ``0`` ）不会被调用，并且该命中组中不包含任何任意命中着色器或相交着色器。但是本示例中我们虽说忽略了
+最近命中着色器，但是存在一个任意命中着色器。
+
+为了修正此问题，我们需要增加另一个命中组。
+
+当前的着色器绑定表 （ ``SBT`` ）结构如下：
+
+.. figure:: ../../../_static/anyhit_0.png
+
+现在我们需要将如下结构的着色器绑定表塞入管线中，增加一个之前命中组的拷贝，用于任意命中的新负载。
+
+.. figure:: ../../../_static/anyhit_01.png
+
+新着色器
+********************
+
+创建两个新文件 ``raytrace_0.ahit`` 和 ``raytrace_1.ahit`` ，并将 ``raytrace.ahit`` 重命名为 ``raytrace_ahit.glsl`` 。
+
+.. note:: 需要重新执行 ``CMake`` 将新文件加入项目解决方案中。
+
+在 ``raytrace_0.ahit`` 和 ``raytrace_0.ahit`` 中增加如下代码：
+
+.. code:: glsl
+
+    #version 460
+    #extension GL_GOOGLE_include_directive : enable
+
+    #define PAYLOAD_0
+    #include "raytrace_rahit.glsl"
+
+之后将 ``raytrace_1.ahit`` 中的 ``PAYLOAD_0`` 替换成 ``PAYLOAD_1`` ：
+
+.. code:: glsl
+
+    #version 460
+    #extension GL_GOOGLE_include_directive : enable
+
+    #define PAYLOAD_1
+    #include "raytrace_rahit.glsl"
+
+之后在 ``raytrace_ahit.glsl`` 中移除 ``#version 460`` 并增加如下代码，这样我们就有了正确的 ``layout`` ：
+
+.. code:: glsl
+
+    #ifdef PAYLOAD_0
+        layout(location = 0) rayPayloadInEXT hitPayload prd;
+    #elif defined(PAYLOAD_1)
+        layout(location = 1) rayPayloadInEXT shadowPayload prd;
+    #endif
+
+新负载
+********************
+
+在阴影光线负载中不能简单的只包含一个布尔值。我们同样需要 ``seed`` 用于随机函数。
+
+在 ``raycommon.glsl`` 文件中，增加如下结构：
+
+.. code:: glsl
+
+    struct shadowPayload
+    {
+      bool isHit;
+      uint seed;
+    };
+
+阴影的负载是在最近命中着色器和阴影未命中着色器中使用的。首先将 ``raytraceShadow.rmiss`` 修改成如下:
+
+.. code:: glsl
+
+    #version 460
+    #extension GL_NV_ray_tracing : require
+    #extension GL_GOOGLE_include_directive : enable
+
+    #include "raycommon.glsl"
+
+    layout(location = 1) rayPayloadInEXT shadowPayload prd;
+
+    void main()
+    {
+      prd.isHit = false;
+    }
+
+由于最近命中着色器也需要使用该负载，所以最近命着色器也需要相应的修改负载，但任然还是在 ``traceRayEXT`` 中使用。
+
+将最近命中着色器中的负载替换成如下：
+
+.. code:: glsl
+
+    layout(location = 1) rayPayloadNV shadowPayload prdShadow;
+
+之后在调用 ``traceRayEXT`` 之前初始化数值：
+
+.. code:: glsl
+
+    prdShadow.isHit = true;
+    prdShadow.seed  = prd.seed;
+
+之后当追踪结束后，将 ``seed`` 值设置回主负载中：
+
+.. code:: glsl
+
+    prd.seed = prdShadow.seed;
+
+并检查追踪阴影的光线是否命中物体：
+
+.. code:: glsl
+
+    if(prdShadow.isHit)
+
+traceRayEXT
+********************
+
+当我们调用 ``traceRayEXT`` 时，我们使用的是负载 ``1`` （最后一个参数），我们同样需要追踪另一个使用负载 ``1`` 命中组。为此我们需要将 ``sbtRecordOffset`` 设置为 ``1`` 。
+
+.. code:: glsl
+
+    traceRayEXT(topLevelAS,  // acceleration structure
+      flags,       // rayFlags
+      0xFF,        // cullMask
+      1,           // sbtRecordOffset
+      0,           // sbtRecordStride
+      1,           // missIndex
+      origin,      // ray origin
+      tMin,        // ray min range
+      rayDir,      // ray direction
+      tMax,        // ray max range
+      1            // payload (location = 1)
+      );
+
+光追管线
+********************
+
+最后一步就是通过修改 ``HelloVulkan::createRtPipeline()`` 增加新的命中组。我们需要加载新的任意命中着色器并且创建一个新的命中组。
+
+将 ``shaders/raytrace.rahit.spv`` 替换成 ``shaders/raytrace_0.rahit.spv``
+
+加载新的着色器：
+
+.. code:: c++
+
+    enum StageIndices
+    {
+      eRaygen,
+      eMiss,
+      eMiss2,
+      eClosestHit,
+      eAnyHit,
+      eAnyHit2,
+      eShaderGroupCount
+    };
+
+    // 命中组 - 任意命中
+    stage.module = nvvk::createShaderModule(m_device, nvh::loadFile("spv/raytrace_0.rahit.spv", true, defaultSearchPaths, true));
+    stage.stage     = VK_SHADER_STAGE_ANY_HIT_BIT_KHR;
+    stages[eAnyHit] = stage;
+    //
+    stage.module = nvvk::createShaderModule(m_device, nvh::loadFile("spv/raytrace_1.rahit.spv", true, defaultSearchPaths, true));
+    stage.stage     = VK_SHADER_STAGE_ANY_HIT_BIT_KHR;
+    stages[eAnyHit2] = stage;
+
+在创建完第一个命中组后，创建一个使用负载 ``1`` 并包含任意命中着色器新的命中组。由于我盟在追踪时忽略了最近命中着色器，所以我们可以忽略在命中组中的最近命中着色器。
+
+.. code:: c++
+
+    // 负载 1
+    group.type             = VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR;
+    group.generalShader    = VK_SHADER_UNUSED_KHR;
+    group.closestHitShader = VK_SHADER_UNUSED_KHR;
+    group.anyHitShader     = eAnyHit2;
+    m_rtShaderGroups.push_back(group);
+
+.. note:: 运行之后其结果应该如以前一样，得到正确的结果。
