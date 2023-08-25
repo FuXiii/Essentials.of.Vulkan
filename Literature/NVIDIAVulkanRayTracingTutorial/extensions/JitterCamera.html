@@ -139,7 +139,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -245,7 +245,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
@@ -262,9 +262,237 @@
 </summary><div class="sd-summary-content sd-card-body docutils">
 <ul class="simple">
 <li><p class="sd-card-text">2023/8/24 增加该扩展文档</p></li>
+<li><p class="sd-card-text">2023/8/25 增加 <code class="docutils literal notranslate"><span class="pre">教程</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/8/25 增加 <code class="docutils literal notranslate"><span class="pre">随机函数</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/8/25 增加 <code class="docutils literal notranslate"><span class="pre">帧序</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/8/25 增加 <code class="docutils literal notranslate"><span class="pre">随机并抖动</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/8/25 增加 <code class="docutils literal notranslate"><span class="pre">存储或更新</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/8/25 增加 <code class="docutils literal notranslate"><span class="pre">更新应用帧</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/8/25 增加 <code class="docutils literal notranslate"><span class="pre">当</span> <span class="pre">UI</span> <span class="pre">发生变化时帧重置</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/8/25 增加 <code class="docutils literal notranslate"><span class="pre">品质</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/8/25 增加 <code class="docutils literal notranslate"><span class="pre">光线生成着色器中的多采样</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/8/25 初步翻译完成</p></li>
 </ul>
 </div>
 </details><p><a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/blob/master/ray_tracing_jitter_cam/README.md">文献源</a></p>
+<figure class="align-default" id="id12">
+<img alt="../../../_images/antialiasing.png" src="../../../_images/antialiasing.png" />
+<figcaption>
+<p><span class="caption-text">相机抖动抗锯齿结果示意图</span><a class="headerlink" href="#id12" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<section id="id3">
+<h2>教程<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<p>该教程为 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> <a class="reference external" href="../NVIDIAVulkanRayTracingTutorial.html">光线追踪教程</a> 的扩展。</p>
+<p>在本示例中，我们将随着时间的随机抖动每个像素的每个光线的偏移来实现抗锯齿，而不总是从像素的中心点发射射线。</p>
+</section>
+<section id="id5">
+<h2>随机函数<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<p>我们将会使用一些简单的随机数生成函数，这些函数对于本示例是足够用了。</p>
+<p>创建一个新的着色器文件 <code class="docutils literal notranslate"><span class="pre">random.glsl</span></code> 并写入如下代码，并将其加入 <code class="docutils literal notranslate"><span class="pre">shaders</span></code> 文件夹下之后执行 <code class="docutils literal notranslate"><span class="pre">CMake</span></code> ，并在 <code class="docutils literal notranslate"><span class="pre">raytrace.rgen</span></code> 中 <code class="docutils literal notranslate"><span class="pre">#include</span></code> 引入该新着色器文件。</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="c1">// 使用两个无符号整型经过16轮微小加密算法生成一个随机的无符号整型。</span>
+<span class="c1">// 相关请查阅 Zafar，Olano 和 Curtis 的 &quot;GPU Random Numbers via the Tiny Encryption Algorithm&quot;</span>
+<span class="kt">uint</span><span class="w"> </span><span class="n">tea</span><span class="p">(</span><span class="kt">uint</span><span class="w"> </span><span class="n">val0</span><span class="p">,</span><span class="w"> </span><span class="kt">uint</span><span class="w"> </span><span class="n">val1</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">uint</span><span class="w"> </span><span class="n">v0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">val0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">uint</span><span class="w"> </span><span class="n">v1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">val1</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">uint</span><span class="w"> </span><span class="n">s0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mo">0</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">for</span><span class="p">(</span><span class="kt">uint</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mo">0</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">16</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">++</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">s0</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mh">0x9e3779b9</span><span class="p">;</span>
+<span class="w">    </span><span class="n">v0</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="p">((</span><span class="n">v1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mh">0xa341316c</span><span class="p">)</span><span class="w"> </span><span class="o">^</span><span class="w"> </span><span class="p">(</span><span class="n">v1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">s0</span><span class="p">)</span><span class="w"> </span><span class="o">^</span><span class="w"> </span><span class="p">((</span><span class="n">v1</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mh">0xc8013ea4</span><span class="p">);</span>
+<span class="w">    </span><span class="n">v1</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="p">((</span><span class="n">v0</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mh">0xad90777d</span><span class="p">)</span><span class="w"> </span><span class="o">^</span><span class="w"> </span><span class="p">(</span><span class="n">v0</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">s0</span><span class="p">)</span><span class="w"> </span><span class="o">^</span><span class="w"> </span><span class="p">((</span><span class="n">v0</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mh">0x7e95761e</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">v0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// 生成一个在 [0, 2^24) 范围中的无符号整型随机值，并初始化之前的（prev）随机数生成器</span>
+<span class="c1">// 使用的是数值分析的线性同余生成器（Numerical Recipes linear congruential generator）</span>
+<span class="c1">// 知乎上有一位大佬提到了该算法：https://www.zhihu.com/question/34515945/answer/59082990</span>
+<span class="kt">uint</span><span class="w"> </span><span class="n">lcg</span><span class="p">(</span><span class="k">inout</span><span class="w"> </span><span class="kt">uint</span><span class="w"> </span><span class="n">prev</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">uint</span><span class="w"> </span><span class="n">LCG_A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1664525</span><span class="n">u</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">uint</span><span class="w"> </span><span class="n">LCG_C</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1013904223</span><span class="n">u</span><span class="p">;</span>
+<span class="w">  </span><span class="n">prev</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">LCG_A</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">prev</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">LCG_C</span><span class="p">);</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">prev</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0x00FFFFFF</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// 生成一个在 [0, 1) 范围中的单精度浮点型随机，并初始化之前的（prev）随机数生成器</span>
+<span class="kt">float</span><span class="w"> </span><span class="n">rnd</span><span class="p">(</span><span class="k">inout</span><span class="w"> </span><span class="kt">uint</span><span class="w"> </span><span class="n">prev</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="kt">float</span><span class="p">(</span><span class="n">lcg</span><span class="p">(</span><span class="n">prev</span><span class="p">))</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="kt">float</span><span class="p">(</span><span class="mh">0x01000000</span><span class="p">));</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="id6">
+<h2>帧序<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<p>当前我们的抖动示例将会累积每一帧数据，所以我们需要知道当前的渲染帧。一个帧序为 <code class="docutils literal notranslate"><span class="pre">0</span></code> 的话表示一个新帧，我们将会积累更大帧序的数据。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p><code class="docutils literal notranslate"><span class="pre">uniform</span></code> 图片是可写可读的，这使得积累之前的帧数据成为可能。</p>
+</div>
+<p>在 <code class="docutils literal notranslate"><span class="pre">shaders/host_device.h</span></code> 下的 <code class="docutils literal notranslate"><span class="pre">PushConstantRay</span></code> 结构体中增加帧序成员：</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="n">PushConstantRay</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">vec4</span><span class="w">  </span><span class="n">clearColor</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">vec3</span><span class="w">  </span><span class="n">lightPosition</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">lightIntensity</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w">   </span><span class="n">lightType</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w">   </span><span class="n">frame</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</section>
+<section id="id7">
+<h2>随机并抖动<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<p>在 <code class="docutils literal notranslate"><span class="pre">raytrace.rgen</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">main()</span></code> 开头，初始化随机种子：</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="c1">// 初始化随机种子</span>
+<span class="kt">uint</span><span class="w"> </span><span class="n">seed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tea</span><span class="p">(</span><span class="nb">gl_LaunchIDEXT</span><span class="p">.</span><span class="n">y</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">gl_LaunchSizeEXT</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">gl_LaunchIDEXT</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">pcRay</span><span class="p">.</span><span class="n">frame</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>除了帧序为 <code class="docutils literal notranslate"><span class="pre">0</span></code> 时我们从像素中心向外发射光线，其余帧序中我们需要使用两个随机数来将像素中的光线进行抖动。</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="kt">float</span><span class="w"> </span><span class="n">r1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rnd</span><span class="p">(</span><span class="n">seed</span><span class="p">);</span>
+<span class="kt">float</span><span class="w"> </span><span class="n">r2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rnd</span><span class="p">(</span><span class="n">seed</span><span class="p">);</span>
+<span class="c1">// 子像素抖动: 每次在像素中的不同位置发射光想，以达到抗锯齿的目的</span>
+<span class="kt">vec2</span><span class="w"> </span><span class="n">subpixel_jitter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pcRay</span><span class="p">.</span><span class="n">frame</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mo">0</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="kt">vec2</span><span class="p">(</span><span class="mf">0.5</span><span class="n">f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5</span><span class="n">f</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">vec2</span><span class="p">(</span><span class="n">r1</span><span class="p">,</span><span class="w"> </span><span class="n">r2</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>现在我们只需要改变像素中心的计算方式即可：</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="k">const</span><span class="w"> </span><span class="kt">vec2</span><span class="w"> </span><span class="n">pixelCenter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">vec2</span><span class="p">(</span><span class="nb">gl_LaunchIDEXT</span><span class="p">.</span><span class="n">xy</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">subpixel_jitter</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<section id="id8">
+<h2>存储或更新<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<p>在 <code class="docutils literal notranslate"><span class="pre">main()</span></code> 函数结束处，如果帧序为 <code class="docutils literal notranslate"><span class="pre">0</span></code> 的话，我们直接将结果写入目标图片。否则我们参考之前的帧来生成新结果并写入目标图片。</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="c1">// 随着时间积累</span>
+<span class="k">if</span><span class="p">(</span><span class="n">pcRay</span><span class="p">.</span><span class="n">frame</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mo">0</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">a</span><span class="w">         </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span><span class="n">f</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="kt">float</span><span class="p">(</span><span class="n">pcRay</span><span class="p">.</span><span class="n">frame</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">vec3</span><span class="w">  </span><span class="n">old_color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">imageLoad</span><span class="p">(</span><span class="n">image</span><span class="p">,</span><span class="w"> </span><span class="kt">ivec2</span><span class="p">(</span><span class="nb">gl_LaunchIDEXT</span><span class="p">.</span><span class="n">xy</span><span class="p">)).</span><span class="n">xyz</span><span class="p">;</span>
+<span class="w">  </span><span class="n">imageStore</span><span class="p">(</span><span class="n">image</span><span class="p">,</span><span class="w"> </span><span class="kt">ivec2</span><span class="p">(</span><span class="nb">gl_LaunchIDEXT</span><span class="p">.</span><span class="n">xy</span><span class="p">),</span><span class="w"> </span><span class="kt">vec4</span><span class="p">(</span><span class="n">mix</span><span class="p">(</span><span class="n">old_color</span><span class="p">,</span><span class="w"> </span><span class="n">prd</span><span class="p">.</span><span class="n">hitValue</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">),</span><span class="w"> </span><span class="mf">1.</span><span class="n">f</span><span class="p">));</span>
+<span class="p">}</span>
+<span class="k">else</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="c1">// 将第一帧写入目标图片中</span>
+<span class="w">  </span><span class="n">imageStore</span><span class="p">(</span><span class="n">image</span><span class="p">,</span><span class="w"> </span><span class="kt">ivec2</span><span class="p">(</span><span class="nb">gl_LaunchIDEXT</span><span class="p">.</span><span class="n">xy</span><span class="p">),</span><span class="w"> </span><span class="kt">vec4</span><span class="p">(</span><span class="n">prd</span><span class="p">.</span><span class="n">hitValue</span><span class="p">,</span><span class="w"> </span><span class="mf">1.</span><span class="n">f</span><span class="p">));</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="id9">
+<h2>更新应用帧<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
+<p>我们需要增加当前的渲染帧，但是当场景中发生变化时我们也需要重新设置渲染帧。</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">HelloVulkan</span></code> 类中增加两个新函数：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">resetFrame</span><span class="p">();</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">updateFrame</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>在 <code class="docutils literal notranslate"><span class="pre">updateFrame</span></code> 中，当相机发生变化时重置帧序，否则累积帧序。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">//--------------------------------------------------------------------------------------------------</span>
+<span class="c1">// 如果相机的矩阵或FOV发生改变，重置。否则累积帧序</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">HelloVulkan::updateFrame</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">nvmath</span><span class="o">::</span><span class="n">mat4f</span><span class="w"> </span><span class="n">refCamMatrix</span><span class="p">;</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">float</span><span class="w">         </span><span class="n">refFov</span><span class="p">{</span><span class="n">CameraManip</span><span class="p">.</span><span class="n">getFov</span><span class="p">()};</span>
+
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">m</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="n">CameraManip</span><span class="p">.</span><span class="n">getMatrix</span><span class="p">();</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w">  </span><span class="n">fov</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CameraManip</span><span class="p">.</span><span class="n">getFov</span><span class="p">();</span>
+
+<span class="w">  </span><span class="k">if</span><span class="p">(</span><span class="n">memcmp</span><span class="p">(</span><span class="o">&amp;</span><span class="n">refCamMatrix</span><span class="p">.</span><span class="n">a00</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">m</span><span class="p">.</span><span class="n">a00</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">nvmath</span><span class="o">::</span><span class="n">mat4f</span><span class="p">))</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">refFov</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">fov</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">resetFrame</span><span class="p">();</span>
+<span class="w">    </span><span class="n">refCamMatrix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m</span><span class="p">;</span>
+<span class="w">    </span><span class="n">refFov</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="n">fov</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="n">m_pcRay</span><span class="p">.</span><span class="n">frame</span><span class="o">++</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>在 <code class="docutils literal notranslate"><span class="pre">resetFrame</span></code> 将被调用并在 <code class="docutils literal notranslate"><span class="pre">updateFrame</span></code> 累积帧序之前， <code class="docutils literal notranslate"><span class="pre">resetFrame</span></code> 将会将帧序设置为 <code class="docutils literal notranslate"><span class="pre">-1</span></code> ：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">HelloVulkan::resetFrame</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">m_pcRay</span><span class="p">.</span><span class="n">frame</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">-1</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>在 <code class="docutils literal notranslate"><span class="pre">HelloVulkan::raytrace</span></code> 一开始调用：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">updateFrame</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>现在当激活光线追踪时将会进行图像抗锯齿。</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">HelloVulkan::onResize()</span></code> 增加 <code class="docutils literal notranslate"><span class="pre">resetFrame()</span></code> 将会确保当当改变窗口大小时清空缓存。</p>
+</section>
+<section id="ui">
+<h2>当 UI 发生变化时帧重置<a class="headerlink" href="#ui" title="Link to this heading">#</a></h2>
+<p>当场景的任意一个部分发生改变时帧序也需要进行重置，比如光照方向或者背景颜色。在 <code class="docutils literal notranslate"><span class="pre">main.cpp</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">renderUI()</span></code> 中，当 <code class="docutils literal notranslate"><span class="pre">UI</span></code> 发生变化时重置帧序：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">renderUI</span><span class="p">(</span><span class="n">HelloVulkan</span><span class="o">&amp;</span><span class="w"> </span><span class="n">helloVk</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">changed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">changed</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="n">ImGuiH</span><span class="o">::</span><span class="n">CameraWidget</span><span class="p">();</span>
+<span class="w">  </span><span class="k">if</span><span class="p">(</span><span class="n">ImGui</span><span class="o">::</span><span class="n">CollapsingHeader</span><span class="p">(</span><span class="s">&quot;Light&quot;</span><span class="p">))</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">pc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">helloVk</span><span class="p">.</span><span class="n">m_pushConstant</span><span class="p">;</span>
+<span class="w">    </span><span class="n">changed</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="n">ImGui</span><span class="o">::</span><span class="n">RadioButton</span><span class="p">(</span><span class="s">&quot;Point&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">pc</span><span class="p">.</span><span class="n">lightType</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="w">    </span><span class="n">ImGui</span><span class="o">::</span><span class="n">SameLine</span><span class="p">();</span>
+<span class="w">    </span><span class="n">changed</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="n">ImGui</span><span class="o">::</span><span class="n">RadioButton</span><span class="p">(</span><span class="s">&quot;Infinite&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">pc</span><span class="p">.</span><span class="n">lightType</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">changed</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="n">ImGui</span><span class="o">::</span><span class="n">SliderFloat3</span><span class="p">(</span><span class="s">&quot;Position&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">pc</span><span class="p">.</span><span class="n">lightPosition</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="mf">-20.f</span><span class="p">,</span><span class="w"> </span><span class="mf">20.f</span><span class="p">);</span>
+<span class="w">    </span><span class="n">changed</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="n">ImGui</span><span class="o">::</span><span class="n">SliderFloat</span><span class="p">(</span><span class="s">&quot;Intensity&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">pc</span><span class="p">.</span><span class="n">lightIntensity</span><span class="p">,</span><span class="w"> </span><span class="mf">0.f</span><span class="p">,</span><span class="w"> </span><span class="mf">150.f</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">if</span><span class="p">(</span><span class="n">changed</span><span class="p">)</span>
+<span class="w">    </span><span class="n">helloVk</span><span class="p">.</span><span class="n">resetFrame</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="id10">
+<h2>品质<a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
+<p>在积累了足够的采样后，渲染的质量已经算是相当的高了，此时避免进一步累积更多的图片将变的很有意义。</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">HelloVulkan</span></code> 中增加一个成员变量：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">m_maxFrames</span><span class="p">{</span><span class="mi">100</span><span class="p">};</span>
+</pre></div>
+</div>
+<p>并且在 <code class="docutils literal notranslate"><span class="pre">renderUI()</span></code> 中增加对其的控制，确保 <code class="docutils literal notranslate"><span class="pre">m_maxFrames</span></code> 不能低于 <code class="docutils literal notranslate"><span class="pre">1</span></code> 。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">changed</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="n">ImGui</span><span class="o">::</span><span class="n">SliderInt</span><span class="p">(</span><span class="s">&quot;Max Frames&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">helloVk</span><span class="p">.</span><span class="n">m_maxFrames</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>之后在 <code class="docutils literal notranslate"><span class="pre">raytrace()</span></code> 中，在紧接着 <code class="docutils literal notranslate"><span class="pre">updateFrame()</span></code> 之后，判断当前帧序是否超出了最大帧序。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="p">(</span><span class="n">m_pcRay</span><span class="p">.</span><span class="n">frame</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">m_maxFrames</span><span class="p">)</span>
+<span class="w">  </span><span class="k">return</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<section id="id11">
+<h2>光线生成着色器中的多采样<a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
+<p>为了提高效率，我们可以直接在光线生成着色器中进行多采样。这比多次调用 <code class="docutils literal notranslate"><span class="pre">raytrace()</span></code> 快很多。</p>
+<p>为此，在 <code class="docutils literal notranslate"><span class="pre">raytrace.rgen</span></code> 中增加一个常量（也可以通过 <code class="docutils literal notranslate"><span class="pre">push</span> <span class="pre">constant</span></code> 块在应用端进行控制）。</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">NBSAMPLES</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>在 <code class="docutils literal notranslate"><span class="pre">main()</span></code> 中，初始化随机数种子之后，创建一个循环将 <code class="docutils literal notranslate"><span class="pre">r1</span></code> 和 <code class="docutils literal notranslate"><span class="pre">r2</span></code> 到 <code class="docutils literal notranslate"><span class="pre">traceRayEXT</span></code> 的代码调用包起来，并且累积 <code class="docutils literal notranslate"><span class="pre">traceRayEXT</span></code> 返回的颜色。在循环结束后，将累积的颜色除以采样数得到一个均值。</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="kt">vec3</span><span class="w"> </span><span class="n">hitValues</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">vec3</span><span class="p">(</span><span class="mo">0</span><span class="p">);</span>
+
+<span class="k">for</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">smpl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mo">0</span><span class="p">;</span><span class="w"> </span><span class="n">smpl</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">NBSAMPLES</span><span class="p">;</span><span class="w"> </span><span class="n">smpl</span><span class="o">++</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">r1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rnd</span><span class="p">(</span><span class="n">seed</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">r2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rnd</span><span class="p">(</span><span class="n">seed</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">// ...</span>
+<span class="w">  </span><span class="c1">// TraceRayEXT( ... );</span>
+<span class="w">  </span><span class="n">hitValues</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">prd</span><span class="p">.</span><span class="n">hitValue</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="n">prd</span><span class="p">.</span><span class="n">hitValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hitValues</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">NBSAMPLES</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>对于给定的 <code class="docutils literal notranslate"><span class="pre">m_maxFrames</span></code> 和 <code class="docutils literal notranslate"><span class="pre">NBSAMPLE</span></code> ，图片将会有 <span class="math notranslate nohighlight">\(m\_maxFrames \times NBSAMPLE\)</span> 的抗锯齿采样。</p>
+<p>比如，如果 <code class="docutils literal notranslate"><span class="pre">m_maxFrames</span> <span class="pre">=</span> <span class="pre">10</span></code> 并且 <code class="docutils literal notranslate"><span class="pre">NBSAMPLE</span> <span class="pre">=</span> <span class="pre">10</span></code> ，这与使用 <code class="docutils literal notranslate"><span class="pre">m_maxFrames</span> <span class="pre">=</span> <span class="pre">100</span></code> 并且 <code class="docutils literal notranslate"><span class="pre">NBSAMPLE</span> <span class="pre">=</span> <span class="pre">1</span></code> 等价。</p>
+<p>然而在光线生成着色器中使用 <code class="docutils literal notranslate"><span class="pre">NBSAMPLE</span> <span class="pre">=</span> <span class="pre">10</span></code> 将会比在 <code class="docutils literal notranslate"><span class="pre">NBSAMPLE</span> <span class="pre">=</span> <span class="pre">1</span></code> 的条件下调用 <code class="docutils literal notranslate"><span class="pre">10</span></code> 次 <code class="docutils literal notranslate"><span class="pre">raytrace()</span></code> 快很多。</p>
+</section>
 </section>
 
         </article>
@@ -329,8 +557,35 @@
 
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+
+<div class="toc-sticky toc-scroll" style="width: 500px;">
+    <div class="toc-title-container" style="width: 500px;">
+        <span class="toc-title" style="width: 500px;">
+            On this page
+        </span>
+    </div>
+    <div class="toc-tree-container" style="width: 500px;">
+        <div class="toc-tree" style="width: 500px;">
+            <ul>
+<li><a class="reference internal" href="#">相机抖动抗锯齿教程</a><ul>
+<li><a class="reference internal" href="#id3">教程</a></li>
+<li><a class="reference internal" href="#id5">随机函数</a></li>
+<li><a class="reference internal" href="#id6">帧序</a></li>
+<li><a class="reference internal" href="#id7">随机并抖动</a></li>
+<li><a class="reference internal" href="#id8">存储或更新</a></li>
+<li><a class="reference internal" href="#id9">更新应用帧</a></li>
+<li><a class="reference internal" href="#ui">当 UI 发生变化时帧重置</a></li>
+<li><a class="reference internal" href="#id10">品质</a></li>
+<li><a class="reference internal" href="#id11">光线生成着色器中的多采样</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+    </div>
+</div>
 
 
     </aside>
@@ -345,6 +600,8 @@
     <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
     <script src="../../../_static/translations.js?v=beaddf03"></script>
     <script src="../../../_static/design-tabs.js?v=36754332"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
     </body>
 </html>

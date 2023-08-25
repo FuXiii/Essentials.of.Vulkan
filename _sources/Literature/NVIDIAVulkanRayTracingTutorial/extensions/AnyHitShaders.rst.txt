@@ -23,6 +23,7 @@
     * 2023/8/24 增加 ``traceRayEXT`` 章节
     * 2023/8/24 增加 ``光追管线`` 章节
     * 2023/8/24 初步翻译完成
+    * 2023/8/25 更新 ``累积`` 章节中的 ``相机抖动抗锯齿教程`` 中的章节链接
 
 `文献源`_
 
@@ -35,7 +36,7 @@
 教程
 ####################
 
-该教程为 ``Vulkan`` 光线追踪教程的扩展。
+该教程为 ``Vulkan`` `光线追踪教程 <../NVIDIAVulkanRayTracingTutorial.html>`_ 的扩展。
 
 与最近命中着色器（ ``closest hit shade`` ）类似，任意命中着色器在光线与几何体相交处执行，与最近命中着色器不同的是，任意命中着色器将会在沿着光线与几何体的所有交点处执行。最近命中着色器只会在最近的交点处执行。
 
@@ -236,9 +237,9 @@ OBJ 材质
 
 正如前面提到的，为了达到效果，我们需要随着时间累积每一帧，请实现 `相机抖动抗锯齿教程 <./JitterCamera.html>`_ 中的：
 
-* `Frame Number <https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing_jitter_cam#frame-number>`_ :bdg-danger:`未翻译`
-* `Storing or Updating <https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing_jitter_cam#storing-or-updating>`_ :bdg-danger:`未翻译`
-* `Application Frame Update <https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing_jitter_cam#application-frame-update>`_ :bdg-danger:`未翻译`
+* `帧序 <./JitterCamera.html#id6>`_
+* `存储或更新 <./JitterCamera.html#id8>`_
+* `更新应用帧 <./JitterCamera.html#id9>`_
 
 修正管线
 ###############################
