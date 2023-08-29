@@ -16,10 +16,18 @@
     * 2023/8/25 增加 ``品质`` 章节
     * 2023/8/25 增加 ``光线生成着色器中的多采样`` 章节
     * 2023/8/25 初步翻译完成
+    * 2023/8/29 提供 ``Turbo`` 实现开源示例
 
 `文献源`_
 
 .. _文献源: https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/blob/master/ray_tracing_jitter_cam/README.md
+
+.. admonition:: Turbo 引擎中对该教程的实现示例
+    :class: note
+
+    ``Turbo`` 引擎对该教程进行了实现，具体如下：
+
+    * `VulkanKHRRayTracingJitterCamera <https://github.com/FuXiii/Turbo/blob/dev/samples/VulkanKHRRayTracingJitterCamera.cpp>`_ ：通过抖动发射源采样点并多帧累积采样结果进行抗锯齿。 `示例视频 <https://www.bilibili.com/video/BV1ej41127tK/?spm_id_from=333.999.0.0>`_
 
 .. figure:: ../../../_static/antialiasing.png
 
