@@ -6,7 +6,7 @@
 <link rel="index" title="索引" href="../../../genindex.html" /><link rel="search" title="搜索" href="../../../search.html" /><link rel="next" title="任意命中着色器（Any Hit Shaders）教程" href="AnyHitShaders.html" /><link rel="prev" title="NVIDIA Vulkan 光线追踪教程" href="../NVIDIAVulkanRayTracingTutorial.html" />
         <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/Literature/NVIDIAVulkanRayTracingTutorial/extensions/JitterCamera.html" />
 
-    <link rel="shortcut icon" href="../../../_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.2.3 and Furo 2023.08.19 -->
+    <link rel="shortcut icon" href="../../../_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.2.4 and Furo 2023.08.19 -->
         <title>相机抖动抗锯齿教程 - Vulkan入门精要</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b20cc3f5" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
@@ -272,22 +272,30 @@
 <li><p class="sd-card-text">2023/8/25 增加 <code class="docutils literal notranslate"><span class="pre">品质</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/8/25 增加 <code class="docutils literal notranslate"><span class="pre">光线生成着色器中的多采样</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/8/25 初步翻译完成</p></li>
+<li><p class="sd-card-text">2023/8/29 提供 <code class="docutils literal notranslate"><span class="pre">Turbo</span></code> 实现开源示例</p></li>
 </ul>
 </div>
 </details><p><a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/blob/master/ray_tracing_jitter_cam/README.md">文献源</a></p>
-<figure class="align-default" id="id12">
+<div class="note admonition">
+<p class="admonition-title">Turbo 引擎中对该教程的实现示例</p>
+<p><code class="docutils literal notranslate"><span class="pre">Turbo</span></code> 引擎对该教程进行了实现，具体如下：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/FuXiii/Turbo/blob/dev/samples/VulkanKHRRayTracingJitterCamera.cpp">VulkanKHRRayTracingJitterCamera</a> ：通过抖动发射源采样点并多帧累积采样结果进行抗锯齿。 <a class="reference external" href="https://www.bilibili.com/video/BV1ej41127tK/?spm_id_from=333.999.0.0">示例视频</a></p></li>
+</ul>
+</div>
+<figure class="align-default" id="id13">
 <img alt="../../../_images/antialiasing.png" src="../../../_images/antialiasing.png" />
 <figcaption>
-<p><span class="caption-text">相机抖动抗锯齿结果示意图</span><a class="headerlink" href="#id12" title="Link to this image">#</a></p>
+<p><span class="caption-text">相机抖动抗锯齿结果示意图</span><a class="headerlink" href="#id13" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
-<section id="id3">
-<h2>教程<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<section id="id4">
+<h2>教程<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
 <p>该教程为 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> <a class="reference external" href="../NVIDIAVulkanRayTracingTutorial.html">光线追踪教程</a> 的扩展。</p>
 <p>在本示例中，我们将随着时间的随机抖动每个像素的每个光线的偏移来实现抗锯齿，而不总是从像素的中心点发射射线。</p>
 </section>
-<section id="id5">
-<h2>随机函数<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<section id="id6">
+<h2>随机函数<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
 <p>我们将会使用一些简单的随机数生成函数，这些函数对于本示例是足够用了。</p>
 <p>创建一个新的着色器文件 <code class="docutils literal notranslate"><span class="pre">random.glsl</span></code> 并写入如下代码，并将其加入 <code class="docutils literal notranslate"><span class="pre">shaders</span></code> 文件夹下之后执行 <code class="docutils literal notranslate"><span class="pre">CMake</span></code> ，并在 <code class="docutils literal notranslate"><span class="pre">raytrace.rgen</span></code> 中 <code class="docutils literal notranslate"><span class="pre">#include</span></code> 引入该新着色器文件。</p>
 <div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="c1">// 使用两个无符号整型经过16轮微小加密算法生成一个随机的无符号整型。</span>
@@ -327,8 +335,8 @@
 </pre></div>
 </div>
 </section>
-<section id="id6">
-<h2>帧序<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<section id="id7">
+<h2>帧序<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
 <p>当前我们的抖动示例将会累积每一帧数据，所以我们需要知道当前的渲染帧。一个帧序为 <code class="docutils literal notranslate"><span class="pre">0</span></code> 的话表示一个新帧，我们将会积累更大帧序的数据。</p>
 <div class="admonition note">
 <p class="admonition-title">备注</p>
@@ -346,8 +354,8 @@
 </pre></div>
 </div>
 </section>
-<section id="id7">
-<h2>随机并抖动<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<section id="id8">
+<h2>随机并抖动<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
 <p>在 <code class="docutils literal notranslate"><span class="pre">raytrace.rgen</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">main()</span></code> 开头，初始化随机种子：</p>
 <div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="c1">// 初始化随机种子</span>
 <span class="kt">uint</span><span class="w"> </span><span class="n">seed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tea</span><span class="p">(</span><span class="nb">gl_LaunchIDEXT</span><span class="p">.</span><span class="n">y</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">gl_LaunchSizeEXT</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">gl_LaunchIDEXT</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">pcRay</span><span class="p">.</span><span class="n">frame</span><span class="p">);</span>
@@ -365,8 +373,8 @@
 </pre></div>
 </div>
 </section>
-<section id="id8">
-<h2>存储或更新<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<section id="id9">
+<h2>存储或更新<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
 <p>在 <code class="docutils literal notranslate"><span class="pre">main()</span></code> 函数结束处，如果帧序为 <code class="docutils literal notranslate"><span class="pre">0</span></code> 的话，我们直接将结果写入目标图片。否则我们参考之前的帧来生成新结果并写入目标图片。</p>
 <div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="c1">// 随着时间积累</span>
 <span class="k">if</span><span class="p">(</span><span class="n">pcRay</span><span class="p">.</span><span class="n">frame</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mo">0</span><span class="p">)</span>
@@ -383,8 +391,8 @@
 </pre></div>
 </div>
 </section>
-<section id="id9">
-<h2>更新应用帧<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
+<section id="id10">
+<h2>更新应用帧<a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
 <p>我们需要增加当前的渲染帧，但是当场景中发生变化时我们也需要重新设置渲染帧。</p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">HelloVulkan</span></code> 类中增加两个新函数：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">resetFrame</span><span class="p">();</span>
@@ -451,8 +459,8 @@
 </pre></div>
 </div>
 </section>
-<section id="id10">
-<h2>品质<a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
+<section id="id11">
+<h2>品质<a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
 <p>在积累了足够的采样后，渲染的质量已经算是相当的高了，此时避免进一步累积更多的图片将变的很有意义。</p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">HelloVulkan</span></code> 中增加一个成员变量：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">m_maxFrames</span><span class="p">{</span><span class="mi">100</span><span class="p">};</span>
@@ -468,8 +476,8 @@
 </pre></div>
 </div>
 </section>
-<section id="id11">
-<h2>光线生成着色器中的多采样<a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
+<section id="id12">
+<h2>光线生成着色器中的多采样<a class="headerlink" href="#id12" title="Link to this heading">#</a></h2>
 <p>为了提高效率，我们可以直接在光线生成着色器中进行多采样。这比多次调用 <code class="docutils literal notranslate"><span class="pre">raytrace()</span></code> 快很多。</p>
 <p>为此，在 <code class="docutils literal notranslate"><span class="pre">raytrace.rgen</span></code> 中增加一个常量（也可以通过 <code class="docutils literal notranslate"><span class="pre">push</span> <span class="pre">constant</span></code> 块在应用端进行控制）。</p>
 <div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">NBSAMPLES</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span>
@@ -570,15 +578,15 @@
         <div class="toc-tree" style="width: 500px;">
             <ul>
 <li><a class="reference internal" href="#">相机抖动抗锯齿教程</a><ul>
-<li><a class="reference internal" href="#id3">教程</a></li>
-<li><a class="reference internal" href="#id5">随机函数</a></li>
-<li><a class="reference internal" href="#id6">帧序</a></li>
-<li><a class="reference internal" href="#id7">随机并抖动</a></li>
-<li><a class="reference internal" href="#id8">存储或更新</a></li>
-<li><a class="reference internal" href="#id9">更新应用帧</a></li>
+<li><a class="reference internal" href="#id4">教程</a></li>
+<li><a class="reference internal" href="#id6">随机函数</a></li>
+<li><a class="reference internal" href="#id7">帧序</a></li>
+<li><a class="reference internal" href="#id8">随机并抖动</a></li>
+<li><a class="reference internal" href="#id9">存储或更新</a></li>
+<li><a class="reference internal" href="#id10">更新应用帧</a></li>
 <li><a class="reference internal" href="#ui">当 UI 发生变化时帧重置</a></li>
-<li><a class="reference internal" href="#id10">品质</a></li>
-<li><a class="reference internal" href="#id11">光线生成着色器中的多采样</a></li>
+<li><a class="reference internal" href="#id11">品质</a></li>
+<li><a class="reference internal" href="#id12">光线生成着色器中的多采样</a></li>
 </ul>
 </li>
 </ul>
