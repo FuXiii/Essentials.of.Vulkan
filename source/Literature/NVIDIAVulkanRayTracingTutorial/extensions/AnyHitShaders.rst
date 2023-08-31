@@ -24,10 +24,22 @@
     * 2023/8/24 增加 ``光追管线`` 章节
     * 2023/8/24 初步翻译完成
     * 2023/8/25 更新 ``累积`` 章节中的 ``相机抖动抗锯齿教程`` 中的章节链接
+    * 2023/8/31 提供 ``Turbo`` 实现开源示例
 
 `文献源`_
 
 .. _文献源: https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/blob/master/ray_tracing_anyhit/README.md
+
+.. admonition:: Turbo 引擎中对该教程的实现示例
+    :class: note
+
+    ``Turbo`` 引擎对该教程进行了实现，具体如下：
+
+    * `VulkanKHRRayTracingAnyHitShader <https://github.com/FuXiii/Turbo/blob/master/samples/VulkanKHRRayTracingAnyHitShader.cpp>`_ ：在 `相机抖动抗锯齿教程 <./JitterCamera.html>`_ 基础上增加任意命中着色器。 `示例视频 <https://www.bilibili.com/video/BV1Zj41127sh/?spm_id_from=333.999.0.0&vd_source=df46bdc268062b383081e71f702cbc1d>`_
+
+    .. figure:: ../../../_static/NVIDIAAnyHit.svg
+
+        着色器和着色器绑定表对应示意图
 
 .. figure:: ../../../_static/anyhit.png
 
