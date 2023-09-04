@@ -266,13 +266,21 @@
 <li><p class="sd-card-text">2023/9/1 增加 <code class="docutils literal notranslate"><span class="pre">教程</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/9/1 增加 <code class="docutils literal notranslate"><span class="pre">多实例</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/9/1 增加 <code class="docutils literal notranslate"><span class="pre">多物体</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/9/4 更新 <code class="docutils literal notranslate"><span class="pre">多实例</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/9/4 增加 <code class="docutils literal notranslate"><span class="pre">设备内存分配器</span> <span class="pre">（DMA）</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/9/4 增加 <code class="docutils literal notranslate"><span class="pre">hello_vulkan.h</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/9/4 增加 <code class="docutils literal notranslate"><span class="pre">hello_vulkan.cpp</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/9/4 增加 <code class="docutils literal notranslate"><span class="pre">结果</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/9/4 增加 <code class="docutils literal notranslate"><span class="pre">VMA</span> <span class="pre">：Vulkan</span> <span class="pre">内存分配器</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/9/4 <code class="docutils literal notranslate"><span class="pre">VMA</span> <span class="pre">：Vulkan</span> <span class="pre">内存分配器</span></code> 章节下增加 <code class="docutils literal notranslate"><span class="pre">hello_vulkan.h</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/9/4 <code class="docutils literal notranslate"><span class="pre">VMA</span> <span class="pre">：Vulkan</span> <span class="pre">内存分配器</span></code> 章节下增加 <code class="docutils literal notranslate"><span class="pre">hello_vulkan.cpp</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p><a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing_instances">文献源</a></p>
-<figure class="align-default" id="id7">
+<figure class="align-default" id="id10">
 <img alt="../../../_images/NVIDIA_instances.png" src="../../../_images/NVIDIA_instances.png" />
 <figcaption>
-<p><span class="caption-text">实例化结果示意图</span><a class="headerlink" href="#id7" title="Link to this image">#</a></p>
+<p><span class="caption-text">实例化结果示意图</span><a class="headerlink" href="#id10" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <section id="id3">
@@ -312,6 +320,10 @@
 <div class="admonition note">
 <p class="admonition-title">备注</p>
 <p>这将会创建 <code class="docutils literal notranslate"><span class="pre">3</span></code> 个 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 模型和相应的实体，之后将会随机创建 <code class="docutils literal notranslate"><span class="pre">2000</span></code> 个绿色或各面异色的方盒实例。</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">小技巧</p>
+<p>此种方式是通过创建少数底层加速结构作为几何物体，之后创建大量顶层加速结构的实体来实现的实例化。</p>
 </div>
 </section>
 <section id="id6">
@@ -354,6 +366,89 @@
 </tbody>
 </table>
 </div>
+<div class="admonition tip">
+<p class="admonition-title">小技巧</p>
+<p>此种方式是通过创建大量数底层加速结构作为几何物体，之后创建少数的顶层加速结构的实体来实现的实例化。</p>
+</div>
+</section>
+<section id="dma">
+<h2>设备内存分配器 （DMA）<a class="headerlink" href="#dma" title="Link to this heading">#</a></h2>
+<p>如上分配问题可通过使用内存分配器得到解决。</p>
+<section id="hello-vulkan-h">
+<h3>hello_vulkan.h<a class="headerlink" href="#hello-vulkan-h" title="Link to this heading">#</a></h3>
+<p>在 <code class="docutils literal notranslate"><span class="pre">hello_vulkan.h</span></code> ， 在文件顶部增加如下宏定义，用于声明使用何种分配器。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 选择使用何种分配器</span>
+<span class="cp">#define ALLOC_DMA</span>
+<span class="c1">//#define ALLOC_DEDICATED</span>
+<span class="c1">//#define ALLOC_VMA</span>
+</pre></div>
+</div>
+<p>替换缓存和纹理的定义并包含正确的分配器。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#if defined(ALLOC_DMA)</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;nvvk/memallocator_dma_vk.hpp&gt;</span>
+<span class="k">using</span><span class="w"> </span><span class="n">Allocator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nvvk</span><span class="o">::</span><span class="n">ResourceAllocatorDma</span><span class="p">;</span>
+<span class="cp">#elif defined(ALLOC_VMA)</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;nvvk/memallocator_vma_vk.hpp&gt;</span>
+<span class="k">using</span><span class="w"> </span><span class="n">Allocator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nvvk</span><span class="o">::</span><span class="n">ResourceAllocatorVma</span><span class="p">;</span>
+<span class="cp">#else</span>
+<span class="k">using</span><span class="w"> </span><span class="n">Allocator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nvvk</span><span class="o">::</span><span class="n">ResourceAllocatorDedicated</span><span class="p">;</span>
+<span class="cp">#endif</span>
+</pre></div>
+</div>
+<p>并将 <code class="docutils literal notranslate"><span class="pre">ResourceAllocatorDedicatednvvk::</span></code> 替换成通用分配类型。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Allocator</span><span class="w"> </span><span class="n">m_alloc</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<section id="hello-vulkan-cpp">
+<h3>hello_vulkan.cpp<a class="headerlink" href="#hello-vulkan-cpp" title="Link to this heading">#</a></h3>
+<p>在源文件中不需要做任何修改，所有的分配器都使用相同的 <code class="docutils literal notranslate"><span class="pre">API</span></code> 。</p>
+</section>
+</section>
+<section id="id7">
+<h2>结果<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<p>相对于成千的分配，该示例仅使用 <code class="docutils literal notranslate"><span class="pre">14</span></code> 个内存分配。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>下图所示的其中一些分配是 <code class="docutils literal notranslate"><span class="pre">Dear</span> <span class="pre">ImGui</span></code> 分配的，并不是 <code class="docutils literal notranslate"><span class="pre">DMA</span></code> 分配的。其中的 <code class="docutils literal notranslate"><span class="pre">14</span></code> 个蓝边框的内存为 <code class="docutils literal notranslate"><span class="pre">DMA</span></code> 分配的。</p>
+</div>
+<figure class="align-default" id="id11">
+<img alt="../../../_images/VkInstanceNsight1.png" src="../../../_images/VkInstanceNsight1.png" />
+<figcaption>
+<p><span class="caption-text">内存分配示意图</span><a class="headerlink" href="#id11" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>最后，在 <code class="docutils literal notranslate"><span class="pre">Nsight</span> <span class="pre">Graphics</span></code> 中 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的设备内存如下：</p>
+<figure class="align-default" id="id12">
+<img alt="../../../_images/VkInstanceNsight2.png" src="../../../_images/VkInstanceNsight2.png" />
+<figcaption>
+<p><span class="caption-text">Vulkan 设备内存示意图</span><a class="headerlink" href="#id12" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="vma-vulkan">
+<h2>VMA ：Vulkan 内存分配器<a class="headerlink" href="#vma-vulkan" title="Link to this heading">#</a></h2>
+<p>我们同样可以使用 <code class="docutils literal notranslate"><span class="pre">AMD</span></code> 的 <a class="reference external" href="https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator">Vulkan Memory Allocator</a> ( <code class="docutils literal notranslate"><span class="pre">VMA</span></code> )。</p>
+<p><code class="docutils literal notranslate"><span class="pre">VMA</span></code> 是 <code class="docutils literal notranslate"><span class="pre">nvpro_core/third_party</span></code> 下的一个子模块。</p>
+<p><code class="docutils literal notranslate"><span class="pre">VMA</span></code> 使用的是专用内存，所以您需要在 <code class="docutils literal notranslate"><span class="pre">main.cpp</span></code> 增加如下扩展来创建上下文。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">contextInfo</span><span class="p">.</span><span class="n">addDeviceExtension</span><span class="p">(</span><span class="n">VK_KHR_BIND_MEMORY_2_EXTENSION_NAME</span><span class="p">);</span>
+</pre></div>
+</div>
+<section id="id8">
+<h3>hello_vulkan.h<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
+<p>激活 <code class="docutils literal notranslate"><span class="pre">VMA</span></code> 的宏定义</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#define ALLOC_VMA</span>
+</pre></div>
+</div>
+</section>
+<section id="id9">
+<h3>hello_vulkan.cpp<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">VMA</span></code> 需要获取函数的具体实现并且在之后的代码中只允许被定义一遍，并且需要在 <code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&quot;hello_vulkan.h&quot;</span></code> 之前定义：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#define VMA_IMPLEMENTATION</span>
+</pre></div>
+</div>
+<p>为确认是否使用 <code class="docutils literal notranslate"><span class="pre">VMA</span></code> 分配器，在 <code class="docutils literal notranslate"><span class="pre">VMAMemoryAllocator::allocMemory()</span></code> 处打个断点。</p>
+</section>
 </section>
 </section>
 
@@ -435,6 +530,17 @@
 <li><a class="reference internal" href="#id3">教程</a></li>
 <li><a class="reference internal" href="#id5">多实例</a></li>
 <li><a class="reference internal" href="#id6">多物体</a></li>
+<li><a class="reference internal" href="#dma">设备内存分配器 （DMA）</a><ul>
+<li><a class="reference internal" href="#hello-vulkan-h">hello_vulkan.h</a></li>
+<li><a class="reference internal" href="#hello-vulkan-cpp">hello_vulkan.cpp</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id7">结果</a></li>
+<li><a class="reference internal" href="#vma-vulkan">VMA ：Vulkan 内存分配器</a><ul>
+<li><a class="reference internal" href="#id8">hello_vulkan.h</a></li>
+<li><a class="reference internal" href="#id9">hello_vulkan.cpp</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

@@ -9,7 +9,14 @@
     * 2023/9/1 增加 ``教程`` 章节
     * 2023/9/1 增加 ``多实例`` 章节
     * 2023/9/1 增加 ``多物体`` 章节
-
+    * 2023/9/4 更新 ``多实例`` 章节
+    * 2023/9/4 增加 ``设备内存分配器 （DMA）`` 章节
+    * 2023/9/4 增加 ``hello_vulkan.h`` 章节
+    * 2023/9/4 增加 ``hello_vulkan.cpp`` 章节
+    * 2023/9/4 增加 ``结果`` 章节
+    * 2023/9/4 增加 ``VMA ：Vulkan 内存分配器`` 章节
+    * 2023/9/4 ``VMA ：Vulkan 内存分配器`` 章节下增加 ``hello_vulkan.h`` 章节
+    * 2023/9/4 ``VMA ：Vulkan 内存分配器`` 章节下增加 ``hello_vulkan.cpp`` 章节
 
 `文献源`_
 
@@ -63,6 +70,8 @@
 
 .. note:: 这将会创建 ``3`` 个 ``OBJ`` 模型和相应的实体，之后将会随机创建 ``2000`` 个绿色或各面异色的方盒实例。
 
+.. tip:: 此种方式是通过创建少数底层加速结构作为几何物体，之后创建大量顶层加速结构的实体来实现的实例化。
+
 多物体
 ####################
 
@@ -96,3 +105,97 @@
 ======== ================================================================================================================================
   Note    This is the best case; the application can run out of memory and crash if substantially more objects are created (e.g. 20,000)
 ======== ================================================================================================================================
+
+.. tip:: 此种方式是通过创建大量数底层加速结构作为几何物体，之后创建少数的顶层加速结构的实体来实现的实例化。
+
+设备内存分配器 （DMA）
+#######################
+
+如上分配问题可通过使用内存分配器得到解决。
+
+hello_vulkan.h
+********************
+
+在 ``hello_vulkan.h`` ， 在文件顶部增加如下宏定义，用于声明使用何种分配器。
+
+.. code:: c++
+
+  // 选择使用何种分配器
+  #define ALLOC_DMA
+  //#define ALLOC_DEDICATED
+  //#define ALLOC_VMA
+
+替换缓存和纹理的定义并包含正确的分配器。
+
+.. code:: c++
+
+  #if defined(ALLOC_DMA)
+  #include <nvvk/memallocator_dma_vk.hpp>
+  using Allocator = nvvk::ResourceAllocatorDma;
+  #elif defined(ALLOC_VMA)
+  #include <nvvk/memallocator_vma_vk.hpp>
+  using Allocator = nvvk::ResourceAllocatorVma;
+  #else
+  using Allocator = nvvk::ResourceAllocatorDedicated;
+  #endif
+
+并将 ``ResourceAllocatorDedicatednvvk::`` 替换成通用分配类型。
+
+.. code:: c++
+
+  Allocator m_alloc;
+
+hello_vulkan.cpp
+********************
+
+在源文件中不需要做任何修改，所有的分配器都使用相同的 ``API`` 。
+
+结果
+#######################
+
+相对于成千的分配，该示例仅使用 ``14`` 个内存分配。
+
+.. note:: 下图所示的其中一些分配是 ``Dear ImGui`` 分配的，并不是 ``DMA`` 分配的。其中的 ``14`` 个蓝边框的内存为 ``DMA`` 分配的。
+
+.. figure:: ../../../_static/VkInstanceNsight1.png
+
+  内存分配示意图
+
+最后，在 ``Nsight Graphics`` 中 ``Vulkan`` 的设备内存如下：
+
+.. figure:: ../../../_static/VkInstanceNsight2.png
+
+  Vulkan 设备内存示意图
+
+VMA ：Vulkan 内存分配器
+#########################
+
+我们同样可以使用 ``AMD`` 的 `Vulkan Memory Allocator <https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator>`_ ( ``VMA`` )。
+
+``VMA`` 是 ``nvpro_core/third_party`` 下的一个子模块。
+
+``VMA`` 使用的是专用内存，所以您需要在 ``main.cpp`` 增加如下扩展来创建上下文。
+
+.. code:: c++
+
+  contextInfo.addDeviceExtension(VK_KHR_BIND_MEMORY_2_EXTENSION_NAME);
+
+hello_vulkan.h
+*******************
+
+激活 ``VMA`` 的宏定义
+
+.. code:: c++
+
+  #define ALLOC_VMA
+
+hello_vulkan.cpp
+*******************
+
+``VMA`` 需要获取函数的具体实现并且在之后的代码中只允许被定义一遍，并且需要在 ``#include "hello_vulkan.h"`` 之前定义：
+
+.. code:: c++
+
+  #define VMA_IMPLEMENTATION
+
+为确认是否使用 ``VMA`` 分配器，在 ``VMAMemoryAllocator::allocMemory()`` 处打个断点。
