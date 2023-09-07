@@ -17,10 +17,20 @@
     * 2023/9/4 增加 ``VMA ：Vulkan 内存分配器`` 章节
     * 2023/9/4 ``VMA ：Vulkan 内存分配器`` 章节下增加 ``hello_vulkan.h`` 章节
     * 2023/9/4 ``VMA ：Vulkan 内存分配器`` 章节下增加 ``hello_vulkan.cpp`` 章节
+    * 2023/9/7 提供 ``Turbo`` 实现开源示例
+    * 2023/9/7 更新 ``多实例`` 章节，增加 ``注解``。
+    * 2023/9/7 更新 ``多物体`` 章节，增加 ``注解``。
 
 `文献源`_
 
 .. _文献源: https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing_instances
+
+.. admonition:: Turbo 引擎中对该教程的实现示例
+    :class: note
+
+    ``Turbo`` 引擎对该教程进行了实现，具体如下：
+
+    * `VulkanKHRRayTracingTestForInstances <https://github.com/FuXiii/Turbo/blob/dev/samples/VulkanKHRRayTracingTestForInstances.cpp>`_ ：在 `NVIDIA Vulkan 光线追踪教程 <../NVIDIAVulkanRayTracingTutorial.html>`_ 基础实现。 `示例视频 <https://www.bilibili.com/video/BV1Qj41117Ph/?spm_id_from=333.999.0.0&vd_source=df46bdc268062b383081e71f702cbc1d>`_
 
 .. figure:: ../../../_static/NVIDIA_instances.png
 
@@ -35,6 +45,11 @@
 
 多实例
 ####################
+
+.. admonition:: 注解
+  :class: note
+
+  该方式实现的多实例的本质是通过创建多个 ``VkAccelerationStructureInstanceKHR`` 并引用相同的底层加速结构（模型）实现的。
 
 首先，让我们先来看看使用零星的几个物体构建多个实例的场景长什么样。
 
@@ -74,6 +89,11 @@
 
 多物体
 ####################
+
+.. admonition:: 注解
+  :class: note
+
+  该方式实现的多实例的本质是通过创建多个底层加速结构（模型）实现的。当创建的底层加速结构过多时大概率会触及 ``Vulkan`` 资源分配的上限。
 
 创建多个物体，而不是创建多个实例。
 
