@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="索引" href="../../../genindex.html" /><link rel="search" title="搜索" href="../../../search.html" /><link rel="next" title="Vulkan迷你路径追踪" href="../../vk_mini_path_tracer.html" /><link rel="prev" title="任意命中着色器（Any Hit Shaders）教程" href="AnyHitShaders.html" />
+<link rel="index" title="索引" href="../../../genindex.html" /><link rel="search" title="搜索" href="../../../search.html" /><link rel="next" title="反射" href="Reflections.html" /><link rel="prev" title="任意命中着色器（Any Hit Shaders）教程" href="AnyHitShaders.html" />
         <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/Literature/NVIDIAVulkanRayTracingTutorial/extensions/Instances.html" />
 
     <link rel="shortcut icon" href="../../../_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.2.5 and Furo 2023.08.19 -->
@@ -177,6 +177,7 @@
 <li class="toctree-l3"><a class="reference internal" href="JitterCamera.html">相机抖动抗锯齿教程</a></li>
 <li class="toctree-l3"><a class="reference internal" href="AnyHitShaders.html">任意命中着色器（Any Hit Shaders）教程</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">实例化</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Reflections.html">反射</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../vk_mini_path_tracer.html">Vulkan迷你路径追踪</a></li>
@@ -274,22 +275,36 @@
 <li><p class="sd-card-text">2023/9/4 增加 <code class="docutils literal notranslate"><span class="pre">VMA</span> <span class="pre">：Vulkan</span> <span class="pre">内存分配器</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/9/4 <code class="docutils literal notranslate"><span class="pre">VMA</span> <span class="pre">：Vulkan</span> <span class="pre">内存分配器</span></code> 章节下增加 <code class="docutils literal notranslate"><span class="pre">hello_vulkan.h</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/9/4 <code class="docutils literal notranslate"><span class="pre">VMA</span> <span class="pre">：Vulkan</span> <span class="pre">内存分配器</span></code> 章节下增加 <code class="docutils literal notranslate"><span class="pre">hello_vulkan.cpp</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/9/7 提供 <code class="docutils literal notranslate"><span class="pre">Turbo</span></code> 实现开源示例</p></li>
+<li><p class="sd-card-text">2023/9/7 更新 <code class="docutils literal notranslate"><span class="pre">多实例</span></code> 章节，增加 <code class="docutils literal notranslate"><span class="pre">注解</span></code>。</p></li>
+<li><p class="sd-card-text">2023/9/7 更新 <code class="docutils literal notranslate"><span class="pre">多物体</span></code> 章节，增加 <code class="docutils literal notranslate"><span class="pre">注解</span></code>。</p></li>
 </ul>
 </div>
 </details><p><a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing_instances">文献源</a></p>
-<figure class="align-default" id="id10">
+<div class="note admonition">
+<p class="admonition-title">Turbo 引擎中对该教程的实现示例</p>
+<p><code class="docutils literal notranslate"><span class="pre">Turbo</span></code> 引擎对该教程进行了实现，具体如下：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/FuXiii/Turbo/blob/dev/samples/VulkanKHRRayTracingTestForInstances.cpp">VulkanKHRRayTracingTestForInstances</a> ：在 <a class="reference external" href="../NVIDIAVulkanRayTracingTutorial.html">NVIDIA Vulkan 光线追踪教程</a> 基础实现。 <a class="reference external" href="https://www.bilibili.com/video/BV1Qj41117Ph/?spm_id_from=333.999.0.0&amp;vd_source=df46bdc268062b383081e71f702cbc1d">示例视频</a></p></li>
+</ul>
+</div>
+<figure class="align-default" id="id11">
 <img alt="../../../_images/NVIDIA_instances.png" src="../../../_images/NVIDIA_instances.png" />
 <figcaption>
-<p><span class="caption-text">实例化结果示意图</span><a class="headerlink" href="#id10" title="Link to this image">#</a></p>
+<p><span class="caption-text">实例化结果示意图</span><a class="headerlink" href="#id11" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
-<section id="id3">
-<h2>教程<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<section id="id4">
+<h2>教程<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
 <p>该教程为 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> <a class="reference external" href="../NVIDIAVulkanRayTracingTutorial.html">光线追踪教程</a> 的扩展。</p>
 <p>光线追踪可以一次性处理有很多物体的实体。对于一个实体，一个顶层加速结构中可以包含不同的底层加速结构。然而，当我们有很多不同的物体时，在内存分配上就会遇到问题。很多 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 驱动实现只支持最多 <code class="docutils literal notranslate"><span class="pre">4096</span></code> 个分配，当我们的程序每个物体创建 <code class="docutils literal notranslate"><span class="pre">4</span></code> 次分配（顶点，索引和材质），其中还包括一个底层加速结构。这就意味着当我们创建 <code class="docutils literal notranslate"><span class="pre">1000</span></code> 个物体时，这将会触及到分配上限。</p>
 </section>
-<section id="id5">
-<h2>多实例<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<section id="id6">
+<h2>多实例<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<div class="note admonition">
+<p class="admonition-title">注解</p>
+<p>该方式实现的多实例的本质是通过创建多个 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureInstanceKHR</span></code> 并引用相同的底层加速结构（模型）实现的。</p>
+</div>
 <p>首先，让我们先来看看使用零星的几个物体构建多个实例的场景长什么样。</p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">main.cpp</span></code> 中，增加如下头文件：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;random&gt;</span>
@@ -326,8 +341,12 @@
 <p>此种方式是通过创建少数底层加速结构作为几何物体，之后创建大量顶层加速结构的实体来实现的实例化。</p>
 </div>
 </section>
-<section id="id6">
-<h2>多物体<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<section id="id7">
+<h2>多物体<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<div class="note admonition">
+<p class="admonition-title">注解</p>
+<p>该方式实现的多实例的本质是通过创建多个底层加速结构（模型）实现的。当创建的底层加速结构过多时大概率会触及 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 资源分配的上限。</p>
+</div>
 <p>创建多个物体，而不是创建多个实例。</p>
 <p>将上面的代码替换成如下：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">random_device</span><span class="w">              </span><span class="n">rd</span><span class="p">;</span><span class="w">  </span><span class="c1">// 用于获取用于随机引擎的种子</span>
@@ -405,24 +424,24 @@
 <p>在源文件中不需要做任何修改，所有的分配器都使用相同的 <code class="docutils literal notranslate"><span class="pre">API</span></code> 。</p>
 </section>
 </section>
-<section id="id7">
-<h2>结果<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<section id="id8">
+<h2>结果<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
 <p>相对于成千的分配，该示例仅使用 <code class="docutils literal notranslate"><span class="pre">14</span></code> 个内存分配。</p>
 <div class="admonition note">
 <p class="admonition-title">备注</p>
 <p>下图所示的其中一些分配是 <code class="docutils literal notranslate"><span class="pre">Dear</span> <span class="pre">ImGui</span></code> 分配的，并不是 <code class="docutils literal notranslate"><span class="pre">DMA</span></code> 分配的。其中的 <code class="docutils literal notranslate"><span class="pre">14</span></code> 个蓝边框的内存为 <code class="docutils literal notranslate"><span class="pre">DMA</span></code> 分配的。</p>
 </div>
-<figure class="align-default" id="id11">
+<figure class="align-default" id="id12">
 <img alt="../../../_images/VkInstanceNsight1.png" src="../../../_images/VkInstanceNsight1.png" />
 <figcaption>
-<p><span class="caption-text">内存分配示意图</span><a class="headerlink" href="#id11" title="Link to this image">#</a></p>
+<p><span class="caption-text">内存分配示意图</span><a class="headerlink" href="#id12" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <p>最后，在 <code class="docutils literal notranslate"><span class="pre">Nsight</span> <span class="pre">Graphics</span></code> 中 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的设备内存如下：</p>
-<figure class="align-default" id="id12">
+<figure class="align-default" id="id13">
 <img alt="../../../_images/VkInstanceNsight2.png" src="../../../_images/VkInstanceNsight2.png" />
 <figcaption>
-<p><span class="caption-text">Vulkan 设备内存示意图</span><a class="headerlink" href="#id12" title="Link to this image">#</a></p>
+<p><span class="caption-text">Vulkan 设备内存示意图</span><a class="headerlink" href="#id13" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 </section>
@@ -434,15 +453,15 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">contextInfo</span><span class="p">.</span><span class="n">addDeviceExtension</span><span class="p">(</span><span class="n">VK_KHR_BIND_MEMORY_2_EXTENSION_NAME</span><span class="p">);</span>
 </pre></div>
 </div>
-<section id="id8">
-<h3>hello_vulkan.h<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
+<section id="id9">
+<h3>hello_vulkan.h<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
 <p>激活 <code class="docutils literal notranslate"><span class="pre">VMA</span></code> 的宏定义</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#define ALLOC_VMA</span>
 </pre></div>
 </div>
 </section>
-<section id="id9">
-<h3>hello_vulkan.cpp<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
+<section id="id10">
+<h3>hello_vulkan.cpp<a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">VMA</span></code> 需要获取函数的具体实现并且在之后的代码中只允许被定义一遍，并且需要在 <code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&quot;hello_vulkan.h&quot;</span></code> 之前定义：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#define VMA_IMPLEMENTATION</span>
 </pre></div>
@@ -457,12 +476,12 @@
       <footer>
         
 <div class="related-pages">
-    <a class="next-page" href="../../vk_mini_path_tracer.html">
+    <a class="next-page" href="Reflections.html">
         <div class="page-info">
             <div class="context">
                 <span>Next</span>
             </div>
-            <div class="title">Vulkan迷你路径追踪</div>
+            <div class="title">反射</div>
         </div>
         <svg class="furo-related-icon">
             <use href="#svg-arrow-right"></use>
@@ -527,18 +546,18 @@
         <div class="toc-tree" style="width: 500px;">
             <ul>
 <li><a class="reference internal" href="#">实例化</a><ul>
-<li><a class="reference internal" href="#id3">教程</a></li>
-<li><a class="reference internal" href="#id5">多实例</a></li>
-<li><a class="reference internal" href="#id6">多物体</a></li>
+<li><a class="reference internal" href="#id4">教程</a></li>
+<li><a class="reference internal" href="#id6">多实例</a></li>
+<li><a class="reference internal" href="#id7">多物体</a></li>
 <li><a class="reference internal" href="#dma">设备内存分配器 （DMA）</a><ul>
 <li><a class="reference internal" href="#hello-vulkan-h">hello_vulkan.h</a></li>
 <li><a class="reference internal" href="#hello-vulkan-cpp">hello_vulkan.cpp</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id7">结果</a></li>
+<li><a class="reference internal" href="#id8">结果</a></li>
 <li><a class="reference internal" href="#vma-vulkan">VMA ：Vulkan 内存分配器</a><ul>
-<li><a class="reference internal" href="#id8">hello_vulkan.h</a></li>
-<li><a class="reference internal" href="#id9">hello_vulkan.cpp</a></li>
+<li><a class="reference internal" href="#id9">hello_vulkan.h</a></li>
+<li><a class="reference internal" href="#id10">hello_vulkan.cpp</a></li>
 </ul>
 </li>
 </ul>
