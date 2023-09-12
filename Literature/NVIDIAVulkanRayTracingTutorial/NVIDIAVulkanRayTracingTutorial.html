@@ -6,7 +6,7 @@
 <link rel="index" title="索引" href="../../genindex.html" /><link rel="search" title="搜索" href="../../search.html" /><link rel="next" title="相机抖动抗锯齿教程" href="extensions/JitterCamera.html" /><link rel="prev" title="光线追踪" href="../Vulkan-GuideRayTracing.html" />
         <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/Literature/NVIDIAVulkanRayTracingTutorial/NVIDIAVulkanRayTracingTutorial.html" />
 
-    <link rel="shortcut icon" href="../../_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.2.5 and Furo 2023.08.19 -->
+    <link rel="shortcut icon" href="../../_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.2.5 and Furo 2023.09.10 -->
         <title>NVIDIA Vulkan 光线追踪教程 - Vulkan入门精要</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b20cc3f5" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
@@ -178,6 +178,7 @@
 <li class="toctree-l3"><a class="reference internal" href="extensions/AnyHitShaders.html">任意命中着色器（Any Hit Shaders）教程</a></li>
 <li class="toctree-l3"><a class="reference internal" href="extensions/Instances.html">实例化</a></li>
 <li class="toctree-l3"><a class="reference internal" href="extensions/Reflections.html">反射</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions/MultipleClosestHitShaders.html">多重最近命中着色器</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../vk_mini_path_tracer.html">Vulkan迷你路径追踪</a></li>
@@ -333,6 +334,7 @@
 <li><p class="sd-card-text">2023/8/24 增加 <code class="docutils literal notranslate"><span class="pre">相机抖动抗锯齿教程</span></code> 扩展文档</p></li>
 <li><p class="sd-card-text">2023/9/1 增加 <code class="docutils literal notranslate"><span class="pre">实例化</span></code> 文档链接</p></li>
 <li><p class="sd-card-text">2023/9/7 增加 <code class="docutils literal notranslate"><span class="pre">反射</span></code> 文档链接</p></li>
+<li><p class="sd-card-text">2023/9/12 增加 <code class="docutils literal notranslate"><span class="pre">多重最近命中着色器</span></code> 文档链接</p></li>
 </ul>
 </div>
 </details><p><a class="reference external" href="https://nvpro-samples.github.io/vk_raytracing_tutorial_KHR/">文献源</a></p>
@@ -2379,11 +2381,17 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="extensions/Reflections.html">反射</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="extensions/Reflections.html#id3">教程</a></li>
-<li class="toctree-l2"><a class="reference internal" href="extensions/Reflections.html#id5">布置场景</a></li>
-<li class="toctree-l2"><a class="reference internal" href="extensions/Reflections.html#id6">递归反射</a></li>
-<li class="toctree-l2"><a class="reference internal" href="extensions/Reflections.html#id8">迭代反射</a></li>
-<li class="toctree-l2"><a class="reference internal" href="extensions/Reflections.html#id14">控制递归深度</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions/Reflections.html#id7">教程</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions/Reflections.html#id9">布置场景</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions/Reflections.html#id10">递归反射</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions/Reflections.html#id12">迭代反射</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions/Reflections.html#id18">控制递归深度</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="extensions/MultipleClosestHitShaders.html">多重最近命中着色器</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="extensions/MultipleClosestHitShaders.html#id4">教程</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions/MultipleClosestHitShaders.html#id5">布置场景</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions/MultipleClosestHitShaders.html#id6">增加一个新的最近命中着色器</a></li>
 </ul>
 </li>
 </ul>

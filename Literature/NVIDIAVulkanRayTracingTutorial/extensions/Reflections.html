@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="索引" href="../../../genindex.html" /><link rel="search" title="搜索" href="../../../search.html" /><link rel="next" title="Vulkan迷你路径追踪" href="../../vk_mini_path_tracer.html" /><link rel="prev" title="实例化" href="Instances.html" />
+<link rel="index" title="索引" href="../../../genindex.html" /><link rel="search" title="搜索" href="../../../search.html" /><link rel="next" title="多重最近命中着色器" href="MultipleClosestHitShaders.html" /><link rel="prev" title="实例化" href="Instances.html" />
         <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/Literature/NVIDIAVulkanRayTracingTutorial/extensions/Reflections.html" />
 
-    <link rel="shortcut icon" href="../../../_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.2.5 and Furo 2023.08.19 -->
+    <link rel="shortcut icon" href="../../../_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.2.5 and Furo 2023.09.10 -->
         <title>反射 - Vulkan入门精要</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b20cc3f5" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
@@ -178,6 +178,7 @@
 <li class="toctree-l3"><a class="reference internal" href="AnyHitShaders.html">任意命中着色器（Any Hit Shaders）教程</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Instances.html">实例化</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">反射</a></li>
+<li class="toctree-l3"><a class="reference internal" href="MultipleClosestHitShaders.html">多重最近命中着色器</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../vk_mini_path_tracer.html">Vulkan迷你路径追踪</a></li>
@@ -279,21 +280,30 @@
 <li><p class="sd-card-text">2023/9/7 <code class="docutils literal notranslate"><span class="pre">迭代反射</span></code> 章节下增加 <code class="docutils literal notranslate"><span class="pre">raytrace.rmiss</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/9/7 <code class="docutils literal notranslate"><span class="pre">迭代反射</span></code> 章节下增加 <code class="docutils literal notranslate"><span class="pre">最大递归</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/9/7 增加 <code class="docutils literal notranslate"><span class="pre">控制递归深度</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/9/12 提供 <code class="docutils literal notranslate"><span class="pre">Turbo</span></code> 实现开源示例</p></li>
 </ul>
 </div>
 </details><p><a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing_reflections">文献源</a></p>
-<figure class="align-default" id="id15">
+<div class="note admonition">
+<p class="admonition-title">Turbo 引擎中对该教程的实现示例</p>
+<p><code class="docutils literal notranslate"><span class="pre">Turbo</span></code> 引擎对该教程进行了实现，具体如下：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/FuXiii/Turbo/blob/master/samples/VulkanKHRRayTracingTestForReflections.cpp">VulkanKHRRayTracingTestForReflections</a> ：在 <a class="reference external" href="../extensions/Instances.html">实例化</a> 基础上实现。 <a class="reference external" href="https://www.bilibili.com/video/BV1pp4y1L7Ew/?vd_source=df46bdc268062b383081e71f702cbc1d">示例视频</a></p></li>
+<li><p><a class="reference external" href="https://github.com/FuXiii/Turbo/blob/master/samples/VulkanKHRRayTracingTestForReflections_WithoutLimited.cpp">VulkanKHRRayTracingTestForReflections_WithoutLimited</a> ：在 <a class="reference external" href="../extensions/Instances.html">实例化</a> 基础上实现。 <a class="reference external" href="https://www.bilibili.com/video/BV17z4y1j7St/?spm_id_from=333.999.0.0&amp;vd_source=df46bdc268062b383081e71f702cbc1d">示例视频</a></p></li>
+</ul>
+</div>
+<figure class="align-default" id="id19">
 <img alt="../../../_images/reflections.png" src="../../../_images/reflections.png" />
 <figcaption>
-<p><span class="caption-text">反射结果示意图</span><a class="headerlink" href="#id15" title="Link to this image">#</a></p>
+<p><span class="caption-text">反射结果示意图</span><a class="headerlink" href="#id19" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
-<section id="id3">
-<h2>教程<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<section id="id7">
+<h2>教程<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
 <p>该教程为 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> <a class="reference external" href="../NVIDIAVulkanRayTracingTutorial.html">光线追踪教程</a> 的扩展。</p>
 </section>
-<section id="id5">
-<h2>布置场景<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<section id="id9">
+<h2>布置场景<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
 <p>首先，我们将在场景中平行按一定间隔放置两个反光平面（压扁拉长的正方体），并在中间放置一个各面异色的正方体。将 <code class="docutils literal notranslate"><span class="pre">main()</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">helloVk.loadModel</span></code> 调用修改成如下：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">helloVk</span><span class="p">.</span><span class="n">loadModel</span><span class="p">(</span><span class="n">nvh</span><span class="o">::</span><span class="n">findFile</span><span class="p">(</span><span class="s">&quot;media/scenes/cube.obj&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">defaultSearchPaths</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">),</span>
 <span class="w">                  </span><span class="n">nvmath</span><span class="o">::</span><span class="n">translation_mat4</span><span class="p">(</span><span class="n">nvmath</span><span class="o">::</span><span class="n">vec3f</span><span class="p">(</span><span class="mi">-2</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span>
@@ -318,8 +328,8 @@ Ks 0.95 0.95 0.95
 </pre></div>
 </div>
 </section>
-<section id="id6">
-<h2>递归反射<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<section id="id10">
+<h2>递归反射<a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的光线追踪允许递归调用 <code class="docutils literal notranslate"><span class="pre">traceRayEXT</span></code> ，对应的限制定义在 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceRayTracingPropertiesKHR</span></code> 中。</p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">hello_vulkan.cpp</span></code> 的 <code class="docutils literal notranslate"><span class="pre">createRtPipeline()</span></code> 中，将最大的递归深度设置为 <code class="docutils literal notranslate"><span class="pre">10</span></code> ，并确保不会超过物理设备允许的最大递归限制：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">rayPipelineInfo</span><span class="p">.</span><span class="n">maxPipelineRayRecursionDepth</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="p">(</span><span class="mi">10u</span><span class="p">,</span><span class="w"> </span><span class="n">m_rtProperties</span><span class="p">.</span><span class="n">maxRecursionDepth</span><span class="p">);</span><span class="w">  </span><span class="c1">// 光线递归深度</span>
@@ -381,16 +391,16 @@ Ks 0.95 0.95 0.95
 </pre></div>
 </div>
 </section>
-<section id="id7">
-<h3>可运行，但有限制<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
+<section id="id11">
+<h3>可运行，但有限制<a class="headerlink" href="#id11" title="Link to this heading">#</a></h3>
 <p>目前是可以运行的，但是 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 的递归能力有限制，并且会性能造成冲击。如果我们强制越过该递归限制的话，最终会造成设备丢失的错误。</p>
 </section>
 </section>
-<section id="id8">
-<h2>迭代反射<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<section id="id12">
+<h2>迭代反射<a class="headerlink" href="#id12" title="Link to this heading">#</a></h2>
 <p>之前是在最近命中着色器中发射一条新射线，现在我们将返回负载中的信息用于判断是否需要发射新的射线。</p>
-<section id="id9">
-<h3>raycommon.glsl<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
+<section id="id13">
+<h3>raycommon.glsl<a class="headerlink" href="#id13" title="Link to this heading">#</a></h3>
 <p>在负载中增加如下信息用于发射新射线。</p>
 <div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w">  </span><span class="n">done</span><span class="p">;</span>
 <span class="kt">vec3</span><span class="w"> </span><span class="n">rayOrigin</span><span class="p">;</span>
@@ -398,8 +408,8 @@ Ks 0.95 0.95 0.95
 </pre></div>
 </div>
 </section>
-<section id="id10">
-<h3>raytrace.rgen<a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
+<section id="id14">
+<h3>raytrace.rgen<a class="headerlink" href="#id14" title="Link to this heading">#</a></h3>
 <p>初始化负载的新成员：</p>
 <div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="n">prd</span><span class="p">.</span><span class="n">done</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
 <span class="n">prd</span><span class="p">.</span><span class="n">rayOrigin</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="n">origin</span><span class="p">.</span><span class="n">xyz</span><span class="p">;</span>
@@ -430,8 +440,8 @@ Ks 0.95 0.95 0.95
 </pre></div>
 </div>
 </section>
-<section id="id11">
-<h3>raytrace.rchit<a class="headerlink" href="#id11" title="Link to this heading">#</a></h3>
+<section id="id15">
+<h3>raytrace.rchit<a class="headerlink" href="#id15" title="Link to this heading">#</a></h3>
 <p>现在我们就不需要在最近命中着色器中发射光线了，所以我们可以将结尾的代码改成如下：</p>
 <div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="p">(</span><span class="n">mat</span><span class="p">.</span><span class="n">illum</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span>
 <span class="p">{</span>
@@ -449,15 +459,15 @@ Ks 0.95 0.95 0.95
 </pre></div>
 </div>
 </section>
-<section id="id12">
-<h3>raytrace.rmiss<a class="headerlink" href="#id12" title="Link to this heading">#</a></h3>
+<section id="id16">
+<h3>raytrace.rmiss<a class="headerlink" href="#id16" title="Link to this heading">#</a></h3>
 <p>现在衰减有光线生成着色器负责处理，未命中着色器中就不需要衰减光线了：</p>
 <div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="n">prd</span><span class="p">.</span><span class="n">hitValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">clearColor</span><span class="p">.</span><span class="n">xyz</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">0.8</span><span class="p">;</span>
 </pre></div>
 </div>
 </section>
-<section id="id13">
-<h3>最大递归<a class="headerlink" href="#id13" title="Link to this heading">#</a></h3>
+<section id="id17">
+<h3>最大递归<a class="headerlink" href="#id17" title="Link to this heading">#</a></h3>
 <p>最后，我们不再需要 <code class="docutils literal notranslate"><span class="pre">createRtPipeline</span></code> 时设置的更高递归层级，仅使用 <code class="docutils literal notranslate"><span class="pre">2</span></code> 层递归层级即可，一个用于初始发射光线，一个用于阴影射线。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">rayPipelineInfo</span><span class="p">.</span><span class="n">maxPipelineRayRecursionDepth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w">  </span><span class="c1">// Ray depth</span>
 </pre></div>
@@ -465,8 +475,8 @@ Ks 0.95 0.95 0.95
 <p>在 <code class="docutils literal notranslate"><span class="pre">raytrace.rgen</span></code> 中，现在我们就可以将最大光线递归深度设置的非常大，比如 <code class="docutils literal notranslate"><span class="pre">100</span></code> ，这样就不会导致设备丢失错误。</p>
 </section>
 </section>
-<section id="id14">
-<h2>控制递归深度<a class="headerlink" href="#id14" title="Link to this heading">#</a></h2>
+<section id="id18">
+<h2>控制递归深度<a class="headerlink" href="#id18" title="Link to this heading">#</a></h2>
 <p>此外，我们还可以增加一个 <code class="docutils literal notranslate"><span class="pre">UI</span></code> 控件来控制最大的递归深度</p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">PushConstantRay</span></code> 结构体中，增加一个新的 <code class="docutils literal notranslate"><span class="pre">maxDepths</span></code> 成员传递到着色器中。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">PushConstantRay</span>
@@ -500,12 +510,12 @@ Ks 0.95 0.95 0.95
       <footer>
         
 <div class="related-pages">
-    <a class="next-page" href="../../vk_mini_path_tracer.html">
+    <a class="next-page" href="MultipleClosestHitShaders.html">
         <div class="page-info">
             <div class="context">
                 <span>Next</span>
             </div>
-            <div class="title">Vulkan迷你路径追踪</div>
+            <div class="title">多重最近命中着色器</div>
         </div>
         <svg class="furo-related-icon">
             <use href="#svg-arrow-right"></use>
@@ -570,25 +580,25 @@ Ks 0.95 0.95 0.95
         <div class="toc-tree" style="width: 500px;">
             <ul>
 <li><a class="reference internal" href="#">反射</a><ul>
-<li><a class="reference internal" href="#id3">教程</a></li>
-<li><a class="reference internal" href="#id5">布置场景</a></li>
-<li><a class="reference internal" href="#id6">递归反射</a><ul>
+<li><a class="reference internal" href="#id7">教程</a></li>
+<li><a class="reference internal" href="#id9">布置场景</a></li>
+<li><a class="reference internal" href="#id10">递归反射</a><ul>
 <li><a class="reference internal" href="#raycommon-glsl">raycommon.glsl</a></li>
 <li><a class="reference internal" href="#raytrace-rgen">raytrace.rgen</a></li>
 <li><a class="reference internal" href="#raytrace-rchit">raytrace.rchit</a></li>
 <li><a class="reference internal" href="#raytrace-rmiss">raytrace.rmiss</a></li>
-<li><a class="reference internal" href="#id7">可运行，但有限制</a></li>
+<li><a class="reference internal" href="#id11">可运行，但有限制</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id8">迭代反射</a><ul>
-<li><a class="reference internal" href="#id9">raycommon.glsl</a></li>
-<li><a class="reference internal" href="#id10">raytrace.rgen</a></li>
-<li><a class="reference internal" href="#id11">raytrace.rchit</a></li>
-<li><a class="reference internal" href="#id12">raytrace.rmiss</a></li>
-<li><a class="reference internal" href="#id13">最大递归</a></li>
+<li><a class="reference internal" href="#id12">迭代反射</a><ul>
+<li><a class="reference internal" href="#id13">raycommon.glsl</a></li>
+<li><a class="reference internal" href="#id14">raytrace.rgen</a></li>
+<li><a class="reference internal" href="#id15">raytrace.rchit</a></li>
+<li><a class="reference internal" href="#id16">raytrace.rmiss</a></li>
+<li><a class="reference internal" href="#id17">最大递归</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id14">控制递归深度</a></li>
+<li><a class="reference internal" href="#id18">控制递归深度</a></li>
 </ul>
 </li>
 </ul>
