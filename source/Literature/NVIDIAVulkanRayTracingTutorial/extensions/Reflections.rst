@@ -21,10 +21,19 @@
     * 2023/9/7 ``迭代反射`` 章节下增加 ``raytrace.rmiss`` 章节
     * 2023/9/7 ``迭代反射`` 章节下增加 ``最大递归`` 章节
     * 2023/9/7 增加 ``控制递归深度`` 章节
+    * 2023/9/12 提供 ``Turbo`` 实现开源示例
 
 `文献源`_
 
 .. _文献源: https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing_reflections
+
+.. admonition:: Turbo 引擎中对该教程的实现示例
+    :class: note
+
+    ``Turbo`` 引擎对该教程进行了实现，具体如下：
+
+    * `VulkanKHRRayTracingTestForReflections <https://github.com/FuXiii/Turbo/blob/master/samples/VulkanKHRRayTracingTestForReflections.cpp>`_ ：在 `实例化 <../extensions/Instances.html>`_ 基础上实现。 `示例视频 <https://www.bilibili.com/video/BV1pp4y1L7Ew/?vd_source=df46bdc268062b383081e71f702cbc1d>`_
+    * `VulkanKHRRayTracingTestForReflections_WithoutLimited <https://github.com/FuXiii/Turbo/blob/master/samples/VulkanKHRRayTracingTestForReflections_WithoutLimited.cpp>`_ ：在 `实例化 <../extensions/Instances.html>`_ 基础上实现。 `示例视频 <https://www.bilibili.com/video/BV17z4y1j7St/?spm_id_from=333.999.0.0&vd_source=df46bdc268062b383081e71f702cbc1d>`_
 
 .. figure:: ../../../_static/reflections.png
 

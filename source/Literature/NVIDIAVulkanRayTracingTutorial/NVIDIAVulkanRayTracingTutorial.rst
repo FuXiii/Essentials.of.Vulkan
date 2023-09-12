@@ -75,6 +75,7 @@ NVIDIA Vulkan 光线追踪教程
     * 2023/8/24 增加 ``相机抖动抗锯齿教程`` 扩展文档
     * 2023/9/1 增加 ``实例化`` 文档链接
     * 2023/9/7 增加 ``反射`` 文档链接
+    * 2023/9/12 增加 ``多重最近命中着色器`` 文档链接
 
 `文献源`_
 
@@ -2417,3 +2418,4 @@ NVIDIA Vulkan 光线追踪教程
    extensions/AnyHitShaders.rst
    extensions/Instances.rst
    extensions/Reflections.rst
+   extensions/MultipleClosestHitShaders.rst
