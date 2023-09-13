@@ -274,13 +274,22 @@
 <li><p class="sd-card-text">2023/9/12 增加 <code class="docutils literal notranslate"><span class="pre">hello_vulkan.h</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/9/12 增加 <code class="docutils literal notranslate"><span class="pre">hello_vulkan.cpp</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/9/12 增加 <code class="docutils literal notranslate"><span class="pre">选择命中着色器</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/9/13 增加 <code class="docutils literal notranslate"><span class="pre">着色器记录数据</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/9/13 增加 <code class="docutils literal notranslate"><span class="pre">hello_vulkan.h</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/9/13 增加 <code class="docutils literal notranslate"><span class="pre">raytrace2.rchit</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/9/13 增加 <code class="docutils literal notranslate"><span class="pre">main.cpp</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/9/13 增加 <code class="docutils literal notranslate"><span class="pre">HelloVulkan::createRtShaderBindingTable</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/9/13 增加 <code class="docutils literal notranslate"><span class="pre">光线追踪</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/9/13 增加 <code class="docutils literal notranslate"><span class="pre">命中延伸</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/9/13 增加 <code class="docutils literal notranslate"><span class="pre">main.cpp</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/9/13 增加 <code class="docutils literal notranslate"><span class="pre">createRtShaderBindingTable</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p><a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing_manyhits">文献源</a></p>
-<figure class="align-default" id="id8">
+<figure class="align-default" id="id13">
 <img alt="../../../_images/manyhits.png" src="../../../_images/manyhits.png" />
 <figcaption>
-<p><span class="caption-text">多重最近命中着色器结果示意图</span><a class="headerlink" href="#id8" title="Link to this image">#</a></p>
+<p><span class="caption-text">多重最近命中着色器结果示意图</span><a class="headerlink" href="#id13" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <section id="id4">
@@ -355,10 +364,10 @@
 <section id="raytrace-rgen">
 <h3>raytrace.rgen<a class="headerlink" href="#raytrace-rgen" title="Link to this heading">#</a></h3>
 <p>为了测试，可以尝试改变 <code class="docutils literal notranslate"><span class="pre">raytrace.rgen</span></code> 中 <code class="docutils literal notranslate"><span class="pre">traceRayEXT</span></code> 函数调用的 <code class="docutils literal notranslate"><span class="pre">sbtRecordOffset</span></code> 参数。如果将其偏移值设置为 <code class="docutils literal notranslate"><span class="pre">1</span></code> ，则所有的光线命中将会使用新的最近命中着色器，可能的光追结果如下：</p>
-<figure class="align-default" id="id9">
+<figure class="align-default" id="id14">
 <img alt="../../../_images/manyhits2.png" src="../../../_images/manyhits2.png" />
 <figcaption>
-<p><span class="caption-text">新的最近命中着色器光追结果示意图</span><a class="headerlink" href="#id9" title="Link to this image">#</a></p>
+<p><span class="caption-text">新的最近命中着色器光追结果示意图</span><a class="headerlink" href="#id14" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <div class="caution admonition">
@@ -371,9 +380,9 @@
 <p>在 <code class="docutils literal notranslate"><span class="pre">ObjInstance</span></code> 结构体中，我们将增加一个新的 <code class="docutils literal notranslate"><span class="pre">hitgroup</span></code> 成员变量，用于声明该实体使用的是哪一个命中着色器：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">ObjInstance</span>
 <span class="p">{</span>
-<span class="w">  </span><span class="n">nvmath</span><span class="o">::</span><span class="n">mat4f</span><span class="w"> </span><span class="n">transform</span><span class="p">;</span><span class="w">    </span><span class="c1">// 实体的变换矩阵</span>
-<span class="w">  </span><span class="kt">uint32_t</span><span class="w">      </span><span class="n">objIndex</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span><span class="w">  </span><span class="c1">// 模型索引</span>
-<span class="w">  </span><span class="kt">int</span><span class="w">           </span><span class="n">hitgroup</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span><span class="w">  </span><span class="c1">// 实体的命中组</span>
+<span class="w">    </span><span class="n">nvmath</span><span class="o">::</span><span class="n">mat4f</span><span class="w"> </span><span class="n">transform</span><span class="p">;</span><span class="w">    </span><span class="c1">// 实体的变换矩阵</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">      </span><span class="n">objIndex</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span><span class="w">  </span><span class="c1">// 模型索引</span>
+<span class="w">    </span><span class="kt">int</span><span class="w">           </span><span class="n">hitgroup</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span><span class="w">  </span><span class="c1">// 实体的命中组</span>
 <span class="p">};</span>
 </pre></div>
 </div>
@@ -381,7 +390,7 @@
 <section id="hello-vulkan-cpp">
 <h3>hello_vulkan.cpp<a class="headerlink" href="#hello-vulkan-cpp" title="Link to this heading">#</a></h3>
 <p>最后我们需要告诉顶层加速结构每一个实体要使用的命中组。在 <code class="docutils literal notranslate"><span class="pre">hello_vulkan.cpp</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">createTopLevelAS()</span></code> 函数中，我们将会记录着色器绑定表中的命中组偏移。</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">rayInst</span><span class="p">.</span><span class="n">instanceShaderBindingTableRecordOffset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">inst</span><span class="p">.</span><span class="n">hitgroup</span><span class="p">;</span><span class="w">  </span><span class="c1">// Using the hit group set in main</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">rayInst</span><span class="p">.</span><span class="n">instanceShaderBindingTableRecordOffset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">inst</span><span class="p">.</span><span class="n">hitgroup</span><span class="p">;</span><span class="w">  </span><span class="c1">// 使用在 main 中设置的命中组</span>
 </pre></div>
 </div>
 </section>
@@ -392,12 +401,168 @@
 <span class="n">helloVk</span><span class="p">.</span><span class="n">m_instances</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">hitgroup</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
 </pre></div>
 </div>
-<figure class="align-default" id="id10">
+<figure class="align-default" id="id15">
 <img alt="../../../_images/manyhits3.png" src="../../../_images/manyhits3.png" />
 <figcaption>
-<p><span class="caption-text">两个 <code class="docutils literal notranslate"><span class="pre">wuson</span></code> 都使用新的最近命中着色器光追结果示意图</span><a class="headerlink" href="#id10" title="Link to this image">#</a></p>
+<p><span class="caption-text">两个 <code class="docutils literal notranslate"><span class="pre">wuson</span></code> 都使用新的最近命中着色器光追结果示意图</span><a class="headerlink" href="#id15" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
+</section>
+</section>
+<section id="shaderrecordkhr">
+<h2>着色器记录数据 <code class="docutils literal notranslate"><span class="pre">shaderRecordKHR</span></code><a class="headerlink" href="#shaderrecordkhr" title="Link to this heading">#</a></h2>
+<p>之前，当创建着色器绑定表时，该表中的每一个条目都对应着要调用的那个着色器。我们已将所有的数据按照 <code class="docutils literal notranslate"><span class="pre">shaderGroupHandleSize</span></code> 大小进行了打包，其实每一个条目可以占有更多内存大小，用于存储数据并在着色器中的 <code class="docutils literal notranslate"><span class="pre">shaderRecordKHR</span></code> 块中进行引用。</p>
+<p>该特性可以将着色器绑定表中的每一个条目向着色器中传递额外信息。</p>
+<div class="caution admonition">
+<p class="admonition-title">注意</p>
+<p>着色器绑定表中的每组中的每个条目必须有相同的大小，组中的每一个条目必须有足够的空间来容纳整个组中最大的那个元素。</p>
+</div>
+<p>下图展示了我们当前的着色器绑定表内部结构，并在 <code class="docutils literal notranslate"><span class="pre">HitGroup1</span></code> 中增加了一些数据。就像 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">注意</span> 中说的那样，即使 <code class="docutils literal notranslate"><span class="pre">HitGroup0</span></code> 没有着色器记录数据，它还是需要与最大的命中组 <code class="docutils literal notranslate"><span class="pre">HitGroup1</span></code> 保持相同的大小，并与句柄对齐大小进行对齐。</p>
+<figure class="align-default" id="id16">
+<img alt="../../../_images/manyhits_sbt_0.png" src="../../../_images/manyhits_sbt_0.png" />
+<figcaption>
+<p><span class="caption-text">当前着色器绑定表结构示意图</span><a class="headerlink" href="#id16" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="id8">
+<h2>hello_vulkan.h<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<p>在 <code class="docutils literal notranslate"><span class="pre">HelloVulkan</span></code> 类中，我们将会增加一个用于承接命中组数据的结构体。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">HitRecordBuffer</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">nvmath</span><span class="o">::</span><span class="n">vec4f</span><span class="w"> </span><span class="n">color</span><span class="p">;</span>
+<span class="p">};</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">HitRecordBuffer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">m_hitShaderRecord</span><span class="p">;</span>
+</pre></div>
+</div>
+<section id="id9">
+<h3>raytrace2.rchit<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
+<p>在最近命中着色器中，我们可以使用 <code class="docutils literal notranslate"><span class="pre">layout(shaderRecordEXT)</span></code> 描述符获取着色器记录。</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="k">layout</span><span class="p">(</span><span class="n">shaderRecordEXT</span><span class="p">)</span><span class="w"> </span><span class="k">buffer</span><span class="w"> </span><span class="n">sr_</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kt">vec4</span><span class="w"> </span><span class="n">shaderRec</span><span class="p">;</span><span class="w"> </span><span class="p">};</span>
+</pre></div>
+</div>
+<p>并使用该信息返回颜色信息：</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">prd</span><span class="p">.</span><span class="n">hitValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">shaderRec</span><span class="p">.</span><span class="n">rgb</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="caution admonition">
+<p class="admonition-title">注意</p>
+<p>增加一个新着色器需要回到 <code class="docutils literal notranslate"><span class="pre">CMake</span></code> 中增加到相应的工程的编译系统中。</p>
+</div>
+</section>
+<section id="main-cpp">
+<h3>main.cpp<a class="headerlink" href="#main-cpp" title="Link to this heading">#</a></h3>
+<p>在 <code class="docutils literal notranslate"><span class="pre">main</span></code> 中，在我们实体使用的哪一个命中组之后，我们可以增加对着色器记录的数据设置。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">helloVk</span><span class="p">.</span><span class="n">m_hitShaderRecord</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="n">helloVk</span><span class="p">.</span><span class="n">m_hitShaderRecord</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nvmath</span><span class="o">::</span><span class="n">vec4f</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w">  </span><span class="c1">// 黄色</span>
+</pre></div>
+</div>
+</section>
+<section id="hellovulkan-creatertshaderbindingtable">
+<h3>HelloVulkan::createRtShaderBindingTable<a class="headerlink" href="#hellovulkan-creatertshaderbindingtable" title="Link to this heading">#</a></h3>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-0">
+新</label><div class="sd-tab-content docutils">
+<p>着色器绑定表的创建是通过使用硬编码偏移来创建的，这会潜在的导致错误。取而代之的是使用新代码 <code class="docutils literal notranslate"><span class="pre">nvvk::SBTWraper</span></code> （着色器绑定表包装器），使用光追管线和 <code class="docutils literal notranslate"><span class="pre">VkRayTracingPipelineCreateInfoKHR</span></code> 来创建着色器绑定表信息。</p>
+<p>该包装器将会寻找每一个组中的句柄并将 <code class="docutils literal notranslate"><span class="pre">m_hitShaderRecord</span></code> 数据添加到每个命中组中。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 寻找句柄索引并添加数据</span>
+<span class="n">m_sbtWrapper</span><span class="p">.</span><span class="n">addIndices</span><span class="p">(</span><span class="n">rayPipelineInfo</span><span class="p">);</span>
+<span class="n">m_sbtWrapper</span><span class="p">.</span><span class="n">addData</span><span class="p">(</span><span class="n">SBTWrapper</span><span class="o">::</span><span class="n">eHit</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">m_hitShaderRecord</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+<span class="n">m_sbtWrapper</span><span class="p">.</span><span class="n">create</span><span class="p">(</span><span class="n">m_rtPipeline</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>该包装器将会确保内部跨度足够承载最大的数据大小并按照 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 的属性进行基准对齐。</p>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-1">
+老</label><div class="sd-tab-content docutils">
+<p>由于我们不再将所有的句柄都压入一个连续缓存中，我们需要按照之前的描述填充着色器绑定表。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">m_hitRegion</span><span class="p">.</span><span class="n">stride</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">nvh</span><span class="o">::</span><span class="n">align_up</span><span class="p">(</span><span class="n">handleSize</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">HitRecordBuffer</span><span class="p">),</span><span class="w"> </span><span class="n">m_rtProperties</span><span class="p">.</span><span class="n">shaderGroupHandleAlignment</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>之后新的着色器绑定表写入如下，只有 <code class="docutils literal notranslate"><span class="pre">Hit</span> <span class="pre">1</span></code> 有额外的数据：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// Hit</span>
+<span class="n">pData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pSBTBuffer</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">m_rgenRegion</span><span class="p">.</span><span class="n">size</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">m_missRegion</span><span class="p">.</span><span class="n">size</span><span class="p">;</span>
+<span class="n">memcpy</span><span class="p">(</span><span class="n">pData</span><span class="p">,</span><span class="w"> </span><span class="n">getHandle</span><span class="p">(</span><span class="n">handleIdx</span><span class="o">++</span><span class="p">),</span><span class="w"> </span><span class="n">handleSize</span><span class="p">);</span>
+
+<span class="c1">// hit 1</span>
+<span class="n">pData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pSBTBuffer</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">m_rgenRegion</span><span class="p">.</span><span class="n">size</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">m_missRegion</span><span class="p">.</span><span class="n">size</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">m_hitRegion</span><span class="p">.</span><span class="n">stride</span><span class="p">;</span>
+<span class="n">memcpy</span><span class="p">(</span><span class="n">pData</span><span class="p">,</span><span class="w"> </span><span class="n">getHandle</span><span class="p">(</span><span class="n">handleIdx</span><span class="o">++</span><span class="p">),</span><span class="w"> </span><span class="n">handleSize</span><span class="p">);</span>
+<span class="n">pData</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">handleSize</span><span class="p">;</span>
+<span class="n">memcpy</span><span class="p">(</span><span class="n">pData</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">m_hitShaderRecord</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">HitRecordBuffer</span><span class="p">));</span><span class="w">  </span><span class="c1">// Hit 1 数据</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="id10">
+<h2>光线追踪<a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
+<p>现在的追踪结果应该为两个黄颜色的 <code class="docutils literal notranslate"><span class="pre">wuson</span></code> 模型。</p>
+<figure class="align-default" id="id17">
+<img alt="../../../_images/manyhits4.png" src="../../../_images/manyhits4.png" />
+<figcaption>
+<p><span class="caption-text">光追渲染结果示意图</span><a class="headerlink" href="#id17" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="id11">
+<h2>命中延伸<a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
+<p>着色器绑定表可以大于着色器的数量，这可以在每一个实体都有一个着色器并携带自己的数据。对于某些应用程序，相较于 <a class="reference external" href="../NVIDIAVulkanRayTracingTutorial.html">光线追踪教程</a> 中使用一个存储缓存 （ <code class="docutils literal notranslate"><span class="pre">storage</span> <span class="pre">buffer</span></code> ）中存储材质信息，并在着色器中使用 <code class="docutils literal notranslate"><span class="pre">gl_InstanceCustomIndexEXT</span></code> 获取材质数据这种方式，现在可以将这些数据全部放到着色器绑定表中。</p>
+<p>接下来的修改将会在着色器绑定表中增加另一个带有不同颜色的条目。新的命中组 <code class="docutils literal notranslate"><span class="pre">Hit</span> <span class="pre">2</span></code> 将会使用与命中组 <code class="docutils literal notranslate"><span class="pre">Hit</span> <span class="pre">1</span></code> 相同的命中句柄。</p>
+<figure class="align-default" id="id18">
+<img alt="../../../_images/manyhits_sbt_1.png" src="../../../_images/manyhits_sbt_1.png" />
+<figcaption>
+<p><span class="caption-text">新增命中组 <code class="docutils literal notranslate"><span class="pre">Hit</span> <span class="pre">2</span></code> 示意图</span><a class="headerlink" href="#id18" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<section id="id12">
+<h3>main.cpp<a class="headerlink" href="#id12" title="Link to this heading">#</a></h3>
+<p>在 <code class="docutils literal notranslate"><span class="pre">main</span></code> 中的场景描述中，我们将会设置两个使用 <code class="docutils literal notranslate"><span class="pre">wuson</span></code> 模型的实体分别使用命中组 <code class="docutils literal notranslate"><span class="pre">1</span></code> 和 <code class="docutils literal notranslate"><span class="pre">2</span></code> ，并且有不同的颜色。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 命中着色器数据设置</span>
+<span class="n">helloVk</span><span class="p">.</span><span class="n">m_hitShaderRecord</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+<span class="n">helloVk</span><span class="p">.</span><span class="n">m_hitShaderRecord</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nvmath</span><span class="o">::</span><span class="n">vec4f</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w">  </span><span class="c1">// 绿色</span>
+<span class="n">helloVk</span><span class="p">.</span><span class="n">m_hitShaderRecord</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nvmath</span><span class="o">::</span><span class="n">vec4f</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w">  </span><span class="c1">// 青蓝色</span>
+<span class="n">helloVk</span><span class="p">.</span><span class="n">m_instances</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">hitgroup</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">                          </span><span class="c1">// wuson 0</span>
+<span class="n">helloVk</span><span class="p">.</span><span class="n">m_instances</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">hitgroup</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w">                          </span><span class="c1">// wuson 1</span>
+</pre></div>
+</div>
+</section>
+<section id="creatertshaderbindingtable">
+<h3>createRtShaderBindingTable<a class="headerlink" href="#creatertshaderbindingtable" title="Link to this heading">#</a></h3>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-2">
+新</label><div class="sd-tab-content docutils">
+<p>如果使用 <code class="docutils literal notranslate"><span class="pre">nvvk::SBTWraper</span></code> 的话，确保数据添加到第三个也就是 <code class="docutils literal notranslate"><span class="pre">Hit</span> <span class="pre">2</span></code> 中。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 寻找句柄索引并添加数据</span>
+<span class="n">m_sbtWrapper</span><span class="p">.</span><span class="n">addIndices</span><span class="p">(</span><span class="n">rayPipelineInfo</span><span class="p">);</span>
+<span class="n">m_sbtWrapper</span><span class="p">.</span><span class="n">addData</span><span class="p">(</span><span class="n">nvvk</span><span class="o">::</span><span class="n">SBTWrapper</span><span class="o">::</span><span class="n">eHit</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">m_hitShaderRecord</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+<span class="n">m_sbtWrapper</span><span class="p">.</span><span class="n">addData</span><span class="p">(</span><span class="n">nvvk</span><span class="o">::</span><span class="n">SBTWrapper</span><span class="o">::</span><span class="n">eHit</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">m_hitShaderRecord</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+<span class="n">m_sbtWrapper</span><span class="p">.</span><span class="n">create</span><span class="p">(</span><span class="n">m_rtPipeline</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-3">
+老</label><div class="sd-tab-content docutils">
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// hit 2</span>
+<span class="n">pData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pSBTBuffer</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">m_rgenRegion</span><span class="p">.</span><span class="n">size</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">m_missRegion</span><span class="p">.</span><span class="n">size</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">m_hitRegion</span><span class="p">.</span><span class="n">stride</span><span class="p">);</span>
+<span class="n">memcpy</span><span class="p">(</span><span class="n">pData</span><span class="p">,</span><span class="w"> </span><span class="n">getHandle</span><span class="p">(</span><span class="n">handleIdx</span><span class="o">++</span><span class="p">),</span><span class="w"> </span><span class="n">handleSize</span><span class="p">);</span>
+<span class="n">pData</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">handleSize</span><span class="p">;</span>
+<span class="n">memcpy</span><span class="p">(</span><span class="n">pData</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">m_hitShaderRecord</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">HitRecordBuffer</span><span class="p">));</span><span class="w">  </span><span class="c1">// Hit 2 data</span>
+</pre></div>
+</div>
+<div class="caution admonition">
+<p class="admonition-title">注意</p>
+<p>像这样添加条目可能容易出错，而且对于一个像样的场景大小来说这也不方便。推荐使用 <code class="docutils literal notranslate"><span class="pre">nvvk::SBTWraper</span></code> 自动存储句柄，数据和着色器绑定表中的每一个组。</p>
+</div>
+</div>
+</div>
 </section>
 </section>
 </section>
@@ -486,6 +651,19 @@
 <li><a class="reference internal" href="#hello-vulkan-h">hello_vulkan.h</a></li>
 <li><a class="reference internal" href="#hello-vulkan-cpp">hello_vulkan.cpp</a></li>
 <li><a class="reference internal" href="#id7">选择命中着色器</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#shaderrecordkhr">着色器记录数据 <code class="docutils literal notranslate"><span class="pre">shaderRecordKHR</span></code></a></li>
+<li><a class="reference internal" href="#id8">hello_vulkan.h</a><ul>
+<li><a class="reference internal" href="#id9">raytrace2.rchit</a></li>
+<li><a class="reference internal" href="#main-cpp">main.cpp</a></li>
+<li><a class="reference internal" href="#hellovulkan-creatertshaderbindingtable">HelloVulkan::createRtShaderBindingTable</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id10">光线追踪</a></li>
+<li><a class="reference internal" href="#id11">命中延伸</a><ul>
+<li><a class="reference internal" href="#id12">main.cpp</a></li>
+<li><a class="reference internal" href="#creatertshaderbindingtable">createRtShaderBindingTable</a></li>
 </ul>
 </li>
 </ul>
