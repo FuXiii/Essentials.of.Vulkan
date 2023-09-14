@@ -82,6 +82,7 @@ Vulkan KHR 光线追踪标准
    * 2023/6/13 将 ``VK_KHR_acceleration_structure`` 相关所有章节转移至单独的 ``VK_KHR_acceleration_structure`` 文档中
    * 2023/6/19 增加 ``VK_KHR_deferred_host_operations`` 文档目录
    * 2023/7/14 增加 ``VK_KHR_ray_tracing_pipeline`` 文档目录
+   * 2023/9/14 增加 ``ShaderBindingTable`` 文档目录
 
 .. admonition:: 有关本文档结构
     :class: warning
@@ -104,3 +105,4 @@ Vulkan KHR 光线追踪标准
    ./VK_KHR_acceleration_structure.rst
    ./VK_KHR_ray_tracing_pipeline.rst
    ./VK_KHR_deferred_host_operations.rst
+   ./ShaderBindingTable.rst
