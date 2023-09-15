@@ -475,7 +475,7 @@
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">Tmax</span> 为追踪的光线长度的最大值。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">payload</span> 为负载引用。</p></li>
 </ul>
-<p>当调用 <code class="docutils literal notranslate"><span class="pre">traceRayEXT</span></code> 时需要设置 <code class="docutils literal notranslate"><span class="pre">sbtRecordOffset</span></code> 、 <code class="docutils literal notranslate"><span class="pre">sbtRecordStride</span></code> 和 <code class="docutils literal notranslate"><span class="pre">missIndex</span></code> 用于告诉 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> ，当该追踪该光线时如果反生了命中或未命中， <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 会根据这些设置去着色器绑定表中进行寻址，找到对应命中着色器绑定表和未命中绑定表中的光追着色器，进而进行调用。其中：</p>
+<p>当调用 <code class="docutils literal notranslate"><span class="pre">traceRayEXT</span></code> 时需要设置 <code class="docutils literal notranslate"><span class="pre">sbtRecordOffset</span></code> 、 <code class="docutils literal notranslate"><span class="pre">sbtRecordStride</span></code> 和 <code class="docutils literal notranslate"><span class="pre">missIndex</span></code> 用于告诉 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> ，当该追踪该光线时如果发生了命中或未命中， <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 会根据这些设置去着色器绑定表中进行寻址，找到对应命中着色器绑定表和未命中绑定表中的光追着色器，进而进行调用。其中：</p>
 </section>
 <section id="id21">
 <h3>命中着色器绑定表寻址<a class="headerlink" href="#id21" title="Link to this heading">#</a></h3>
