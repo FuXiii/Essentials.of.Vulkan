@@ -28,6 +28,7 @@
     * 2023/9/15 增加 ``综上`` 章节
     * 2023/9/15 更新 ``着色器绑定表的拷贝`` 章节
     * 2023/9/15 增加 ``光追调度着色器绑定表寻址`` 章节
+    * 2023/9/15 增加 ``命中着色器绑定表寻址`` 章节
 
 `文献源`_
 
@@ -203,4 +204,83 @@ VkRayTracingShaderGroupCreateInfoKHR
 
 光追调度着色器绑定表寻址
 #####################################
+
+在使用 ``vkCmdTraceRaysKHR`` 光追调度时， ``GPU`` 首先会去调用 ``光线生成着色器绑定表`` 中绑定的光线生成着色器生成光线并进行光线追踪。
+
+光线生成着色器绑定表寻址
+********************************************
+
+该寻址比较简单，由于 ``pRaygenShaderBindingTable`` 中的 ``stride`` 和 ``size`` 是固定的，且相同， ``GPU`` 可直接通过 ``pRaygenShaderBindingTable`` 寻址到光线生成着色器。
+
+自后，在光追着色器中使用 ``traceRayEXT`` 函数进行光线追踪。
+
+.. code:: glsl
+
+    void traceRayEXT(
+                        accelerationStructureEXT topLevel,
+                        uint rayFlags,
+                        uint cullMask,
+                        uint sbtRecordOffset,
+                        uint sbtRecordStride,
+                        uint missIndex,
+                        vec3 origin,
+                        float Tmin,
+                        vec3 direction,
+                        float Tmax,
+                        int payload
+                    );
+
+* :bdg-secondary:`topLevel` 为顶层加速结构。
+* :bdg-secondary:`rayFlags` 为追踪标志位。
+* :bdg-secondary:`cullMask` 为剔除遮罩。
+* :bdg-secondary:`sbtRecordOffset` 为命中着色器绑定表记录偏移。
+* :bdg-secondary:`sbtRecordStride` 为命中着色器绑定表记录跨度。
+* :bdg-secondary:`missIndex` 为未命中着色器绑定表引用。
+* :bdg-secondary:`origin` 为追踪的光线起点。
+* :bdg-secondary:`Tmin` 为追踪的光线长度的最小值。
+* :bdg-secondary:`direction` 为追踪的光线的方向。
+* :bdg-secondary:`Tmax` 为追踪的光线长度的最大值。
+* :bdg-secondary:`payload` 为负载引用。
+
+当调用 ``traceRayEXT`` 时需要设置 ``sbtRecordOffset`` 、 ``sbtRecordStride`` 和 ``missIndex`` 用于告诉 ``GPU`` ，当该追踪该光线时如果反生了命中或未命中， ``GPU`` 会根据这些设置去着色器绑定表中进行寻址，找到对应命中着色器绑定表和未命中绑定表中的光追着色器，进而进行调用。其中：
+
+命中着色器绑定表寻址
+********************************************
+
+``sbtRecordOffset`` 和 ``sbtRecordStride`` 用于寻址命中着色器绑定表中的命中组。该寻址与创建实体（ ``VkAccelerationStructureInstanceKHR`` ）时设置的 ``instanceShaderBingdingTableRecordOffset`` 进行配合寻址。
+``instanceShaderBingdingTableRecordOffset`` 用于记录命中着色器绑定表中的其实位置。 ``sbtRecordOffset`` 、 ``sbtRecordStride`` 和 ``instanceShaderBingdingTableRecordOffset`` 最终的寻址结果会加到 ``pHitShaderBindingTable->deviceAddress`` 中。
+
+对于 ``traceRayEXT`` 完整的命中着色器绑定表寻址计算为：
+
+.. math::
+
+    pHitShaderBindingTable->deviceAddress+pHitShaderBindingTable->stride\times(instanceShaderBindingTableRecordOffset+geometryIndex \times sbtRecordStride+sbtRecordOffset)
+
+.. note:: 其中 ``geometryIndex`` 为实体中的相交的几何体索引值
+
+未命中着色器绑定表寻址
+********************************************
+
+``missIndex`` 用于寻址未命中着色器绑定表中的未命中组。进而找到对应的未命中着色器。
+
+对于 ``traceRayEXT`` 完整的未命中着色器绑定表寻址计算为：
+
+.. math::
+
+    pMissShaderBindingTable->deviceAddress + pMissShaderBindingTable->stride \times missIndex
+
+可调用着色器绑定表寻址
+********************************************
+
+通过在主色器中调用 ``executeCallableEXT`` 函数传入 ``sbtRecordIndex`` 参数进行可调用着色器绑定表寻址：
+
+.. code:: glsl
+
+    void executeCallableEXT(uint sbtRecordIndex, int callable);
+
+对于 ``executeCallableEXT`` 完整的可调用着色器绑定表寻址算法为：
+
+.. math::
+
+    pCallableShaderBindingTable->deviceAddress + pCallableShaderBindingTable->stride \times sbtRecordIndex
 
