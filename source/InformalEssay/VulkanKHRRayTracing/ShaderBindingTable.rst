@@ -242,7 +242,7 @@ VkRayTracingShaderGroupCreateInfoKHR
 * :bdg-secondary:`Tmax` 为追踪的光线长度的最大值。
 * :bdg-secondary:`payload` 为负载引用。
 
-当调用 ``traceRayEXT`` 时需要设置 ``sbtRecordOffset`` 、 ``sbtRecordStride`` 和 ``missIndex`` 用于告诉 ``GPU`` ，当该追踪该光线时如果反生了命中或未命中， ``GPU`` 会根据这些设置去着色器绑定表中进行寻址，找到对应命中着色器绑定表和未命中绑定表中的光追着色器，进而进行调用。其中：
+当调用 ``traceRayEXT`` 时需要设置 ``sbtRecordOffset`` 、 ``sbtRecordStride`` 和 ``missIndex`` 用于告诉 ``GPU`` ，当该追踪该光线时如果发生了命中或未命中， ``GPU`` 会根据这些设置去着色器绑定表中进行寻址，找到对应命中着色器绑定表和未命中绑定表中的光追着色器，进而进行调用。其中：
 
 命中着色器绑定表寻址
 ********************************************
