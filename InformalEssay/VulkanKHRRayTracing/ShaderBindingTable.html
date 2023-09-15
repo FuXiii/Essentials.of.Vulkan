@@ -275,6 +275,19 @@
 <li><p class="sd-card-text">2023/9/14 增加 <code class="docutils literal notranslate"><span class="pre">未命中组</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/9/14 增加 <code class="docutils literal notranslate"><span class="pre">着色器绑定表的拷贝</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/9/14 增加 <code class="docutils literal notranslate"><span class="pre">着色器绑定表</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/9/15 重命名 <code class="docutils literal notranslate"><span class="pre">光线生成着色器组</span></code> 为 <code class="docutils literal notranslate"><span class="pre">生成组</span></code></p></li>
+<li><p class="sd-card-text">2023/9/15 更新 <code class="docutils literal notranslate"><span class="pre">生成组</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/9/15 更新 <code class="docutils literal notranslate"><span class="pre">一个简单的着色器绑定表示意图</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/9/15 更新 <code class="docutils literal notranslate"><span class="pre">未命中组</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/9/15 重命名 <code class="docutils literal notranslate"><span class="pre">着色器绑定表的分类</span></code> 章节为 <code class="docutils literal notranslate"><span class="pre">着色器组</span></code></p></li>
+<li><p class="sd-card-text">2023/9/15 更新 <code class="docutils literal notranslate"><span class="pre">着色器组</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/9/15 更新 <code class="docutils literal notranslate"><span class="pre">命中组</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/9/15 更新 <code class="docutils literal notranslate"><span class="pre">未命中组</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/9/15 增加 <code class="docutils literal notranslate"><span class="pre">着色器绑定表的构成</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/9/15 增加 <code class="docutils literal notranslate"><span class="pre">光线生成着色器绑定表</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/9/15 增加 <code class="docutils literal notranslate"><span class="pre">综上</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/9/15 更新 <code class="docutils literal notranslate"><span class="pre">着色器绑定表的拷贝</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/9/15 增加 <code class="docutils literal notranslate"><span class="pre">光追调度着色器绑定表寻址</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p><a class="reference external" href="https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap40.html#shader-binding-table">文献源</a></p>
@@ -285,14 +298,14 @@
 <li><p>其指定了加速结构中每一个几何上要操作的着色器。</p></li>
 <li><p>此外还包含每一个着色器要访问的资源，包括纹理索引，缓存地址和常量。</p></li>
 <li><p>应用通过 <code class="docutils literal notranslate"><span class="pre">VkBuffer</span></code> 来分配和管理着色绑定表。</p></li>
-<li><p>着色器绑定表作为光追管线的 <code class="docutils literal notranslate"><span class="pre">vkCmdTraceRaysNV</span></code> ， <code class="docutils literal notranslate"><span class="pre">vkCmdTraceRaysKHR</span></code> 或者 <code class="docutils literal notranslate"><span class="pre">vkCmdTraceRaysIndirectKHR</span></code> 光追调度指令的参数使用</p></li>
+<li><p>着色器绑定表作为光追管线的 <code class="docutils literal notranslate"><span class="pre">vkCmdTraceRaysNV</span></code> ， <code class="docutils literal notranslate"><span class="pre">vkCmdTraceRaysKHR</span></code> 或者 <code class="docutils literal notranslate"><span class="pre">vkCmdTraceRaysIndirectKHR</span></code> 光追调度指令的参数使用。</p></li>
 </ul>
 </section>
 <section id="id4">
 <h2>光追管线和着色器组结构<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
-<figure class="align-default" id="id12">
+<figure class="align-default" id="id20">
 <img alt="../../_images/vkRayTracingShaderGroupCreateInfo.svg" src="../../_images/vkRayTracingShaderGroupCreateInfo.svg" /><figcaption>
-<p><span class="caption-text">光追管线和着色器组结构示意图</span><a class="headerlink" href="#id12" title="Link to this image">#</a></p>
+<p><span class="caption-text">光追管线和着色器组结构示意图</span><a class="headerlink" href="#id20" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <section id="vkraytracingshadergroupcreateinfokhr">
@@ -302,38 +315,132 @@
 </section>
 <section id="id6">
 <h2>一个简单的着色器绑定表示意图<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
-<figure class="align-default" id="id13">
+<figure class="align-default" id="id21">
 <img alt="../../_images/sbt_struct_sample.svg" src="../../_images/sbt_struct_sample.svg" /><figcaption>
-<p><span class="caption-text">一个简单的着色器绑定表示意图</span><a class="headerlink" href="#id13" title="Link to this image">#</a></p>
+<p><span class="caption-text">一个简单的着色器绑定表示意图</span><a class="headerlink" href="#id21" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
-<p>在创建光线追踪管线时需要通过指定 <code class="docutils literal notranslate"><span class="pre">VkRayTracingShaderGroupCreateInfoKHR</span></code> 来设置该管线中的一些着色器组。在光追光线创建时，驱动会根据用户 <code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">VkRayTracingShaderGroupCreateInfoKHR*</span> <span class="pre">VkRayTracingPipelineCreateInfoKHR::pGroups</span></code> 指定的着色器组创建相应着色器组句柄。在光追管线构建成功后，既可以
+<p>在创建光线追踪管线时需要通过指定 <code class="docutils literal notranslate"><span class="pre">VkRayTracingShaderGroupCreateInfoKHR</span></code> 来设置该管线中的着色器组。在光追光线创建时，驱动会根据用户 <code class="docutils literal notranslate"><span class="pre">VkRayTracingPipelineCreateInfoKHR::pGroups</span></code> 指定的着色器组创建相应着色器组句柄。在光追管线构建成功后，就可以
 通过 <code class="docutils literal notranslate"><span class="pre">vkGetRayTracingShaderGroupHandlesKHR</span></code> 获取相应的着色器组句柄（示意图中的 <code class="docutils literal notranslate"><span class="pre">Handle</span></code>）。</p>
-<p><code class="docutils literal notranslate"><span class="pre">Handle</span></code> 是一个类型为 <code class="docutils literal notranslate"><span class="pre">uint8_t</span></code> 的数组，实际上就是一段连续的内存，用于存储着色器组对应的句柄。该数组就是通过 <code class="docutils literal notranslate"><span class="pre">vkGetRayTracingShaderGroupHandlesKHR</span></code> 获取得到的相应着色器句柄数据。</p>
+<p><code class="docutils literal notranslate"><span class="pre">Handle</span></code> 是一个类型为 <code class="docutils literal notranslate"><span class="pre">uint8_t</span></code> 的数组，实际上就是一段连续的内存，用于存储着色器组对应的句柄（其中 <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VkPhysicalDeviceRayTracingPipelinePropertiesKHR::shaderGroupHandleSize</span> 就是单个句柄的比特大小，本机为 <code class="docutils literal notranslate"><span class="pre">32</span></code>）。该数组就是通过 <code class="docutils literal notranslate"><span class="pre">vkGetRayTracingShaderGroupHandlesKHR</span></code> 获取得到的相应着色器句柄数据。</p>
 <p>之后就需要创建一个 <code class="docutils literal notranslate"><span class="pre">Buffer</span></code> 缓存（上图的 <code class="docutils literal notranslate"><span class="pre">Group</span></code>）用于存放（ <code class="docutils literal notranslate"><span class="pre">Handle</span></code> 拷贝到 <code class="docutils literal notranslate"><span class="pre">Buffer</span></code> 中）这些着色器组句柄，该 <code class="docutils literal notranslate"><span class="pre">Buffer</span></code> 就是传说中的着色器绑定表。</p>
-</section>
 <section id="id7">
-<h2>着色器绑定表的分类<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
-<p>着色器绑定表分为三种：</p>
+<h3>着色器组<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
+<p>着色器组分为三种：</p>
 <section id="id8">
-<h3>光线生成着色器组<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
-<p>光线生成着色器组只能由一个光线生成着色器组成。</p>
+<h4>生成组<a class="headerlink" href="#id8" title="Link to this heading">#</a></h4>
+<p>生成组只能由一个光线生成着色器构成，用于生成光线。每一次光追调度只能执行一个光线生成着色器，也就是每一次光追调度只能有一个生成组。</p>
+<p>如上图中的 <code class="docutils literal notranslate"><span class="pre">RG</span></code> 就是由一个光线生成着色器构成的生成组。</p>
 </section>
 <section id="id9">
-<h3>命中组<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
+<h4>命中组<a class="headerlink" href="#id9" title="Link to this heading">#</a></h4>
+<p>命中组是由相交着色器、任意命中着色器和最近命中着色器，单一或两两或三三不重复构成的，比如：</p>
+<ul class="simple">
+<li><p>单个相交着色器或单个任意命中着色器或单个最近命中着色器，可以构成一个命中组</p></li>
+<li><p>一个任意命中着色器和一个最近命中着色器，可以构成一个命中组</p></li>
+<li><p>一个任意命中着色器和一个最近命中着色器，可以构成一个命中组</p></li>
+<li><p>一个相交着色器和一个任意命中着色器和一个最近命中着色器，可以构成一个命中组</p></li>
+</ul>
+<p>如上图中的 <code class="docutils literal notranslate"><span class="pre">Hit</span></code> 就是由一个最近命中着色器构成的命中组。</p>
 </section>
 <section id="id10">
-<h3>未命中组<a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
-</section>
+<h4>未命中组<a class="headerlink" href="#id10" title="Link to this heading">#</a></h4>
+<p>当对场景中的某一几何物体光线相交查询失败时会调用。一次光追调度可以执行多个未命中着色器。</p>
+<p>未命中组只能由一个未命中着色器构成。</p>
+<p>如上图中的 <code class="docutils literal notranslate"><span class="pre">Miss</span></code> 和 <code class="docutils literal notranslate"><span class="pre">Miss</span> <span class="pre">Shadow</span></code> 就是各自由一个未命中着色器构成的未命中组。</p>
 </section>
 <section id="id11">
-<h2>着色器绑定表的拷贝<a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
+<h4>可调用组<a class="headerlink" href="#id11" title="Link to this heading">#</a></h4>
+<p>可调用着色器是通过光追着色器请求执行的，一次光追调度可能会执行多次可调用着色器。</p>
+<p>一个可调用组由一个可调用着色器构成。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>着色器绑定表示意图中没有用到可调用着色器，也就没有可调用组。</p>
+</div>
+</section>
+</section>
+<section id="id12">
+<h3>着色器绑定表的构成<a class="headerlink" href="#id12" title="Link to this heading">#</a></h3>
+<p>与着色器组分类对应，着色器绑定表由三类着色器绑定表构成：</p>
+<section id="id13">
+<h4>光线生成着色器绑定表<a class="headerlink" href="#id13" title="Link to this heading">#</a></h4>
+<p>由一个生成组构成。</p>
+<p>如上图的 <code class="docutils literal notranslate"><span class="pre">RG</span></code> 就是使用一个生成组构成一个光线生成着色器绑定表。</p>
+</section>
+<section id="id14">
+<h4>命中着色器绑定表<a class="headerlink" href="#id14" title="Link to this heading">#</a></h4>
+<p>由多个命中组构成。</p>
+<p>如上图的 <code class="docutils literal notranslate"><span class="pre">Hit</span></code> 就是使用一个命中组构成一个命中着色器绑定表。</p>
+</section>
+<section id="id15">
+<h4>未命中着色器绑定表<a class="headerlink" href="#id15" title="Link to this heading">#</a></h4>
+<p>由多个未命中组构成。</p>
+<p>如上图的 <code class="docutils literal notranslate"><span class="pre">Miss</span></code> 和 <code class="docutils literal notranslate"><span class="pre">Miss</span> <span class="pre">Shadow</span></code> 就是使用两个未命中组构成一个未命中着色器绑定表。</p>
+</section>
+<section id="id16">
+<h4>可调用着色器绑定表<a class="headerlink" href="#id16" title="Link to this heading">#</a></h4>
+<p>由多个可调用组构成。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>着色器绑定表示意图中没有用到可调用组，也就没有可调用着色器绑定表。</p>
+</div>
+</section>
+<section id="id17">
+<h4>综上<a class="headerlink" href="#id17" title="Link to this heading">#</a></h4>
+<p>着色器绑定表是由光线生成着色器绑定表、命中着色器绑定表、未命中着色器绑定表和可调用着色器绑定表组成的一张大表。</p>
+<p>在使用 <code class="docutils literal notranslate"><span class="pre">vkCmdTraceRaysKHR</span></code> 光追调度时：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_ray_tracing_pipeline 提供</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">vkCmdTraceRaysKHR</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkCommandBuffer</span><span class="w">                             </span><span class="n">commandBuffer</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkStridedDeviceAddressRegionKHR</span><span class="o">*</span><span class="w">      </span><span class="n">pRaygenShaderBindingTable</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkStridedDeviceAddressRegionKHR</span><span class="o">*</span><span class="w">      </span><span class="n">pMissShaderBindingTable</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkStridedDeviceAddressRegionKHR</span><span class="o">*</span><span class="w">      </span><span class="n">pHitShaderBindingTable</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkStridedDeviceAddressRegionKHR</span><span class="o">*</span><span class="w">      </span><span class="n">pCallableShaderBindingTable</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                                    </span><span class="n">width</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                                    </span><span class="n">height</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                                    </span><span class="n">depth</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>其中：</p>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pRaygenShaderBindingTable</span> 对应着光线生成着色器绑定表。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pMissShaderBindingTable</span> 对应着未命中着色器绑定表。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pHitShaderBindingTable</span> 对应着命中着色器绑定表。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pCallableShaderBindingTable</span> 对应着可调用着色器绑定表。</p></li>
+</ul>
+<p>而 <code class="docutils literal notranslate"><span class="pre">VkStridedDeviceAddressRegionKHR</span></code> 定义如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_KHR_ray_tracing_pipeline 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkStridedDeviceAddressRegionKHR</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VkDeviceAddress</span><span class="w">    </span><span class="n">deviceAddress</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkDeviceSize</span><span class="w">       </span><span class="n">stride</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkDeviceSize</span><span class="w">       </span><span class="n">size</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkStridedDeviceAddressRegionKHR</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">deviceAddress</span> 对应着色器绑定表那张大表中该类型的绑定表的起始偏移地址。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">stride</span> 对应着该类型的绑定表中组句柄的大小。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">size</span> 对应着该类型的绑定表的大小。</p></li>
+</ul>
+<p>各类型 <code class="docutils literal notranslate"><span class="pre">VkStridedDeviceAddressRegionKHR</span></code> 与示意图中着色器绑定表的对应结构示意图如下：</p>
+<figure class="align-default">
+<img alt="../../_images/SBTAddressRegion.svg" src="../../_images/SBTAddressRegion.svg" /></figure>
+</section>
+</section>
+<section id="id18">
+<h3>着色器绑定表的拷贝<a class="headerlink" href="#id18" title="Link to this heading">#</a></h3>
+<p>就是将各类着色器绑定表拷贝至由 <code class="docutils literal notranslate"><span class="pre">VkBuffer</span></code> 构成的着色器绑定表的大表中。</p>
 <p>在将 <code class="docutils literal notranslate"><span class="pre">Handle</span></code> 拷贝到 <code class="docutils literal notranslate"><span class="pre">Buffer</span></code> 中时需要满足如下条件：</p>
 <ul class="simple">
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VkPhysicalDeviceRayTracingPipelinePropertiesKHR::shaderGroupHandleSize</span> 单个着色器组句柄的大小。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VkPhysicalDeviceRayTracingPipelinePropertiesKHR::shaderGroupHandleAlignment</span> 单个着色器组句柄的对齐大小。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VkPhysicalDeviceRayTracingPipelinePropertiesKHR::shaderGroupBaseAlignment</span> 不同着色器组句柄的对齐大小。</p></li>
+<li><p>光线生成着色器绑定表的 <code class="docutils literal notranslate"><span class="pre">pRaygenShaderBindingTable-&gt;stride</span></code> 是不使用的且必须等于 <code class="docutils literal notranslate"><span class="pre">pRaygenShaderBindingTable-&gt;size</span></code></p></li>
 </ul>
+</section>
+</section>
+<section id="id19">
+<h2>光追调度着色器绑定表寻址<a class="headerlink" href="#id19" title="Link to this heading">#</a></h2>
 </section>
 </section>
 
@@ -417,14 +524,26 @@
 <li><a class="reference internal" href="#vkraytracingshadergroupcreateinfokhr">VkRayTracingShaderGroupCreateInfoKHR</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id6">一个简单的着色器绑定表示意图</a></li>
-<li><a class="reference internal" href="#id7">着色器绑定表的分类</a><ul>
-<li><a class="reference internal" href="#id8">光线生成着色器组</a></li>
+<li><a class="reference internal" href="#id6">一个简单的着色器绑定表示意图</a><ul>
+<li><a class="reference internal" href="#id7">着色器组</a><ul>
+<li><a class="reference internal" href="#id8">生成组</a></li>
 <li><a class="reference internal" href="#id9">命中组</a></li>
 <li><a class="reference internal" href="#id10">未命中组</a></li>
+<li><a class="reference internal" href="#id11">可调用组</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id11">着色器绑定表的拷贝</a></li>
+<li><a class="reference internal" href="#id12">着色器绑定表的构成</a><ul>
+<li><a class="reference internal" href="#id13">光线生成着色器绑定表</a></li>
+<li><a class="reference internal" href="#id14">命中着色器绑定表</a></li>
+<li><a class="reference internal" href="#id15">未命中着色器绑定表</a></li>
+<li><a class="reference internal" href="#id16">可调用着色器绑定表</a></li>
+<li><a class="reference internal" href="#id17">综上</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id18">着色器绑定表的拷贝</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id19">光追调度着色器绑定表寻址</a></li>
 </ul>
 </li>
 </ul>
