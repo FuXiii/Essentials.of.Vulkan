@@ -179,6 +179,7 @@
 <li class="toctree-l3"><a class="reference internal" href="extensions/Instances.html">实例化</a></li>
 <li class="toctree-l3"><a class="reference internal" href="extensions/Reflections.html">反射</a></li>
 <li class="toctree-l3"><a class="reference internal" href="extensions/MultipleClosestHitShaders.html">多重最近命中着色器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions/Animation.html">动态更新</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../vk_mini_path_tracer.html">Vulkan迷你路径追踪</a></li>
@@ -338,6 +339,7 @@
 <li><p class="sd-card-text">2023/9/12 增加 <code class="docutils literal notranslate"><span class="pre">多重最近命中着色器</span></code> 文档链接</p></li>
 <li><p class="sd-card-text">2023/9/15 更新 <code class="docutils literal notranslate"><span class="pre">8.1</span> <span class="pre">句柄</span></code> 修改文字错误</p></li>
 <li><p class="sd-card-text">2023/9/15 更新 <code class="docutils literal notranslate"><span class="pre">8</span> <span class="pre">着色器绑定表</span></code> 添加 <code class="docutils literal notranslate"><span class="pre">随笔链接</span></code></p></li>
+<li><p class="sd-card-text">2023/9/20 增加 <code class="docutils literal notranslate"><span class="pre">动态更新</span></code> 文档链接</p></li>
 </ul>
 </div>
 </details><p><a class="reference external" href="https://nvpro-samples.github.io/vk_raytracing_tutorial_KHR/">文献源</a></p>
@@ -353,10 +355,10 @@
 </div>
 <p>本文所提供的的代码和文档聚焦于使用 <a class="reference external" href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/vkspec.html#VK_KHR_ray_tracing_pipeline">VK_KHR_ray_tracing_pipeline</a> 扩展展示一个基础光追示例。
 该教程从一个基于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 开发的基础程序开始，并且提供一步步的介绍去修改和增加函数和功能。</p>
-<figure class="align-default" id="id42">
+<figure class="align-default" id="id40">
 <img alt="../../_images/resultRaytraceShadowMedieval.png" src="../../_images/resultRaytraceShadowMedieval.png" />
 <figcaption>
-<p><span class="caption-text">最终结果</span><a class="headerlink" href="#id42" title="Link to this image">#</a></p>
+<p><span class="caption-text">最终结果</span><a class="headerlink" href="#id40" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <div class="note admonition">
@@ -413,10 +415,10 @@
 <p>打开位于 <code class="docutils literal notranslate"><span class="pre">build</span></code> 目录下的解决方案，之后编译并运行 <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing__before">vk_ray_tracing__before_KHR</a> 。</p>
 <p>该示例将会是此教程的示例起点。这是一个用于加载 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 文件并使用 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 光栅化渲染他们的小框架。您可以通过阅读 <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/blob/master/ray_tracing__before/README.md#nvidia-vulkan-ray-tracing-tutorial">Base Overview</a> 来纵观该示例是如何实现的。
 我们将使用这个框架加载几何体并且渲染场景来实现光线追踪。</p>
-<figure class="align-default" id="id43">
+<figure class="align-default" id="id41">
 <img alt="../../_images/resultRasterCube.png" src="../../_images/resultRasterCube.png" />
 <figcaption>
-<p><span class="caption-text">首次执行</span><a class="headerlink" href="#id43" title="Link to this image">#</a></p>
+<p><span class="caption-text">首次执行</span><a class="headerlink" href="#id41" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <p>接下来的步骤将是修改 <code class="docutils literal notranslate"><span class="pre">vk_ray_tracing__before_KHR</span></code> 使其支持光线追踪。该教程修改后的最终结果将是同 <code class="docutils literal notranslate"><span class="pre">vk_ray_tracing__simple_KHR</span></code> 一样。如果开发过程发生错误
@@ -487,9 +489,9 @@
 据经验来说，底层加速结构越少越好。</p>
 </div>
 <p>顶层加速结构可以包含多个物体的实体（ <code class="docutils literal notranslate"><span class="pre">instance</span></code> ），每一个实体都会有自己的变换矩阵并且引用一个具体的底层加速结构。我们将会从一个底层加速结构和一个单位矩阵的顶层加速结构实例开始实现。</p>
-<figure class="align-default" id="id44">
+<figure class="align-default" id="id42">
 <img alt="../../_images/AccelerationStructure.svg" src="../../_images/AccelerationStructure.svg" /><figcaption>
-<p><span class="caption-text">加速结构</span><a class="headerlink" href="#id44" title="Link to this image">#</a></p>
+<p><span class="caption-text">加速结构</span><a class="headerlink" href="#id42" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <p>该教程将会加载一个 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 文件，并将其索引、顶点和材质数据存储到 <code class="docutils literal notranslate"><span class="pre">ObjModel</span></code> 数据结构中。该模型同时引用一个 <code class="docutils literal notranslate"><span class="pre">ObjInstance</span></code> 数据结构，其中包含用于特定实体的变换矩阵。对于光线追踪， <code class="docutils literal notranslate"><span class="pre">ObjModel</span></code> 和一系列的 <code class="docutils literal notranslate"><span class="pre">ObjInstances</span></code> 将在之后分别用于构建底层加速结构和顶层加速结构。</p>
@@ -1336,9 +1338,9 @@
 有可能会有多个交点。</p>
 <p>任意命中着色器主要用于筛选相交着色器返回的交点的。</p>
 </div>
-<figure class="align-default" id="id45">
+<figure class="align-default" id="id43">
 <img alt="../../_images/ShaderPipeline.svg" src="../../_images/ShaderPipeline.svg" /><figcaption>
-<p><span class="caption-text">光线追踪管线</span><a class="headerlink" href="#id45" title="Link to this image">#</a></p>
+<p><span class="caption-text">光线追踪管线</span><a class="headerlink" href="#id43" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <p>我们将从使用三个主要着色器开始：一个光线生成着色器，一个未命中着色器和由一个最近命中着色器构成的一个命中组。这在 <code class="docutils literal notranslate"><span class="pre">GLSL</span></code> 编译成 <code class="docutils literal notranslate"><span class="pre">SPIR-V</span></code> 时已经完成。 <code class="docutils literal notranslate"><span class="pre">SPIR-V</span></code> 的着色器们将会链接成一个能够通过求交计算执行正确的击中着色器的光线追踪管线。</p>
@@ -1549,7 +1551,7 @@
 <p>我们需要确保所有组的开头地址都与 <code class="docutils literal notranslate"><span class="pre">shaderGroupBaseAlignment</span></code> 进行内存对齐，并且组内的每一个元素与 <code class="docutils literal notranslate"><span class="pre">shaderGroupHandleAlignment</span></code> 进行内存对其。所有组的元素都与 <code class="docutils literal notranslate"><span class="pre">shaderGroupHandleAlignment</span></code> 进行对其。</p>
 <div class="warning admonition">
 <p class="admonition-title">内存大小和对齐</p>
-<p>特别注意对齐大小和句柄或组大小相对应的。句柄或组大小相应的对齐并不保证一定正确，所以需要向上取整。使用 <code class="docutils literal notranslate"><span class="pre">groupHandleSize</span></code> 作为内存跨度也许碰巧能够在您的设备上工作，其他设备就不一定了。在一些设备上句柄大小小于对齐大小时，当没有设置相关的内存使用策略将会导致着色器存储（ <a href="#id28"><span class="problematic" id="id29">``</span></a>shaderRecordEXT `` ）的数据重叠错位。</p>
+<p>特别注意对齐大小和句柄或组大小相对应的。句柄或组大小相应的对齐并不保证一定正确，所以需要向上取整。使用 <code class="docutils literal notranslate"><span class="pre">groupHandleSize</span></code> 作为内存跨度也许碰巧能够在您的设备上工作，其他设备就不一定了。在一些设备上句柄大小小于对齐大小时，当没有设置相关的内存使用策略将会导致着色器存储（ <code class="docutils literal notranslate"><span class="pre">shaderRecordEXT</span></code> ）的数据重叠错位。</p>
 <p>向上取整获取下一个对齐位置使用如下算法：</p>
 <p><span class="math notranslate nohighlight">\(alignedSize = [size + (alignment - 1)]\ \texttt{&amp;}\ \texttt{~}(alignment - 1)\)</span>.</p>
 </div>
@@ -1708,16 +1710,16 @@
 可以到 <a class="reference external" href="https://github.com/nvpro-samples/nvpro_core/tree/master/nvvk#sbtwrapper_vkhpp">nnvk::SBTWrapper</a> 中找到实现。一些额外的示例将会使用该类。</p>
 </div>
 </section>
-<section id="id30">
-<h3>8.2 main<a class="headerlink" href="#id30" title="Link to this heading">#</a></h3>
+<section id="id28">
+<h3>8.2 main<a class="headerlink" href="#id28" title="Link to this heading">#</a></h3>
 <p>在 <code class="docutils literal notranslate"><span class="pre">main</span></code> 函数中，现在增加着色器绑定表的构建函数调用。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">helloVk</span><span class="p">.</span><span class="n">createRtShaderBindingTable</span><span class="p">();</span>
 </pre></div>
 </div>
 </section>
 </section>
-<section id="id31">
-<h2>9 光线追踪<a class="headerlink" href="#id31" title="Link to this heading">#</a></h2>
+<section id="id29">
+<h2>9 光线追踪<a class="headerlink" href="#id29" title="Link to this heading">#</a></h2>
 <p>创建一个记录调用光追着色器的指令函数。首先，头文件中增加如下声明：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">raytrace</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">VkCommandBuffer</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">nvmath</span><span class="o">::</span><span class="n">vec4f</span><span class="o">&amp;</span><span class="w"> </span><span class="n">clearColor</span><span class="p">);</span>
 </pre></div>
@@ -1764,11 +1766,11 @@
 </div>
 </div>
 </section>
-<section id="id32">
-<h2>10 开始追踪<a class="headerlink" href="#id32" title="Link to this heading">#</a></h2>
+<section id="id30">
+<h2>10 开始追踪<a class="headerlink" href="#id30" title="Link to this heading">#</a></h2>
 <p>现在我们已经完成了光线追踪的所有前置设置和构建：加速结构，描述符集，光追管线和着色器绑定表。现在尝试生成渲染图片吧。</p>
-<section id="id33">
-<h3>10.1 main<a class="headerlink" href="#id33" title="Link to this heading">#</a></h3>
+<section id="id31">
+<h3>10.1 main<a class="headerlink" href="#id31" title="Link to this heading">#</a></h3>
 <p>在 <code class="docutils literal notranslate"><span class="pre">main</span></code> 函数中，我们将定义一个用于在光栅化和光线追踪之间切换的本地变量。在光线追踪初始化之后增加如下代码：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="n">useRaytracer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
 </pre></div>
@@ -1816,8 +1818,8 @@
 </div>
 </section>
 </section>
-<section id="id34">
-<h2>11 相机矩阵<a class="headerlink" href="#id34" title="Link to this heading">#</a></h2>
+<section id="id32">
+<h2>11 相机矩阵<a class="headerlink" href="#id32" title="Link to this heading">#</a></h2>
 <p>相机矩阵存储在一个 <code class="docutils literal notranslate"><span class="pre">uniform</span></code> 缓存中并使用 <code class="docutils literal notranslate"><span class="pre">updateUniformBuffer</span></code> 更新。光线追踪同样会使用该矩阵，所有我们需要将该缓存适配到光追着色器中。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">uboUsageStages</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_PIPELINE_STAGE_VERTEX_SHADER_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR</span><span class="p">;</span>
 </pre></div>
@@ -2007,8 +2009,8 @@
 </div>
 </section>
 </section>
-<section id="id35">
-<h2>12 简单光照<a class="headerlink" href="#id35" title="Link to this heading">#</a></h2>
+<section id="id33">
+<h2>12 简单光照<a class="headerlink" href="#id33" title="Link to this heading">#</a></h2>
 <p>当前最近命中着色器仅返回一个固定单色。为了增加一些光照，我们需要介绍一下表面法线这个概念。然而，光追命中点处只能获取到质心坐标，为了得到交点处的法线和其他顶点属性，我们需要在顶点缓存中找到他们，之后使用质心坐标计算相关属性值。这就是为什么我们在创建光追描述符集时将顶点缓存和索引缓存的可访问范围扩展至最近命中着色器。</p>
 <div class="note admonition">
 <p class="admonition-title">可访问范围扩展至最近命中着色器</p>
@@ -2109,16 +2111,16 @@
 </figure>
 </section>
 </section>
-<section id="id36">
-<h2>13 简单材质<a class="headerlink" href="#id36" title="Link to this heading">#</a></h2>
+<section id="id34">
+<h2>13 简单材质<a class="headerlink" href="#id34" title="Link to this heading">#</a></h2>
 <p>基于上面的渲染，我们可以通过增加材质来呈现更有趣的渲染效果。加载进来的 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 对象提供了一个简单的 <code class="docutils literal notranslate"><span class="pre">Alias</span> <span class="pre">Wavefront</span></code> 材质。</p>
 <div class="note admonition">
 <p class="admonition-title">Alias Wavefront</p>
 <p>估计是指 <code class="docutils literal notranslate"><span class="pre">Alias</span></code> （原 <code class="docutils literal notranslate"><span class="pre">Alias|Wavefront</span></code> ）是著名的3D软件公司，旗下作品 <code class="docutils literal notranslate"><span class="pre">Maya</span></code> 、 <code class="docutils literal notranslate"><span class="pre">StudioTools</span></code> 、等。后来被 <code class="docutils literal notranslate"><span class="pre">Autodesk</span></code> 公司收购。</p>
 <p><code class="docutils literal notranslate"><span class="pre">Alias</span> <span class="pre">Wavefront</span></code> 应该是 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 模型文件内部的材质数据格式。本人没具体研究过。</p>
 </div>
-<section id="id37">
-<h3>13.1 raytrace.rchit<a class="headerlink" href="#id37" title="Link to this heading">#</a></h3>
+<section id="id35">
+<h3>13.1 raytrace.rchit<a class="headerlink" href="#id35" title="Link to this heading">#</a></h3>
 <p>该材质使用简单的颜色系数定义基础反射属性，并同时支持纹理。包含该材质的缓存已经在光栅化渲染时创建完成，并且同时也被光追描述符集使用。如下在最近命中着色器中绑定要采样的纹理：</p>
 <div class="highlight-GLSL notranslate"><div class="highlight"><pre><span></span><span class="k">layout</span><span class="p">(</span><span class="n">set</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">binding</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">eTextures</span><span class="p">)</span><span class="w"> </span><span class="k">uniform</span><span class="w"> </span><span class="kt">sampler2D</span><span class="w"> </span><span class="n">textureSamplers</span><span class="p">[];</span>
 </pre></div>
@@ -2182,8 +2184,8 @@
 <img alt="../../_images/resultRaytraceLightMatCube.png" src="../../_images/resultRaytraceLightMatCube.png" />
 </figure>
 </section>
-<section id="id38">
-<h3>13.2 main<a class="headerlink" href="#id38" title="Link to this heading">#</a></h3>
+<section id="id36">
+<h3>13.2 main<a class="headerlink" href="#id36" title="Link to this heading">#</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 的模型是在 <code class="docutils literal notranslate"><span class="pre">main.cpp</span></code> 中通过调用 <code class="docutils literal notranslate"><span class="pre">helloVk.loadModel</span></code> 加载的。相比于加载一个方盒子，让我们加载一些更有趣的模型：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">helloVk</span><span class="p">.</span><span class="n">loadModel</span><span class="p">(</span><span class="n">nvh</span><span class="o">::</span><span class="n">findFile</span><span class="p">(</span><span class="s">&quot;media/scenes/Medieval_building.obj&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">defaultSearchPaths</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">));</span>
 <span class="n">helloVk</span><span class="p">.</span><span class="n">loadModel</span><span class="p">(</span><span class="n">nvh</span><span class="o">::</span><span class="n">findFile</span><span class="p">(</span><span class="s">&quot;media/scenes/plane.obj&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">defaultSearchPaths</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">));</span>
@@ -2198,8 +2200,8 @@
 </figure>
 </section>
 </section>
-<section id="id39">
-<h2>14 阴影<a class="headerlink" href="#id39" title="Link to this heading">#</a></h2>
+<section id="id37">
+<h2>14 阴影<a class="headerlink" href="#id37" title="Link to this heading">#</a></h2>
 <p>如上光追渲染能得到一个应用了一些光照的场景，但是目前还没有阴影。在本示例的结尾，我们将会增加一个新的光线类型，并且从最近命中着色器中发射该光线，该新增加的光线类型需要增加一个新的未命中着色器。</p>
 <section id="createraytracingpipeline">
 <h3>14.1 createRaytracingPipeline<a class="headerlink" href="#createraytracingpipeline" title="Link to this heading">#</a></h3>
@@ -2280,8 +2282,8 @@
 </pre></div>
 </div>
 </section>
-<section id="id40">
-<h3>14.4 raytrace.rchit<a class="headerlink" href="#id40" title="Link to this heading">#</a></h3>
+<section id="id38">
+<h3>14.4 raytrace.rchit<a class="headerlink" href="#id38" title="Link to this heading">#</a></h3>
 <p>现在最近命中着色器需要访问加速结构用于发射光线：</p>
 <div class="highlight-GLSL notranslate"><div class="highlight"><pre><span></span><span class="k">layout</span><span class="p">(</span><span class="n">set</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mo">0</span><span class="p">,</span><span class="w"> </span><span class="n">binding</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">eTlas</span><span class="p">)</span><span class="w"> </span><span class="k">uniform</span><span class="w"> </span><span class="n">accelerationStructureEXT</span><span class="w"> </span><span class="n">topLevelAS</span><span class="p">;</span>
 </pre></div>
@@ -2346,8 +2348,8 @@
 <p>最终的工程可以在 <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing__simple">ray_tracing__simple</a> 文件夹下找到。</p>
 </section>
 </section>
-<section id="id41">
-<h2>15 拓展延伸<a class="headerlink" href="#id41" title="Link to this heading">#</a></h2>
+<section id="id39">
+<h2>15 拓展延伸<a class="headerlink" href="#id39" title="Link to this heading">#</a></h2>
 <p>从此时起，您可以继续创建自己的光线类型和着色器，并尝试更高级的光线跟踪算法。</p>
 <div class="toctree-wrapper compound">
 <ul>
@@ -2396,13 +2398,19 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="extensions/MultipleClosestHitShaders.html">多重最近命中着色器</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="extensions/MultipleClosestHitShaders.html#id4">教程</a></li>
-<li class="toctree-l2"><a class="reference internal" href="extensions/MultipleClosestHitShaders.html#id5">布置场景</a></li>
-<li class="toctree-l2"><a class="reference internal" href="extensions/MultipleClosestHitShaders.html#id6">增加一个新的最近命中着色器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions/MultipleClosestHitShaders.html#id6">教程</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions/MultipleClosestHitShaders.html#id7">布置场景</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions/MultipleClosestHitShaders.html#id8">增加一个新的最近命中着色器</a></li>
 <li class="toctree-l2"><a class="reference internal" href="extensions/MultipleClosestHitShaders.html#shaderrecordkhr">着色器记录数据 <code class="docutils literal notranslate"><span class="pre">shaderRecordKHR</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="extensions/MultipleClosestHitShaders.html#id8">hello_vulkan.h</a></li>
-<li class="toctree-l2"><a class="reference internal" href="extensions/MultipleClosestHitShaders.html#id10">光线追踪</a></li>
-<li class="toctree-l2"><a class="reference internal" href="extensions/MultipleClosestHitShaders.html#id11">命中延伸</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions/MultipleClosestHitShaders.html#id10">hello_vulkan.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions/MultipleClosestHitShaders.html#id12">光线追踪</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions/MultipleClosestHitShaders.html#id13">命中延伸</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="extensions/Animation.html">动态更新</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="extensions/Animation.html#id4">教程</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions/Animation.html#id5">更新变换矩阵</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions/Animation.html#id9">更新顶层加速结构</a></li>
 </ul>
 </li>
 </ul>
@@ -2525,36 +2533,36 @@
 </li>
 <li><a class="reference internal" href="#id25">8 着色器绑定表</a><ul>
 <li><a class="reference internal" href="#id27">8.1 句柄</a></li>
-<li><a class="reference internal" href="#id30">8.2 main</a></li>
+<li><a class="reference internal" href="#id28">8.2 main</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id31">9 光线追踪</a></li>
-<li><a class="reference internal" href="#id32">10 开始追踪</a><ul>
-<li><a class="reference internal" href="#id33">10.1 main</a></li>
+<li><a class="reference internal" href="#id29">9 光线追踪</a></li>
+<li><a class="reference internal" href="#id30">10 开始追踪</a><ul>
+<li><a class="reference internal" href="#id31">10.1 main</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id34">11 相机矩阵</a><ul>
+<li><a class="reference internal" href="#id32">11 相机矩阵</a><ul>
 <li><a class="reference internal" href="#raytrace-rgen">11.1 光线生成（ <code class="docutils literal notranslate"><span class="pre">raytrace.rgen</span></code> ）</a></li>
 <li><a class="reference internal" href="#raytrace-miss">11.2 未命中着色器（raytrace.miss）</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id35">12 简单光照</a><ul>
+<li><a class="reference internal" href="#id33">12 简单光照</a><ul>
 <li><a class="reference internal" href="#raytrace-rchit">12.1 最近命中着色器（raytrace.rchit）</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id36">13 简单材质</a><ul>
-<li><a class="reference internal" href="#id37">13.1 raytrace.rchit</a></li>
-<li><a class="reference internal" href="#id38">13.2 main</a></li>
+<li><a class="reference internal" href="#id34">13 简单材质</a><ul>
+<li><a class="reference internal" href="#id35">13.1 raytrace.rchit</a></li>
+<li><a class="reference internal" href="#id36">13.2 main</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id39">14 阴影</a><ul>
+<li><a class="reference internal" href="#id37">14 阴影</a><ul>
 <li><a class="reference internal" href="#createraytracingpipeline">14.1 createRaytracingPipeline</a></li>
 <li><a class="reference internal" href="#creatertshaderbindingtable">14.2 createRtShaderBindingTable</a></li>
 <li><a class="reference internal" href="#creatertdescriptorset">14.3 createRtDescriptorSet</a></li>
-<li><a class="reference internal" href="#id40">14.4 raytrace.rchit</a></li>
+<li><a class="reference internal" href="#id38">14.4 raytrace.rchit</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id41">15 拓展延伸</a></li>
+<li><a class="reference internal" href="#id39">15 拓展延伸</a></li>
 </ul>
 </li>
 </ul>

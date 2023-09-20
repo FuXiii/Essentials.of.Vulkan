@@ -78,6 +78,7 @@ NVIDIA Vulkan 光线追踪教程
     * 2023/9/12 增加 ``多重最近命中着色器`` 文档链接
     * 2023/9/15 更新 ``8.1 句柄`` 修改文字错误
     * 2023/9/15 更新 ``8 着色器绑定表`` 添加 ``随笔链接``
+    * 2023/9/20 增加 ``动态更新`` 文档链接
 
 `文献源`_
 
@@ -1488,7 +1489,7 @@ NVIDIA Vulkan 光线追踪教程
 .. admonition:: 内存大小和对齐
     :class: warning
 
-    特别注意对齐大小和句柄或组大小相对应的。句柄或组大小相应的对齐并不保证一定正确，所以需要向上取整。使用 ``groupHandleSize`` 作为内存跨度也许碰巧能够在您的设备上工作，其他设备就不一定了。在一些设备上句柄大小小于对齐大小时，当没有设置相关的内存使用策略将会导致着色器存储（ ``shaderRecordEXT `` ）的数据重叠错位。
+    特别注意对齐大小和句柄或组大小相对应的。句柄或组大小相应的对齐并不保证一定正确，所以需要向上取整。使用 ``groupHandleSize`` 作为内存跨度也许碰巧能够在您的设备上工作，其他设备就不一定了。在一些设备上句柄大小小于对齐大小时，当没有设置相关的内存使用策略将会导致着色器存储（ ``shaderRecordEXT`` ）的数据重叠错位。
 
     向上取整获取下一个对齐位置使用如下算法：
 
@@ -2063,10 +2064,10 @@ NVIDIA Vulkan 光线追踪教程
         Materials  materials   = Materials(objResource.materialAddress);
         Indices    indices     = Indices(objResource.indexAddress);
         Vertices   vertices    = Vertices(objResource.vertexAddress);
-    
+
         // Indices of the triangle
         ivec3 ind = indices.i[gl_PrimitiveID];
-    
+
         // Vertex of the triangle
         Vertex v0 = vertices.v[ind.x];
         Vertex v1 = vertices.v[ind.y];
@@ -2426,3 +2427,4 @@ NVIDIA Vulkan 光线追踪教程
    extensions/Instances.rst
    extensions/Reflections.rst
    extensions/MultipleClosestHitShaders.rst
+   extensions/Animation.rst

@@ -24,12 +24,20 @@
     * 2023/9/13 增加 ``命中延伸`` 章节
     * 2023/9/13 增加 ``main.cpp`` 章节
     * 2023/9/13 增加 ``createRtShaderBindingTable`` 章节
+    * 2023/9/20 提供 ``Turbo`` 实现开源示例
 
 `文献源`_
 
 .. _文献源: https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing_manyhits
 
 .. _光线追踪教程: ../NVIDIAVulkanRayTracingTutorial.html
+
+.. admonition:: Turbo 引擎中对该教程的实现示例
+    :class: note
+
+    ``Turbo`` 引擎对该教程进行了实现，具体如下：
+
+    * `VulkanKHRRayTracingTestForMultiClosestHits <https://github.com/FuXiii/Turbo/blob/dev/samples/VulkanKHRRayTracingTestForMultiClosestHits.cpp>`_ ：在 `实例化 <../extensions/Instances.html>`_ 基础上实现。 `示例视频 <https://www.bilibili.com/video/BV1Hh4y1a7zH/?vd_source=df46bdc268062b383081e71f702cbc1d>`_
 
 .. figure:: ../../../_static/manyhits.png
 

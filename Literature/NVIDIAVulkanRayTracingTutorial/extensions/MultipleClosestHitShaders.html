@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="索引" href="../../../genindex.html" /><link rel="search" title="搜索" href="../../../search.html" /><link rel="next" title="Vulkan迷你路径追踪" href="../../vk_mini_path_tracer.html" /><link rel="prev" title="反射" href="Reflections.html" />
+<link rel="index" title="索引" href="../../../genindex.html" /><link rel="search" title="搜索" href="../../../search.html" /><link rel="next" title="动态更新" href="Animation.html" /><link rel="prev" title="反射" href="Reflections.html" />
         <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/Literature/NVIDIAVulkanRayTracingTutorial/extensions/MultipleClosestHitShaders.html" />
 
     <link rel="shortcut icon" href="../../../_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
@@ -179,6 +179,7 @@
 <li class="toctree-l3"><a class="reference internal" href="Instances.html">实例化</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Reflections.html">反射</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">多重最近命中着色器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Animation.html">动态更新</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../vk_mini_path_tracer.html">Vulkan迷你路径追踪</a></li>
@@ -284,22 +285,30 @@
 <li><p class="sd-card-text">2023/9/13 增加 <code class="docutils literal notranslate"><span class="pre">命中延伸</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/9/13 增加 <code class="docutils literal notranslate"><span class="pre">main.cpp</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/9/13 增加 <code class="docutils literal notranslate"><span class="pre">createRtShaderBindingTable</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/9/20 提供 <code class="docutils literal notranslate"><span class="pre">Turbo</span></code> 实现开源示例</p></li>
 </ul>
 </div>
 </details><p><a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing_manyhits">文献源</a></p>
-<figure class="align-default" id="id13">
+<div class="note admonition">
+<p class="admonition-title">Turbo 引擎中对该教程的实现示例</p>
+<p><code class="docutils literal notranslate"><span class="pre">Turbo</span></code> 引擎对该教程进行了实现，具体如下：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/FuXiii/Turbo/blob/dev/samples/VulkanKHRRayTracingTestForMultiClosestHits.cpp">VulkanKHRRayTracingTestForMultiClosestHits</a> ：在 <a class="reference external" href="../extensions/Instances.html">实例化</a> 基础上实现。 <a class="reference external" href="https://www.bilibili.com/video/BV1Hh4y1a7zH/?vd_source=df46bdc268062b383081e71f702cbc1d">示例视频</a></p></li>
+</ul>
+</div>
+<figure class="align-default" id="id15">
 <img alt="../../../_images/manyhits.png" src="../../../_images/manyhits.png" />
 <figcaption>
-<p><span class="caption-text">多重最近命中着色器结果示意图</span><a class="headerlink" href="#id13" title="Link to this image">#</a></p>
+<p><span class="caption-text">多重最近命中着色器结果示意图</span><a class="headerlink" href="#id15" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
-<section id="id4">
-<h2>教程<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<section id="id6">
+<h2>教程<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
 <p>该教程为 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> <a class="reference external" href="../NVIDIAVulkanRayTracingTutorial.html">光线追踪教程</a> 的扩展。</p>
 <p>在 <a class="reference external" href="../NVIDIAVulkanRayTracingTutorial.html">光线追踪教程</a> 中只使用了一个最近命中着色器，但其实是可以使用多个的。比如，对于不同模型使用不同的着色器，或者当计算反射时使用一个相对简单的着色器进行计算。</p>
 </section>
-<section id="id5">
-<h2>布置场景<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<section id="id7">
+<h2>布置场景<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
 <p>对于本示例，我们将会加载 <code class="docutils literal notranslate"><span class="pre">wuson</span></code> 模型并变换创建其另一个实体。</p>
 <p>将 <code class="docutils literal notranslate"><span class="pre">helloVk.loadModel</span></code> 调用修改如下：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// loadModel(...) 函数内部会自动增加一个 Wuson 的实体</span>
@@ -312,8 +321,8 @@
 </pre></div>
 </div>
 </section>
-<section id="id6">
-<h2>增加一个新的最近命中着色器<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<section id="id8">
+<h2>增加一个新的最近命中着色器<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
 <p>我们需要创建一个新的最近命中着色器，并将其加入到光追管线中，并指示哪个实体将使用此着色器。</p>
 <section id="raytrace2-rchit">
 <h3>raytrace2.rchit<a class="headerlink" href="#raytrace2-rchit" title="Link to this heading">#</a></h3>
@@ -365,10 +374,10 @@
 <section id="raytrace-rgen">
 <h3>raytrace.rgen<a class="headerlink" href="#raytrace-rgen" title="Link to this heading">#</a></h3>
 <p>为了测试，可以尝试改变 <code class="docutils literal notranslate"><span class="pre">raytrace.rgen</span></code> 中 <code class="docutils literal notranslate"><span class="pre">traceRayEXT</span></code> 函数调用的 <code class="docutils literal notranslate"><span class="pre">sbtRecordOffset</span></code> 参数。如果将其偏移值设置为 <code class="docutils literal notranslate"><span class="pre">1</span></code> ，则所有的光线命中将会使用新的最近命中着色器，可能的光追结果如下：</p>
-<figure class="align-default" id="id14">
+<figure class="align-default" id="id16">
 <img alt="../../../_images/manyhits2.png" src="../../../_images/manyhits2.png" />
 <figcaption>
-<p><span class="caption-text">新的最近命中着色器光追结果示意图</span><a class="headerlink" href="#id14" title="Link to this image">#</a></p>
+<p><span class="caption-text">新的最近命中着色器光追结果示意图</span><a class="headerlink" href="#id16" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <div class="caution admonition">
@@ -395,17 +404,17 @@
 </pre></div>
 </div>
 </section>
-<section id="id7">
-<h3>选择命中着色器<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
+<section id="id9">
+<h3>选择命中着色器<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
 <p>回到 <code class="docutils literal notranslate"><span class="pre">main.cpp</span></code> ，在加载场景模型之后，我们现在可以将两个 <code class="docutils literal notranslate"><span class="pre">wuson</span></code> 模型都使用新的最近命中着色器，通过如下代码：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">helloVk</span><span class="p">.</span><span class="n">m_instances</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">hitgroup</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
 <span class="n">helloVk</span><span class="p">.</span><span class="n">m_instances</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">hitgroup</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
 </pre></div>
 </div>
-<figure class="align-default" id="id15">
+<figure class="align-default" id="id17">
 <img alt="../../../_images/manyhits3.png" src="../../../_images/manyhits3.png" />
 <figcaption>
-<p><span class="caption-text">两个 <code class="docutils literal notranslate"><span class="pre">wuson</span></code> 都使用新的最近命中着色器光追结果示意图</span><a class="headerlink" href="#id15" title="Link to this image">#</a></p>
+<p><span class="caption-text">两个 <code class="docutils literal notranslate"><span class="pre">wuson</span></code> 都使用新的最近命中着色器光追结果示意图</span><a class="headerlink" href="#id17" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 </section>
@@ -419,15 +428,15 @@
 <p>着色器绑定表中的每组中的每个条目必须有相同的大小，组中的每一个条目必须有足够的空间来容纳整个组中最大的那个元素。</p>
 </div>
 <p>下图展示了我们当前的着色器绑定表内部结构，并在 <code class="docutils literal notranslate"><span class="pre">HitGroup1</span></code> 中增加了一些数据。就像 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">注意</span> 中说的那样，即使 <code class="docutils literal notranslate"><span class="pre">HitGroup0</span></code> 没有着色器记录数据，它还是需要与最大的命中组 <code class="docutils literal notranslate"><span class="pre">HitGroup1</span></code> 保持相同的大小，并与句柄对齐大小进行对齐。</p>
-<figure class="align-default" id="id16">
+<figure class="align-default" id="id18">
 <img alt="../../../_images/manyhits_sbt_0.png" src="../../../_images/manyhits_sbt_0.png" />
 <figcaption>
-<p><span class="caption-text">当前着色器绑定表结构示意图</span><a class="headerlink" href="#id16" title="Link to this image">#</a></p>
+<p><span class="caption-text">当前着色器绑定表结构示意图</span><a class="headerlink" href="#id18" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 </section>
-<section id="id8">
-<h2>hello_vulkan.h<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<section id="id10">
+<h2>hello_vulkan.h<a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
 <p>在 <code class="docutils literal notranslate"><span class="pre">HelloVulkan</span></code> 类中，我们将会增加一个用于承接命中组数据的结构体。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">HitRecordBuffer</span>
 <span class="p">{</span>
@@ -436,8 +445,8 @@
 <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">HitRecordBuffer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">m_hitShaderRecord</span><span class="p">;</span>
 </pre></div>
 </div>
-<section id="id9">
-<h3>raytrace2.rchit<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
+<section id="id11">
+<h3>raytrace2.rchit<a class="headerlink" href="#id11" title="Link to this heading">#</a></h3>
 <p>在最近命中着色器中，我们可以使用 <code class="docutils literal notranslate"><span class="pre">layout(shaderRecordEXT)</span></code> 描述符获取着色器记录。</p>
 <div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="k">layout</span><span class="p">(</span><span class="n">shaderRecordEXT</span><span class="p">)</span><span class="w"> </span><span class="k">buffer</span><span class="w"> </span><span class="n">sr_</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kt">vec4</span><span class="w"> </span><span class="n">shaderRec</span><span class="p">;</span><span class="w"> </span><span class="p">};</span>
 </pre></div>
@@ -501,28 +510,28 @@
 </div>
 </section>
 </section>
-<section id="id10">
-<h2>光线追踪<a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
+<section id="id12">
+<h2>光线追踪<a class="headerlink" href="#id12" title="Link to this heading">#</a></h2>
 <p>现在的追踪结果应该为两个黄颜色的 <code class="docutils literal notranslate"><span class="pre">wuson</span></code> 模型。</p>
-<figure class="align-default" id="id17">
+<figure class="align-default" id="id19">
 <img alt="../../../_images/manyhits4.png" src="../../../_images/manyhits4.png" />
 <figcaption>
-<p><span class="caption-text">光追渲染结果示意图</span><a class="headerlink" href="#id17" title="Link to this image">#</a></p>
+<p><span class="caption-text">光追渲染结果示意图</span><a class="headerlink" href="#id19" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 </section>
-<section id="id11">
-<h2>命中延伸<a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
+<section id="id13">
+<h2>命中延伸<a class="headerlink" href="#id13" title="Link to this heading">#</a></h2>
 <p>着色器绑定表可以大于着色器的数量，这可以在每一个实体都有一个着色器并携带自己的数据。对于某些应用程序，相较于 <a class="reference external" href="../NVIDIAVulkanRayTracingTutorial.html">光线追踪教程</a> 中使用一个存储缓存 （ <code class="docutils literal notranslate"><span class="pre">storage</span> <span class="pre">buffer</span></code> ）中存储材质信息，并在着色器中使用 <code class="docutils literal notranslate"><span class="pre">gl_InstanceCustomIndexEXT</span></code> 获取材质数据这种方式，现在可以将这些数据全部放到着色器绑定表中。</p>
 <p>接下来的修改将会在着色器绑定表中增加另一个带有不同颜色的条目。新的命中组 <code class="docutils literal notranslate"><span class="pre">Hit</span> <span class="pre">2</span></code> 将会使用与命中组 <code class="docutils literal notranslate"><span class="pre">Hit</span> <span class="pre">1</span></code> 相同的命中句柄。</p>
-<figure class="align-default" id="id18">
+<figure class="align-default" id="id20">
 <img alt="../../../_images/manyhits_sbt_1.png" src="../../../_images/manyhits_sbt_1.png" />
 <figcaption>
-<p><span class="caption-text">新增命中组 <code class="docutils literal notranslate"><span class="pre">Hit</span> <span class="pre">2</span></code> 示意图</span><a class="headerlink" href="#id18" title="Link to this image">#</a></p>
+<p><span class="caption-text">新增命中组 <code class="docutils literal notranslate"><span class="pre">Hit</span> <span class="pre">2</span></code> 示意图</span><a class="headerlink" href="#id20" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
-<section id="id12">
-<h3>main.cpp<a class="headerlink" href="#id12" title="Link to this heading">#</a></h3>
+<section id="id14">
+<h3>main.cpp<a class="headerlink" href="#id14" title="Link to this heading">#</a></h3>
 <p>在 <code class="docutils literal notranslate"><span class="pre">main</span></code> 中的场景描述中，我们将会设置两个使用 <code class="docutils literal notranslate"><span class="pre">wuson</span></code> 模型的实体分别使用命中组 <code class="docutils literal notranslate"><span class="pre">1</span></code> 和 <code class="docutils literal notranslate"><span class="pre">2</span></code> ，并且有不同的颜色。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 命中着色器数据设置</span>
 <span class="n">helloVk</span><span class="p">.</span><span class="n">m_hitShaderRecord</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
@@ -573,12 +582,12 @@
       <footer>
         
 <div class="related-pages">
-    <a class="next-page" href="../../vk_mini_path_tracer.html">
+    <a class="next-page" href="Animation.html">
         <div class="page-info">
             <div class="context">
                 <span>Next</span>
             </div>
-            <div class="title">Vulkan迷你路径追踪</div>
+            <div class="title">动态更新</div>
         </div>
         <svg class="furo-related-icon">
             <use href="#svg-arrow-right"></use>
@@ -643,27 +652,27 @@
         <div class="toc-tree" style="width: 500px;">
             <ul>
 <li><a class="reference internal" href="#">多重最近命中着色器</a><ul>
-<li><a class="reference internal" href="#id4">教程</a></li>
-<li><a class="reference internal" href="#id5">布置场景</a></li>
-<li><a class="reference internal" href="#id6">增加一个新的最近命中着色器</a><ul>
+<li><a class="reference internal" href="#id6">教程</a></li>
+<li><a class="reference internal" href="#id7">布置场景</a></li>
+<li><a class="reference internal" href="#id8">增加一个新的最近命中着色器</a><ul>
 <li><a class="reference internal" href="#raytrace2-rchit">raytrace2.rchit</a></li>
 <li><a class="reference internal" href="#creatertpipeline">createRtPipeline</a></li>
 <li><a class="reference internal" href="#raytrace-rgen">raytrace.rgen</a></li>
 <li><a class="reference internal" href="#hello-vulkan-h">hello_vulkan.h</a></li>
 <li><a class="reference internal" href="#hello-vulkan-cpp">hello_vulkan.cpp</a></li>
-<li><a class="reference internal" href="#id7">选择命中着色器</a></li>
+<li><a class="reference internal" href="#id9">选择命中着色器</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#shaderrecordkhr">着色器记录数据 <code class="docutils literal notranslate"><span class="pre">shaderRecordKHR</span></code></a></li>
-<li><a class="reference internal" href="#id8">hello_vulkan.h</a><ul>
-<li><a class="reference internal" href="#id9">raytrace2.rchit</a></li>
+<li><a class="reference internal" href="#id10">hello_vulkan.h</a><ul>
+<li><a class="reference internal" href="#id11">raytrace2.rchit</a></li>
 <li><a class="reference internal" href="#main-cpp">main.cpp</a></li>
 <li><a class="reference internal" href="#hellovulkan-creatertshaderbindingtable">HelloVulkan::createRtShaderBindingTable</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id10">光线追踪</a></li>
-<li><a class="reference internal" href="#id11">命中延伸</a><ul>
-<li><a class="reference internal" href="#id12">main.cpp</a></li>
+<li><a class="reference internal" href="#id12">光线追踪</a></li>
+<li><a class="reference internal" href="#id13">命中延伸</a><ul>
+<li><a class="reference internal" href="#id14">main.cpp</a></li>
 <li><a class="reference internal" href="#creatertshaderbindingtable">createRtShaderBindingTable</a></li>
 </ul>
 </li>
