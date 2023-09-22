@@ -273,13 +273,20 @@
 <li><p class="sd-card-text">2023/9/20 增加 <code class="docutils literal notranslate"><span class="pre">更新函数</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/9/20 增加 <code class="docutils literal notranslate"><span class="pre">循环更新函数</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/9/20 增加 <code class="docutils literal notranslate"><span class="pre">nvvk::RaytracingBuilder::buildTlas</span> <span class="pre">（实现）</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/9/22 增加 <code class="docutils literal notranslate"><span class="pre">更新底层加速结构</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/9/22 增加 <code class="docutils literal notranslate"><span class="pre">增加一个球体</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/9/22 增加 <code class="docutils literal notranslate"><span class="pre">计算着色器</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/9/22 增加 <code class="docutils literal notranslate"><span class="pre">anim.comp</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/9/22 增加 <code class="docutils literal notranslate"><span class="pre">更新物体</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/9/22 增加 <code class="docutils literal notranslate"><span class="pre">执行更新</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/9/22 增加 <code class="docutils literal notranslate"><span class="pre">底层加速结构的更新</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p><a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing_animation">文献源</a></p>
-<figure class="align-default" id="id10">
+<figure class="align-default" id="id16">
 <img alt="../../../_images/animation2.gif" src="../../../_images/animation2.gif" />
 <figcaption>
-<p><span class="caption-text">动态更新结果示意图</span><a class="headerlink" href="#id10" title="Link to this image">#</a></p>
+<p><span class="caption-text">动态更新结果示意图</span><a class="headerlink" href="#id16" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <section id="id4">
@@ -394,6 +401,286 @@
 <p>更新只会去更新包含所有变换矩阵的那个缓存，并且 <code class="docutils literal notranslate"><span class="pre">vkCmdBuildAccelerationStructuresKHR</span></code> 将会根据缓存进行相应的更新。</p>
 </section>
 </section>
+<section id="id10">
+<h2>更新底层加速结构<a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
+<p>在之前的章节中，我们更新的变换矩阵。这次我们将会在计算着色器中修改顶点数据。</p>
+<section id="id11">
+<h3>增加一个球体<a class="headerlink" href="#id11" title="Link to this heading">#</a></h3>
+<p>本章节，我们将会更新一个球体的顶点。在 <code class="docutils literal notranslate"><span class="pre">main.cpp</span></code> 中设置场景如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">helloVk</span><span class="p">.</span><span class="n">loadModel</span><span class="p">(</span><span class="n">nvh</span><span class="o">::</span><span class="n">findFile</span><span class="p">(</span><span class="s">&quot;media/scenes/plane.obj&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">defaultSearchPaths</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">),</span>
+<span class="w">                  </span><span class="n">nvmath</span><span class="o">::</span><span class="n">scale_mat4</span><span class="p">(</span><span class="n">nvmath</span><span class="o">::</span><span class="n">vec3f</span><span class="p">(</span><span class="mf">2.f</span><span class="p">,</span><span class="w"> </span><span class="mf">1.f</span><span class="p">,</span><span class="w"> </span><span class="mf">2.f</span><span class="p">)));</span>
+<span class="n">helloVk</span><span class="p">.</span><span class="n">loadModel</span><span class="p">(</span><span class="n">nvh</span><span class="o">::</span><span class="n">findFile</span><span class="p">(</span><span class="s">&quot;media/scenes/wuson.obj&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">defaultSearchPaths</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">));</span>
+<span class="kt">uint32_t</span><span class="w">      </span><span class="n">wusonId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="n">nvmath</span><span class="o">::</span><span class="n">mat4f</span><span class="w"> </span><span class="n">identity</span><span class="p">{</span><span class="mi">1</span><span class="p">};</span>
+<span class="k">for</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">helloVk</span><span class="p">.</span><span class="n">m_instances</span><span class="p">.</span><span class="n">push_back</span><span class="p">({</span><span class="n">identity</span><span class="p">,</span><span class="w"> </span><span class="n">wusonId</span><span class="p">});</span>
+<span class="p">}</span>
+<span class="n">helloVk</span><span class="p">.</span><span class="n">loadModel</span><span class="p">(</span><span class="n">nvh</span><span class="o">::</span><span class="n">findFile</span><span class="p">(</span><span class="s">&quot;media/scenes/sphere.obj&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">defaultSearchPaths</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">));</span><span class="c1">//增加一个球体</span>
+</pre></div>
+</div>
+<p>由于我们现在增加了一个新模型（内部会增加一个实体），所以需要修正 <code class="docutils literal notranslate"><span class="pre">HelloVulkan::animationInstances()</span></code> 中对于 <code class="docutils literal notranslate"><span class="pre">Wuson</span></code> 模型实体数量的计算。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">const</span><span class="w"> </span><span class="kt">int32_t</span><span class="w"> </span><span class="n">nbWuson</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">int32_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">m_instances</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span><span class="w"> </span><span class="c1">// 刨除（地）平面和球体</span>
+</pre></div>
+</div>
+</section>
+<section id="id12">
+<h3>计算着色器<a class="headerlink" href="#id12" title="Link to this heading">#</a></h3>
+<p>我们使用计算着色器来为模型的顶点做更新。</p>
+<p>将如下的所有申明加入 <code class="docutils literal notranslate"><span class="pre">HelloVulkan</span></code> 类中成为其成员：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">createCompDescriptors</span><span class="p">();</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">updateCompDescriptors</span><span class="p">(</span><span class="n">nvvkBuffer</span><span class="o">&amp;</span><span class="w"> </span><span class="n">vertex</span><span class="p">);</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">createCompPipelines</span><span class="p">();</span>
+
+<span class="n">nvvk</span><span class="o">::</span><span class="n">DescriptorSetBindings</span><span class="w"> </span><span class="n">m_compDescSetLayoutBind</span><span class="p">;</span>
+<span class="n">VkDescriptorPool</span><span class="w">            </span><span class="n">m_compDescPool</span><span class="p">;</span>
+<span class="n">VkDescriptorSetLayout</span><span class="w">       </span><span class="n">m_compDescSetLayout</span><span class="p">;</span>
+<span class="n">VkDescriptorSet</span><span class="w">             </span><span class="n">m_compDescSet</span><span class="p">;</span>
+<span class="n">VkPipeline</span><span class="w">                  </span><span class="n">m_compPipeline</span><span class="p">;</span>
+<span class="n">VkPipelineLayout</span><span class="w">            </span><span class="n">m_compPipelineLayout</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>计算着色器将会在一个 <code class="docutils literal notranslate"><span class="pre">VertexObj</span></code> 缓存上执行。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">HelloVulkan::createCompDescriptors</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">m_compDescSetLayoutBind</span><span class="p">.</span><span class="n">addBinding</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">VK_DESCRIPTOR_TYPE_STORAGE_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_COMPUTE_BIT</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">m_compDescSetLayout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_compDescSetLayoutBind</span><span class="p">.</span><span class="n">createLayout</span><span class="p">(</span><span class="n">m_device</span><span class="p">);</span>
+<span class="w">  </span><span class="n">m_compDescPool</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="n">m_compDescSetLayoutBind</span><span class="p">.</span><span class="n">createPool</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="w">  </span><span class="n">m_compDescSet</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="n">nvvk</span><span class="o">::</span><span class="n">allocateDescriptorSet</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">m_compDescPool</span><span class="p">,</span><span class="w"> </span><span class="n">m_compDescSetLayout</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">updateCompDescriptors</span></code> 将会设置一系列的描述符，用于将 <code class="docutils literal notranslate"><span class="pre">VertexObj</span></code> 对象与着色器进行关联。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">HelloVulkan::updateCompDescriptors</span><span class="p">(</span><span class="n">nvvk</span><span class="o">::</span><span class="n">Buffer</span><span class="o">&amp;</span><span class="w"> </span><span class="n">vertex</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">VkWriteDescriptorSet</span><span class="o">&gt;</span><span class="w"> </span><span class="n">writes</span><span class="p">;</span>
+<span class="w">  </span><span class="n">VkDescriptorBufferInfo</span><span class="w">            </span><span class="n">dbiUnif</span><span class="p">{</span><span class="n">vertex</span><span class="p">.</span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">VK_WHOLE_SIZE</span><span class="p">};</span>
+<span class="w">  </span><span class="n">writes</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">m_compDescSetLayoutBind</span><span class="p">.</span><span class="n">makeWrite</span><span class="p">(</span><span class="n">m_compDescSet</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">dbiUnif</span><span class="p">));</span>
+<span class="w">  </span><span class="n">vkUpdateDescriptorSets</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">writes</span><span class="p">.</span><span class="n">size</span><span class="p">()),</span><span class="w"> </span><span class="n">writes</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>该计算管线由一个计算着色器和一个推送常量（ <code class="docutils literal notranslate"><span class="pre">push</span> <span class="pre">constant</span></code> ）构成，这将用于之后的顶点更新。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">HelloVulkan::createCompPipelines</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">VkPushConstantRange</span><span class="w"> </span><span class="n">push_constants</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">VK_SHADER_STAGE_COMPUTE_BIT</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">float</span><span class="p">)};</span>
+
+<span class="w">  </span><span class="n">VkPipelineLayoutCreateInfo</span><span class="w"> </span><span class="n">createInfo</span><span class="p">{</span><span class="n">VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO</span><span class="p">};</span>
+<span class="w">  </span><span class="n">createInfo</span><span class="p">.</span><span class="n">setLayoutCount</span><span class="w">         </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">  </span><span class="n">createInfo</span><span class="p">.</span><span class="n">pSetLayouts</span><span class="w">            </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">m_compDescSetLayout</span><span class="p">;</span>
+<span class="w">  </span><span class="n">createInfo</span><span class="p">.</span><span class="n">pushConstantRangeCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">  </span><span class="n">createInfo</span><span class="p">.</span><span class="n">pPushConstantRanges</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">push_constants</span><span class="p">;</span>
+<span class="w">  </span><span class="n">vkCreatePipelineLayout</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">createInfo</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">m_compPipelineLayout</span><span class="p">);</span>
+
+
+<span class="w">  </span><span class="n">VkComputePipelineCreateInfo</span><span class="w"> </span><span class="n">computePipelineCreateInfo</span><span class="p">{</span><span class="n">VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO</span><span class="p">};</span>
+<span class="w">  </span><span class="n">computePipelineCreateInfo</span><span class="p">.</span><span class="n">layout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_compPipelineLayout</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">computePipelineCreateInfo</span><span class="p">.</span><span class="n">stage</span><span class="w"> </span><span class="o">=</span>
+<span class="w">      </span><span class="n">nvvk</span><span class="o">::</span><span class="n">createShaderStageInfo</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">nvh</span><span class="o">::</span><span class="n">loadFile</span><span class="p">(</span><span class="s">&quot;spv/anim.comp.spv&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="n">defaultSearchPaths</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">),</span>
+<span class="w">                                  </span><span class="n">VK_SHADER_STAGE_COMPUTE_BIT</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">vkCreateComputePipelines</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="p">{},</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">computePipelineCreateInfo</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">m_compPipeline</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">vkDestroyShaderModule</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">computePipelineCreateInfo</span><span class="p">.</span><span class="n">stage</span><span class="p">.</span><span class="k">module</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>最后在 <code class="docutils literal notranslate"><span class="pre">HelloVulkan::destroyResources()</span></code> 销毁资源并回收：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">vkDestroyPipeline</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">m_compPipeline</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+<span class="n">vkDestroyPipelineLayout</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">m_compPipelineLayout</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+<span class="n">vkDestroyDescriptorPool</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">m_compDescPool</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+<span class="n">vkDestroyDescriptorSetLayout</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">m_compDescSetLayout</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="anim-comp">
+<h3>anim.comp<a class="headerlink" href="#anim-comp" title="Link to this heading">#</a></h3>
+<p>该计算着色器比较简单。我们在解决方案中的 <code class="docutils literal notranslate"><span class="pre">shaders</span></code> 中增加一个新着色器文件 <code class="docutils literal notranslate"><span class="pre">anim.com</span></code> 。</p>
+<p>该着色器将会随时间将每个顶点来回上下移动。</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="cp">#version 460</span>
+<span class="cp">#extension GL_ARB_separate_shader_objects : enable</span>
+<span class="cp">#extension GL_EXT_scalar_block_layout : enable</span>
+<span class="cp">#extension GL_GOOGLE_include_directive : enable</span>
+<span class="cp">#extension GL_EXT_shader_explicit_arithmetic_types_int64 : require</span>
+<span class="cp">#include &quot;wavefront.glsl&quot;</span>
+
+<span class="k">layout</span><span class="p">(</span><span class="n">binding</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mo">0</span><span class="p">,</span><span class="w"> </span><span class="n">scalar</span><span class="p">)</span><span class="w"> </span><span class="k">buffer</span><span class="w"> </span><span class="n">Vertices</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">Vertex</span><span class="w"> </span><span class="n">v</span><span class="p">[];</span>
+<span class="p">}</span>
+<span class="n">vertices</span><span class="p">;</span>
+
+<span class="k">layout</span><span class="p">(</span><span class="n">push_constant</span><span class="p">)</span><span class="w"> </span><span class="k">uniform</span><span class="w"> </span><span class="n">shaderInformation</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">iTime</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="n">pushc</span><span class="p">;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">Vertex</span><span class="w"> </span><span class="n">v0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vertices</span><span class="p">.</span><span class="n">v</span><span class="p">[</span><span class="nb">gl_GlobalInvocationID</span><span class="p">.</span><span class="n">x</span><span class="p">];</span>
+
+<span class="w">  </span><span class="c1">// 计算顶点位置</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">PI</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="mf">3.14159265</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">signY</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">v0</span><span class="p">.</span><span class="n">pos</span><span class="p">.</span><span class="n">y</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mo">0</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">);</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">radius</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="n">length</span><span class="p">(</span><span class="n">v0</span><span class="p">.</span><span class="n">pos</span><span class="p">.</span><span class="n">xz</span><span class="p">);</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">argument</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pushc</span><span class="p">.</span><span class="n">iTime</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">radius</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">PI</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">s</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="n">sin</span><span class="p">(</span><span class="n">argument</span><span class="p">);</span>
+<span class="w">  </span><span class="n">v0</span><span class="p">.</span><span class="n">pos</span><span class="p">.</span><span class="n">y</span><span class="w">             </span><span class="o">=</span><span class="w"> </span><span class="n">signY</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">abs</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">0.5</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// 计算法线</span>
+<span class="w">  </span><span class="k">if</span><span class="p">(</span><span class="n">radius</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mf">0.0</span><span class="n">f</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">v0</span><span class="p">.</span><span class="n">nrm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">vec3</span><span class="p">(</span><span class="mf">0.0</span><span class="n">f</span><span class="p">,</span><span class="w"> </span><span class="n">signY</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="n">f</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">else</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">c</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="n">cos</span><span class="p">(</span><span class="n">argument</span><span class="p">);</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">xzFactor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="n">PI</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">c</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">yFactor</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mf">2.0</span><span class="n">f</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">signY</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">radius</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">abs</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
+<span class="w">    </span><span class="n">v0</span><span class="p">.</span><span class="n">nrm</span><span class="w">               </span><span class="o">=</span><span class="w"> </span><span class="n">normalize</span><span class="p">(</span><span class="kt">vec3</span><span class="p">(</span><span class="n">v0</span><span class="p">.</span><span class="n">pos</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">xzFactor</span><span class="p">,</span><span class="w"> </span><span class="n">yFactor</span><span class="p">,</span><span class="w"> </span><span class="n">v0</span><span class="p">.</span><span class="n">pos</span><span class="p">.</span><span class="n">z</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">xzFactor</span><span class="p">));</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="n">vertices</span><span class="p">.</span><span class="n">v</span><span class="p">[</span><span class="nb">gl_GlobalInvocationID</span><span class="p">.</span><span class="n">x</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="id13">
+<h3>更新物体<a class="headerlink" href="#id13" title="Link to this heading">#</a></h3>
+<p>首先在 <code class="docutils literal notranslate"><span class="pre">HelloVulkan</span></code> 中增加更新函数的声明：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">animationObject</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">time</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>更新函数实现仅干两件事：</p>
+<ol class="arabic simple">
+<li><p>推送当前时间</p></li>
+<li><p>调用计算着色器（ <code class="docutils literal notranslate"><span class="pre">dispatch</span></code> ）</p></li>
+</ol>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">HelloVulkan::animationObject</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">time</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">sphereId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="w">  </span><span class="n">ObjModel</span><span class="o">&amp;</span><span class="w">      </span><span class="n">model</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">m_objModel</span><span class="p">[</span><span class="n">sphereId</span><span class="p">];</span>
+
+<span class="w">  </span><span class="n">updateCompDescriptors</span><span class="p">(</span><span class="n">model</span><span class="p">.</span><span class="n">vertexBuffer</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">nvvk</span><span class="o">::</span><span class="n">CommandPool</span><span class="w"> </span><span class="n">genCmdBuf</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">m_graphicsQueueIndex</span><span class="p">);</span>
+<span class="w">  </span><span class="n">VkCommandBuffer</span><span class="w">   </span><span class="n">cmdBuf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">genCmdBuf</span><span class="p">.</span><span class="n">createCommandBuffer</span><span class="p">();</span>
+
+<span class="w">  </span><span class="n">vkCmdBindPipeline</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="n">VK_PIPELINE_BIND_POINT_COMPUTE</span><span class="p">,</span><span class="w"> </span><span class="n">m_compPipeline</span><span class="p">);</span>
+<span class="w">  </span><span class="n">vkCmdBindDescriptorSets</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="n">VK_PIPELINE_BIND_POINT_COMPUTE</span><span class="p">,</span><span class="w"> </span><span class="n">m_compPipelineLayout</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">m_compDescSet</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+<span class="w">  </span><span class="n">vkCmdPushConstants</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="n">m_compPipelineLayout</span><span class="p">,</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_COMPUTE_BIT</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">float</span><span class="p">),</span><span class="w"> </span><span class="o">&amp;</span><span class="n">time</span><span class="p">);</span>
+<span class="w">  </span><span class="n">vkCmdDispatch</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="n">model</span><span class="p">.</span><span class="n">nbVertices</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">genCmdBuf</span><span class="p">.</span><span class="n">submitAndWait</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="id14">
+<h3>执行更新<a class="headerlink" href="#id14" title="Link to this heading">#</a></h3>
+<p>在 <code class="docutils literal notranslate"><span class="pre">main.cpp</span></code> 中，在其他资源创建完成之后，添加计算着色器的创建函数。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">helloVk</span><span class="p">.</span><span class="n">createCompDescriptors</span><span class="p">();</span>
+<span class="n">helloVk</span><span class="p">.</span><span class="n">createCompPipelines</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>在渲染循环中，在 <code class="docutils literal notranslate"><span class="pre">animationInstances</span></code> 调用之前调用，物体更新函数。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">helloVk</span><span class="p">.</span><span class="n">animationObject</span><span class="p">(</span><span class="n">diff</span><span class="p">.</span><span class="n">count</span><span class="p">());</span>
+</pre></div>
+</div>
+<div class="caution admonition">
+<p class="admonition-title">注意</p>
+<p>当底层加速结构发生了更新，一定不要忘了去更新一下顶层加速结构。目的是确保顶层加速结构中的包围盒是更新后的状态。</p>
+</div>
+<div class="caution admonition">
+<p class="admonition-title">注意</p>
+<p>此时，在光栅化渲染下能够看到更新，但是光追渲染中不会发生任何改变（因为还未更新底层加速结构）。</p>
+</div>
+</section>
+</section>
+<section id="id15">
+<h2>底层加速结构的更新<a class="headerlink" href="#id15" title="Link to this heading">#</a></h2>
+<p>在 <code class="docutils literal notranslate"><span class="pre">raytrace_vkpp.hpp</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">nvvk::RaytracingBuilder</span></code> 中，我们可以增加一个函数用于将之前更新的顶点数据更新到底层加速结构中。这与之前更新实体类似，只不过这次没有缓存传输这一说了。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">//--------------------------------------------------------------------------------------------------</span>
+<span class="c1">// 从更新的缓存中重组底层加速结构的 blasIdx 数量</span>
+<span class="c1">//</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">nvvk::RaytracingBuilderKHR::updateBlas</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">blasIdx</span><span class="p">,</span><span class="w"> </span><span class="n">BlasInput</span><span class="o">&amp;</span><span class="w"> </span><span class="n">blas</span><span class="p">,</span><span class="w"> </span><span class="n">VkBuildAccelerationStructureFlagsKHR</span><span class="w"> </span><span class="n">flags</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">assert</span><span class="p">(</span><span class="kt">size_t</span><span class="p">(</span><span class="n">blasIdx</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">m_blas</span><span class="p">.</span><span class="n">size</span><span class="p">());</span>
+
+<span class="w">  </span><span class="c1">// 准备好所有的构建信息，并填充要更新的加速结构</span>
+<span class="w">  </span><span class="n">VkAccelerationStructureBuildGeometryInfoKHR</span><span class="w"> </span><span class="n">buildInfos</span><span class="p">{</span><span class="n">VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR</span><span class="p">};</span>
+<span class="w">  </span><span class="n">buildInfos</span><span class="p">.</span><span class="n">flags</span><span class="w">                    </span><span class="o">=</span><span class="w"> </span><span class="n">flags</span><span class="p">;</span>
+<span class="w">  </span><span class="n">buildInfos</span><span class="p">.</span><span class="n">geometryCount</span><span class="w">            </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint32_t</span><span class="p">)</span><span class="n">blas</span><span class="p">.</span><span class="n">asGeometry</span><span class="p">.</span><span class="n">size</span><span class="p">();</span>
+<span class="w">  </span><span class="n">buildInfos</span><span class="p">.</span><span class="n">pGeometries</span><span class="w">              </span><span class="o">=</span><span class="w"> </span><span class="n">blas</span><span class="p">.</span><span class="n">asGeometry</span><span class="p">.</span><span class="n">data</span><span class="p">();</span>
+<span class="w">  </span><span class="n">buildInfos</span><span class="p">.</span><span class="n">mode</span><span class="w">                     </span><span class="o">=</span><span class="w"> </span><span class="n">VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR</span><span class="p">;</span><span class="w">  </span><span class="c1">// 更新标志位</span>
+<span class="w">  </span><span class="n">buildInfos</span><span class="p">.</span><span class="n">type</span><span class="w">                     </span><span class="o">=</span><span class="w"> </span><span class="n">VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR</span><span class="p">;</span>
+<span class="w">  </span><span class="n">buildInfos</span><span class="p">.</span><span class="n">srcAccelerationStructure</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_blas</span><span class="p">[</span><span class="n">blasIdx</span><span class="p">].</span><span class="n">accel</span><span class="p">;</span><span class="w">  </span><span class="c1">// 更新源</span>
+<span class="w">  </span><span class="n">buildInfos</span><span class="p">.</span><span class="n">dstAccelerationStructure</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_blas</span><span class="p">[</span><span class="n">blasIdx</span><span class="p">].</span><span class="n">accel</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// 从设备中获取构建大小</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">maxPrimCount</span><span class="p">(</span><span class="n">blas</span><span class="p">.</span><span class="n">asBuildOffsetInfo</span><span class="p">.</span><span class="n">size</span><span class="p">());</span>
+<span class="w">  </span><span class="k">for</span><span class="p">(</span><span class="k">auto</span><span class="w"> </span><span class="n">tt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">tt</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">blas</span><span class="p">.</span><span class="n">asBuildOffsetInfo</span><span class="p">.</span><span class="n">size</span><span class="p">();</span><span class="w"> </span><span class="n">tt</span><span class="o">++</span><span class="p">)</span>
+<span class="w">    </span><span class="n">maxPrimCount</span><span class="p">[</span><span class="n">tt</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">blas</span><span class="p">.</span><span class="n">asBuildOffsetInfo</span><span class="p">[</span><span class="n">tt</span><span class="p">].</span><span class="n">primitiveCount</span><span class="p">;</span><span class="w">  </span><span class="c1">// 图元数量（也就是三角形数量）</span>
+<span class="w">  </span><span class="n">VkAccelerationStructureBuildSizesInfoKHR</span><span class="w"> </span><span class="n">sizeInfo</span><span class="p">{</span><span class="n">VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR</span><span class="p">};</span>
+<span class="w">  </span><span class="n">vkGetAccelerationStructureBuildSizesKHR</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">buildInfos</span><span class="p">,</span>
+<span class="w">                                          </span><span class="n">maxPrimCount</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span><span class="w"> </span><span class="o">&amp;</span><span class="n">sizeInfo</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// 分配暂付缓存并设置暂付信息</span>
+<span class="w">  </span><span class="n">nvvk</span><span class="o">::</span><span class="n">Buffer</span><span class="w"> </span><span class="n">scratchBuffer</span><span class="w"> </span><span class="o">=</span>
+<span class="w">      </span><span class="n">m_alloc</span><span class="o">-&gt;</span><span class="n">createBuffer</span><span class="p">(</span><span class="n">sizeInfo</span><span class="p">.</span><span class="n">buildScratchSize</span><span class="p">,</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_STORAGE_BUFFER_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT</span><span class="p">);</span>
+<span class="w">  </span><span class="n">VkBufferDeviceAddressInfo</span><span class="w"> </span><span class="n">bufferInfo</span><span class="p">{</span><span class="n">VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO</span><span class="p">};</span>
+<span class="w">  </span><span class="n">bufferInfo</span><span class="p">.</span><span class="n">buffer</span><span class="w">                    </span><span class="o">=</span><span class="w"> </span><span class="n">scratchBuffer</span><span class="p">.</span><span class="n">buffer</span><span class="p">;</span>
+<span class="w">  </span><span class="n">buildInfos</span><span class="p">.</span><span class="n">scratchData</span><span class="p">.</span><span class="n">deviceAddress</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vkGetBufferDeviceAddress</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">bufferInfo</span><span class="p">);</span>
+<span class="w">  </span><span class="n">NAME_VK</span><span class="p">(</span><span class="n">scratchBuffer</span><span class="p">.</span><span class="n">buffer</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">VkAccelerationStructureBuildRangeInfoKHR</span><span class="o">*&gt;</span><span class="w"> </span><span class="n">pBuildOffset</span><span class="p">(</span><span class="n">blas</span><span class="p">.</span><span class="n">asBuildOffsetInfo</span><span class="p">.</span><span class="n">size</span><span class="p">());</span>
+<span class="w">  </span><span class="k">for</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">blas</span><span class="p">.</span><span class="n">asBuildOffsetInfo</span><span class="p">.</span><span class="n">size</span><span class="p">();</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="w">    </span><span class="n">pBuildOffset</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">blas</span><span class="p">.</span><span class="n">asBuildOffsetInfo</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+
+<span class="w">  </span><span class="c1">// 更新设备端的实体缓存并构建顶层加速结构</span>
+<span class="w">  </span><span class="n">nvvk</span><span class="o">::</span><span class="n">CommandPool</span><span class="w"> </span><span class="n">genCmdBuf</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">m_queueIndex</span><span class="p">);</span>
+<span class="w">  </span><span class="n">VkCommandBuffer</span><span class="w">   </span><span class="n">cmdBuf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">genCmdBuf</span><span class="p">.</span><span class="n">createCommandBuffer</span><span class="p">();</span>
+
+
+<span class="w">  </span><span class="c1">// 更新加速结构</span>
+<span class="w">  </span><span class="n">vkCmdBuildAccelerationStructuresKHR</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">buildInfos</span><span class="p">,</span><span class="w"> </span><span class="n">pBuildOffset</span><span class="p">.</span><span class="n">data</span><span class="p">());</span>
+
+<span class="w">  </span><span class="n">genCmdBuf</span><span class="p">.</span><span class="n">submitAndWait</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">);</span>
+<span class="w">  </span><span class="n">m_alloc</span><span class="o">-&gt;</span><span class="n">destroy</span><span class="p">(</span><span class="n">scratchBuffer</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>之前的 <code class="docutils literal notranslate"><span class="pre">updateBlas</span></code> 函数会使用 <code class="docutils literal notranslate"><span class="pre">m_blas</span></code> 中存储的几何体信息。为了能够重复使用这些信息，我们需要在 <code class="docutils literal notranslate"><span class="pre">nvvk::RaytracingBuilderKHR::Blas</span></code> 对象创建时保留这些数据。</p>
+<p>将 <code class="docutils literal notranslate"><span class="pre">HelloVulkan::createBottomLevelAS()</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">nvvk::RaytracingBuilderKHR::Blas</span></code> 转移至 <code class="docutils literal notranslate"><span class="pre">HelloVulkan</span></code> 类中，将其重命名为 <code class="docutils literal notranslate"><span class="pre">m_blas</span></code> 。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">nvvk</span><span class="o">::</span><span class="n">RaytracingBuilderKHR</span><span class="o">::</span><span class="n">Blas</span><span class="o">&gt;</span><span class="w">         </span><span class="n">m_blas</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>和顶层加速结构类似，底层加速结构也需要支持更新（ <code class="docutils literal notranslate"><span class="pre">VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_UPDATE_BIT_KHR</span></code> ） 。我们需要使用 <code class="docutils literal notranslate"><span class="pre">VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_BUILD_BIT_KHR</span></code> 标志位，用于告知驱动相较于追踪性能，我们更关注加速结构的构建速度。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">HelloVulkan::createBottomLevelAS</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="c1">// 底层加速结构 - 存储几何中的每一个图元</span>
+<span class="w">  </span><span class="n">m_blas</span><span class="p">.</span><span class="n">reserve</span><span class="p">(</span><span class="n">m_objModel</span><span class="p">.</span><span class="n">size</span><span class="p">());</span>
+<span class="w">  </span><span class="k">for</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">obj</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">m_objModel</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">blas</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">objectToVkGeometryKHR</span><span class="p">(</span><span class="n">obj</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// 每一个底层加速结构都可以包含多个几何体，但是目前我们只有一个</span>
+<span class="w">    </span><span class="n">m_blas</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">blas</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="n">m_rtBuilder</span><span class="p">.</span><span class="n">buildBlas</span><span class="p">(</span><span class="n">m_blas</span><span class="p">,</span><span class="w"> </span><span class="n">VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_UPDATE_BIT_KHR</span>
+<span class="w">                                    </span><span class="o">|</span><span class="w"> </span><span class="n">VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_BUILD_BIT_KHR</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>最后我们可以在 <code class="docutils literal notranslate"><span class="pre">HelloVulkan::animationObject()</span></code> 后面增加对于底层加速结构的更新。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">m_rtBuilder</span><span class="p">.</span><span class="n">updateBlas</span><span class="p">(</span><span class="n">sphereId</span><span class="p">,</span><span class="w"> </span><span class="n">m_blas</span><span class="p">[</span><span class="n">sphereId</span><span class="p">],</span>
+<span class="w">                         </span><span class="n">VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_UPDATE_BIT_KHR</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_BUILD_BIT_KHR</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
 </section>
 
         </article>
@@ -482,6 +769,15 @@
 <li><a class="reference internal" href="#nvvk-raytracingbuilder-buildtlas">nvvk::RaytracingBuilder::buildTlas （实现）</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#id10">更新底层加速结构</a><ul>
+<li><a class="reference internal" href="#id11">增加一个球体</a></li>
+<li><a class="reference internal" href="#id12">计算着色器</a></li>
+<li><a class="reference internal" href="#anim-comp">anim.comp</a></li>
+<li><a class="reference internal" href="#id13">更新物体</a></li>
+<li><a class="reference internal" href="#id14">执行更新</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id15">底层加速结构的更新</a></li>
 </ul>
 </li>
 </ul>
