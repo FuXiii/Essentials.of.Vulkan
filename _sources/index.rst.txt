@@ -14,6 +14,7 @@
    * 2023/5/22 增加 ``更新日志`` 目录
    * 2023/6/5 增加 ``随笔`` 目录
    * 2023/9/22 增加 ``环境配置`` 文档链接
+   * 2023/9/23 增加 ``Android 平台适配`` 文档链接
 
 .. image:: https://img.shields.io/badge/QQ%20Group-128656761-deepgreen?logo=tencentqq
    :target: https://jq.qq.com/?_wv=1027&k=rZGd2LHr
@@ -80,6 +81,7 @@
    :maxdepth: 2
 
    ./InformalEssay/index.rst
+   ./InformalEssay/VulkanForAndroid.rst
 
 .. toctree::
    :caption: 工程应用
