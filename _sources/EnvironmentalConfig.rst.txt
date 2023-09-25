@@ -8,11 +8,14 @@
     * 2023/9/22 增加该扩展文档
     * 2023/9/22 增加 ``获取 Vulkan-Headers`` 章节
     * 2023/9/22 增加 ``环境配置`` 章节
+    * 2023/9/25 更新 ``环境配置`` 章节中的 ``Windows`` 配置
+
+.. |vs_new_line| image:: ./_static/vs_new_line.png
+    :width: 1em
 
 在开始真正开发学习 ``Vulkan`` 前，需要配置一下必要的开发环境。
 
 在开始配置环境前，您只需要获取 `Vulkan-Headers <https://github.com/KhronosGroup/Vulkan-Headers>`_ 即可：
-
 
 获取 Vulkan-Headers
 #####################
@@ -66,7 +69,44 @@
 
         .. figure:: ./_static/vs_solution_explorer_menu.png
 
-        待续
+        4. 在项目上的 ``Source Files`` 上 :kbd:`右键` 依次点击 :menuselection:`Add --> New Item` 选项
+
+        .. figure:: ./_static/vs_new_item.png
+
+        5. 在 ``Add New Item`` 页面中依次点击 :menuselection:`C++ File(.cpp) --> Name(将 Source.cpp 修改为 main.cpp) --> Add` 选项
+
+        .. figure:: ./_static/vs_create_main_cpp.png
+
+        这样就在 ``Source Files`` 下创建了一个 ``main.cpp`` 文件。
+
+        .. figure:: ./_static/vs_main_cpp_file.png
+
+        6. 在项目上 :kbd:`右键` 点击 :menuselection:`Properties` 选项，打开 ``Properties`` 页面。
+
+        .. figure:: ./_static/vs_project_properties.png
+
+        7. 在 ``Properties`` 页面中依次点击 :menuselection:`Configuration Properties --> C/C++ --> General --> Additional Include Directions --> ∨ --> <Edit...>` ，打开头文件目录配置页面。
+
+        .. figure:: ./_static/vs_additional_include_directions.png
+
+        .. admonition:: 注意
+            :class: note
+
+            需要确保红框中对应的配置参数一致（这里使用输出 ``Debug`` 调试目标， ``x64`` 平台）。
+
+            .. figure:: ./_static/vs_config_uniform.png
+
+        8. 在红框空白处 :kbd:`双击` 或点击右上角的 |vs_new_line| 。将 ``Vulkan-Headers`` 的 ``include`` 文件夹目录配置进来。
+
+        .. figure:: ./_static/vs_add_include_header_dir.png
+
+        9. 配置完成后点击 :menuselection:`OK` 完成头文件目录配置。
+
+        .. figure:: ./_static/vs_vulkan_headers.png
+
+        10. 回到 ``Properties`` 页面点击 :menuselection:`Apply` 完成配置
+
+        .. figure:: ./_static/vs_apply_header.png
 
     .. tab-item:: Linux
 
