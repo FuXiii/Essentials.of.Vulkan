@@ -73,6 +73,10 @@
    * 2023/7/9 增加 ``VkMemoryHeapFlagBits`` 章节
    * 2023/7/9 增加 ``VkPhysicalDeviceMemoryProperties 结构图`` 章节
    * 2023/7/10 增加 ``vkGetPhysicalDeviceMemoryProperties`` 函数例程
+   * 2023/10/3 将 ``获取 Vulkan 支持的缓存`` 章节重命名为 ``获取 Vulkan 支持的缓存信息``
+   * 2023/10/3 更新 ``VkMemoryHeap`` 章节，增加 ``堆`` 说明。
+   * 2023/10/3 更新 ``vkGetPhysicalDeviceQueueFamilyProperties`` 章节，更新 ``队列族`` 说明图示。
+   * 2023/10/3 更新 ``VkPhysicalDeviceMemoryProperties 结构图`` 章节，更新说明图示。
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -772,59 +776,64 @@ vkGetPhysicalDeviceQueueFamilyProperties
 
    在 ``Vulkan`` 中设备队列是按照 ``族`` 进行管理的，前面我们知道一个物理设备上的可能会有多个设备队列支持相同的功能域，这些支持相同功能域的设备队列算作同一族。
 
-   .. mermaid::
+   .. figure:: ./_static/vk_queue_family_struct.svg
 
-      flowchart TB
-         subgraph DeviceQueueFamily_A["设备队列族 A"]
-            direction LR
-            subgraph DeviceQueueFamily_A_Flags["支持的功能域"]
+      如上图中。队列0、1、2三个队列属于队列族A，则这三个队列支持计算、图形和转移功能。队列3属于队列族B，则该队列支持计算和转移功能。
+
+   ..
+      .. mermaid::
+      
+         flowchart TB
+            subgraph DeviceQueueFamily_A["设备队列族 A"]
                direction LR
-                  DeviceQueueFamily_A_GRAPHICS["图形"]
-                  DeviceQueueFamily_A_COMPUTE["计算"]
-                  DeviceQueueFamily_A_TRANSFER["转移"]
-
-                  DeviceQueueFamily_A_GRAPHICS -.- DeviceQueueFamily_A_COMPUTE -.- DeviceQueueFamily_A_TRANSFER
+               subgraph DeviceQueueFamily_A_Flags["支持的功能域"]
+                  direction LR
+                     DeviceQueueFamily_A_GRAPHICS["图形"]
+                     DeviceQueueFamily_A_COMPUTE["计算"]
+                     DeviceQueueFamily_A_TRANSFER["转移"]
+   
+                     DeviceQueueFamily_A_GRAPHICS -.- DeviceQueueFamily_A_COMPUTE -.- DeviceQueueFamily_A_TRANSFER
+               end
+   
+               subgraph DeviceQueueFamily_A_Queues["支持的队列"]
+                  direction TB
+                     DeviceQueueFamily_A_Queue0["队列0"]
+                     DeviceQueueFamily_A_Queue1["队列1"]
+                     DeviceQueueFamily_A_Queue2["队列2"]
+   
+                     DeviceQueueFamily_A_Queue0 -.- DeviceQueueFamily_A_Queue1 -.- DeviceQueueFamily_A_Queue2
+               end
+   
+               DeviceQueueFamily_A_Flags o--o DeviceQueueFamily_A_Queues
+   
             end
-
-            subgraph DeviceQueueFamily_A_Queues["支持的队列"]
-               direction TB
-                  DeviceQueueFamily_A_Queue0["队列0"]
-                  DeviceQueueFamily_A_Queue1["队列1"]
-                  DeviceQueueFamily_A_Queue2["队列2"]
-
-                  DeviceQueueFamily_A_Queue0 -.- DeviceQueueFamily_A_Queue1 -.- DeviceQueueFamily_A_Queue2
-            end
-
-            DeviceQueueFamily_A_Flags o--o DeviceQueueFamily_A_Queues
-
-         end
-
-         subgraph DeviceQueueFamily_B["设备队列族 B"]
-            direction LR
-            subgraph DeviceQueueFamily_B_Flags["支持的功能域"]
+   
+            subgraph DeviceQueueFamily_B["设备队列族 B"]
                direction LR
-                  DeviceQueueFamily_B_COMPUTE["计算"]
-                  DeviceQueueFamily_B_TRANSFER["转移"]
-
-                  DeviceQueueFamily_B_COMPUTE -.- DeviceQueueFamily_B_TRANSFER
+               subgraph DeviceQueueFamily_B_Flags["支持的功能域"]
+                  direction LR
+                     DeviceQueueFamily_B_COMPUTE["计算"]
+                     DeviceQueueFamily_B_TRANSFER["转移"]
+   
+                     DeviceQueueFamily_B_COMPUTE -.- DeviceQueueFamily_B_TRANSFER
+               end
+   
+               subgraph DeviceQueueFamily_B_Queues["支持的队列"]
+                  direction TB
+                     DeviceQueueFamily_B_Queue3["队列3"]
+               end
+   
+               DeviceQueueFamily_B_Flags o--o DeviceQueueFamily_B_Queues
+   
             end
-
-            subgraph DeviceQueueFamily_B_Queues["支持的队列"]
-               direction TB
-                  DeviceQueueFamily_B_Queue3["队列3"]
-            end
-
-            DeviceQueueFamily_B_Flags o--o DeviceQueueFamily_B_Queues
-
-         end
-
-         DeviceQueueFamily_A-->DeviceQueueFamily_B
-         DeviceQueueFamily_B-->etc["..."]
-
-         style DeviceQueueFamily_A_Flags fill:#f96
-         style DeviceQueueFamily_B_Flags fill:#f96
-         style DeviceQueueFamily_A_Queues fill:#00bfa5
-         style DeviceQueueFamily_B_Queues fill:#00bfa5
+   
+            DeviceQueueFamily_A-->DeviceQueueFamily_B
+            DeviceQueueFamily_B-->etc["..."]
+   
+            style DeviceQueueFamily_A_Flags fill:#f96
+            style DeviceQueueFamily_B_Flags fill:#f96
+            style DeviceQueueFamily_A_Queues fill:#00bfa5
+            style DeviceQueueFamily_B_Queues fill:#00bfa5
 
 设备队列族 ``VkQueueFamilyProperties`` 定义如下：
 
@@ -1239,7 +1248,7 @@ vkGetDeviceQueue
 
    其实在 ``Vulkan`` 标准看来，所有的内存都属于 ``Device`` 端内存，只不过有些 ``Device`` 端内存可以被 ``Host`` 端访问。有些 ``Device`` 端内存为 ``Device`` 专属内存。
 
-获取 Vulkan 支持的缓存
+获取 Vulkan 支持的缓存信息
 *******************************
 
 .. admonition:: 内存与缓存
@@ -1351,6 +1360,11 @@ VkMemoryHeap
 * :bdg-secondary:`size` 表示该内存堆的比特大小。
 * :bdg-secondary:`flags` 表示该堆的属性标志位，各位的含义被定义在 ``VkMemoryHeapFlagBits`` 中。
 
+.. admonition:: ``VkMemoryHeap`` 与 ``堆``
+   :class: note
+
+   一个 ``VkMemoryHeap`` 对应这一个内存 ``堆`` 。 ``堆`` 就是用于存储数据的地方，一般对应着物理存储介质。在 ``Vulkan`` 中内存是从堆上进行分配和管理的。
+
 ``VkMemoryHeapFlags`` 对应的各个比特位的值定义于 ``VkMemoryHeapFlagBits`` 枚举中，定义如下：
 
 VkMemoryHeapFlagBits
@@ -1375,53 +1389,58 @@ VkPhysicalDeviceMemoryProperties 结构图
 
 为了更清晰的理解 ``VkPhysicalDeviceMemoryProperties`` ，在此给出一张 ``VkPhysicalDeviceMemoryProperties`` 结构参考图：
 
-.. mermaid::
+.. figure:: ./_static/VkPhysicalDeviceMemoryProperties_struct.svg
 
-   flowchart TB
-      subgraph memoryTypes["VkPhysicalDeviceMemoryProperties::memoryTypes"]
-      direction LR
-         subgraph VkMemoryType0["VkMemoryType 0"]
-         direction TB
-             VkMemoryType0_PropertyFlags["VkMemoryPropertyFlags propertyFlags"] -.- VkMemoryType0_HeapIndex["uint32_t heapIndex"]
-         end
-         subgraph VkMemoryType1["VkMemoryType 1"]
-         direction TB
-             VkMemoryType1_PropertyFlags["VkMemoryPropertyFlags propertyFlags"] -.- VkMemoryType1_HeapIndex["uint32_t heapIndex"]
-         end
-         subgraph VkMemoryType2["VkMemoryType 2"]
-         direction TB
-             VkMemoryType2_PropertyFlags["VkMemoryPropertyFlags propertyFlags"] -.- VkMemoryType2_HeapIndex["uint32_t heapIndex"]
-         end
-         subgraph VkMemoryTypeEtc["..."]
-         end
+   如图所示为一种可能的结构。第一种内存类型对应着第三个内存堆，第二种内存类型对应着第一个内存堆，第三种内存类型对应着第二个内存堆。
 
-         VkMemoryType0 -.- VkMemoryType1 -.- VkMemoryType2 -.- VkMemoryTypeEtc
-      end
+..
+   .. mermaid::
 
-      subgraph memoryHeaps["VkPhysicalDeviceMemoryProperties::memoryHeaps"]
-      direction LR
-         subgraph VkMemoryHeap0["VkMemoryHeap 0"]
-         direction TB
-             VkMemoryHeap0_Size["VkDeviceSize size"] -.- VkMemoryHeap0_Flags["VkMemoryHeapFlags flags"]
-         end
-         subgraph VkMemoryHeap1["VkMemoryHeap 1"]
-         direction TB
-             VkMemoryHeap1_Size["VkDeviceSize size"] -.- VkMemoryHeap1_Flags["VkMemoryHeapFlags flags"]
-         end
-         subgraph VkMemoryHeap2["VkMemoryHeap 2"]
-         direction TB
-             VkMemoryHeap2_Size["VkDeviceSize size"] -.- VkMemoryHeap2_Flags["VkMemoryHeapFlags flags"]
-         end
-         subgraph VkMemoryHeapEtc["..."]
+      flowchart TB
+         subgraph memoryTypes["VkPhysicalDeviceMemoryProperties::memoryTypes"]
+         direction LR
+            subgraph VkMemoryType0["VkMemoryType 0"]
+            direction TB
+                VkMemoryType0_PropertyFlags["VkMemoryPropertyFlags propertyFlags"] -.- VkMemoryType0_HeapIndex["uint32_t heapIndex"]
+            end
+            subgraph VkMemoryType1["VkMemoryType 1"]
+            direction TB
+                VkMemoryType1_PropertyFlags["VkMemoryPropertyFlags propertyFlags"] -.- VkMemoryType1_HeapIndex["uint32_t heapIndex"]
+            end
+            subgraph VkMemoryType2["VkMemoryType 2"]
+            direction TB
+                VkMemoryType2_PropertyFlags["VkMemoryPropertyFlags propertyFlags"] -.- VkMemoryType2_HeapIndex["uint32_t heapIndex"]
+            end
+            subgraph VkMemoryTypeEtc["..."]
+            end
+
+            VkMemoryType0 -.- VkMemoryType1 -.- VkMemoryType2 -.- VkMemoryTypeEtc
          end
 
-         VkMemoryHeap0 -.- VkMemoryHeap1 -.- VkMemoryHeap2 -.- VkMemoryHeapEtc
+         subgraph memoryHeaps["VkPhysicalDeviceMemoryProperties::memoryHeaps"]
+         direction LR
+            subgraph VkMemoryHeap0["VkMemoryHeap 0"]
+            direction TB
+                VkMemoryHeap0_Size["VkDeviceSize size"] -.- VkMemoryHeap0_Flags["VkMemoryHeapFlags flags"]
+            end
+            subgraph VkMemoryHeap1["VkMemoryHeap 1"]
+            direction TB
+                VkMemoryHeap1_Size["VkDeviceSize size"] -.- VkMemoryHeap1_Flags["VkMemoryHeapFlags flags"]
+            end
+            subgraph VkMemoryHeap2["VkMemoryHeap 2"]
+            direction TB
+                VkMemoryHeap2_Size["VkDeviceSize size"] -.- VkMemoryHeap2_Flags["VkMemoryHeapFlags flags"]
+            end
+            subgraph VkMemoryHeapEtc["..."]
+            end
 
-      end
+            VkMemoryHeap0 -.- VkMemoryHeap1 -.- VkMemoryHeap2 -.- VkMemoryHeapEtc
 
-      VkMemoryType0_HeapIndex-->VkMemoryHeap2
-      VkMemoryType1_HeapIndex-->VkMemoryHeap0
-      VkMemoryType2_HeapIndex-->VkMemoryHeap1
+         end
+
+         VkMemoryType0_HeapIndex-->VkMemoryHeap2
+         VkMemoryType1_HeapIndex-->VkMemoryHeap0
+         VkMemoryType2_HeapIndex-->VkMemoryHeap1
 
 接下来就能够通过 ``vkGetPhysicalDeviceMemoryProperties`` 获取内存信息了，和之前很多函数一样，首先获取 ``vkGetPhysicalDeviceMemoryProperties`` 函数实现：
 

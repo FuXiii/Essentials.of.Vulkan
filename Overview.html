@@ -336,6 +336,10 @@
 <li><p class="sd-card-text">2023/7/9 增加 <code class="docutils literal notranslate"><span class="pre">VkMemoryHeapFlagBits</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/7/9 增加 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties</span> <span class="pre">结构图</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/7/10 增加 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties</span></code> 函数例程</p></li>
+<li><p class="sd-card-text">2023/10/3 将 <code class="docutils literal notranslate"><span class="pre">获取</span> <span class="pre">Vulkan</span> <span class="pre">支持的缓存</span></code> 章节重命名为 <code class="docutils literal notranslate"><span class="pre">获取</span> <span class="pre">Vulkan</span> <span class="pre">支持的缓存信息</span></code></p></li>
+<li><p class="sd-card-text">2023/10/3 更新 <code class="docutils literal notranslate"><span class="pre">VkMemoryHeap</span></code> 章节，增加 <code class="docutils literal notranslate"><span class="pre">堆</span></code> 说明。</p></li>
+<li><p class="sd-card-text">2023/10/3 更新 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceQueueFamilyProperties</span></code> 章节，更新 <code class="docutils literal notranslate"><span class="pre">队列族</span></code> 说明图示。</p></li>
+<li><p class="sd-card-text">2023/10/3 更新 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties</span> <span class="pre">结构图</span></code> 章节，更新说明图示。</p></li>
 </ul>
 </div>
 </details><p>由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 比较复杂，为了更好的入门 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> ，还是大致过一遍 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的核心思路，这对以后的学习很有帮助。</p>
@@ -976,59 +980,12 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <div class="note admonition">
 <p class="admonition-title">队列族</p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中设备队列是按照 <code class="docutils literal notranslate"><span class="pre">族</span></code> 进行管理的，前面我们知道一个物理设备上的可能会有多个设备队列支持相同的功能域，这些支持相同功能域的设备队列算作同一族。</p>
-<div class="mermaid">
-            flowchart TB
-   subgraph DeviceQueueFamily_A[&quot;设备队列族 A&quot;]
-      direction LR
-      subgraph DeviceQueueFamily_A_Flags[&quot;支持的功能域&quot;]
-         direction LR
-            DeviceQueueFamily_A_GRAPHICS[&quot;图形&quot;]
-            DeviceQueueFamily_A_COMPUTE[&quot;计算&quot;]
-            DeviceQueueFamily_A_TRANSFER[&quot;转移&quot;]
-
-            DeviceQueueFamily_A_GRAPHICS -.- DeviceQueueFamily_A_COMPUTE -.- DeviceQueueFamily_A_TRANSFER
-      end
-
-      subgraph DeviceQueueFamily_A_Queues[&quot;支持的队列&quot;]
-         direction TB
-            DeviceQueueFamily_A_Queue0[&quot;队列0&quot;]
-            DeviceQueueFamily_A_Queue1[&quot;队列1&quot;]
-            DeviceQueueFamily_A_Queue2[&quot;队列2&quot;]
-
-            DeviceQueueFamily_A_Queue0 -.- DeviceQueueFamily_A_Queue1 -.- DeviceQueueFamily_A_Queue2
-      end
-
-      DeviceQueueFamily_A_Flags o--o DeviceQueueFamily_A_Queues
-
-   end
-
-   subgraph DeviceQueueFamily_B[&quot;设备队列族 B&quot;]
-      direction LR
-      subgraph DeviceQueueFamily_B_Flags[&quot;支持的功能域&quot;]
-         direction LR
-            DeviceQueueFamily_B_COMPUTE[&quot;计算&quot;]
-            DeviceQueueFamily_B_TRANSFER[&quot;转移&quot;]
-
-            DeviceQueueFamily_B_COMPUTE -.- DeviceQueueFamily_B_TRANSFER
-      end
-
-      subgraph DeviceQueueFamily_B_Queues[&quot;支持的队列&quot;]
-         direction TB
-            DeviceQueueFamily_B_Queue3[&quot;队列3&quot;]
-      end
-
-      DeviceQueueFamily_B_Flags o--o DeviceQueueFamily_B_Queues
-
-   end
-
-   DeviceQueueFamily_A--&gt;DeviceQueueFamily_B
-   DeviceQueueFamily_B--&gt;etc[&quot;...&quot;]
-
-   style DeviceQueueFamily_A_Flags fill:#f96
-   style DeviceQueueFamily_B_Flags fill:#f96
-   style DeviceQueueFamily_A_Queues fill:#00bfa5
-   style DeviceQueueFamily_B_Queues fill:#00bfa5
-        </div></div>
+<figure class="align-default" id="id20">
+<img alt="_images/vk_queue_family_struct.svg" src="_images/vk_queue_family_struct.svg" /><figcaption>
+<p><span class="caption-text">如上图中。队列0、1、2三个队列属于队列族A，则这三个队列支持计算、图形和转移功能。队列3属于队列族B，则该队列支持计算和转移功能。</span><a class="headerlink" href="#id20" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</div>
 <p>设备队列族 <code class="docutils literal notranslate"><span class="pre">VkQueueFamilyProperties</span></code> 定义如下：</p>
 </section>
 <section id="vkqueuefamilyproperties">
@@ -1398,7 +1355,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </div>
 </section>
 <section id="id17">
-<h3>获取 Vulkan 支持的缓存<a class="headerlink" href="#id17" title="Link to this heading">#</a></h3>
+<h3>获取 Vulkan 支持的缓存信息<a class="headerlink" href="#id17" title="Link to this heading">#</a></h3>
 <div class="note admonition">
 <p class="admonition-title">内存与缓存</p>
 <p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中与内存相关的英文为 <code class="docutils literal notranslate"><span class="pre">Buffer</span></code> ，翻译成 <code class="docutils literal notranslate"><span class="pre">缓存</span></code> 更加贴合 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准，这里与 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准保持一致。</p>
@@ -1501,6 +1458,10 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">size</span> 表示该内存堆的比特大小。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">flags</span> 表示该堆的属性标志位，各位的含义被定义在 <code class="docutils literal notranslate"><span class="pre">VkMemoryHeapFlagBits</span></code> 中。</p></li>
 </ul>
+<div class="note admonition">
+<p class="admonition-title"><code class="docutils literal notranslate"><span class="pre">VkMemoryHeap</span></code> 与 <code class="docutils literal notranslate"><span class="pre">堆</span></code></p>
+<p>一个 <code class="docutils literal notranslate"><span class="pre">VkMemoryHeap</span></code> 对应这一个内存 <code class="docutils literal notranslate"><span class="pre">堆</span></code> 。 <code class="docutils literal notranslate"><span class="pre">堆</span></code> 就是用于存储数据的地方，一般对应着物理存储介质。在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中内存是从堆上进行分配和管理的。</p>
+</div>
 <p><code class="docutils literal notranslate"><span class="pre">VkMemoryHeapFlags</span></code> 对应的各个比特位的值定义于 <code class="docutils literal notranslate"><span class="pre">VkMemoryHeapFlagBits</span></code> 枚举中，定义如下：</p>
 </section>
 <section id="vkmemoryheapflagbits">
@@ -1522,53 +1483,12 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <section id="id18">
 <h4>VkPhysicalDeviceMemoryProperties 结构图<a class="headerlink" href="#id18" title="Link to this heading">#</a></h4>
 <p>为了更清晰的理解 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties</span></code> ，在此给出一张 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties</span></code> 结构参考图：</p>
-<div class="mermaid">
-            flowchart TB
-   subgraph memoryTypes[&quot;VkPhysicalDeviceMemoryProperties::memoryTypes&quot;]
-   direction LR
-      subgraph VkMemoryType0[&quot;VkMemoryType 0&quot;]
-      direction TB
-          VkMemoryType0_PropertyFlags[&quot;VkMemoryPropertyFlags propertyFlags&quot;] -.- VkMemoryType0_HeapIndex[&quot;uint32_t heapIndex&quot;]
-      end
-      subgraph VkMemoryType1[&quot;VkMemoryType 1&quot;]
-      direction TB
-          VkMemoryType1_PropertyFlags[&quot;VkMemoryPropertyFlags propertyFlags&quot;] -.- VkMemoryType1_HeapIndex[&quot;uint32_t heapIndex&quot;]
-      end
-      subgraph VkMemoryType2[&quot;VkMemoryType 2&quot;]
-      direction TB
-          VkMemoryType2_PropertyFlags[&quot;VkMemoryPropertyFlags propertyFlags&quot;] -.- VkMemoryType2_HeapIndex[&quot;uint32_t heapIndex&quot;]
-      end
-      subgraph VkMemoryTypeEtc[&quot;...&quot;]
-      end
-
-      VkMemoryType0 -.- VkMemoryType1 -.- VkMemoryType2 -.- VkMemoryTypeEtc
-   end
-
-   subgraph memoryHeaps[&quot;VkPhysicalDeviceMemoryProperties::memoryHeaps&quot;]
-   direction LR
-      subgraph VkMemoryHeap0[&quot;VkMemoryHeap 0&quot;]
-      direction TB
-          VkMemoryHeap0_Size[&quot;VkDeviceSize size&quot;] -.- VkMemoryHeap0_Flags[&quot;VkMemoryHeapFlags flags&quot;]
-      end
-      subgraph VkMemoryHeap1[&quot;VkMemoryHeap 1&quot;]
-      direction TB
-          VkMemoryHeap1_Size[&quot;VkDeviceSize size&quot;] -.- VkMemoryHeap1_Flags[&quot;VkMemoryHeapFlags flags&quot;]
-      end
-      subgraph VkMemoryHeap2[&quot;VkMemoryHeap 2&quot;]
-      direction TB
-          VkMemoryHeap2_Size[&quot;VkDeviceSize size&quot;] -.- VkMemoryHeap2_Flags[&quot;VkMemoryHeapFlags flags&quot;]
-      end
-      subgraph VkMemoryHeapEtc[&quot;...&quot;]
-      end
-
-      VkMemoryHeap0 -.- VkMemoryHeap1 -.- VkMemoryHeap2 -.- VkMemoryHeapEtc
-
-   end
-
-   VkMemoryType0_HeapIndex--&gt;VkMemoryHeap2
-   VkMemoryType1_HeapIndex--&gt;VkMemoryHeap0
-   VkMemoryType2_HeapIndex--&gt;VkMemoryHeap1
-        </div><p>接下来就能够通过 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties</span></code> 获取内存信息了，和之前很多函数一样，首先获取 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties</span></code> 函数实现：</p>
+<figure class="align-default" id="id21">
+<img alt="_images/VkPhysicalDeviceMemoryProperties_struct.svg" src="_images/VkPhysicalDeviceMemoryProperties_struct.svg" /><figcaption>
+<p><span class="caption-text">如图所示为一种可能的结构。第一种内存类型对应着第三个内存堆，第二种内存类型对应着第一个内存堆，第三种内存类型对应着第二个内存堆。</span><a class="headerlink" href="#id21" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>接下来就能够通过 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties</span></code> 获取内存信息了，和之前很多函数一样，首先获取 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties</span></code> 函数实现：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkInstance</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前成功创建的</span><span class="w"> </span><span class="n">VkInstance</span><span class="w"> </span><span class="p">;</span>
 
 <span class="n">PFN_vkGetPhysicalDeviceMemoryProperties</span><span class="w"> </span><span class="n">vkGetPhysicalDeviceMemoryProperties</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">PFN_vkGetPhysicalDeviceMemoryProperties</span><span class="p">)</span><span class="n">vkGetInstanceProcAddr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;vkGetPhysicalDeviceMemoryProperties&quot;</span><span class="p">);</span>
@@ -1753,7 +1673,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </li>
 <li><a class="reference internal" href="#id15">内存</a><ul>
 <li><a class="reference internal" href="#id16">内存分类</a></li>
-<li><a class="reference internal" href="#id17">获取 Vulkan 支持的缓存</a><ul>
+<li><a class="reference internal" href="#id17">获取 Vulkan 支持的缓存信息</a><ul>
 <li><a class="reference internal" href="#vkgetphysicaldevicememoryproperties">vkGetPhysicalDeviceMemoryProperties</a></li>
 <li><a class="reference internal" href="#vkphysicaldevicememoryproperties">VkPhysicalDeviceMemoryProperties</a></li>
 <li><a class="reference internal" href="#vkmemorytype">VkMemoryType</a></li>
