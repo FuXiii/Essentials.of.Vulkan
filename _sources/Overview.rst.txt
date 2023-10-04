@@ -77,6 +77,10 @@
    * 2023/10/3 更新 ``VkMemoryHeap`` 章节，增加 ``堆`` 说明。
    * 2023/10/3 更新 ``vkGetPhysicalDeviceQueueFamilyProperties`` 章节，更新 ``队列族`` 说明图示。
    * 2023/10/3 更新 ``VkPhysicalDeviceMemoryProperties 结构图`` 章节，更新说明图示。
+   * 2023/10/4 更新 ``vkGetDeviceProcAddr`` 章节中的说明。
+   * 2023/10/4 更新 ``分配缓存`` 章节。
+   * 2023/10/4 更新 ``获取 Vulkan 支持的缓存信息`` 章节。将 ``缓存`` 更改为 ``内存`` 。
+   * 2023/10/4 更新 ``const VkAllocationCallbacks* pAllocator`` 说明。
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -1132,7 +1136,7 @@ vkGetDeviceProcAddr
 
    PFN_vk{Device 域函数名} vk{Device 域函数名} = (PFN_vk{Device 域函数名})vkGetDeviceProcAddr(device, "vk{Device 域函数名}");
 
-.. note:: 在创建完 ``VkDevice`` 之后，由于所有要调用的函数都作用在某一具体逻辑设备上，所以之后所有函数都是 ``Device`` 域函数。
+.. note:: 在创建完 ``VkDevice`` 之后，由于之后所有要调用的函数追踪都作用在某一具体逻辑设备上（或由该逻辑设备创建的相关对象上），所以之后所有函数都是 ``Device`` 域函数。
 
 获取设备队列
 ############################
@@ -1202,11 +1206,11 @@ vkGetDeviceQueue
 .. admonition:: const VkAllocationCallbacks* pAllocator
    :class: important
 
-   使用 ``VkAllocationCallbacks`` 内存分配回调分配的内存将会存储在内存条中，该部分内存属于特殊的 ``Host`` 端内存，确切的说使用 ``new`` 或 ``malloc`` 等分配的内存，在 ``Vulkan`` 标准中不属于 ``Vulkan`` 管理的范畴。这里仅仅为了引出 ``Host`` 端做的简要引子。
+   使用 ``VkAllocationCallbacks`` 内存分配回调分配的内存将会存储在内存条中，该部分内存属于特殊的 ``Host`` 端内存，确切的说使用 ``new`` 或 ``malloc`` 等分配的内存，在 ``Vulkan`` 标准中不属于 ``Vulkan`` 管理的范畴（ ``Vulkan`` 标准中属于 ``Host`` 端范畴，其本质上属于 ``C/C++`` 范畴）。这里仅仅为了引出 ``Host`` 端做的简要引子。
 
    有关 ``VkAllocationCallbacks`` 的具体用法将会在之后单独的章节中进行讲解。
 
-由此引出了 ``Vulkan`` 中的两个端分类：
+由此引出了 ``Vulkan`` 中的两个 ``端`` 分类：
 
 * ``Host`` 端
 * ``Device`` 端
@@ -1217,7 +1221,7 @@ vkGetDeviceQueue
 
 这里可以看出内存条上的内存和 ``GPU`` 上的显存都属于 ``Vulkan`` 可访问的内存范畴。
 
-在 ``Vulkan`` 中我们往往在 ``Host`` 端将数据准备好，之后打算使用 ``GPU`` 设备访问该数据进行计算。然而 ``Host`` 端准备的数据只有 ``CPU`` 能够访问， ``GPU`` 设备并不能直接访问 ``Host`` 端内存，为此 ``Vulkan`` 标准中为我们提供了可被 ``GPU`` 访问的 ``Host`` 端内存。
+在 ``Vulkan`` 中我们往往在 ``Host`` 端将数据准备好，之后使用 ``GPU`` 设备访问该数据进行计算。然而 ``Host`` 端准备的数据只有 ``CPU`` 能够访问， ``GPU`` 设备并不能直接访问 ``Host`` 端内存，为此 ``Vulkan`` 标准中为我们提供了可被 ``GPU`` 访问的 ``Host`` 端内存。
 也就是说这一部分内存既可以被 ``Host`` 端访问也可以被 ``Device`` 端访问。一般来说，我们会先将 ``Host`` 端的数据拷贝至可以被 ``Host`` 端访问也可以被 ``Device`` 端访问的内存中，之后再将这部分数据拷贝至 ``Device`` 端内存中被 ``GPU`` 访问使用。
 
 .. mermaid::
@@ -1248,15 +1252,16 @@ vkGetDeviceQueue
 
    其实在 ``Vulkan`` 标准看来，所有的内存都属于 ``Device`` 端内存，只不过有些 ``Device`` 端内存可以被 ``Host`` 端访问。有些 ``Device`` 端内存为 ``Device`` 专属内存。
 
-获取 Vulkan 支持的缓存信息
+获取 Vulkan 支持的内存信息
 *******************************
 
-.. admonition:: 内存与缓存
-   :class: note
+..
+   .. admonition:: 内存与缓存
+      :class: note
 
-   ``Vulkan`` 中与内存相关的英文为 ``Buffer`` ，翻译成 ``缓存`` 更加贴合 ``Vulkan`` 标准，这里与 ``Vulkan`` 标准保持一致。
+      ``Vulkan`` 中与内存相关的英文为 ``Buffer`` ，翻译成 ``缓存`` 更加贴合 ``Vulkan`` 标准，这里与 ``Vulkan`` 标准保持一致。
 
-``Vulkan`` 所有的缓存信息都可以通过 ``vkGetPhysicalDeviceMemoryProperties`` 函数获取，其定义如下：
+``Vulkan`` 所有的内存信息都可以通过 ``vkGetPhysicalDeviceMemoryProperties`` 函数获取，其定义如下：
 
 vkGetPhysicalDeviceMemoryProperties
 ------------------------------------------
@@ -1268,8 +1273,8 @@ vkGetPhysicalDeviceMemoryProperties
      VkPhysicalDevice                           physicalDevice,
      VkPhysicalDeviceMemoryProperties*          pMemoryProperties);
 
-* :bdg-secondary:`physicalDevice` 为对应获取对应缓存信息的物理设备。
-* :bdg-secondary:`pMemoryProperties` 相应的缓存信息将会写入并返回。
+* :bdg-secondary:`physicalDevice` 为对应获取对应内存信息的物理设备。
+* :bdg-secondary:`pMemoryProperties` 相应的内存信息将会写入并返回。
 
 .. note:: ``vkGetPhysicalDeviceMemoryProperties`` 为 ``PhysicalDevice 域函数`` 。
 
@@ -1333,7 +1338,7 @@ VkMemoryPropertyFlagBits
 * :bdg-secondary:`VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT` 表示这部分内存为 ``GPU`` 物理设备自身的内存只有物理设备自身可访问，也就是 ``Device`` 端内存。
 * :bdg-secondary:`VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT` 表示这部分内存为 ``Host`` 端可访问到的内存只有 ``Host`` 端自身可访问， ``Device`` 端不可访问。
 * :bdg-secondary:`VK_MEMORY_PROPERTY_HOST_COHERENT_BIT` 表示这部分内存为 ``Host`` 端连续内存，表示对于该内存的读写可连续进行（就像 ``CPU`` 对于内存的修改那样）。该内存类型不需要手动进行 ``刷新`` 和 ``失效`` 操作。
-* :bdg-secondary:`VK_MEMORY_PROPERTY_HOST_CACHED_BIT` 表示这部分内存为 ``Host`` 端高速缓存内存，并且自带 ``VK_MEMORY_PROPERTY_HOST_COHERENT_BIT`` 属性。这一部分内存大小相对较小。
+* :bdg-secondary:`VK_MEMORY_PROPERTY_HOST_CACHED_BIT` 表示这部分内存为 ``Host`` 端高速内存，并且自带 ``VK_MEMORY_PROPERTY_HOST_COHERENT_BIT`` 属性。这一部分内存大小相对较小。
 * :bdg-secondary:`VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT` 表示这部分内存为可以滞后分配内存，等要使用时再分配内存。
 * :bdg-secondary:`VK_MEMORY_PROPERTY_PROTECTED_BIT` 表示这部分内存为受保护内存，并且只允许 ``GPU`` 硬件设备和受保护的队列（ ``VK_QUEUE_PROTECTED_BIT`` ）可以访问该内存。
 
@@ -1489,8 +1494,10 @@ VkPhysicalDeviceMemoryProperties 结构图
       }
    }
 
-分配缓存
+分配内存
 ********************************
+
+在 ``C/C++`` 中分配内存使用 ``malloc`` 、 ``new`` ，回收内存使用 ``free`` 、 ``delete`` 。而在 ``Vulkan`` 中分配内存使用 ``vkAllocateMemory`` 函数，回收内存使用 ``vkFreeMemory`` 函数。
 
 
 

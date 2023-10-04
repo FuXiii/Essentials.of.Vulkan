@@ -340,6 +340,10 @@
 <li><p class="sd-card-text">2023/10/3 更新 <code class="docutils literal notranslate"><span class="pre">VkMemoryHeap</span></code> 章节，增加 <code class="docutils literal notranslate"><span class="pre">堆</span></code> 说明。</p></li>
 <li><p class="sd-card-text">2023/10/3 更新 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceQueueFamilyProperties</span></code> 章节，更新 <code class="docutils literal notranslate"><span class="pre">队列族</span></code> 说明图示。</p></li>
 <li><p class="sd-card-text">2023/10/3 更新 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties</span> <span class="pre">结构图</span></code> 章节，更新说明图示。</p></li>
+<li><p class="sd-card-text">2023/10/4 更新 <code class="docutils literal notranslate"><span class="pre">vkGetDeviceProcAddr</span></code> 章节中的说明。</p></li>
+<li><p class="sd-card-text">2023/10/4 更新 <code class="docutils literal notranslate"><span class="pre">分配缓存</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2023/10/4 更新 <code class="docutils literal notranslate"><span class="pre">获取</span> <span class="pre">Vulkan</span> <span class="pre">支持的缓存信息</span></code> 章节。将 <code class="docutils literal notranslate"><span class="pre">缓存</span></code> 更改为 <code class="docutils literal notranslate"><span class="pre">内存</span></code> 。</p></li>
+<li><p class="sd-card-text">2023/10/4 更新 <code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">VkAllocationCallbacks*</span> <span class="pre">pAllocator</span></code> 说明。</p></li>
 </ul>
 </div>
 </details><p>由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 比较复杂，为了更好的入门 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> ，还是大致过一遍 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的核心思路，这对以后的学习很有帮助。</p>
@@ -1251,7 +1255,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </div>
 <div class="admonition note">
 <p class="admonition-title">备注</p>
-<p>在创建完 <code class="docutils literal notranslate"><span class="pre">VkDevice</span></code> 之后，由于所有要调用的函数都作用在某一具体逻辑设备上，所以之后所有函数都是 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 域函数。</p>
+<p>在创建完 <code class="docutils literal notranslate"><span class="pre">VkDevice</span></code> 之后，由于之后所有要调用的函数追踪都作用在某一具体逻辑设备上（或由该逻辑设备创建的相关对象上），所以之后所有函数都是 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 域函数。</p>
 </div>
 </section>
 </section>
@@ -1317,10 +1321,10 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <p><code class="docutils literal notranslate"><span class="pre">Device</span></code> 域函数中主要在 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 能够访问的内存（显存）中进行内存分配和访问。这一部分内存称为 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端内存。</p>
 <div class="important admonition">
 <p class="admonition-title">const VkAllocationCallbacks* pAllocator</p>
-<p>使用 <code class="docutils literal notranslate"><span class="pre">VkAllocationCallbacks</span></code> 内存分配回调分配的内存将会存储在内存条中，该部分内存属于特殊的 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端内存，确切的说使用 <code class="docutils literal notranslate"><span class="pre">new</span></code> 或 <code class="docutils literal notranslate"><span class="pre">malloc</span></code> 等分配的内存，在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准中不属于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 管理的范畴。这里仅仅为了引出 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端做的简要引子。</p>
+<p>使用 <code class="docutils literal notranslate"><span class="pre">VkAllocationCallbacks</span></code> 内存分配回调分配的内存将会存储在内存条中，该部分内存属于特殊的 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端内存，确切的说使用 <code class="docutils literal notranslate"><span class="pre">new</span></code> 或 <code class="docutils literal notranslate"><span class="pre">malloc</span></code> 等分配的内存，在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准中不属于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 管理的范畴（ <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准中属于 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端范畴，其本质上属于 <code class="docutils literal notranslate"><span class="pre">C/C++</span></code> 范畴）。这里仅仅为了引出 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端做的简要引子。</p>
 <p>有关 <code class="docutils literal notranslate"><span class="pre">VkAllocationCallbacks</span></code> 的具体用法将会在之后单独的章节中进行讲解。</p>
 </div>
-<p>由此引出了 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中的两个端分类：</p>
+<p>由此引出了 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中的两个 <code class="docutils literal notranslate"><span class="pre">端</span></code> 分类：</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Host</span></code> 端</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Device</span></code> 端</p></li>
@@ -1328,7 +1332,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端一般是指 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 可以访问的那部分资源（内存），而该部分资源可能存储在 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 设备上的内存中也可能存储在内存条上的内存中。只不过这部分资源可以被 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 访问到并归为 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 管理范畴。</p>
 <p><code class="docutils literal notranslate"><span class="pre">Device</span></code> 端表示 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 设备可访问的的专属资源（内存）。</p>
 <p>这里可以看出内存条上的内存和 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 上的显存都属于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 可访问的内存范畴。</p>
-<p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中我们往往在 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端将数据准备好，之后打算使用 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 设备访问该数据进行计算。然而 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端准备的数据只有 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 能够访问， <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 设备并不能直接访问 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端内存，为此 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准中为我们提供了可被 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 访问的 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端内存。
+<p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中我们往往在 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端将数据准备好，之后使用 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 设备访问该数据进行计算。然而 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端准备的数据只有 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 能够访问， <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 设备并不能直接访问 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端内存，为此 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准中为我们提供了可被 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 访问的 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端内存。
 也就是说这一部分内存既可以被 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端访问也可以被 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端访问。一般来说，我们会先将 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端的数据拷贝至可以被 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端访问也可以被 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端访问的内存中，之后再将这部分数据拷贝至 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端内存中被 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 访问使用。</p>
 <div class="mermaid">
             flowchart LR
@@ -1355,12 +1359,8 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </div>
 </section>
 <section id="id17">
-<h3>获取 Vulkan 支持的缓存信息<a class="headerlink" href="#id17" title="Link to this heading">#</a></h3>
-<div class="note admonition">
-<p class="admonition-title">内存与缓存</p>
-<p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中与内存相关的英文为 <code class="docutils literal notranslate"><span class="pre">Buffer</span></code> ，翻译成 <code class="docutils literal notranslate"><span class="pre">缓存</span></code> 更加贴合 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准，这里与 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准保持一致。</p>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 所有的缓存信息都可以通过 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties</span></code> 函数获取，其定义如下：</p>
+<h3>获取 Vulkan 支持的内存信息<a class="headerlink" href="#id17" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 所有的内存信息都可以通过 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties</span></code> 函数获取，其定义如下：</p>
 <section id="vkgetphysicaldevicememoryproperties">
 <h4>vkGetPhysicalDeviceMemoryProperties<a class="headerlink" href="#vkgetphysicaldevicememoryproperties" title="Link to this heading">#</a></h4>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
@@ -1370,8 +1370,8 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 <ul class="simple">
-<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">physicalDevice</span> 为对应获取对应缓存信息的物理设备。</p></li>
-<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pMemoryProperties</span> 相应的缓存信息将会写入并返回。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">physicalDevice</span> 为对应获取对应内存信息的物理设备。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pMemoryProperties</span> 相应的内存信息将会写入并返回。</p></li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">备注</p>
@@ -1434,7 +1434,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT</span> 表示这部分内存为 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 物理设备自身的内存只有物理设备自身可访问，也就是 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端内存。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT</span> 表示这部分内存为 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端可访问到的内存只有 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端自身可访问， <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端不可访问。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_MEMORY_PROPERTY_HOST_COHERENT_BIT</span> 表示这部分内存为 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端连续内存，表示对于该内存的读写可连续进行（就像 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 对于内存的修改那样）。该内存类型不需要手动进行 <code class="docutils literal notranslate"><span class="pre">刷新</span></code> 和 <code class="docutils literal notranslate"><span class="pre">失效</span></code> 操作。</p></li>
-<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_MEMORY_PROPERTY_HOST_CACHED_BIT</span> 表示这部分内存为 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端高速缓存内存，并且自带 <code class="docutils literal notranslate"><span class="pre">VK_MEMORY_PROPERTY_HOST_COHERENT_BIT</span></code> 属性。这一部分内存大小相对较小。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_MEMORY_PROPERTY_HOST_CACHED_BIT</span> 表示这部分内存为 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端高速内存，并且自带 <code class="docutils literal notranslate"><span class="pre">VK_MEMORY_PROPERTY_HOST_COHERENT_BIT</span></code> 属性。这一部分内存大小相对较小。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT</span> 表示这部分内存为可以滞后分配内存，等要使用时再分配内存。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_MEMORY_PROPERTY_PROTECTED_BIT</span> 表示这部分内存为受保护内存，并且只允许 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 硬件设备和受保护的队列（ <code class="docutils literal notranslate"><span class="pre">VK_QUEUE_PROTECTED_BIT</span></code> ）可以访问该内存。</p></li>
 </ul>
@@ -1533,7 +1533,8 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </section>
 </section>
 <section id="id19">
-<h3>分配缓存<a class="headerlink" href="#id19" title="Link to this heading">#</a></h3>
+<h3>分配内存<a class="headerlink" href="#id19" title="Link to this heading">#</a></h3>
+<p>在 <code class="docutils literal notranslate"><span class="pre">C/C++</span></code> 中分配内存使用 <code class="docutils literal notranslate"><span class="pre">malloc</span></code> 、 <code class="docutils literal notranslate"><span class="pre">new</span></code> ，回收内存使用 <code class="docutils literal notranslate"><span class="pre">free</span></code> 、 <code class="docutils literal notranslate"><span class="pre">delete</span></code> 。而在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中分配内存使用 <code class="docutils literal notranslate"><span class="pre">vkAllocateMemory</span></code> 函数，回收内存使用 <code class="docutils literal notranslate"><span class="pre">vkFreeMemory</span></code> 函数。</p>
 </section>
 </section>
 </section>
@@ -1673,7 +1674,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </li>
 <li><a class="reference internal" href="#id15">内存</a><ul>
 <li><a class="reference internal" href="#id16">内存分类</a></li>
-<li><a class="reference internal" href="#id17">获取 Vulkan 支持的缓存信息</a><ul>
+<li><a class="reference internal" href="#id17">获取 Vulkan 支持的内存信息</a><ul>
 <li><a class="reference internal" href="#vkgetphysicaldevicememoryproperties">vkGetPhysicalDeviceMemoryProperties</a></li>
 <li><a class="reference internal" href="#vkphysicaldevicememoryproperties">VkPhysicalDeviceMemoryProperties</a></li>
 <li><a class="reference internal" href="#vkmemorytype">VkMemoryType</a></li>
@@ -1683,7 +1684,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <li><a class="reference internal" href="#id18">VkPhysicalDeviceMemoryProperties 结构图</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id19">分配缓存</a></li>
+<li><a class="reference internal" href="#id19">分配内存</a></li>
 </ul>
 </li>
 </ul>
