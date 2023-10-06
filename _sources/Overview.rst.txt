@@ -81,6 +81,10 @@
    * 2023/10/4 更新 ``分配缓存`` 章节。
    * 2023/10/4 更新 ``获取 Vulkan 支持的缓存信息`` 章节。将 ``缓存`` 更改为 ``内存`` 。
    * 2023/10/4 更新 ``const VkAllocationCallbacks* pAllocator`` 说明。
+   * 2023/10/6 增加 ``内存管理`` 章节。
+   * 2023/10/6 增加 ``VkMemoryAllocateInfo`` 章节。
+   * 2023/10/6 更新 ``VkMemoryHeap`` 章节。修正 ``VkMemoryHeap::size`` 单位讲解错误。
+   * 2023/10/6 增加 ``回收内存`` 章节。
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -1362,7 +1366,7 @@ VkMemoryHeap
      VkMemoryHeapFlags              flags;
    } VkMemoryHeap;
 
-* :bdg-secondary:`size` 表示该内存堆的比特大小。
+* :bdg-secondary:`size` 表示该内存堆的大小。单位为字节。
 * :bdg-secondary:`flags` 表示该堆的属性标志位，各位的含义被定义在 ``VkMemoryHeapFlagBits`` 中。
 
 .. admonition:: ``VkMemoryHeap`` 与 ``堆``
@@ -1494,13 +1498,125 @@ VkPhysicalDeviceMemoryProperties 结构图
       }
    }
 
-分配内存
+内存管理
 ********************************
 
 在 ``C/C++`` 中分配内存使用 ``malloc`` 、 ``new`` ，回收内存使用 ``free`` 、 ``delete`` 。而在 ``Vulkan`` 中分配内存使用 ``vkAllocateMemory`` 函数，回收内存使用 ``vkFreeMemory`` 函数。
 
+.. admonition:: const VkAllocationCallbacks* pAllocator
+   :class: note
 
+   对于 ``VkAllocationCallbacks`` 的内存回调在 ``Vulkan`` 中为特殊的内存管理，其本质应该算作 ``C/C++`` 的内存管理。将会在单独的章节进行讲解。
 
+.. admonition:: VkAllocationCallbacks 与 vk[Allocate/Free]Memory
+   :class: note
+
+   ``VkAllocationCallbacks`` 为 ``C/C++`` 的内存管理范畴。 ``vkAllocateMemory`` 和 ``vkFreeMemory`` 将会在 ``VkPhysicalDeviceMemoryProperties::memoryHeaps`` 中的某一内存堆上进行内存管理（分配和回收）。
+
+分配内存
+--------------------------------
+
+在某一个堆上进行内存分配，调用 ``vkAllocateMemory`` 函数，其定义如下：
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   VkResult vkAllocateMemory(
+     VkDevice                          device,
+     const VkMemoryAllocateInfo*       pAllocateInfo,
+     const VkAllocationCallbacks*      pAllocator,
+     VkDeviceMemory*                   pMemory);
+
+* :bdg-secondary:`device` 对应的 ``VkDevice`` 逻辑设备句柄。内存将会在该逻辑设备上进行分配。
+* :bdg-secondary:`pAllocateInfo` 为内存分配的配置信息。
+* :bdg-secondary:`pAllocator` 内存分配器。
+* :bdg-secondary:`pMemory` 为分配完的内存句柄。
+
+其中 ``VkMemoryAllocateInfo`` 定义如下：
+
+VkMemoryAllocateInfo
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef struct VkMemoryAllocateInfo {
+     VkStructureType                         sType;
+     const void*                             pNext;
+     VkDeviceSize                            allocationSize;
+     uint32_t                                memoryTypeIndex;
+   } VkMemoryAllocateInfo;
+
+* :bdg-secondary:`sType` 是该结构体的类型枚举值，必须是 ``VkStructureType::VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO`` 。
+* :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
+* :bdg-secondary:`allocationSize` 为要分配的内存大小。单位为字节。
+* :bdg-secondary:`memoryTypeIndex` 为在 ``VkPhysicalDeviceMemoryProperties::memoryTypes`` 数组对应的 ``memoryTypeIndex`` 索引处的堆上分配内存。
+
+.. admonition:: 注意
+   :class: note
+
+   ``VkMemoryAllocateInfo::memoryTypeIndex`` 为 ``VkPhysicalDeviceMemoryProperties::memoryTypes`` 内存类型数组所对应的索引值，而 :bdg-danger:`不是` ``VkPhysicalDeviceMemoryProperties::memoryHeaps`` 内存堆数组所对应的索引值。
+
+这样我们就可以在支持 ``Vulkan`` 的设备上分配内存了。在正式分配内存前，首先获取 ``vkAllocateMemory`` 函数的实现。
+
+.. code:: c++
+
+   VkDevice device = 之前成功创建的逻辑设备句柄;
+
+   PFN_vkAllocateMemory vkAllocateMemory = (PFN_vkAllocateMemory)vkGetDeviceProcAddr(device, "vkAllocateMemory");
+
+.. 假如， 的 ``propertyFlags`` 包含 ``VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT`` 和 ``VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT`` ，并且对应的内存堆大小足够大。
+
+现在 ``VkPhysicalDeviceMemoryProperties::memoryTypes[0]`` 对应内存类型的堆上分配 ``1KB`` 内存（假如，对应的内存堆大小足够大）。示例代码如下：
+
+.. code:: c++
+
+   VkDevice device = 之前成功创建的逻辑设备句柄;
+
+   VkMemoryAllocateInfo memory_allocate_info = {};
+   memory_allocate_info.sType = VkStructureType::VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+   memory_allocate_info.pNext = nullptr;
+   memory_allocate_info.allocationSize = 1024; //1KB
+   memory_allocate_info.memoryTypeIndex = 0; //在 VkPhysicalDeviceMemoryProperties::memoryTypes[0] 对应内存类型的堆上分配
+
+   VkDeviceMemory device_memory = VK_NULL_HANDLE; // 分配的目标内存句柄
+   VkResult result = vkAllocateMemory(device, &memory_allocate_info, nullptr, &device_memory);
+
+   assert(result == VkResult::VK_SUCCESS) //是否创建成功
+
+回收内存
+--------------------------------
+
+内存成功分配完之后，可以通过 ``vkFreeMemory`` 函数进行回收。其定义如下：
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   void vkFreeMemory(
+     VkDevice                             device,
+     VkDeviceMemory                       memory,
+     const VkAllocationCallbacks*         pAllocator);
+
+* :bdg-secondary:`device` 对应的 ``VkDevice`` 逻辑设备句柄。
+* :bdg-secondary:`memory` 要回收的内存句柄。需要为 ``device`` 上分配的内存句柄。
+* :bdg-secondary:`pAllocator` 内存分配器。
+
+这样我们就可以回收内存了。在正式回收内存前，首先获取 ``vkFreeMemory`` 函数的实现。
+
+.. code:: c++
+
+   VkDevice device = 之前成功创建的逻辑设备句柄;
+
+   PFN_vkFreeMemory vkFreeMemory = (PFN_vkFreeMemory)vkGetDeviceProcAddr(device, "vkFreeMemory");
+
+之后就可以进行内存回收了，示例代码如下：
+
+.. code:: c++
+
+   VkDevice device = 之前成功创建的逻辑设备句柄;
+   VkDeviceMemory device_memory = 之前成功分配的内存句柄;
+
+   vkFreeMemory(device, device_memory, nullptr);
 
 
 ..

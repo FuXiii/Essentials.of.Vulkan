@@ -344,6 +344,10 @@
 <li><p class="sd-card-text">2023/10/4 更新 <code class="docutils literal notranslate"><span class="pre">分配缓存</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2023/10/4 更新 <code class="docutils literal notranslate"><span class="pre">获取</span> <span class="pre">Vulkan</span> <span class="pre">支持的缓存信息</span></code> 章节。将 <code class="docutils literal notranslate"><span class="pre">缓存</span></code> 更改为 <code class="docutils literal notranslate"><span class="pre">内存</span></code> 。</p></li>
 <li><p class="sd-card-text">2023/10/4 更新 <code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">VkAllocationCallbacks*</span> <span class="pre">pAllocator</span></code> 说明。</p></li>
+<li><p class="sd-card-text">2023/10/6 增加 <code class="docutils literal notranslate"><span class="pre">内存管理</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2023/10/6 增加 <code class="docutils literal notranslate"><span class="pre">VkMemoryAllocateInfo</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2023/10/6 更新 <code class="docutils literal notranslate"><span class="pre">VkMemoryHeap</span></code> 章节。修正 <code class="docutils literal notranslate"><span class="pre">VkMemoryHeap::size</span></code> 单位讲解错误。</p></li>
+<li><p class="sd-card-text">2023/10/6 增加 <code class="docutils literal notranslate"><span class="pre">回收内存</span></code> 章节。</p></li>
 </ul>
 </div>
 </details><p>由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 比较复杂，为了更好的入门 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> ，还是大致过一遍 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的核心思路，这对以后的学习很有帮助。</p>
@@ -984,9 +988,9 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <div class="note admonition">
 <p class="admonition-title">队列族</p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中设备队列是按照 <code class="docutils literal notranslate"><span class="pre">族</span></code> 进行管理的，前面我们知道一个物理设备上的可能会有多个设备队列支持相同的功能域，这些支持相同功能域的设备队列算作同一族。</p>
-<figure class="align-default" id="id20">
+<figure class="align-default" id="id22">
 <img alt="_images/vk_queue_family_struct.svg" src="_images/vk_queue_family_struct.svg" /><figcaption>
-<p><span class="caption-text">如上图中。队列0、1、2三个队列属于队列族A，则这三个队列支持计算、图形和转移功能。队列3属于队列族B，则该队列支持计算和转移功能。</span><a class="headerlink" href="#id20" title="Link to this image">#</a></p>
+<p><span class="caption-text">如上图中。队列0、1、2三个队列属于队列族A，则这三个队列支持计算、图形和转移功能。队列3属于队列族B，则该队列支持计算和转移功能。</span><a class="headerlink" href="#id22" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 </div>
@@ -1455,7 +1459,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 <ul class="simple">
-<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">size</span> 表示该内存堆的比特大小。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">size</span> 表示该内存堆的大小。单位为字节。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">flags</span> 表示该堆的属性标志位，各位的含义被定义在 <code class="docutils literal notranslate"><span class="pre">VkMemoryHeapFlagBits</span></code> 中。</p></li>
 </ul>
 <div class="note admonition">
@@ -1483,9 +1487,9 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <section id="id18">
 <h4>VkPhysicalDeviceMemoryProperties 结构图<a class="headerlink" href="#id18" title="Link to this heading">#</a></h4>
 <p>为了更清晰的理解 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties</span></code> ，在此给出一张 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties</span></code> 结构参考图：</p>
-<figure class="align-default" id="id21">
+<figure class="align-default" id="id23">
 <img alt="_images/VkPhysicalDeviceMemoryProperties_struct.svg" src="_images/VkPhysicalDeviceMemoryProperties_struct.svg" /><figcaption>
-<p><span class="caption-text">如图所示为一种可能的结构。第一种内存类型对应着第三个内存堆，第二种内存类型对应着第一个内存堆，第三种内存类型对应着第二个内存堆。</span><a class="headerlink" href="#id21" title="Link to this image">#</a></p>
+<p><span class="caption-text">如图所示为一种可能的结构。第一种内存类型对应着第三个内存堆，第二种内存类型对应着第一个内存堆，第三种内存类型对应着第二个内存堆。</span><a class="headerlink" href="#id23" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <p>接下来就能够通过 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties</span></code> 获取内存信息了，和之前很多函数一样，首先获取 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties</span></code> 函数实现：</p>
@@ -1533,8 +1537,107 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </section>
 </section>
 <section id="id19">
-<h3>分配内存<a class="headerlink" href="#id19" title="Link to this heading">#</a></h3>
+<h3>内存管理<a class="headerlink" href="#id19" title="Link to this heading">#</a></h3>
 <p>在 <code class="docutils literal notranslate"><span class="pre">C/C++</span></code> 中分配内存使用 <code class="docutils literal notranslate"><span class="pre">malloc</span></code> 、 <code class="docutils literal notranslate"><span class="pre">new</span></code> ，回收内存使用 <code class="docutils literal notranslate"><span class="pre">free</span></code> 、 <code class="docutils literal notranslate"><span class="pre">delete</span></code> 。而在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中分配内存使用 <code class="docutils literal notranslate"><span class="pre">vkAllocateMemory</span></code> 函数，回收内存使用 <code class="docutils literal notranslate"><span class="pre">vkFreeMemory</span></code> 函数。</p>
+<div class="note admonition">
+<p class="admonition-title">const VkAllocationCallbacks* pAllocator</p>
+<p>对于 <code class="docutils literal notranslate"><span class="pre">VkAllocationCallbacks</span></code> 的内存回调在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中为特殊的内存管理，其本质应该算作 <code class="docutils literal notranslate"><span class="pre">C/C++</span></code> 的内存管理。将会在单独的章节进行讲解。</p>
+</div>
+<div class="note admonition">
+<p class="admonition-title">VkAllocationCallbacks 与 vk[Allocate/Free]Memory</p>
+<p><code class="docutils literal notranslate"><span class="pre">VkAllocationCallbacks</span></code> 为 <code class="docutils literal notranslate"><span class="pre">C/C++</span></code> 的内存管理范畴。 <code class="docutils literal notranslate"><span class="pre">vkAllocateMemory</span></code> 和 <code class="docutils literal notranslate"><span class="pre">vkFreeMemory</span></code> 将会在 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties::memoryHeaps</span></code> 中的某一内存堆上进行内存管理（分配和回收）。</p>
+</div>
+<section id="id20">
+<h4>分配内存<a class="headerlink" href="#id20" title="Link to this heading">#</a></h4>
+<p>在某一个堆上进行内存分配，调用 <code class="docutils literal notranslate"><span class="pre">vkAllocateMemory</span></code> 函数，其定义如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="n">VkResult</span><span class="w"> </span><span class="nf">vkAllocateMemory</span><span class="p">(</span>
+<span class="w">  </span><span class="n">VkDevice</span><span class="w">                          </span><span class="n">device</span><span class="p">,</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">VkMemoryAllocateInfo</span><span class="o">*</span><span class="w">       </span><span class="n">pAllocateInfo</span><span class="p">,</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">VkAllocationCallbacks</span><span class="o">*</span><span class="w">      </span><span class="n">pAllocator</span><span class="p">,</span>
+<span class="w">  </span><span class="n">VkDeviceMemory</span><span class="o">*</span><span class="w">                   </span><span class="n">pMemory</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">device</span> 对应的 <code class="docutils literal notranslate"><span class="pre">VkDevice</span></code> 逻辑设备句柄。内存将会在该逻辑设备上进行分配。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pAllocateInfo</span> 为内存分配的配置信息。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pAllocator</span> 内存分配器。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pMemory</span> 为分配完的内存句柄。</p></li>
+</ul>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">VkMemoryAllocateInfo</span></code> 定义如下：</p>
+<section id="vkmemoryallocateinfo">
+<h5>VkMemoryAllocateInfo<a class="headerlink" href="#vkmemoryallocateinfo" title="Link to this heading">#</a></h5>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkMemoryAllocateInfo</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">VkStructureType</span><span class="w">                         </span><span class="n">sType</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w">                             </span><span class="n">pNext</span><span class="p">;</span>
+<span class="w">  </span><span class="n">VkDeviceSize</span><span class="w">                            </span><span class="n">allocationSize</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">uint32_t</span><span class="w">                                </span><span class="n">memoryTypeIndex</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkMemoryAllocateInfo</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 是该结构体的类型枚举值，必须是 <code class="docutils literal notranslate"><span class="pre">VkStructureType::VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pNext</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向其他结构体来扩展该结构体。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">allocationSize</span> 为要分配的内存大小。单位为字节。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">memoryTypeIndex</span> 为在 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties::memoryTypes</span></code> 数组对应的 <code class="docutils literal notranslate"><span class="pre">memoryTypeIndex</span></code> 索引处的堆上分配内存。</p></li>
+</ul>
+<div class="note admonition">
+<p class="admonition-title">注意</p>
+<p><code class="docutils literal notranslate"><span class="pre">VkMemoryAllocateInfo::memoryTypeIndex</span></code> 为 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties::memoryTypes</span></code> 内存类型数组所对应的索引值，而 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">不是</span> <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties::memoryHeaps</span></code> 内存堆数组所对应的索引值。</p>
+</div>
+<p>这样我们就可以在支持 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的设备上分配内存了。在正式分配内存前，首先获取 <code class="docutils literal notranslate"><span class="pre">vkAllocateMemory</span></code> 函数的实现。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkDevice</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前成功创建的逻辑设备句柄</span><span class="p">;</span>
+
+<span class="n">PFN_vkAllocateMemory</span><span class="w"> </span><span class="n">vkAllocateMemory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">PFN_vkAllocateMemory</span><span class="p">)</span><span class="n">vkGetDeviceProcAddr</span><span class="p">(</span><span class="n">device</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;vkAllocateMemory&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>现在 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties::memoryTypes[0]</span></code> 对应内存类型的堆上分配 <code class="docutils literal notranslate"><span class="pre">1KB</span></code> 内存（假如，对应的内存堆大小足够大）。示例代码如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkDevice</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前成功创建的逻辑设备句柄</span><span class="p">;</span>
+
+<span class="n">VkMemoryAllocateInfo</span><span class="w"> </span><span class="n">memory_allocate_info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
+<span class="n">memory_allocate_info</span><span class="p">.</span><span class="n">sType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VkStructureType</span><span class="o">::</span><span class="n">VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO</span><span class="p">;</span>
+<span class="n">memory_allocate_info</span><span class="p">.</span><span class="n">pNext</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="n">memory_allocate_info</span><span class="p">.</span><span class="n">allocationSize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1024</span><span class="p">;</span><span class="w"> </span><span class="c1">//1KB</span>
+<span class="n">memory_allocate_info</span><span class="p">.</span><span class="n">memoryTypeIndex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="c1">//在 VkPhysicalDeviceMemoryProperties::memoryTypes[0] 对应内存类型的堆上分配</span>
+
+<span class="n">VkDeviceMemory</span><span class="w"> </span><span class="n">device_memory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_NULL_HANDLE</span><span class="p">;</span><span class="w"> </span><span class="c1">// 分配的目标内存句柄</span>
+<span class="n">VkResult</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vkAllocateMemory</span><span class="p">(</span><span class="n">device</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">memory_allocate_info</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">device_memory</span><span class="p">);</span>
+
+<span class="n">assert</span><span class="p">(</span><span class="n">result</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">VkResult</span><span class="o">::</span><span class="n">VK_SUCCESS</span><span class="p">)</span><span class="w"> </span><span class="c1">//是否创建成功</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id21">
+<h4>回收内存<a class="headerlink" href="#id21" title="Link to this heading">#</a></h4>
+<p>内存成功分配完之后，可以通过 <code class="docutils literal notranslate"><span class="pre">vkFreeMemory</span></code> 函数进行回收。其定义如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">vkFreeMemory</span><span class="p">(</span>
+<span class="w">  </span><span class="n">VkDevice</span><span class="w">                             </span><span class="n">device</span><span class="p">,</span>
+<span class="w">  </span><span class="n">VkDeviceMemory</span><span class="w">                       </span><span class="n">memory</span><span class="p">,</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">VkAllocationCallbacks</span><span class="o">*</span><span class="w">         </span><span class="n">pAllocator</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">device</span> 对应的 <code class="docutils literal notranslate"><span class="pre">VkDevice</span></code> 逻辑设备句柄。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">memory</span> 要回收的内存句柄。需要为 <code class="docutils literal notranslate"><span class="pre">device</span></code> 上分配的内存句柄。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pAllocator</span> 内存分配器。</p></li>
+</ul>
+<p>这样我们就可以回收内存了。在正式回收内存前，首先获取 <code class="docutils literal notranslate"><span class="pre">vkFreeMemory</span></code> 函数的实现。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkDevice</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前成功创建的逻辑设备句柄</span><span class="p">;</span>
+
+<span class="n">PFN_vkFreeMemory</span><span class="w"> </span><span class="n">vkFreeMemory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">PFN_vkFreeMemory</span><span class="p">)</span><span class="n">vkGetDeviceProcAddr</span><span class="p">(</span><span class="n">device</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;vkFreeMemory&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>之后就可以进行内存回收了，示例代码如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkDevice</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前成功创建的逻辑设备句柄</span><span class="p">;</span>
+<span class="n">VkDeviceMemory</span><span class="w"> </span><span class="n">device_memory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前成功分配的内存句柄</span><span class="p">;</span>
+
+<span class="n">vkFreeMemory</span><span class="p">(</span><span class="n">device</span><span class="p">,</span><span class="w"> </span><span class="n">device_memory</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 </section>
@@ -1684,7 +1787,14 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <li><a class="reference internal" href="#id18">VkPhysicalDeviceMemoryProperties 结构图</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id19">分配内存</a></li>
+<li><a class="reference internal" href="#id19">内存管理</a><ul>
+<li><a class="reference internal" href="#id20">分配内存</a><ul>
+<li><a class="reference internal" href="#vkmemoryallocateinfo">VkMemoryAllocateInfo</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id21">回收内存</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
