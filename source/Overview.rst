@@ -85,6 +85,7 @@
    * 2023/10/6 增加 ``VkMemoryAllocateInfo`` 章节。
    * 2023/10/6 更新 ``VkMemoryHeap`` 章节。修正 ``VkMemoryHeap::size`` 单位讲解错误。
    * 2023/10/6 增加 ``回收内存`` 章节。
+   * 2023/10/6 增加 ``vkFreeMemory`` 章节。
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -1588,6 +1589,9 @@ VkMemoryAllocateInfo
 --------------------------------
 
 内存成功分配完之后，可以通过 ``vkFreeMemory`` 函数进行回收。其定义如下：
+
+vkFreeMemory
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code:: c++
 
