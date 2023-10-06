@@ -348,6 +348,7 @@
 <li><p class="sd-card-text">2023/10/6 增加 <code class="docutils literal notranslate"><span class="pre">VkMemoryAllocateInfo</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2023/10/6 更新 <code class="docutils literal notranslate"><span class="pre">VkMemoryHeap</span></code> 章节。修正 <code class="docutils literal notranslate"><span class="pre">VkMemoryHeap::size</span></code> 单位讲解错误。</p></li>
 <li><p class="sd-card-text">2023/10/6 增加 <code class="docutils literal notranslate"><span class="pre">回收内存</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2023/10/6 增加 <code class="docutils literal notranslate"><span class="pre">vkFreeMemory</span></code> 章节。</p></li>
 </ul>
 </div>
 </details><p>由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 比较复杂，为了更好的入门 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> ，还是大致过一遍 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的核心思路，这对以后的学习很有帮助。</p>
@@ -1612,6 +1613,8 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <section id="id21">
 <h4>回收内存<a class="headerlink" href="#id21" title="Link to this heading">#</a></h4>
 <p>内存成功分配完之后，可以通过 <code class="docutils literal notranslate"><span class="pre">vkFreeMemory</span></code> 函数进行回收。其定义如下：</p>
+<section id="vkfreememory">
+<h5>vkFreeMemory<a class="headerlink" href="#vkfreememory" title="Link to this heading">#</a></h5>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">vkFreeMemory</span><span class="p">(</span>
 <span class="w">  </span><span class="n">VkDevice</span><span class="w">                             </span><span class="n">device</span><span class="p">,</span>
@@ -1637,6 +1640,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <span class="n">vkFreeMemory</span><span class="p">(</span><span class="n">device</span><span class="p">,</span><span class="w"> </span><span class="n">device_memory</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
 </pre></div>
 </div>
+</section>
 </section>
 </section>
 </section>
@@ -1792,7 +1796,10 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <li><a class="reference internal" href="#vkmemoryallocateinfo">VkMemoryAllocateInfo</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id21">回收内存</a></li>
+<li><a class="reference internal" href="#id21">回收内存</a><ul>
+<li><a class="reference internal" href="#vkfreememory">vkFreeMemory</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
