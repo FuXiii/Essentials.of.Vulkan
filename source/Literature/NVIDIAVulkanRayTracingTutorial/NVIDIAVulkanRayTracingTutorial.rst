@@ -79,6 +79,7 @@ NVIDIA Vulkan 光线追踪教程
     * 2023/9/15 更新 ``8.1 句柄`` 修改文字错误
     * 2023/9/15 更新 ``8 着色器绑定表`` 添加 ``随笔链接``
     * 2023/9/20 增加 ``动态更新`` 文档链接
+    * 2023/10/7 增加 ``相交着色器`` 文档链接
 
 `文献源`_
 
@@ -2428,3 +2429,4 @@ NVIDIA Vulkan 光线追踪教程
    extensions/Reflections.rst
    extensions/MultipleClosestHitShaders.rst
    extensions/Animation.rst
+   extensions/IntersectionShader.rst

@@ -19,12 +19,21 @@
     * 2023/9/22 增加 ``更新物体`` 章节
     * 2023/9/22 增加 ``执行更新`` 章节
     * 2023/9/22 增加 ``底层加速结构的更新`` 章节
+    * 2023/10/7 提供 ``Turbo`` 实现开源示例
 
 `文献源`_
 
 .. _文献源: https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing_animation
 
 .. _光线追踪教程: ../NVIDIAVulkanRayTracingTutorial.html
+
+.. admonition:: Turbo 引擎中对该教程的实现示例
+    :class: note
+
+    ``Turbo`` 引擎对该教程进行了实现，具体如下：
+
+    * `VulkanKHRRayTracingTestForAnimationTLAS <https://github.com/FuXiii/Turbo/blob/master/samples/VulkanKHRRayTracingTestForAnimationTLAS.cpp>`_ ：在 `多重最近命中着色器 <./MultipleClosestHitShaders.html>`_ 基础上增加对于顶层加速结构的更新。 `示例视频 <https://www.bilibili.com/video/BV1ez4y137ct/?spm_id_from=333.999.0.0&vd_source=df46bdc268062b383081e71f702cbc1d>`_
+    * `VulkanKHRRayTracingTestForAnimationBLAS <https://github.com/FuXiii/Turbo/blob/master/samples/VulkanKHRRayTracingTestForAnimationBLAS.cpp>`_ ：在 `多重最近命中着色器 <./MultipleClosestHitShaders.html>`_ 基础上增加对于底层加速结构的更新。 `示例视频 <https://www.bilibili.com/video/BV1nH4y1U7fL/?spm_id_from=333.999.0.0&vd_source=df46bdc268062b383081e71f702cbc1d>`_
 
 .. figure:: ../../../_static/animation2.gif
 
