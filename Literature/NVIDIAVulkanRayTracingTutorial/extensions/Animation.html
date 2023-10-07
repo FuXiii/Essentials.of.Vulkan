@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="索引" href="../../../genindex.html" /><link rel="search" title="搜索" href="../../../search.html" /><link rel="next" title="Vulkan迷你路径追踪" href="../../vk_mini_path_tracer.html" /><link rel="prev" title="多重最近命中着色器" href="MultipleClosestHitShaders.html" />
+<link rel="index" title="索引" href="../../../genindex.html" /><link rel="search" title="搜索" href="../../../search.html" /><link rel="next" title="相交着色器" href="IntersectionShader.html" /><link rel="prev" title="多重最近命中着色器" href="MultipleClosestHitShaders.html" />
         <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/Literature/NVIDIAVulkanRayTracingTutorial/extensions/Animation.html" />
 
     <link rel="shortcut icon" href="../../../_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
@@ -181,6 +181,7 @@
 <li class="toctree-l3"><a class="reference internal" href="Reflections.html">反射</a></li>
 <li class="toctree-l3"><a class="reference internal" href="MultipleClosestHitShaders.html">多重最近命中着色器</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">动态更新</a></li>
+<li class="toctree-l3"><a class="reference internal" href="IntersectionShader.html">相交着色器</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../vk_mini_path_tracer.html">Vulkan迷你路径追踪</a></li>
@@ -282,17 +283,26 @@
 <li><p class="sd-card-text">2023/9/22 增加 <code class="docutils literal notranslate"><span class="pre">更新物体</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/9/22 增加 <code class="docutils literal notranslate"><span class="pre">执行更新</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/9/22 增加 <code class="docutils literal notranslate"><span class="pre">底层加速结构的更新</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/10/7 提供 <code class="docutils literal notranslate"><span class="pre">Turbo</span></code> 实现开源示例</p></li>
 </ul>
 </div>
 </details><p><a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing_animation">文献源</a></p>
-<figure class="align-default" id="id16">
+<div class="note admonition">
+<p class="admonition-title">Turbo 引擎中对该教程的实现示例</p>
+<p><code class="docutils literal notranslate"><span class="pre">Turbo</span></code> 引擎对该教程进行了实现，具体如下：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/FuXiii/Turbo/blob/master/samples/VulkanKHRRayTracingTestForAnimationTLAS.cpp">VulkanKHRRayTracingTestForAnimationTLAS</a> ：在 <a class="reference external" href="./MultipleClosestHitShaders.html">多重最近命中着色器</a> 基础上增加对于顶层加速结构的更新。 <a class="reference external" href="https://www.bilibili.com/video/BV1ez4y137ct/?spm_id_from=333.999.0.0&amp;vd_source=df46bdc268062b383081e71f702cbc1d">示例视频</a></p></li>
+<li><p><a class="reference external" href="https://github.com/FuXiii/Turbo/blob/master/samples/VulkanKHRRayTracingTestForAnimationBLAS.cpp">VulkanKHRRayTracingTestForAnimationBLAS</a> ：在 <a class="reference external" href="./MultipleClosestHitShaders.html">多重最近命中着色器</a> 基础上增加对于底层加速结构的更新。 <a class="reference external" href="https://www.bilibili.com/video/BV1nH4y1U7fL/?spm_id_from=333.999.0.0&amp;vd_source=df46bdc268062b383081e71f702cbc1d">示例视频</a></p></li>
+</ul>
+</div>
+<figure class="align-default" id="id20">
 <img alt="../../../_images/animation2.gif" src="../../../_images/animation2.gif" />
 <figcaption>
-<p><span class="caption-text">动态更新结果示意图</span><a class="headerlink" href="#id16" title="Link to this image">#</a></p>
+<p><span class="caption-text">动态更新结果示意图</span><a class="headerlink" href="#id20" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
-<section id="id4">
-<h2>教程<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<section id="id8">
+<h2>教程<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
 <p>该教程为 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> <a class="reference external" href="../NVIDIAVulkanRayTracingTutorial.html">光线追踪教程</a> 的扩展。</p>
 <p>我们将会实现两种更新方式：</p>
 <ol class="arabic simple">
@@ -300,11 +310,11 @@
 <li><p>几何体</p></li>
 </ol>
 </section>
-<section id="id5">
-<h2>更新变换矩阵<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<section id="id9">
+<h2>更新变换矩阵<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
 <p>定一个示例是通过更新顶层加速结构中实体对应的变换矩阵进行的动态更新。</p>
-<section id="id6">
-<h3>创建一个场景<a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
+<section id="id10">
+<h3>创建一个场景<a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
 <p>在 <code class="docutils literal notranslate"><span class="pre">main.cpp</span></code> 中替换掉之前的通过 <code class="docutils literal notranslate"><span class="pre">main()</span></code> 中 <code class="docutils literal notranslate"><span class="pre">helloVk.loadModel</span></code> 的函数调用，这次我们使用一个地板和使用 <code class="docutils literal notranslate"><span class="pre">Wuson</span></code> 模型组成的 <code class="docutils literal notranslate"><span class="pre">21</span></code> 个实体组成的场景。如下代码是在同一位置创建所有的实体，我们将会在之后的更新函数中更新这些数据。如果此时运行示例，你会发现现在渲染的非常慢，这是因为所有的几何体都叠在了一起并且加速结构不能很好的处理此种情况。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">helloVk</span><span class="p">.</span><span class="n">loadModel</span><span class="p">(</span><span class="n">nvh</span><span class="o">::</span><span class="n">findFile</span><span class="p">(</span><span class="s">&quot;media/scenes/plane.obj&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">defaultSearchPaths</span><span class="p">),</span>
 <span class="w">                  </span><span class="n">nvmath</span><span class="o">::</span><span class="n">scale_mat4</span><span class="p">(</span><span class="n">nvmath</span><span class="o">::</span><span class="n">vec3f</span><span class="p">(</span><span class="mf">2.f</span><span class="p">,</span><span class="w"> </span><span class="mf">1.f</span><span class="p">,</span><span class="w"> </span><span class="mf">2.f</span><span class="p">)));</span>
@@ -316,8 +326,8 @@
 </pre></div>
 </div>
 </section>
-<section id="id7">
-<h3>更新函数<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
+<section id="id11">
+<h3>更新函数<a class="headerlink" href="#id11" title="Link to this heading">#</a></h3>
 <p>我们现在想让这些 <code class="docutils literal notranslate"><span class="pre">Wuson</span></code> 模型绕着圈转，我们首先使用光栅化进行更新渲染，此示例将会在 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 端进行变换更新，之后再将变换结果拷贝至 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 。而下一个示例中，我们将在 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 上使用计算着色器进行更新。</p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">HelloVulkan</span></code> 类中声明更新函数。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">animationInstances</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">time</span><span class="p">);</span>
@@ -342,8 +352,8 @@
 </pre></div>
 </div>
 </section>
-<section id="id8">
-<h3>循环更新函数<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
+<section id="id12">
+<h3>循环更新函数<a class="headerlink" href="#id12" title="Link to this heading">#</a></h3>
 <p>在 <code class="docutils literal notranslate"><span class="pre">main()</span></code> 中，在进入主循环之前增加一个用于记录开始时间的变量，该变量将会被更新函数使用。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">system_clock</span><span class="o">::</span><span class="n">now</span><span class="p">();</span>
 </pre></div>
@@ -356,8 +366,8 @@
 <p>如果此时执行该应用，这些 <code class="docutils literal notranslate"><span class="pre">Wuson</span></code> 模型将会做圆周运动，并被光栅化（管线）渲染出来。但是此时光追（管线）没有做任何变化，所有的模型还在原位叠在一起一动不动。我们需要更新顶层加速结构使其各实体位置发生变化。</p>
 </section>
 </section>
-<section id="id9">
-<h2>更新顶层加速结构<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
+<section id="id13">
+<h2>更新顶层加速结构<a class="headerlink" href="#id13" title="Link to this heading">#</a></h2>
 <p>由于我们要更新顶层加速结构中的变换矩阵，我们需要保存在创建时的对象信息，这样才能知道顶层加速结构中都有哪些实体。</p>
 <p>首先，将 <code class="docutils literal notranslate"><span class="pre">HelloVulkan::createTopLevelAS()</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">nvvk::RaytracingBuilder::Instance</span></code> 数组转移至 <code class="docutils literal notranslate"><span class="pre">HelloVulkan</span></code> 类中：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">nvvk</span><span class="o">::</span><span class="n">RaytracingBuilder</span><span class="o">::</span><span class="n">Instance</span><span class="o">&gt;</span><span class="w"> </span><span class="n">m_tlas</span><span class="p">;</span>
@@ -403,11 +413,11 @@
 <p>更新只会去更新包含所有变换矩阵的那个缓存，并且 <code class="docutils literal notranslate"><span class="pre">vkCmdBuildAccelerationStructuresKHR</span></code> 将会根据缓存进行相应的更新。</p>
 </section>
 </section>
-<section id="id10">
-<h2>更新底层加速结构<a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
+<section id="id14">
+<h2>更新底层加速结构<a class="headerlink" href="#id14" title="Link to this heading">#</a></h2>
 <p>在之前的章节中，我们更新的变换矩阵。这次我们将会在计算着色器中修改顶点数据。</p>
-<section id="id11">
-<h3>增加一个球体<a class="headerlink" href="#id11" title="Link to this heading">#</a></h3>
+<section id="id15">
+<h3>增加一个球体<a class="headerlink" href="#id15" title="Link to this heading">#</a></h3>
 <p>本章节，我们将会更新一个球体的顶点。在 <code class="docutils literal notranslate"><span class="pre">main.cpp</span></code> 中设置场景如下：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">helloVk</span><span class="p">.</span><span class="n">loadModel</span><span class="p">(</span><span class="n">nvh</span><span class="o">::</span><span class="n">findFile</span><span class="p">(</span><span class="s">&quot;media/scenes/plane.obj&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">defaultSearchPaths</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">),</span>
 <span class="w">                  </span><span class="n">nvmath</span><span class="o">::</span><span class="n">scale_mat4</span><span class="p">(</span><span class="n">nvmath</span><span class="o">::</span><span class="n">vec3f</span><span class="p">(</span><span class="mf">2.f</span><span class="p">,</span><span class="w"> </span><span class="mf">1.f</span><span class="p">,</span><span class="w"> </span><span class="mf">2.f</span><span class="p">)));</span>
@@ -426,8 +436,8 @@
 </pre></div>
 </div>
 </section>
-<section id="id12">
-<h3>计算着色器<a class="headerlink" href="#id12" title="Link to this heading">#</a></h3>
+<section id="id16">
+<h3>计算着色器<a class="headerlink" href="#id16" title="Link to this heading">#</a></h3>
 <p>我们使用计算着色器来为模型的顶点做更新。</p>
 <p>将如下的所有申明加入 <code class="docutils literal notranslate"><span class="pre">HelloVulkan</span></code> 类中成为其成员：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">createCompDescriptors</span><span class="p">();</span>
@@ -550,8 +560,8 @@
 </pre></div>
 </div>
 </section>
-<section id="id13">
-<h3>更新物体<a class="headerlink" href="#id13" title="Link to this heading">#</a></h3>
+<section id="id17">
+<h3>更新物体<a class="headerlink" href="#id17" title="Link to this heading">#</a></h3>
 <p>首先在 <code class="docutils literal notranslate"><span class="pre">HelloVulkan</span></code> 中增加更新函数的声明：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">animationObject</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">time</span><span class="p">);</span>
 </pre></div>
@@ -581,8 +591,8 @@
 </pre></div>
 </div>
 </section>
-<section id="id14">
-<h3>执行更新<a class="headerlink" href="#id14" title="Link to this heading">#</a></h3>
+<section id="id18">
+<h3>执行更新<a class="headerlink" href="#id18" title="Link to this heading">#</a></h3>
 <p>在 <code class="docutils literal notranslate"><span class="pre">main.cpp</span></code> 中，在其他资源创建完成之后，添加计算着色器的创建函数。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">helloVk</span><span class="p">.</span><span class="n">createCompDescriptors</span><span class="p">();</span>
 <span class="n">helloVk</span><span class="p">.</span><span class="n">createCompPipelines</span><span class="p">();</span>
@@ -602,8 +612,8 @@
 </div>
 </section>
 </section>
-<section id="id15">
-<h2>底层加速结构的更新<a class="headerlink" href="#id15" title="Link to this heading">#</a></h2>
+<section id="id19">
+<h2>底层加速结构的更新<a class="headerlink" href="#id19" title="Link to this heading">#</a></h2>
 <p>在 <code class="docutils literal notranslate"><span class="pre">raytrace_vkpp.hpp</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">nvvk::RaytracingBuilder</span></code> 中，我们可以增加一个函数用于将之前更新的顶点数据更新到底层加速结构中。这与之前更新实体类似，只不过这次没有缓存传输这一说了。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">//--------------------------------------------------------------------------------------------------</span>
 <span class="c1">// 从更新的缓存中重组底层加速结构的 blasIdx 数量</span>
@@ -690,12 +700,12 @@
       <footer>
         
 <div class="related-pages">
-    <a class="next-page" href="../../vk_mini_path_tracer.html">
+    <a class="next-page" href="IntersectionShader.html">
         <div class="page-info">
             <div class="context">
                 <span>Next</span>
             </div>
-            <div class="title">Vulkan迷你路径追踪</div>
+            <div class="title">相交着色器</div>
         </div>
         <svg class="furo-related-icon">
             <use href="#svg-arrow-right"></use>
@@ -760,26 +770,26 @@
         <div class="toc-tree" style="width: 500px;">
             <ul>
 <li><a class="reference internal" href="#">动态更新</a><ul>
-<li><a class="reference internal" href="#id4">教程</a></li>
-<li><a class="reference internal" href="#id5">更新变换矩阵</a><ul>
-<li><a class="reference internal" href="#id6">创建一个场景</a></li>
-<li><a class="reference internal" href="#id7">更新函数</a></li>
-<li><a class="reference internal" href="#id8">循环更新函数</a></li>
+<li><a class="reference internal" href="#id8">教程</a></li>
+<li><a class="reference internal" href="#id9">更新变换矩阵</a><ul>
+<li><a class="reference internal" href="#id10">创建一个场景</a></li>
+<li><a class="reference internal" href="#id11">更新函数</a></li>
+<li><a class="reference internal" href="#id12">循环更新函数</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id9">更新顶层加速结构</a><ul>
+<li><a class="reference internal" href="#id13">更新顶层加速结构</a><ul>
 <li><a class="reference internal" href="#nvvk-raytracingbuilder-buildtlas">nvvk::RaytracingBuilder::buildTlas （实现）</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id10">更新底层加速结构</a><ul>
-<li><a class="reference internal" href="#id11">增加一个球体</a></li>
-<li><a class="reference internal" href="#id12">计算着色器</a></li>
+<li><a class="reference internal" href="#id14">更新底层加速结构</a><ul>
+<li><a class="reference internal" href="#id15">增加一个球体</a></li>
+<li><a class="reference internal" href="#id16">计算着色器</a></li>
 <li><a class="reference internal" href="#anim-comp">anim.comp</a></li>
-<li><a class="reference internal" href="#id13">更新物体</a></li>
-<li><a class="reference internal" href="#id14">执行更新</a></li>
+<li><a class="reference internal" href="#id17">更新物体</a></li>
+<li><a class="reference internal" href="#id18">执行更新</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id15">底层加速结构的更新</a></li>
+<li><a class="reference internal" href="#id19">底层加速结构的更新</a></li>
 </ul>
 </li>
 </ul>

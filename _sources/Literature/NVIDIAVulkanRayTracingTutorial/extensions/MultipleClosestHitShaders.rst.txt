@@ -37,7 +37,7 @@
 
     ``Turbo`` 引擎对该教程进行了实现，具体如下：
 
-    * `VulkanKHRRayTracingTestForMultiClosestHits <https://github.com/FuXiii/Turbo/blob/dev/samples/VulkanKHRRayTracingTestForMultiClosestHits.cpp>`_ ：在 `实例化 <../extensions/Instances.html>`_ 基础上实现。 `示例视频 <https://www.bilibili.com/video/BV1Hh4y1a7zH/?vd_source=df46bdc268062b383081e71f702cbc1d>`_
+    * `VulkanKHRRayTracingTestForMultiClosestHits <https://github.com/FuXiii/Turbo/blob/dev/samples/VulkanKHRRayTracingTestForMultiClosestHits.cpp>`_ ：在 `实例化 <./Instances.html>`_ 基础上实现。 `示例视频 <https://www.bilibili.com/video/BV1Hh4y1a7zH/?vd_source=df46bdc268062b383081e71f702cbc1d>`_
 
 .. figure:: ../../../_static/manyhits.png
 
