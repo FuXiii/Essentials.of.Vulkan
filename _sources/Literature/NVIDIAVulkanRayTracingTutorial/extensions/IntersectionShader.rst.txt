@@ -78,3 +78,20 @@
 
     #define KIND_SPHERE 0
     #define KIND_CUBE 1
+
+所有的数据将会在缓存中进行存储，之后着色器将会对其进行访问。
+
+.. code:: c++
+
+    std::vector<Sphere> m_spheres;                // 所有球体
+    nvvkBuffer          m_spheresBuffer;          // 存储所有球体的缓存
+    nvvkBuffer          m_spheresAabbBuffer;      // 存储所有轴对齐包围盒的缓存
+    nvvkBuffer          m_spheresMatColorBuffer;  // 多个材质
+    nvvkBuffer          m_spheresMatIndexBuffer;  // 定义哪个球体使用哪个材质
+
+最后，增加两个函数，一个是用于创建球体，一个是用于构造底层加速结构时所需的中间结构体数据（与 ``objectToVkGeometryKHR()`` 类似）。
+
+.. code:: c++
+
+    void createSpheres();
+    auto sphereToVkGeometryKHR();

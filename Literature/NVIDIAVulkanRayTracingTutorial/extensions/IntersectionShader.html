@@ -330,6 +330,19 @@
 <span class="cp">#define KIND_CUBE 1</span>
 </pre></div>
 </div>
+<p>所有的数据将会在缓存中进行存储，之后着色器将会对其进行访问。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Sphere</span><span class="o">&gt;</span><span class="w"> </span><span class="n">m_spheres</span><span class="p">;</span><span class="w">                </span><span class="c1">// 所有球体</span>
+<span class="n">nvvkBuffer</span><span class="w">          </span><span class="n">m_spheresBuffer</span><span class="p">;</span><span class="w">          </span><span class="c1">// 存储所有球体的缓存</span>
+<span class="n">nvvkBuffer</span><span class="w">          </span><span class="n">m_spheresAabbBuffer</span><span class="p">;</span><span class="w">      </span><span class="c1">// 存储所有轴对齐包围盒的缓存</span>
+<span class="n">nvvkBuffer</span><span class="w">          </span><span class="n">m_spheresMatColorBuffer</span><span class="p">;</span><span class="w">  </span><span class="c1">// 多个材质</span>
+<span class="n">nvvkBuffer</span><span class="w">          </span><span class="n">m_spheresMatIndexBuffer</span><span class="p">;</span><span class="w">  </span><span class="c1">// 定义哪个球体使用哪个材质</span>
+</pre></div>
+</div>
+<p>最后，增加两个函数，一个是用于创建球体，一个是用于构造底层加速结构时所需的中间结构体数据（与 <code class="docutils literal notranslate"><span class="pre">objectToVkGeometryKHR()</span></code> 类似）。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">createSpheres</span><span class="p">();</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">sphereToVkGeometryKHR</span><span class="p">();</span>
+</pre></div>
+</div>
 </section>
 </section>
 
