@@ -273,13 +273,20 @@
 <li><p class="sd-card-text">2023/10/7 增加 <code class="docutils literal notranslate"><span class="pre">教程</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/10/7 增加 <code class="docutils literal notranslate"><span class="pre">上层实现</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/10/7 增加 <code class="docutils literal notranslate"><span class="pre">创建所有隐式对象</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/10/8 更新 <code class="docutils literal notranslate"><span class="pre">创建所有隐式对象</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/10/8 增加 <code class="docutils literal notranslate"><span class="pre">布置场景</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/10/8 增加 <code class="docutils literal notranslate"><span class="pre">加速结构</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/10/8 增加 <code class="docutils literal notranslate"><span class="pre">底层加速结构</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/10/8 增加 <code class="docutils literal notranslate"><span class="pre">顶层加速结构</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/10/8 增加 <code class="docutils literal notranslate"><span class="pre">描述符</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/10/8 增加 <code class="docutils literal notranslate"><span class="pre">相交着色器</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p><a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing_intersection#intersection-shader---tutorial">文献源</a></p>
-<figure class="align-default" id="id7">
+<figure class="align-default" id="id13">
 <img alt="../../../_images/intersection.png" src="../../../_images/intersection.png" />
 <figcaption>
-<p><span class="caption-text">相交着色器结果示意图</span><a class="headerlink" href="#id7" title="Link to this image">#</a></p>
+<p><span class="caption-text">相交着色器结果示意图</span><a class="headerlink" href="#id13" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <section id="id4">
@@ -291,7 +298,7 @@
 <h2>上层实现<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
 <p>从上层角度来看，我们将：</p>
 <ul class="simple">
-<li><p>在底层加速结构中增加 <span class="math notranslate nohighlight">\(2,000,000\)</span> 个轴对齐包围盒</p></li>
+<li><p>在底层加速结构中增加 <span class="math notranslate nohighlight">\(2,000,000\)</span> 个轴对齐包围盒（ <code class="docutils literal notranslate"><span class="pre">axis</span> <span class="pre">aligned</span> <span class="pre">bounding</span> <span class="pre">box</span></code> 简写为 <code class="docutils literal notranslate"><span class="pre">AABB</span></code> ）</p></li>
 <li><p>增加两个材质</p></li>
 <li><p>每一个相交物体将会是球体或盒体两者交替，并且使用两个材质其中的一个</p></li>
 </ul>
@@ -343,6 +350,223 @@
 <span class="k">auto</span><span class="w"> </span><span class="n">sphereToVkGeometryKHR</span><span class="p">();</span>
 </pre></div>
 </div>
+<p>这下来将会在随机的位置上创建随机半径的 <span class="math notranslate nohighlight">\(2,000,000\)</span> 个球体。并从球体定义中导出轴对齐包围盒。两种材料将会交替分配给每个对象。所有的构建完的数据都会保存进 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的缓存中并在相交着色器和最近命中着色器中使用。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">//--------------------------------------------------------------------------------------------------</span>
+<span class="c1">// 创建所有的球体</span>
+<span class="c1">//</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">HelloVulkan::createSpheres</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">nbSpheres</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">random_device</span><span class="w">                    </span><span class="n">rd</span><span class="p">{};</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">mt19937</span><span class="w">                          </span><span class="n">gen</span><span class="p">{</span><span class="n">rd</span><span class="p">()};</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">normal_distribution</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="w">       </span><span class="n">xzd</span><span class="p">{</span><span class="mf">0.f</span><span class="p">,</span><span class="w"> </span><span class="mf">5.f</span><span class="p">};</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">normal_distribution</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="w">       </span><span class="n">yd</span><span class="p">{</span><span class="mf">6.f</span><span class="p">,</span><span class="w"> </span><span class="mf">3.f</span><span class="p">};</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">uniform_real_distribution</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="w"> </span><span class="n">radd</span><span class="p">{</span><span class="mf">.05f</span><span class="p">,</span><span class="w"> </span><span class="mf">.2f</span><span class="p">};</span>
+
+<span class="w">  </span><span class="c1">// 所有球体</span>
+<span class="w">  </span><span class="n">m_spheres</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span><span class="n">nbSpheres</span><span class="p">);</span>
+<span class="w">  </span><span class="k">for</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">nbSpheres</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Sphere</span><span class="w"> </span><span class="n">s</span><span class="p">;</span>
+<span class="w">    </span><span class="n">s</span><span class="p">.</span><span class="n">center</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="n">nvmath</span><span class="o">::</span><span class="n">vec3f</span><span class="p">(</span><span class="n">xzd</span><span class="p">(</span><span class="n">gen</span><span class="p">),</span><span class="w"> </span><span class="n">yd</span><span class="p">(</span><span class="n">gen</span><span class="p">),</span><span class="w"> </span><span class="n">xzd</span><span class="p">(</span><span class="n">gen</span><span class="p">));</span>
+<span class="w">    </span><span class="n">s</span><span class="p">.</span><span class="n">radius</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="n">radd</span><span class="p">(</span><span class="n">gen</span><span class="p">);</span>
+<span class="w">    </span><span class="n">m_spheres</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">// 每一个球体的轴对齐包围盒</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Aabb</span><span class="o">&gt;</span><span class="w"> </span><span class="n">aabbs</span><span class="p">;</span>
+<span class="w">  </span><span class="n">aabbs</span><span class="p">.</span><span class="n">reserve</span><span class="p">(</span><span class="n">nbSpheres</span><span class="p">);</span>
+<span class="w">  </span><span class="k">for</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">m_spheres</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Aabb</span><span class="w"> </span><span class="n">aabb</span><span class="p">;</span>
+<span class="w">    </span><span class="n">aabb</span><span class="p">.</span><span class="n">minimum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">center</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">nvmath</span><span class="o">::</span><span class="n">vec3f</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">radius</span><span class="p">);</span>
+<span class="w">    </span><span class="n">aabb</span><span class="p">.</span><span class="n">maximum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">center</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">nvmath</span><span class="o">::</span><span class="n">vec3f</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">radius</span><span class="p">);</span>
+<span class="w">    </span><span class="n">aabbs</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">aabb</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">// 创建两个材质</span>
+<span class="w">  </span><span class="n">MaterialObj</span><span class="w"> </span><span class="n">mat</span><span class="p">;</span>
+<span class="w">  </span><span class="n">mat</span><span class="p">.</span><span class="n">diffuse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nvmath</span><span class="o">::</span><span class="n">vec3f</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">MaterialObj</span><span class="o">&gt;</span><span class="w"> </span><span class="n">materials</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w">         </span><span class="n">matIdx</span><span class="p">(</span><span class="n">nbSpheres</span><span class="p">);</span>
+<span class="w">  </span><span class="n">materials</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">mat</span><span class="p">);</span>
+<span class="w">  </span><span class="n">mat</span><span class="p">.</span><span class="n">diffuse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nvmath</span><span class="o">::</span><span class="n">vec3f</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="w">  </span><span class="n">materials</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">mat</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// 为每一个球体分配一个材质</span>
+<span class="w">  </span><span class="k">for</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">m_spheres</span><span class="p">.</span><span class="n">size</span><span class="p">();</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">matIdx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">// 创建所有的缓存</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">vkBU</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VkBufferUsageFlagBits</span><span class="p">;</span>
+<span class="w">  </span><span class="n">nvvk</span><span class="o">::</span><span class="n">CommandPool</span><span class="w"> </span><span class="n">genCmdBuf</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">m_graphicsQueueIndex</span><span class="p">);</span>
+<span class="w">  </span><span class="k">auto</span><span class="w">              </span><span class="n">cmdBuf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">genCmdBuf</span><span class="p">.</span><span class="n">createCommandBuffer</span><span class="p">();</span>
+<span class="w">  </span><span class="n">m_spheresBuffer</span><span class="w">          </span><span class="o">=</span><span class="w"> </span><span class="n">m_alloc</span><span class="p">.</span><span class="n">createBuffer</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="n">m_spheres</span><span class="p">,</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_STORAGE_BUFFER_BIT</span><span class="p">);</span>
+<span class="w">  </span><span class="n">m_spheresAabbBuffer</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="n">m_alloc</span><span class="p">.</span><span class="n">createBuffer</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="n">aabbs</span><span class="p">,</span>
+<span class="w">                                             </span><span class="n">VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT</span>
+<span class="w">                                                 </span><span class="o">|</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR</span><span class="p">);</span>
+<span class="w">  </span><span class="n">m_spheresMatIndexBuffer</span><span class="w"> </span><span class="o">=</span>
+<span class="w">      </span><span class="n">m_alloc</span><span class="p">.</span><span class="n">createBuffer</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="n">matIdx</span><span class="p">,</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_STORAGE_BUFFER_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT</span><span class="p">);</span>
+<span class="w">  </span><span class="n">m_spheresMatColorBuffer</span><span class="w"> </span><span class="o">=</span>
+<span class="w">      </span><span class="n">m_alloc</span><span class="p">.</span><span class="n">createBuffer</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="n">materials</span><span class="p">,</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_STORAGE_BUFFER_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT</span><span class="p">);</span>
+<span class="w">  </span><span class="n">genCmdBuf</span><span class="p">.</span><span class="n">submitAndWait</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// 调试信息</span>
+<span class="w">  </span><span class="n">m_debug</span><span class="p">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="n">m_spheresBuffer</span><span class="p">.</span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;spheres&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">m_debug</span><span class="p">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="n">m_spheresAabbBuffer</span><span class="p">.</span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;spheresAabb&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">m_debug</span><span class="p">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="n">m_spheresMatColorBuffer</span><span class="p">.</span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;spheresMat&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">m_debug</span><span class="p">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="n">m_spheresMatIndexBuffer</span><span class="p">.</span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;spheresMatIdx&quot;</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// 增加一个额外的实体，用于着色器中访问材质数据</span>
+<span class="w">  </span><span class="n">ObjDesc</span><span class="w"> </span><span class="n">objDesc</span><span class="p">{};</span>
+<span class="w">  </span><span class="n">objDesc</span><span class="p">.</span><span class="n">materialAddress</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="n">nvvk</span><span class="o">::</span><span class="n">getBufferDeviceAddress</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">m_spheresMatColorBuffer</span><span class="p">.</span><span class="n">buffer</span><span class="p">);</span>
+<span class="w">  </span><span class="n">objDesc</span><span class="p">.</span><span class="n">materialIndexAddress</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nvvk</span><span class="o">::</span><span class="n">getBufferDeviceAddress</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">m_spheresMatIndexBuffer</span><span class="p">.</span><span class="n">buffer</span><span class="p">);</span>
+<span class="w">  </span><span class="n">m_objDesc</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">objDesc</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">ObjInstance</span><span class="w"> </span><span class="n">instance</span><span class="p">{};</span>
+<span class="w">  </span><span class="n">instance</span><span class="p">.</span><span class="n">objIndex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">m_objModel</span><span class="p">.</span><span class="n">size</span><span class="p">());</span>
+<span class="w">  </span><span class="n">m_instances</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">instance</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>不要忘记在 <code class="docutils literal notranslate"><span class="pre">destroyResources()</span></code> 中回收资源。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">m_alloc</span><span class="p">.</span><span class="n">destroy</span><span class="p">(</span><span class="n">m_spheresBuffer</span><span class="p">);</span>
+<span class="n">m_alloc</span><span class="p">.</span><span class="n">destroy</span><span class="p">(</span><span class="n">m_spheresAabbBuffer</span><span class="p">);</span>
+<span class="n">m_alloc</span><span class="p">.</span><span class="n">destroy</span><span class="p">(</span><span class="n">m_spheresMatColorBuffer</span><span class="p">);</span>
+<span class="n">m_alloc</span><span class="p">.</span><span class="n">destroy</span><span class="p">(</span><span class="n">m_spheresMatIndexBuffer</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>我们需要一个新的底层加速结构用于承载支持创建的图元（几何体）。为了效率并且所有的图元都是静态的，所有的图元将会将入到同一个底层加速结构中。</p>
+<p>与创建三角图元不同的是，现在使用轴对齐包围盒数据并且几何类型为 <code class="docutils literal notranslate"><span class="pre">VK_GEOMETRY_TYPE_AABBS_KHR</span></code> 。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">//--------------------------------------------------------------------------------------------------</span>
+<span class="c1">// 返回用于底层加速结构的光追几何数据，存有所有的球体</span>
+<span class="c1">//</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">HelloVulkan</span><span class="o">::</span><span class="n">sphereToVkGeometryKHR</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">VkDeviceAddress</span><span class="w"> </span><span class="n">dataAddress</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nvvk</span><span class="o">::</span><span class="n">getBufferDeviceAddress</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">m_spheresAabbBuffer</span><span class="p">.</span><span class="n">buffer</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">VkAccelerationStructureGeometryAabbsDataKHR</span><span class="w"> </span><span class="n">aabbs</span><span class="p">{</span><span class="n">VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_AABBS_DATA_KHR</span><span class="p">};</span>
+<span class="w">  </span><span class="n">aabbs</span><span class="p">.</span><span class="n">data</span><span class="p">.</span><span class="n">deviceAddress</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dataAddress</span><span class="p">;</span>
+<span class="w">  </span><span class="n">aabbs</span><span class="p">.</span><span class="n">stride</span><span class="w">             </span><span class="o">=</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">Aabb</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// 设置加速结构的构建信息</span>
+<span class="w">  </span><span class="n">VkAccelerationStructureGeometryKHR</span><span class="w"> </span><span class="n">asGeom</span><span class="p">{</span><span class="n">VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR</span><span class="p">};</span>
+<span class="w">  </span><span class="n">asGeom</span><span class="p">.</span><span class="n">geometryType</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="n">VK_GEOMETRY_TYPE_AABBS_KHR</span><span class="p">;</span>
+<span class="w">  </span><span class="n">asGeom</span><span class="p">.</span><span class="n">flags</span><span class="w">          </span><span class="o">=</span><span class="w"> </span><span class="n">VK_GEOMETRY_OPAQUE_BIT_KHR</span><span class="p">;</span>
+<span class="w">  </span><span class="n">asGeom</span><span class="p">.</span><span class="n">geometry</span><span class="p">.</span><span class="n">aabbs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">aabbs</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">VkAccelerationStructureBuildRangeInfoKHR</span><span class="w"> </span><span class="n">offset</span><span class="p">{};</span>
+<span class="w">  </span><span class="n">offset</span><span class="p">.</span><span class="n">firstVertex</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="n">offset</span><span class="p">.</span><span class="n">primitiveCount</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint32_t</span><span class="p">)</span><span class="n">m_spheres</span><span class="p">.</span><span class="n">size</span><span class="p">();</span><span class="w">  </span><span class="c1">// 轴对齐包围盒的数量</span>
+<span class="w">  </span><span class="n">offset</span><span class="p">.</span><span class="n">primitiveOffset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="n">offset</span><span class="p">.</span><span class="n">transformOffset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">nvvk</span><span class="o">::</span><span class="n">RaytracingBuilderKHR</span><span class="o">::</span><span class="n">BlasInput</span><span class="w"> </span><span class="n">input</span><span class="p">;</span>
+<span class="w">  </span><span class="n">input</span><span class="p">.</span><span class="n">asGeometry</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">asGeom</span><span class="p">);</span>
+<span class="w">  </span><span class="n">input</span><span class="p">.</span><span class="n">asBuildOffsetInfo</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">offset</span><span class="p">);</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">input</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="id7">
+<h2>布置场景<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<p>在 <code class="docutils literal notranslate"><span class="pre">main.cpp</span></code> 中，加载 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 模型的地方，将其替换成如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">helloVk</span><span class="p">.</span><span class="n">loadModel</span><span class="p">(</span><span class="n">nvh</span><span class="o">::</span><span class="n">findFile</span><span class="p">(</span><span class="s">&quot;media/scenes/plane.obj&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">defaultSearchPaths</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">));</span>
+<span class="n">helloVk</span><span class="p">.</span><span class="n">createSpheres</span><span class="p">(</span><span class="mi">2000000</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="note admonition">
+<p class="admonition-title">注意</p>
+<p>可以加载更多的 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 模型，但由于我们现在构建顶层加速结构的流程，球体需要在最后加载。</p>
+</div>
+<p>该场景较大，最好先将相机移开。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">CameraManip</span><span class="p">.</span><span class="n">setLookat</span><span class="p">(</span><span class="n">nvmath</span><span class="o">::</span><span class="n">vec3f</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="mi">20</span><span class="p">),</span><span class="w"> </span><span class="n">nvmath</span><span class="o">::</span><span class="n">vec3f</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span><span class="w"> </span><span class="n">nvmath</span><span class="o">::</span><span class="n">vec3f</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">));</span>
+</pre></div>
+</div>
+</section>
+<section id="id8">
+<h2>加速结构<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<section id="id9">
+<h3>底层加速结构<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">createBottomLevelAS()</span></code> 函数会为每一个 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 模型创建一个底层加速结构，我们需要增加一个新的底层加速结构用于承载所有球体的轴对齐包围盒。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">HelloVulkan::createBottomLevelAS</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="c1">// 底层加速结构 - 每个模型存入一个几何体中</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">nvvk</span><span class="o">::</span><span class="n">RaytracingBuilderKHR</span><span class="o">::</span><span class="n">BlasInput</span><span class="o">&gt;</span><span class="w"> </span><span class="n">allBlas</span><span class="p">;</span>
+<span class="w">  </span><span class="n">allBlas</span><span class="p">.</span><span class="n">reserve</span><span class="p">(</span><span class="n">m_objModel</span><span class="p">.</span><span class="n">size</span><span class="p">());</span>
+<span class="w">  </span><span class="k">for</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">obj</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">m_objModel</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">blas</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">objectToVkGeometryKHR</span><span class="p">(</span><span class="n">obj</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// 每一个底层加速结构可以增加更多几何体，但是现在我们仅增加一个</span>
+<span class="w">    </span><span class="n">allBlas</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">blas</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">// 所有球体</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">blas</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sphereToVkGeometryKHR</span><span class="p">();</span>
+<span class="w">    </span><span class="n">allBlas</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">blas</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="n">m_rtBuilder</span><span class="p">.</span><span class="n">buildBlas</span><span class="p">(</span><span class="n">allBlas</span><span class="p">,</span><span class="w"> </span><span class="n">VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="id10">
+<h3>顶层加速结构<a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
+<p>与 <code class="docutils literal notranslate"><span class="pre">createTopLevelAS()</span></code> 类似，顶层加速结构将会引入承载所有球体的底层加速结构。我们将 <code class="docutils literal notranslate"><span class="pre">instanceCustomId</span></code> 和 <code class="docutils literal notranslate"><span class="pre">blasId</span></code> 设置为最后一个元素。这就是为什么存储球体的底层加速结构需要在所有模型加载完成之后加载。</p>
+<p><code class="docutils literal notranslate"><span class="pre">hitGroupId</span></code> 将会设置成 <code class="docutils literal notranslate"><span class="pre">1</span></code> 而不是 <code class="docutils literal notranslate"><span class="pre">0</span></code> 。我们需要为这些隐式图元增加一个新的命中组，由于我们没有提供类似三角形这样的图元，所以我们需要计算类似法线这样的图元属性。</p>
+<p>由于我们在创建隐式对象时增加了一个额外的实体，循环遍历时就会将最后一个元素忽略，循环将会少一次。因此循环将会类似于如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">nbObj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">m_instances</span><span class="p">.</span><span class="n">size</span><span class="p">())</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="n">tlas</span><span class="p">.</span><span class="n">reserve</span><span class="p">(</span><span class="n">nbObj</span><span class="p">);</span>
+<span class="k">for</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">nbObj</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">inst</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_instances</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>紧接着上面的循环之后，构建顶层加速结构之前，我们需要增加如下代码：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 增加包含所有隐式对象的底层加速结构</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">VkAccelerationStructureInstanceKHR</span><span class="w"> </span><span class="n">rayInst</span><span class="p">{};</span>
+<span class="w">  </span><span class="n">rayInst</span><span class="p">.</span><span class="n">transform</span><span class="w">           </span><span class="o">=</span><span class="w"> </span><span class="n">nvvk</span><span class="o">::</span><span class="n">toTransformMatrixKHR</span><span class="p">(</span><span class="n">nvmath</span><span class="o">::</span><span class="n">mat4f</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span><span class="w">  </span><span class="c1">// 实体的位置 （单位矩阵）</span>
+<span class="w">  </span><span class="n">rayInst</span><span class="p">.</span><span class="n">instanceCustomIndex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nbObj</span><span class="p">;</span><span class="w">                                         </span><span class="c1">// nbObj == last object == implicit</span>
+<span class="w">  </span><span class="n">rayInst</span><span class="p">.</span><span class="n">accelerationStructureReference</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_rtBuilder</span><span class="p">.</span><span class="n">getBlasDeviceAddress</span><span class="p">(</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">m_objModel</span><span class="p">.</span><span class="n">size</span><span class="p">()));</span>
+<span class="w">  </span><span class="n">rayInst</span><span class="p">.</span><span class="n">instanceShaderBindingTableRecordOffset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">  </span><span class="c1">// 所有的对象我们将使用相同的命中组</span>
+<span class="w">  </span><span class="n">rayInst</span><span class="p">.</span><span class="n">flags</span><span class="w">                                  </span><span class="o">=</span><span class="w"> </span><span class="n">VK_GEOMETRY_INSTANCE_TRIANGLE_FACING_CULL_DISABLE_BIT_KHR</span><span class="p">;</span>
+<span class="w">  </span><span class="n">rayInst</span><span class="p">.</span><span class="n">mask</span><span class="w">                                   </span><span class="o">=</span><span class="w"> </span><span class="mh">0xFF</span><span class="p">;</span><span class="w">  </span><span class="c1">//  只有当 rayMask &amp; instance.mask != 0 成立时表示命中</span>
+<span class="w">  </span><span class="n">tlas</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">rayInst</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">instanceCustomIndex</span></code> 为 <code class="docutils literal notranslate"><span class="pre">m_instances</span></code> 的最后一个元素，并在着色器中访问隐式对象的材质信息。</p>
+</section>
+</section>
+<section id="id11">
+<h2>描述符<a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
+<p>为了在着色器中能够访问到存储所有球体的缓存，需要对描述符进行一些改变。</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">Binding</span></code> 中增加一个新的枚举。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">eImplicit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w">  </span><span class="c1">// 所有隐式对象</span>
+</pre></div>
+</div>
+<p>描述符需要增加一个对于隐式对象的绑定。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 对应着所有球体 (binding = 3)</span>
+<span class="n">m_descSetLayoutBind</span><span class="p">.</span><span class="n">addBinding</span><span class="p">(</span><span class="n">eImplicit</span><span class="p">,</span><span class="w"> </span><span class="n">VK_DESCRIPTOR_TYPE_STORAGE_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">                               </span><span class="n">VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_INTERSECTION_BIT_KHR</span><span class="p">);</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">updateDescriptorSet()</span></code> 函数中的更新缓存绑定同样需要进行修改。在更新绑定纹理之后，绑定包含所有球体的缓存。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkDescriptorBufferInfo</span><span class="w"> </span><span class="n">dbiSpheres</span><span class="p">{</span><span class="n">m_spheresBuffer</span><span class="p">.</span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">VK_WHOLE_SIZE</span><span class="p">};</span>
+<span class="n">writes</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">m_descSetLayoutBind</span><span class="p">.</span><span class="n">makeWrite</span><span class="p">(</span><span class="n">m_descSet</span><span class="p">,</span><span class="w"> </span><span class="n">eImplicit</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">dbiSpheres</span><span class="p">));</span>
+</pre></div>
+</div>
+</section>
+<section id="id12">
+<h2>相交着色器<a class="headerlink" href="#id12" title="Link to this heading">#</a></h2>
 </section>
 </section>
 
@@ -424,6 +648,14 @@
 <li><a class="reference internal" href="#id4">教程</a></li>
 <li><a class="reference internal" href="#id5">上层实现</a></li>
 <li><a class="reference internal" href="#id6">创建所有隐式对象</a></li>
+<li><a class="reference internal" href="#id7">布置场景</a></li>
+<li><a class="reference internal" href="#id8">加速结构</a><ul>
+<li><a class="reference internal" href="#id9">底层加速结构</a></li>
+<li><a class="reference internal" href="#id10">顶层加速结构</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id11">描述符</a></li>
+<li><a class="reference internal" href="#id12">相交着色器</a></li>
 </ul>
 </li>
 </ul>
