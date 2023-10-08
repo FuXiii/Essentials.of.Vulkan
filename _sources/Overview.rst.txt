@@ -1141,7 +1141,7 @@ vkGetDeviceProcAddr
 
    PFN_vk{Device 域函数名} vk{Device 域函数名} = (PFN_vk{Device 域函数名})vkGetDeviceProcAddr(device, "vk{Device 域函数名}");
 
-.. note:: 在创建完 ``VkDevice`` 之后，由于之后所有要调用的函数追踪都作用在某一具体逻辑设备上（或由该逻辑设备创建的相关对象上），所以之后所有函数都是 ``Device`` 域函数。
+.. note:: 在创建完 ``VkDevice`` 之后，由于之后所有要调用的函数最终都作用在某一具体逻辑设备上（或由该逻辑设备创建的相关对象上），所以之后所有函数都是 ``Device`` 域函数。
 
 获取设备队列
 ############################
