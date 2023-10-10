@@ -16,6 +16,11 @@
     * 2023/10/8 增加 ``顶层加速结构`` 章节
     * 2023/10/8 增加 ``描述符`` 章节
     * 2023/10/8 增加 ``相交着色器`` 章节
+    * 2023/10/10 更新 ``相交着色器`` 章节
+    * 2023/10/10 增加 ``raytrace.rint`` 章节
+    * 2023/10/10 增加 ``光线与球体求交`` 章节
+    * 2023/10/10 增加 ``光线与轴对齐包围盒求交`` 章节
+    * 2023/10/10 增加 ``raytrace2.rchit`` 章节
 
 `文献源`_
 
@@ -347,3 +352,217 @@
 
 相交着色器
 ####################
+
+相交着色器是增加到类型为 ``VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR`` （ ``VkRayTracingShaderGroupCreateInfoKHR::type`` ）的命中组中。在本示例中，我们已经有一个用于与三角形和相应的最近命中交互的命中组了。想在我能增加一个新的，新增的命中组的 ``Hit Group ID`` 为 ``1`` 。
+
+如下是新的命中组相关代码：
+
+.. code:: c++
+
+    enum StageIndices
+    {
+      eRaygen,
+      eMiss,
+      eMiss2,
+      eClosestHit,
+      eClosestHit2,
+      eIntersection,
+      eShaderGroupCount
+    };
+
+    // 最近命中着色器
+    stage.module = nvvk::createShaderModule(m_device, nvh::loadFile("spv/raytrace2.rchit.spv", true, defaultSearchPaths, true));
+    stage.stage          = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
+    stages[eClosestHit2] = stage;
+    // 相交着色器
+    stage.module = nvvk::createShaderModule(m_device, nvh::loadFile("spv/raytrace.rint.spv", true, defaultSearchPaths, true));
+    stage.stage           = VK_SHADER_STAGE_INTERSECTION_BIT_KHR;
+    stages[eIntersection] = stage;
+
+.. code:: c++
+
+    // 最近命中着色器 + 相交着色器 (第2个命中组)
+    group.type               = VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR;
+    group.closestHitShader   = eClosestHit2;
+    group.intersectionShader = eIntersection;
+    m_rtShaderGroups.push_back(group);
+
+raytrace.rint
+**********************************************
+
+相交着色器 ``raytrace.rint`` 需要添加到着色器目录下并重新执行 ``CMake`` 将其加入到项目工程中。当光线命中场景中的某一个轴对齐包围盒之后将会执行相交着色器。
+
+.. admonition:: 注意
+    :class: note
+
+    在相交着色器中获取不到轴对齐包围盒的相关信息。也获取不到 ``GPU`` 光线追踪器中计算的命中点位置。
+
+仅有的信息就是知道光线与轴对齐包围盒放生了碰撞并与哪一个发生碰撞，并存入 ``gl_PrimitiveID`` ，由于之前我们将球体数组存入缓存中，这样我们就可以通过 ``gl_PrimitiveID`` 获取相应球体的几何信息。
+
+首先在着色器中声明扩展和包含通用头文件。
+
+.. code:: glsl
+
+    #version 460
+    #extension GL_EXT_ray_tracing : require
+    #extension GL_EXT_nonuniform_qualifier : enable
+    #extension GL_EXT_scalar_block_layout : enable
+    #extension GL_GOOGLE_include_directive : enable
+    #extension GL_EXT_shader_explicit_arithmetic_types_int64 : require
+    #extension GL_EXT_buffer_reference2 : require
+
+    #include "raycommon.glsl"
+    #include "wavefront.glsl"
+
+接下来声明所有的球体数组结构描述符接口，之后就可以通过 ``gl_PrimitiveID`` 获取具体球体信息了。
+
+.. code:: glsl
+
+    layout(binding = 3, set = eImplicit, scalar) buffer allSpheres_
+    {
+      Sphere allSpheres[];
+    };
+
+我们将会实现两个相交函数用于与射入光线进行相交计算。
+
+.. code:: glsl
+
+    struct Ray
+    {
+      vec3 origin;
+      vec3 direction;
+    };
+
+光线与球体求交
+--------------------
+
+.. code:: glsl
+
+    // 光线-球体 求交
+    // http://viclw17.github.io/2018/07/16/raytracing-ray-sphere-intersection/
+    float hitSphere(const Sphere s, const Ray r)
+    {
+      vec3  oc           = r.origin - s.center;
+      float a            = dot(r.direction, r.direction);
+      float b            = 2.0 * dot(oc, r.direction);
+      float c            = dot(oc, oc) - s.radius * s.radius;
+      float discriminant = b * b - 4 * a * c;
+      if(discriminant < 0)
+      {
+        return -1.0;
+      }
+      else
+      {
+        return (-b - sqrt(discriminant)) / (2.0 * a);
+      }
+    }
+
+光线与轴对齐包围盒求交
+------------------------
+
+.. code:: glsl
+
+    // 光线-轴对齐包围盒 求交
+    float hitAabb(const Aabb aabb, const Ray r)
+    {
+      vec3  invDir = 1.0 / r.direction;
+      vec3  tbot   = invDir * (aabb.minimum - r.origin);
+      vec3  ttop   = invDir * (aabb.maximum - r.origin);
+      vec3  tmin   = min(ttop, tbot);
+      vec3  tmax   = max(ttop, tbot);
+      float t0     = max(tmin.x, max(tmin.y, tmin.z));
+      float t1     = min(tmax.x, min(tmax.y, tmax.z));
+      return t1 > max(t0, 0.0) ? t0 : -1.0;
+    }
+
+如果没有交点，两个都返回 ``-1`` ，否则返回交点到光线起点间的距离。
+
+光线信息的获取非常直接：
+
+.. code:: glsl
+
+    void main()
+    {
+      Ray ray;
+      ray.origin    = gl_WorldRayOriginEXT;
+      ray.direction = gl_WorldRayDirectionEXT;
+
+并且获取相交轴对齐包围盒中的几何信息如下：
+
+.. code:: glsl
+
+    // 球体数据
+    Sphere sphere = allSpheres.i[gl_PrimitiveID];
+
+现在我们只需要判断击中的是球体还是包围盒即可。
+
+.. code:: glsl
+
+    float tHit    = -1;
+    int   hitKind = gl_PrimitiveID % 2 == 0 ? KIND_SPHERE : KIND_CUBE;
+    if(hitKind == KIND_SPHERE)
+    {
+      // 与球体相交
+      tHit = hitSphere(sphere, ray);
+    }
+    else
+    {
+      // 与轴对齐包围盒相交
+      Aabb aabb;
+      aabb.minimum = sphere.center - vec3(sphere.radius);
+      aabb.maximum = sphere.center + vec3(sphere.radius);
+      tHit         = hitAabb(aabb, ray);
+    }
+
+相交着色器的相交信息是通过 ``reportIntersectionEXT`` 进行报告（返回）的。其有两个参数：
+
+* :bdg-secondary:`tHit` 交点与光线起点间的距离
+* :bdg-secondary:`hitKind` 用于区分命中图元类型信息
+
+.. code:: glsl
+
+    // 报告命中点
+    if(tHit > 0)
+      reportIntersectionEXT(tHit, hitKind);
+
+raytrace2.rchit
+**********************************************
+
+该最近命中着色器与之前的 ``raytrace.rchit`` 基本上是相同的，但是由于图元是隐式的，我们需要计算命中点处图元的法线。
+
+我们需要通过相交着色器返回的 ``gl_HitTEXT`` （命中点到光线起点间的距离）计算光线命中点：
+
+.. code:: glsl
+
+    vec3 worldPos = gl_WorldRayOriginEXT + gl_WorldRayDirectionEXT * gl_HitTEXT;
+
+对于球体信息的获取与 ``raytrace.rint`` 相交着色器中的相同：
+
+.. code:: glsl
+
+    Sphere instance = allSpheres.i[gl_PrimitiveID];
+
+之后先按照命中球体进行法线计算：
+
+.. code:: glsl
+
+    // 计算球体上命中点处的法线
+    vec3 normal = normalize(worldPos - instance.center);
+
+现在使用 ``gl_HitKindEXT`` （通过相交着色器的 ``reportIntersectionEXT`` 进行设置的）来判断命中的是否为轴对齐包围盒。
+
+如果是个包围盒，我们将法线与坐标轴对齐：
+
+.. code:: glsl
+
+    // 如果 gl_HitKindEXT 为 1 （KIND_CUBE），计算包围盒的法线
+    if(gl_HitKindEXT == KIND_CUBE)  // Aabb
+    {
+      vec3  absN = abs(normal);
+      float maxC = max(max(absN.x, absN.y), absN.z);
+      normal     = (maxC == absN.x) ?
+                   vec3(sign(normal.x), 0, 0) :
+                   (maxC == absN.y) ? vec3(0, sign(normal.y), 0) : vec3(0, 0, sign(normal.z));
+    }
+
+
