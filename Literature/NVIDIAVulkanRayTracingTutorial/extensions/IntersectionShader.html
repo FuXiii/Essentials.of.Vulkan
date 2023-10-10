@@ -280,13 +280,18 @@
 <li><p class="sd-card-text">2023/10/8 增加 <code class="docutils literal notranslate"><span class="pre">顶层加速结构</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/10/8 增加 <code class="docutils literal notranslate"><span class="pre">描述符</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/10/8 增加 <code class="docutils literal notranslate"><span class="pre">相交着色器</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/10/10 更新 <code class="docutils literal notranslate"><span class="pre">相交着色器</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/10/10 增加 <code class="docutils literal notranslate"><span class="pre">raytrace.rint</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/10/10 增加 <code class="docutils literal notranslate"><span class="pre">光线与球体求交</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/10/10 增加 <code class="docutils literal notranslate"><span class="pre">光线与轴对齐包围盒求交</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/10/10 增加 <code class="docutils literal notranslate"><span class="pre">raytrace2.rchit</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p><a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing_intersection#intersection-shader---tutorial">文献源</a></p>
-<figure class="align-default" id="id13">
+<figure class="align-default" id="id15">
 <img alt="../../../_images/intersection.png" src="../../../_images/intersection.png" />
 <figcaption>
-<p><span class="caption-text">相交着色器结果示意图</span><a class="headerlink" href="#id13" title="Link to this image">#</a></p>
+<p><span class="caption-text">相交着色器结果示意图</span><a class="headerlink" href="#id15" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <section id="id4">
@@ -567,6 +572,185 @@
 </section>
 <section id="id12">
 <h2>相交着色器<a class="headerlink" href="#id12" title="Link to this heading">#</a></h2>
+<p>相交着色器是增加到类型为 <code class="docutils literal notranslate"><span class="pre">VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR</span></code> （ <code class="docutils literal notranslate"><span class="pre">VkRayTracingShaderGroupCreateInfoKHR::type</span></code> ）的命中组中。在本示例中，我们已经有一个用于与三角形和相应的最近命中交互的命中组了。想在我能增加一个新的，新增的命中组的 <code class="docutils literal notranslate"><span class="pre">Hit</span> <span class="pre">Group</span> <span class="pre">ID</span></code> 为 <code class="docutils literal notranslate"><span class="pre">1</span></code> 。</p>
+<p>如下是新的命中组相关代码：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">enum</span><span class="w"> </span><span class="nc">StageIndices</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">eRaygen</span><span class="p">,</span>
+<span class="w">  </span><span class="n">eMiss</span><span class="p">,</span>
+<span class="w">  </span><span class="n">eMiss2</span><span class="p">,</span>
+<span class="w">  </span><span class="n">eClosestHit</span><span class="p">,</span>
+<span class="w">  </span><span class="n">eClosestHit2</span><span class="p">,</span>
+<span class="w">  </span><span class="n">eIntersection</span><span class="p">,</span>
+<span class="w">  </span><span class="n">eShaderGroupCount</span>
+<span class="p">};</span>
+
+<span class="c1">// 最近命中着色器</span>
+<span class="n">stage</span><span class="p">.</span><span class="k">module</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nvvk</span><span class="o">::</span><span class="n">createShaderModule</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">nvh</span><span class="o">::</span><span class="n">loadFile</span><span class="p">(</span><span class="s">&quot;spv/raytrace2.rchit.spv&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="n">defaultSearchPaths</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">));</span>
+<span class="n">stage</span><span class="p">.</span><span class="n">stage</span><span class="w">          </span><span class="o">=</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR</span><span class="p">;</span>
+<span class="n">stages</span><span class="p">[</span><span class="n">eClosestHit2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stage</span><span class="p">;</span>
+<span class="c1">// 相交着色器</span>
+<span class="n">stage</span><span class="p">.</span><span class="k">module</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nvvk</span><span class="o">::</span><span class="n">createShaderModule</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">nvh</span><span class="o">::</span><span class="n">loadFile</span><span class="p">(</span><span class="s">&quot;spv/raytrace.rint.spv&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="n">defaultSearchPaths</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">));</span>
+<span class="n">stage</span><span class="p">.</span><span class="n">stage</span><span class="w">           </span><span class="o">=</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_INTERSECTION_BIT_KHR</span><span class="p">;</span>
+<span class="n">stages</span><span class="p">[</span><span class="n">eIntersection</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stage</span><span class="p">;</span>
+</pre></div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 最近命中着色器 + 相交着色器 (第2个命中组)</span>
+<span class="n">group</span><span class="p">.</span><span class="n">type</span><span class="w">               </span><span class="o">=</span><span class="w"> </span><span class="n">VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR</span><span class="p">;</span>
+<span class="n">group</span><span class="p">.</span><span class="n">closestHitShader</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="n">eClosestHit2</span><span class="p">;</span>
+<span class="n">group</span><span class="p">.</span><span class="n">intersectionShader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">eIntersection</span><span class="p">;</span>
+<span class="n">m_rtShaderGroups</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">group</span><span class="p">);</span>
+</pre></div>
+</div>
+<section id="raytrace-rint">
+<h3>raytrace.rint<a class="headerlink" href="#raytrace-rint" title="Link to this heading">#</a></h3>
+<p>相交着色器 <code class="docutils literal notranslate"><span class="pre">raytrace.rint</span></code> 需要添加到着色器目录下并重新执行 <code class="docutils literal notranslate"><span class="pre">CMake</span></code> 将其加入到项目工程中。当光线命中场景中的某一个轴对齐包围盒之后将会执行相交着色器。</p>
+<div class="note admonition">
+<p class="admonition-title">注意</p>
+<p>在相交着色器中获取不到轴对齐包围盒的相关信息。也获取不到 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 光线追踪器中计算的命中点位置。</p>
+</div>
+<p>仅有的信息就是知道光线与轴对齐包围盒放生了碰撞并与哪一个发生碰撞，并存入 <code class="docutils literal notranslate"><span class="pre">gl_PrimitiveID</span></code> ，由于之前我们将球体数组存入缓存中，这样我们就可以通过 <code class="docutils literal notranslate"><span class="pre">gl_PrimitiveID</span></code> 获取相应球体的几何信息。</p>
+<p>首先在着色器中声明扩展和包含通用头文件。</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="cp">#version 460</span>
+<span class="cp">#extension GL_EXT_ray_tracing : require</span>
+<span class="cp">#extension GL_EXT_nonuniform_qualifier : enable</span>
+<span class="cp">#extension GL_EXT_scalar_block_layout : enable</span>
+<span class="cp">#extension GL_GOOGLE_include_directive : enable</span>
+<span class="cp">#extension GL_EXT_shader_explicit_arithmetic_types_int64 : require</span>
+<span class="cp">#extension GL_EXT_buffer_reference2 : require</span>
+
+<span class="cp">#include &quot;raycommon.glsl&quot;</span>
+<span class="cp">#include &quot;wavefront.glsl&quot;</span>
+</pre></div>
+</div>
+<p>接下来声明所有的球体数组结构描述符接口，之后就可以通过 <code class="docutils literal notranslate"><span class="pre">gl_PrimitiveID</span></code> 获取具体球体信息了。</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="k">layout</span><span class="p">(</span><span class="n">binding</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">set</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">eImplicit</span><span class="p">,</span><span class="w"> </span><span class="n">scalar</span><span class="p">)</span><span class="w"> </span><span class="k">buffer</span><span class="w"> </span><span class="n">allSpheres_</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">Sphere</span><span class="w"> </span><span class="n">allSpheres</span><span class="p">[];</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>我们将会实现两个相交函数用于与射入光线进行相交计算。</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="n">Ray</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">vec3</span><span class="w"> </span><span class="n">origin</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">vec3</span><span class="w"> </span><span class="n">direction</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<section id="id13">
+<h4>光线与球体求交<a class="headerlink" href="#id13" title="Link to this heading">#</a></h4>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="c1">// 光线-球体 求交</span>
+<span class="c1">// http://viclw17.github.io/2018/07/16/raytracing-ray-sphere-intersection/</span>
+<span class="kt">float</span><span class="w"> </span><span class="n">hitSphere</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Sphere</span><span class="w"> </span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Ray</span><span class="w"> </span><span class="n">r</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">vec3</span><span class="w">  </span><span class="n">oc</span><span class="w">           </span><span class="o">=</span><span class="w"> </span><span class="n">r</span><span class="p">.</span><span class="n">origin</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">center</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">a</span><span class="w">            </span><span class="o">=</span><span class="w"> </span><span class="n">dot</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">direction</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">.</span><span class="n">direction</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">b</span><span class="w">            </span><span class="o">=</span><span class="w"> </span><span class="mf">2.0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">dot</span><span class="p">(</span><span class="n">oc</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">.</span><span class="n">direction</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">c</span><span class="w">            </span><span class="o">=</span><span class="w"> </span><span class="n">dot</span><span class="p">(</span><span class="n">oc</span><span class="p">,</span><span class="w"> </span><span class="n">oc</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">radius</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">radius</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">discriminant</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">c</span><span class="p">;</span>
+<span class="w">  </span><span class="k">if</span><span class="p">(</span><span class="n">discriminant</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mo">0</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">-</span><span class="mf">1.0</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">else</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="o">-</span><span class="n">b</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">sqrt</span><span class="p">(</span><span class="n">discriminant</span><span class="p">))</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="mf">2.0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">a</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="id14">
+<h4>光线与轴对齐包围盒求交<a class="headerlink" href="#id14" title="Link to this heading">#</a></h4>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="c1">// 光线-轴对齐包围盒 求交</span>
+<span class="kt">float</span><span class="w"> </span><span class="n">hitAabb</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Aabb</span><span class="w"> </span><span class="n">aabb</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Ray</span><span class="w"> </span><span class="n">r</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">vec3</span><span class="w">  </span><span class="n">invDir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">r</span><span class="p">.</span><span class="n">direction</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">vec3</span><span class="w">  </span><span class="n">tbot</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="n">invDir</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">aabb</span><span class="p">.</span><span class="n">minimum</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">r</span><span class="p">.</span><span class="n">origin</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">vec3</span><span class="w">  </span><span class="n">ttop</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="n">invDir</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">aabb</span><span class="p">.</span><span class="n">maximum</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">r</span><span class="p">.</span><span class="n">origin</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">vec3</span><span class="w">  </span><span class="n">tmin</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="n">min</span><span class="p">(</span><span class="n">ttop</span><span class="p">,</span><span class="w"> </span><span class="n">tbot</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">vec3</span><span class="w">  </span><span class="n">tmax</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="n">max</span><span class="p">(</span><span class="n">ttop</span><span class="p">,</span><span class="w"> </span><span class="n">tbot</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">t0</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="n">max</span><span class="p">(</span><span class="n">tmin</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">max</span><span class="p">(</span><span class="n">tmin</span><span class="p">.</span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">tmin</span><span class="p">.</span><span class="n">z</span><span class="p">));</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">t1</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="n">min</span><span class="p">(</span><span class="n">tmax</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">min</span><span class="p">(</span><span class="n">tmax</span><span class="p">.</span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">tmax</span><span class="p">.</span><span class="n">z</span><span class="p">));</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">t1</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">max</span><span class="p">(</span><span class="n">t0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">t0</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="o">-</span><span class="mf">1.0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>如果没有交点，两个都返回 <code class="docutils literal notranslate"><span class="pre">-1</span></code> ，否则返回交点到光线起点间的距离。</p>
+<p>光线信息的获取非常直接：</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">Ray</span><span class="w"> </span><span class="n">ray</span><span class="p">;</span>
+<span class="w">  </span><span class="n">ray</span><span class="p">.</span><span class="n">origin</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="nb">gl_WorldRayOriginEXT</span><span class="p">;</span>
+<span class="w">  </span><span class="n">ray</span><span class="p">.</span><span class="n">direction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">gl_WorldRayDirectionEXT</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>并且获取相交轴对齐包围盒中的几何信息如下：</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="c1">// 球体数据</span>
+<span class="n">Sphere</span><span class="w"> </span><span class="n">sphere</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">allSpheres</span><span class="p">.</span><span class="n">i</span><span class="p">[</span><span class="nb">gl_PrimitiveID</span><span class="p">];</span>
+</pre></div>
+</div>
+<p>现在我们只需要判断击中的是球体还是包围盒即可。</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="kt">float</span><span class="w"> </span><span class="n">tHit</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+<span class="kt">int</span><span class="w">   </span><span class="n">hitKind</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">gl_PrimitiveID</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mo">0</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">KIND_SPHERE</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">KIND_CUBE</span><span class="p">;</span>
+<span class="k">if</span><span class="p">(</span><span class="n">hitKind</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">KIND_SPHERE</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="c1">// 与球体相交</span>
+<span class="w">  </span><span class="n">tHit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hitSphere</span><span class="p">(</span><span class="n">sphere</span><span class="p">,</span><span class="w"> </span><span class="n">ray</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="k">else</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="c1">// 与轴对齐包围盒相交</span>
+<span class="w">  </span><span class="n">Aabb</span><span class="w"> </span><span class="n">aabb</span><span class="p">;</span>
+<span class="w">  </span><span class="n">aabb</span><span class="p">.</span><span class="n">minimum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sphere</span><span class="p">.</span><span class="n">center</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="kt">vec3</span><span class="p">(</span><span class="n">sphere</span><span class="p">.</span><span class="n">radius</span><span class="p">);</span>
+<span class="w">  </span><span class="n">aabb</span><span class="p">.</span><span class="n">maximum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sphere</span><span class="p">.</span><span class="n">center</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="kt">vec3</span><span class="p">(</span><span class="n">sphere</span><span class="p">.</span><span class="n">radius</span><span class="p">);</span>
+<span class="w">  </span><span class="n">tHit</span><span class="w">         </span><span class="o">=</span><span class="w"> </span><span class="n">hitAabb</span><span class="p">(</span><span class="n">aabb</span><span class="p">,</span><span class="w"> </span><span class="n">ray</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>相交着色器的相交信息是通过 <code class="docutils literal notranslate"><span class="pre">reportIntersectionEXT</span></code> 进行报告（返回）的。其有两个参数：</p>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">tHit</span> 交点与光线起点间的距离</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">hitKind</span> 用于区分命中图元类型信息</p></li>
+</ul>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="c1">// 报告命中点</span>
+<span class="k">if</span><span class="p">(</span><span class="n">tHit</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mo">0</span><span class="p">)</span>
+<span class="w">  </span><span class="n">reportIntersectionEXT</span><span class="p">(</span><span class="n">tHit</span><span class="p">,</span><span class="w"> </span><span class="n">hitKind</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="raytrace2-rchit">
+<h3>raytrace2.rchit<a class="headerlink" href="#raytrace2-rchit" title="Link to this heading">#</a></h3>
+<p>该最近命中着色器与之前的 <code class="docutils literal notranslate"><span class="pre">raytrace.rchit</span></code> 基本上是相同的，但是由于图元是隐式的，我们需要计算命中点处图元的法线。</p>
+<p>我们需要通过相交着色器返回的 <code class="docutils literal notranslate"><span class="pre">gl_HitTEXT</span></code> （命中点到光线起点间的距离）计算光线命中点：</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="kt">vec3</span><span class="w"> </span><span class="n">worldPos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">gl_WorldRayOriginEXT</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">gl_WorldRayDirectionEXT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">gl_HitTEXT</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>对于球体信息的获取与 <code class="docutils literal notranslate"><span class="pre">raytrace.rint</span></code> 相交着色器中的相同：</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="n">Sphere</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">allSpheres</span><span class="p">.</span><span class="n">i</span><span class="p">[</span><span class="nb">gl_PrimitiveID</span><span class="p">];</span>
+</pre></div>
+</div>
+<p>之后先按照命中球体进行法线计算：</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="c1">// 计算球体上命中点处的法线</span>
+<span class="kt">vec3</span><span class="w"> </span><span class="n">normal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">normalize</span><span class="p">(</span><span class="n">worldPos</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">instance</span><span class="p">.</span><span class="n">center</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>现在使用 <code class="docutils literal notranslate"><span class="pre">gl_HitKindEXT</span></code> （通过相交着色器的 <code class="docutils literal notranslate"><span class="pre">reportIntersectionEXT</span></code> 进行设置的）来判断命中的是否为轴对齐包围盒。</p>
+<p>如果是个包围盒，我们将法线与坐标轴对齐：</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="c1">// 如果 gl_HitKindEXT 为 1 （KIND_CUBE），计算包围盒的法线</span>
+<span class="k">if</span><span class="p">(</span><span class="nb">gl_HitKindEXT</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">KIND_CUBE</span><span class="p">)</span><span class="w">  </span><span class="c1">// Aabb</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">vec3</span><span class="w">  </span><span class="n">absN</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">abs</span><span class="p">(</span><span class="n">normal</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">maxC</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">max</span><span class="p">(</span><span class="n">max</span><span class="p">(</span><span class="n">absN</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">absN</span><span class="p">.</span><span class="n">y</span><span class="p">),</span><span class="w"> </span><span class="n">absN</span><span class="p">.</span><span class="n">z</span><span class="p">);</span>
+<span class="w">  </span><span class="n">normal</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">maxC</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">absN</span><span class="p">.</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="o">?</span>
+<span class="w">               </span><span class="kt">vec3</span><span class="p">(</span><span class="n">sign</span><span class="p">(</span><span class="n">normal</span><span class="p">.</span><span class="n">x</span><span class="p">),</span><span class="w"> </span><span class="mo">0</span><span class="p">,</span><span class="w"> </span><span class="mo">0</span><span class="p">)</span><span class="w"> </span><span class="o">:</span>
+<span class="w">               </span><span class="p">(</span><span class="n">maxC</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">absN</span><span class="p">.</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="kt">vec3</span><span class="p">(</span><span class="mo">0</span><span class="p">,</span><span class="w"> </span><span class="n">sign</span><span class="p">(</span><span class="n">normal</span><span class="p">.</span><span class="n">y</span><span class="p">),</span><span class="w"> </span><span class="mo">0</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">vec3</span><span class="p">(</span><span class="mo">0</span><span class="p">,</span><span class="w"> </span><span class="mo">0</span><span class="p">,</span><span class="w"> </span><span class="n">sign</span><span class="p">(</span><span class="n">normal</span><span class="p">.</span><span class="n">z</span><span class="p">));</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 
@@ -655,7 +839,15 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#id11">描述符</a></li>
-<li><a class="reference internal" href="#id12">相交着色器</a></li>
+<li><a class="reference internal" href="#id12">相交着色器</a><ul>
+<li><a class="reference internal" href="#raytrace-rint">raytrace.rint</a><ul>
+<li><a class="reference internal" href="#id13">光线与球体求交</a></li>
+<li><a class="reference internal" href="#id14">光线与轴对齐包围盒求交</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#raytrace2-rchit">raytrace2.rchit</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
