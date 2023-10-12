@@ -350,9 +350,16 @@
 <li><p class="sd-card-text">2023/10/6 更新 <code class="docutils literal notranslate"><span class="pre">VkMemoryHeap</span></code> 章节。修正 <code class="docutils literal notranslate"><span class="pre">VkMemoryHeap::size</span></code> 单位讲解错误。</p></li>
 <li><p class="sd-card-text">2023/10/6 增加 <code class="docutils literal notranslate"><span class="pre">回收内存</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2023/10/6 增加 <code class="docutils literal notranslate"><span class="pre">vkFreeMemory</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2023/10/12 增加开头 <code class="docutils literal notranslate"><span class="pre">篇幅</span></code> 注意事项。</p></li>
+<li><p class="sd-card-text">2023/10/12 增加 <code class="docutils literal notranslate"><span class="pre">资源</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2023/10/12 增加 <code class="docutils literal notranslate"><span class="pre">缓存</span></code> 章节。</p></li>
 </ul>
 </div>
 </details><p>由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 比较复杂，为了更好的入门 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> ，还是大致过一遍 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的核心思路，这对以后的学习很有帮助。</p>
+<div class="caution admonition">
+<p class="admonition-title">篇幅</p>
+<p>该 <code class="docutils literal notranslate"><span class="pre">纵览</span></code> 章节会比较长。但也推荐您通读一遍。之后会分章节进行精讲。</p>
+</div>
 <section id="vulkan">
 <h2>Vulkan 能为我们做什么<a class="headerlink" href="#vulkan" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 最主要的任务就是为我们提供了 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 并行计算的接口。是的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 仅仅只是规定了一套接口，其并没有接口的具体实现，而实现是需要硬件厂商自己适配实现，所以市面上并不是所有硬件设备都支持 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 。像 <code class="docutils literal notranslate"><span class="pre">NVIDIA</span></code> 、 <code class="docutils literal notranslate"><span class="pre">AMD</span></code> 和 <code class="docutils literal notranslate"><span class="pre">Intel</span></code> 等国际大厂基本提供了完整的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>
@@ -990,9 +997,9 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <div class="note admonition">
 <p class="admonition-title">队列族</p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中设备队列是按照 <code class="docutils literal notranslate"><span class="pre">族</span></code> 进行管理的，前面我们知道一个物理设备上的可能会有多个设备队列支持相同的功能域，这些支持相同功能域的设备队列算作同一族。</p>
-<figure class="align-default" id="id22">
+<figure class="align-default" id="id24">
 <img alt="_images/vk_queue_family_struct.svg" src="_images/vk_queue_family_struct.svg" /><figcaption>
-<p><span class="caption-text">如上图中。队列0、1、2三个队列属于队列族A，则这三个队列支持计算、图形和转移功能。队列3属于队列族B，则该队列支持计算和转移功能。</span><a class="headerlink" href="#id22" title="Link to this image">#</a></p>
+<p><span class="caption-text">如上图中。队列0、1、2三个队列属于队列族A，则这三个队列支持计算、图形和转移功能。队列3属于队列族B，则该队列支持计算和转移功能。</span><a class="headerlink" href="#id24" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 </div>
@@ -1489,9 +1496,9 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <section id="id18">
 <h4>VkPhysicalDeviceMemoryProperties 结构图<a class="headerlink" href="#id18" title="Link to this heading">#</a></h4>
 <p>为了更清晰的理解 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties</span></code> ，在此给出一张 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties</span></code> 结构参考图：</p>
-<figure class="align-default" id="id23">
+<figure class="align-default" id="id25">
 <img alt="_images/VkPhysicalDeviceMemoryProperties_struct.svg" src="_images/VkPhysicalDeviceMemoryProperties_struct.svg" /><figcaption>
-<p><span class="caption-text">如图所示为一种可能的结构。第一种内存类型对应着第三个内存堆，第二种内存类型对应着第一个内存堆，第三种内存类型对应着第二个内存堆。</span><a class="headerlink" href="#id23" title="Link to this image">#</a></p>
+<p><span class="caption-text">如图所示为一种可能的结构。第一种内存类型对应着第三个内存堆，第二种内存类型对应着第一个内存堆，第三种内存类型对应着第二个内存堆。</span><a class="headerlink" href="#id25" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <p>接下来就能够通过 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties</span></code> 获取内存信息了，和之前很多函数一样，首先获取 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties</span></code> 函数实现：</p>
@@ -1643,6 +1650,20 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </div>
 </section>
 </section>
+</section>
+</section>
+<section id="id22">
+<h2>资源<a class="headerlink" href="#id22" title="Link to this heading">#</a></h2>
+<p>分配内存的目的是存储数据并用于计算，之后储存获得的结果。但在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中，并不能直接对内存进行操作，内存只能绑定到具体 <code class="docutils literal notranslate"><span class="pre">资源</span></code> 上才能够使用。这是由于 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 的并行性，在并行处理多块特定结构的数据时能够得到更优效率，而 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 非常善于处理连续内存。为了能够使得用户分配的内存在 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 上尽可能的高速处理， <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 为用户提供了 <code class="docutils literal notranslate"><span class="pre">资源</span></code> 来为用户屏蔽掉复杂的 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 内存结构。</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中为我们提供了 <code class="docutils literal notranslate"><span class="pre">2</span></code> 种资源：</p>
+<ol class="arabic simple">
+<li><p>缓存（ <code class="docutils literal notranslate"><span class="pre">Buffer</span></code> ）</p></li>
+<li><p>图片（ <code class="docutils literal notranslate"><span class="pre">Image</span></code> ）</p></li>
+</ol>
+<p><code class="docutils literal notranslate"><span class="pre">缓存</span></code> 资源和 <code class="docutils literal notranslate"><span class="pre">图片</span></code> 资源都需要绑定一块特定内存才能够使用。对于 <code class="docutils literal notranslate"><span class="pre">缓存</span></code> 可以简单理解为其代表一块连续的内存（虽然在实际存储中内部的结构可能是非常复杂的），其内存可以存储任何数据。对于 <code class="docutils literal notranslate"><span class="pre">图片</span></code> 可以简单理解为一个二维或三维的内存数组，其内部可以存储特定格式的数据（ <code class="docutils literal notranslate"><span class="pre">缓存</span></code> 内部数据对格式没有要求，但 <code class="docutils literal notranslate"><span class="pre">图片</span></code> 有要求，其目的是高速并行）。</p>
+<p>所以创建完内存后，下一步就是创建要绑定的资源。</p>
+<section id="id23">
+<h3>缓存<a class="headerlink" href="#id23" title="Link to this heading">#</a></h3>
 </section>
 </section>
 </section>
@@ -1803,6 +1824,10 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </li>
 </ul>
 </li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id22">资源</a><ul>
+<li><a class="reference internal" href="#id23">缓存</a></li>
 </ul>
 </li>
 </ul>
