@@ -89,6 +89,13 @@
    * 2023/10/12 增加开头 ``篇幅`` 注意事项。
    * 2023/10/12 增加 ``资源`` 章节。
    * 2023/10/12 增加 ``缓存`` 章节。
+   * 2023/10/15 更新 ``资源`` 章节。
+   * 2023/10/15 更新 ``缓存`` 章节。
+   * 2023/10/15 增加 ``vkCreateBuffer`` 章节。
+   * 2023/10/15 增加 ``VkBufferCreateInfo`` 章节。
+   * 2023/10/15 增加 ``VkDeviceSize`` 章节。
+   * 2023/10/15 增加 ``VkBufferUsageFlags`` 章节。
+   * 2023/10/15 增加 ``VkSharingMode`` 章节。
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -1383,6 +1390,17 @@ VkMemoryHeap
 
    一个 ``VkMemoryHeap`` 对应这一个内存 ``堆`` 。 ``堆`` 就是用于存储数据的地方，一般对应着物理存储介质。在 ``Vulkan`` 中内存是从堆上进行分配和管理的。
 
+其中 ``VkDeviceSize`` 定义如下：
+
+VkDeviceSize
+------------------------------------------
+
+.. code:: c++
+
+   typedef uint64_t VkDeviceSize;
+
+从定义来看 ``VkDeviceSize`` 就是一个正整数。
+
 ``VkMemoryHeapFlags`` 对应的各个比特位的值定义于 ``VkMemoryHeapFlagBits`` 枚举中，定义如下：
 
 VkMemoryHeapFlagBits
@@ -1640,13 +1658,183 @@ vkFreeMemory
 1. 缓存（ ``Buffer`` ）
 2. 图片（ ``Image`` ）
 
-``缓存`` 资源和 ``图片`` 资源都需要绑定一块特定内存才能够使用。对于 ``缓存`` 可以简单理解为其代表一块连续的内存（虽然在实际存储中内部的结构可能是非常复杂的），其内存可以存储任何数据。对于 ``图片`` 可以简单理解为一个二维或三维的内存数组，其内部可以存储特定格式的数据（ ``缓存`` 内部数据对格式没有要求，但 ``图片`` 有要求，其目的是高速并行）。
+``缓存`` 资源和 ``图片`` 资源都需要绑定一块特定内存才能够使用。对于 ``缓存`` 可以简单理解为其代表一块连续的内存（虽然在实际存储中内部的结构可能是非常复杂的），其内存可以存储任何数据。对于 ``图片`` 可以简单理解为一个二维或三维的数组（也可以是一维的，但用的较少），其内部可以存储特定格式的数据（ ``缓存`` 内部数据对格式没有要求，但 ``图片`` 有要求，其目的是高速并行）。
 
 所以创建完内存后，下一步就是创建要绑定的资源。
 
 缓存
 ********************************
 
+现在我们知道 ``缓存`` 代表一段连续的内存，其内部拥有自己的优化格式。不同用途的缓存，其内部的格式不尽相同，具体创建何种用途的缓存与开发需求有关，并在创建缓存时通过 ``VkBufferCreateInfo`` 指定相关信息。
+
+在 ``Vulkan`` 中通过 ``vkCreateBuffer`` 函数创建缓存。
+
+vkCreateBuffer
+--------------------------------
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   VkResult vkCreateBuffer(
+       VkDevice                                    device,
+       const VkBufferCreateInfo*                   pCreateInfo,
+       const VkAllocationCallbacks*                pAllocator,
+       VkBuffer*                                   pBuffer);
+
+* :bdg-secondary:`device` 对应的 ``VkDevice`` 逻辑设备句柄。
+* :bdg-secondary:`pCreateInfo` 创建缓存的配置信息。
+* :bdg-secondary:`pAllocator` 内存分配器。
+* :bdg-secondary:`pBuffer` 创建的缓存结果。
+
+其中最重要的就是配置 ``pCreateInfo`` 信息。 ``VkBufferCreateInfo`` 定义如下：
+
+VkBufferCreateInfo
+--------------------------------
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef struct VkBufferCreateInfo {
+       VkStructureType        sType;
+       const void*            pNext;
+       VkBufferCreateFlags    flags;
+       VkDeviceSize           size;
+       VkBufferUsageFlags     usage;
+       VkSharingMode          sharingMode;
+       uint32_t               queueFamilyIndexCount;
+       const uint32_t*        pQueueFamilyIndices;
+   } VkBufferCreateInfo;
+
+* :bdg-secondary:`sType` 是该结构体的类型枚举值，必须是 ``VkStructureType::VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO`` 。
+* :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
+* :bdg-secondary:`flags` 缓存额外标志位配置。
+* :bdg-secondary:`size` 创建的缓存大小。单位为字节。
+* :bdg-secondary:`usage` 缓存的用途。
+* :bdg-secondary:`sharingMode` 共享模式。用于配置缓存是否可在设备队列间进行共享。
+* :bdg-secondary:`queueFamilyIndexCount` 对应 ``pQueueFamilyIndices`` 的元素数量。
+* :bdg-secondary:`pQueueFamilyIndices` 对应类型为 ``uint32_t`` 的数组。用于配置需要互相共享访问该缓存的那些队列族索引。如果 ``sharingMode`` 不是 ``VK_SHARING_MODE_CONCURRENT`` 的话，该项将被忽略。
+
+其中 ``pQueueFamilyIndices`` 中的索引值对应于 ``vkGetPhysicalDeviceQueueFamilyProperties`` 函数中获取的 ``VkQueueFamilyProperties`` 数组索引。
+
+其中最重要的就是对于 ``usage`` 的配置。 其为我们提供了缓存的各种用途。其定义如下：
+
+VkBufferUsageFlags
+--------------------------------
+
+其中最常用的缓存用途如下：
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef enum VkBufferUsageFlagBits {
+       VK_BUFFER_USAGE_TRANSFER_SRC_BIT = 0x00000001,
+       VK_BUFFER_USAGE_TRANSFER_DST_BIT = 0x00000002,
+       VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT = 0x00000010,
+       VK_BUFFER_USAGE_STORAGE_BUFFER_BIT = 0x00000020,
+       VK_BUFFER_USAGE_INDEX_BUFFER_BIT = 0x00000040,
+       VK_BUFFER_USAGE_VERTEX_BUFFER_BIT = 0x00000080,
+       ...
+   } VkBufferUsageFlagBits;
+
+* :bdg-secondary:`VK_BUFFER_USAGE_TRANSFER_SRC_BIT` 将该缓存作为数据传输的源。
+* :bdg-secondary:`VK_BUFFER_USAGE_TRANSFER_DST_BIT` 将该缓存作为数据传输的目标。
+* :bdg-secondary:`VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT` 将该缓存作为统一缓存（用于向着色器中传递数据）。
+* :bdg-secondary:`VK_BUFFER_USAGE_STORAGE_BUFFER_BIT` 将该缓存作为存储缓存。
+* :bdg-secondary:`VK_BUFFER_USAGE_INDEX_BUFFER_BIT` 将该缓存作为索引缓存。
+* :bdg-secondary:`VK_BUFFER_USAGE_VERTEX_BUFFER_BIT` 将该缓存作为顶点缓存。
+
+.. admonition:: 其他 VK_BUFFER_USAGE_*_BUFFER_BIT
+   :class: note
+
+   还有很多其他的缓存用途枚举，比如 ``VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR`` 用于存储 ``Vulkan`` 硬件实时光追标准中的 ``加速结构`` 数据。其他缓存用途将在专门的章节进行讲解。
+
+而 ``VkSharingMode`` 的类型枚举就比较简单：
+
+VkSharingMode
+--------------------------------
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef enum VkSharingMode {
+       VK_SHARING_MODE_EXCLUSIVE = 0,
+       VK_SHARING_MODE_CONCURRENT = 1,
+   } VkSharingMode;
+
+* :bdg-secondary:`VK_SHARING_MODE_EXCLUSIVE` 对于该缓存的访问一次只能在单独的一个队列族上进行。
+* :bdg-secondary:`VK_SHARING_MODE_CONCURRENT` 对于该缓存的访问一次可以在多个队列族上进行。
+
+现在来尝试创建一个存有一个三角形的三个顶点信息的顶点缓存，并使用 ``VK_SHARING_MODE_EXCLUSIVE`` 模式。在创建前需要获取到 ``vkCreateBuffer`` 的函数实现：
+
+.. code:: c++
+
+   VkDevice device = 之前成功创建的逻辑设备句柄;
+
+   PFN_vkCreateBuffer vkCreateBuffer = (PFN_vkCreateBuffer)vkGetDeviceProcAddr(device, "vkCreateBuffer");
+
+之后就可以调用 ``vkCreateBuffer`` 进行缓存创建了：
+
+.. code:: c++
+
+   VkDevice device = 之前成功创建的逻辑设备;
+
+   // 顶点位置
+   typedef struct Position
+   {
+      float x;
+      float y;
+      float z;
+   };
+
+   // 顶点颜色
+   typedef struct Color
+   {
+      float r;
+      float g;
+      float b;
+      float a;
+   };
+
+   // 位置和颜色
+   typedef struct PositionAndColor
+   {
+      Position position;
+      Color color;
+   };
+
+   std::vector<PositionAndColor> position_and_colors;
+   position_and_colors.push_back(PositionAndColor{{0.0f, -0.5f, 0.0f}, {1.f, 0.f, 0.f}});
+   position_and_colors.push_back(PositionAndColor{{0.5f, 0.5f, 0.0f}, {0.f, 1.f, 0.f}});
+   position_and_colors.push_back(PositionAndColor{{-0.5f, 0.5f, 0.0f}, {0.f, 0.f, 1.f}});
+
+   VkBufferCreateInfo buffer_create_info = {};
+   buffer_create_info.sType = VkStructureType::VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+   buffer_create_info.pNext =nullptr;
+   buffer_create_info.flags = 0;
+   buffer_create_info.size = sizeof(PositionAndColor) * position_and_colors.size(); 
+   buffer_create_info.usage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+   buffer_create_info.sharingMode = VkSharingMode::VK_SHARING_MODE_EXCLUSIVE;
+   buffer_create_info.queueFamilyIndexCount = 0;
+   buffer_create_info.pQueueFamilyIndices = nullptr;
+
+   VkBuffer buffer = VK_NULL_HANDLE;
+   
+   VkResult result = vkCreateBuffer(device, &buffer_create_info, nullptr, &buffer);
+
+   assert(result == VkResult::VK_SUCCESS) //是否创建成功
+
+.. admonition:: VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT
+   :class: note
+
+   在如上的代码示例中 ``VkBufferCreateInfo::usage`` 设置为：
+
+   .. code:: c++
+
+      buffer_create_info.usage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+
+   * :bdg-secondary:`VK_BUFFER_USAGE_TRANSFER_DST_BIT` 表示该缓存将会作为数据传输的目标，用于之后的数据拷贝（具体如何将数据拷贝进该缓存将在之后的章节进行讲解）。
+   * :bdg-secondary:`VK_BUFFER_USAGE_VERTEX_BUFFER_BIT` 表示该缓存将会作为顶点缓存进行内存优化。
+   
 ..
    内存
 
