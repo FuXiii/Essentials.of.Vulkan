@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="索引" href="../../../genindex.html" /><link rel="search" title="搜索" href="../../../search.html" /><link rel="next" title="Vulkan迷你路径追踪" href="../../vk_mini_path_tracer.html" /><link rel="prev" title="动态更新" href="Animation.html" />
+<link rel="index" title="索引" href="../../../genindex.html" /><link rel="search" title="搜索" href="../../../search.html" /><link rel="next" title="可调用着色器" href="CallableShaders.html" /><link rel="prev" title="动态更新" href="Animation.html" />
         <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/Literature/NVIDIAVulkanRayTracingTutorial/extensions/IntersectionShader.html" />
 
     <link rel="shortcut icon" href="../../../_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
@@ -182,6 +182,7 @@
 <li class="toctree-l3"><a class="reference internal" href="MultipleClosestHitShaders.html">多重最近命中着色器</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Animation.html">动态更新</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">相交着色器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CallableShaders.html">可调用着色器</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../vk_mini_path_tracer.html">Vulkan迷你路径追踪</a></li>
@@ -285,9 +286,17 @@
 <li><p class="sd-card-text">2023/10/10 增加 <code class="docutils literal notranslate"><span class="pre">光线与球体求交</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/10/10 增加 <code class="docutils literal notranslate"><span class="pre">光线与轴对齐包围盒求交</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/10/10 增加 <code class="docutils literal notranslate"><span class="pre">raytrace2.rchit</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/10/16 提供 <code class="docutils literal notranslate"><span class="pre">Turbo</span></code> 实现开源示例</p></li>
 </ul>
 </div>
 </details><p><a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing_intersection#intersection-shader---tutorial">文献源</a></p>
+<div class="note admonition">
+<p class="admonition-title">Turbo 引擎中对该教程的实现示例</p>
+<p><code class="docutils literal notranslate"><span class="pre">Turbo</span></code> 引擎对该教程进行了实现，具体如下：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/FuXiii/Turbo/blob/dev/samples/VulkanKHRRayTracingTestForIntersectionShader.cpp">VulkanKHRRayTracingTestForIntersectionShader</a> ：在 <a class="reference external" href="../NVIDIAVulkanRayTracingTutorial.html">NVIDIA Vulkan 光线追踪教程</a> 基础实现。 <code class="docutils literal notranslate"><span class="pre">示例视频（暂无，待补充）</span></code> 。</p></li>
+</ul>
+</div>
 <figure class="align-default" id="id15">
 <img alt="../../../_images/intersection.png" src="../../../_images/intersection.png" />
 <figcaption>
@@ -759,12 +768,12 @@
       <footer>
         
 <div class="related-pages">
-    <a class="next-page" href="../../vk_mini_path_tracer.html">
+    <a class="next-page" href="CallableShaders.html">
         <div class="page-info">
             <div class="context">
                 <span>Next</span>
             </div>
-            <div class="title">Vulkan迷你路径追踪</div>
+            <div class="title">可调用着色器</div>
         </div>
         <svg class="furo-related-icon">
             <use href="#svg-arrow-right"></use>
