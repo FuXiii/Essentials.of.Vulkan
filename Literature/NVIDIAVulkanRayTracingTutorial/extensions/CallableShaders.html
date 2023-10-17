@@ -273,13 +273,19 @@
 <li><p class="sd-card-text">2023/10/16 增加该扩展文档</p></li>
 <li><p class="sd-card-text">2023/10/16 增加 <code class="docutils literal notranslate"><span class="pre">教程</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/10/16 增加 <code class="docutils literal notranslate"><span class="pre">数据存储</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/10/17 增加 <code class="docutils literal notranslate"><span class="pre">执行</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/10/17 增加 <code class="docutils literal notranslate"><span class="pre">可调用着色器加入着色器绑定表中</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/10/17 增加 <code class="docutils literal notranslate"><span class="pre">创建可调用着色器</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/10/17 增加 <code class="docutils literal notranslate"><span class="pre">可调用着色器</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/10/17 增加 <code class="docutils literal notranslate"><span class="pre">着色器绑定表</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/10/17 增加 <code class="docutils literal notranslate"><span class="pre">调用可调用着色器</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p><a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing_callable">文献源</a></p>
-<figure class="align-default" id="id6">
+<figure class="align-default" id="id12">
 <img alt="../../../_images/callable.png" src="../../../_images/callable.png" />
 <figcaption>
-<p><span class="caption-text">可调用着色器结果示意图</span><a class="headerlink" href="#id6" title="Link to this image">#</a></p>
+<p><span class="caption-text">可调用着色器结果示意图</span><a class="headerlink" href="#id12" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <section id="id4">
@@ -307,6 +313,230 @@
 <p>并且在可调用着色器内部必须使用 <code class="docutils literal notranslate"><span class="pre">callableDataInEXT</span></code> 存储限定符声明传入的数据。</p>
 <div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="k">layout</span><span class="p">(</span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mo">0</span><span class="p">)</span><span class="w"> </span><span class="n">callableDataInEXT</span><span class="w"> </span><span class="n">rayLight</span><span class="w"> </span><span class="n">cLight</span><span class="p">;</span>
 </pre></div>
+</div>
+</section>
+<section id="id6">
+<h2>执行<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<p>为了执行可调用着色器，需要在父阶段着色器中调用 <code class="docutils literal notranslate"><span class="pre">executeCallableEXT</span></code> 函数。</p>
+<p>该函数的第一个参数就是着色器绑定表中的索引，第二个参数对应着 <code class="docutils literal notranslate"><span class="pre">location</span></code> 声明的索引。</p>
+<p>如下函数调用将执行可调用着色器。</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="n">executeCallableEXT</span><span class="p">(</span><span class="n">pushC</span><span class="p">.</span><span class="n">lightType</span><span class="p">,</span><span class="w"> </span><span class="mo">0</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="id7">
+<h2>可调用着色器加入着色器绑定表中<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<section id="id8">
+<h3>创建可调用着色器<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
+<p>在 <code class="docutils literal notranslate"><span class="pre">HelloVulkan::createRtPipeline()</span></code> 中，紧接着最近命中着色器的后面，我们将会增加 <code class="docutils literal notranslate"><span class="pre">3</span></code> 个可调用着色器，分别对应不同的光源类型。</p>
+<p>首先创建相应的着色器：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">enum</span><span class="w"> </span><span class="nc">StageIndices</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">eRaygen</span><span class="p">,</span>
+<span class="w">  </span><span class="n">eMiss</span><span class="p">,</span>
+<span class="w">  </span><span class="n">eMiss2</span><span class="p">,</span>
+<span class="w">  </span><span class="n">eClosestHit</span><span class="p">,</span>
+<span class="w">  </span><span class="n">eCall0</span><span class="p">,</span>
+<span class="w">  </span><span class="n">eCall1</span><span class="p">,</span>
+<span class="w">  </span><span class="n">eCall2</span><span class="p">,</span>
+<span class="w">  </span><span class="n">eShaderGroupCount</span>
+<span class="p">};</span>
+
+<span class="p">...</span>
+<span class="c1">// 可调用着色器 0</span>
+<span class="n">stage</span><span class="p">.</span><span class="k">module</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nvvk</span><span class="o">::</span><span class="n">createShaderModule</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">nvh</span><span class="o">::</span><span class="n">loadFile</span><span class="p">(</span><span class="s">&quot;spv/light_point.rcall.spv&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="n">defaultSearchPaths</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">));</span>
+<span class="n">stage</span><span class="p">.</span><span class="n">stage</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_CALLABLE_BIT_KHR</span><span class="p">;</span>
+<span class="n">stages</span><span class="p">[</span><span class="n">eCall0</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stage</span><span class="p">;</span>
+<span class="c1">// 可调用着色器 1</span>
+<span class="n">stage</span><span class="p">.</span><span class="k">module</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nvvk</span><span class="o">::</span><span class="n">createShaderModule</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">nvh</span><span class="o">::</span><span class="n">loadFile</span><span class="p">(</span><span class="s">&quot;spv/light_spot.rcall.spv&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="n">defaultSearchPaths</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">));</span>
+<span class="n">stage</span><span class="p">.</span><span class="n">stage</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_CALLABLE_BIT_KHR</span><span class="p">;</span>
+<span class="n">stages</span><span class="p">[</span><span class="n">eCall1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stage</span><span class="p">;</span>
+<span class="c1">// 可调用着色器 2</span>
+<span class="n">stage</span><span class="p">.</span><span class="k">module</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nvvk</span><span class="o">::</span><span class="n">createShaderModule</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">nvh</span><span class="o">::</span><span class="n">loadFile</span><span class="p">(</span><span class="s">&quot;spv/light_inf.rcall.spv&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="n">defaultSearchPaths</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">));</span>
+<span class="n">stage</span><span class="p">.</span><span class="n">stage</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_CALLABLE_BIT_KHR</span><span class="p">;</span>
+<span class="n">stages</span><span class="p">[</span><span class="n">eCall2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stage</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>之后使用相应的着色器设置 <code class="docutils literal notranslate"><span class="pre">3</span></code> 个可调用着色器组：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 可调用着色器组</span>
+<span class="n">group</span><span class="p">.</span><span class="n">type</span><span class="w">             </span><span class="o">=</span><span class="w"> </span><span class="n">VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR</span><span class="p">;</span>
+<span class="n">group</span><span class="p">.</span><span class="n">closestHitShader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_SHADER_UNUSED_KHR</span><span class="p">;</span>
+<span class="n">group</span><span class="p">.</span><span class="n">generalShader</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">eCall0</span><span class="p">;</span>
+<span class="n">m_rtShaderGroups</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">group</span><span class="p">);</span>
+<span class="n">group</span><span class="p">.</span><span class="n">generalShader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">eCall1</span><span class="p">;</span>
+<span class="n">m_rtShaderGroups</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">group</span><span class="p">);</span>
+<span class="n">group</span><span class="p">.</span><span class="n">generalShader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">eCall2</span><span class="p">;</span>
+<span class="n">m_rtShaderGroups</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">group</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="id9">
+<h3>可调用着色器<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
+<p>三个可调用着色器源码如下：</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="c1">// light_point.rcall</span>
+
+<span class="cp">#version 460 core</span>
+<span class="cp">#extension GL_EXT_ray_tracing : enable</span>
+<span class="cp">#extension GL_GOOGLE_include_directive : enable</span>
+<span class="cp">#include &quot;raycommon.glsl&quot;</span>
+
+<span class="k">layout</span><span class="p">(</span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mo">0</span><span class="p">)</span><span class="w"> </span><span class="n">callableDataInEXT</span><span class="w"> </span><span class="n">rayLight</span><span class="w"> </span><span class="n">cLight</span><span class="p">;</span>
+
+<span class="k">layout</span><span class="p">(</span><span class="n">push_constant</span><span class="p">)</span><span class="w"> </span><span class="k">uniform</span><span class="w"> </span><span class="n">Constants</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">vec4</span><span class="w">  </span><span class="n">clearColor</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">vec3</span><span class="w">  </span><span class="n">lightPosition</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">lightIntensity</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">vec3</span><span class="w">  </span><span class="n">lightDirection</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">lightSpotCutoff</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">lightSpotOuterCutoff</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w">   </span><span class="n">lightType</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">vec3</span><span class="w"> </span><span class="n">lDir</span><span class="w">               </span><span class="o">=</span><span class="w"> </span><span class="n">lightPosition</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">cLight</span><span class="p">.</span><span class="n">inHitPosition</span><span class="p">;</span>
+<span class="w">  </span><span class="n">cLight</span><span class="p">.</span><span class="n">outLightDistance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">length</span><span class="p">(</span><span class="n">lDir</span><span class="p">);</span>
+<span class="w">  </span><span class="n">cLight</span><span class="p">.</span><span class="n">outIntensity</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="n">lightIntensity</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">cLight</span><span class="p">.</span><span class="n">outLightDistance</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">cLight</span><span class="p">.</span><span class="n">outLightDistance</span><span class="p">);</span>
+<span class="w">  </span><span class="n">cLight</span><span class="p">.</span><span class="n">outLightDir</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="n">normalize</span><span class="p">(</span><span class="n">lDir</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="c1">// light_spot.rcall</span>
+
+<span class="cp">#version 460 core</span>
+<span class="cp">#extension GL_EXT_ray_tracing : enable</span>
+<span class="cp">#extension GL_GOOGLE_include_directive : enable</span>
+<span class="cp">#include &quot;raycommon.glsl&quot;</span>
+
+<span class="k">layout</span><span class="p">(</span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mo">0</span><span class="p">)</span><span class="w"> </span><span class="n">callableDataInEXT</span><span class="w"> </span><span class="n">rayLight</span><span class="w"> </span><span class="n">cLight</span><span class="p">;</span>
+
+<span class="k">layout</span><span class="p">(</span><span class="n">push_constant</span><span class="p">)</span><span class="w"> </span><span class="k">uniform</span><span class="w"> </span><span class="n">Constants</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">vec4</span><span class="w">  </span><span class="n">clearColor</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">vec3</span><span class="w">  </span><span class="n">lightPosition</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">lightIntensity</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">vec3</span><span class="w">  </span><span class="n">lightDirection</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">lightSpotCutoff</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">lightSpotOuterCutoff</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w">   </span><span class="n">lightType</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">vec3</span><span class="w"> </span><span class="n">lDir</span><span class="w">               </span><span class="o">=</span><span class="w"> </span><span class="n">lightPosition</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">cLight</span><span class="p">.</span><span class="n">inHitPosition</span><span class="p">;</span>
+<span class="w">  </span><span class="n">cLight</span><span class="p">.</span><span class="n">outLightDistance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">length</span><span class="p">(</span><span class="n">lDir</span><span class="p">);</span>
+<span class="w">  </span><span class="n">cLight</span><span class="p">.</span><span class="n">outIntensity</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="n">lightIntensity</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">cLight</span><span class="p">.</span><span class="n">outLightDistance</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">cLight</span><span class="p">.</span><span class="n">outLightDistance</span><span class="p">);</span>
+<span class="w">  </span><span class="n">cLight</span><span class="p">.</span><span class="n">outLightDir</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="n">normalize</span><span class="p">(</span><span class="n">lDir</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">theta</span><span class="w">             </span><span class="o">=</span><span class="w"> </span><span class="n">dot</span><span class="p">(</span><span class="n">cLight</span><span class="p">.</span><span class="n">outLightDir</span><span class="p">,</span><span class="w"> </span><span class="n">normalize</span><span class="p">(</span><span class="o">-</span><span class="n">lightDirection</span><span class="p">));</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">epsilon</span><span class="w">           </span><span class="o">=</span><span class="w"> </span><span class="n">lightSpotCutoff</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">lightSpotOuterCutoff</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">spotIntensity</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="n">clamp</span><span class="p">((</span><span class="n">theta</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">lightSpotOuterCutoff</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">epsilon</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">);</span>
+<span class="w">  </span><span class="n">cLight</span><span class="p">.</span><span class="n">outIntensity</span><span class="w"> </span><span class="o">*=</span><span class="w"> </span><span class="n">spotIntensity</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="c1">// light_inf.rcall</span>
+
+<span class="cp">#version 460 core</span>
+<span class="cp">#extension GL_EXT_ray_tracing : enable</span>
+<span class="cp">#extension GL_GOOGLE_include_directive : enable</span>
+<span class="cp">#include &quot;raycommon.glsl&quot;</span>
+
+<span class="k">layout</span><span class="p">(</span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mo">0</span><span class="p">)</span><span class="w"> </span><span class="n">callableDataInEXT</span><span class="w"> </span><span class="n">rayLight</span><span class="w"> </span><span class="n">cLight</span><span class="p">;</span>
+
+<span class="k">layout</span><span class="p">(</span><span class="n">push_constant</span><span class="p">)</span><span class="w"> </span><span class="k">uniform</span><span class="w"> </span><span class="n">Constants</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">vec4</span><span class="w">  </span><span class="n">clearColor</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">vec3</span><span class="w">  </span><span class="n">lightPosition</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">lightIntensity</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">vec3</span><span class="w">  </span><span class="n">lightDirection</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">lightSpotCutoff</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">lightSpotOuterCutoff</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w">   </span><span class="n">lightType</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">cLight</span><span class="p">.</span><span class="n">outLightDistance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10000000</span><span class="p">;</span>
+<span class="w">  </span><span class="n">cLight</span><span class="p">.</span><span class="n">outIntensity</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span><span class="p">;</span>
+<span class="w">  </span><span class="n">cLight</span><span class="p">.</span><span class="n">outLightDir</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="n">normalize</span><span class="p">(</span><span class="o">-</span><span class="n">lightDirection</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>可以看到每个可调用着色器分别计算各自的光源类型数据。</p>
+</section>
+<section id="id10">
+<h3>着色器绑定表<a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
+<p>在本示例中，我们将会使用 <code class="docutils literal notranslate"><span class="pre">nvvk::SBTWrapper</span></code> 。其内部将会使用创建光追管线中的信息自动适配着色器绑定表缓存的内部结构。</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">hello_vulkan.h</span></code> 头文件中，将该包装器添加进来并增加一个新成员。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;nvvk/sbtwrapper_vk.hpp&quot;</span>
+<span class="p">...</span>
+<span class="n">nvvk</span><span class="o">::</span><span class="n">SBTWrapper</span><span class="w"> </span><span class="n">m_sbtWrapper</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>在 <code class="docutils literal notranslate"><span class="pre">HelloVulkan::initRayTracing()</span></code> 通过如下代码进行初始化。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">m_sbtWrapper</span><span class="p">.</span><span class="n">setup</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">m_graphicsQueueIndex</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">m_alloc</span><span class="p">,</span><span class="w"> </span><span class="n">m_rtProperties</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>在 <code class="docutils literal notranslate"><span class="pre">HelloVulkan::createRtPipeline()</span></code> 中紧接着调用 <code class="docutils literal notranslate"><span class="pre">vkCreateRayTracingPipelinesKHR()</span></code> 创建管线之后，调用如下代码创建着色器绑定表：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">m_sbtWrapper</span><span class="p">.</span><span class="n">create</span><span class="p">(</span><span class="n">m_rtPipeline</span><span class="p">,</span><span class="w"> </span><span class="n">rayPipelineInfo</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>在 <code class="docutils literal notranslate"><span class="pre">HelloVulkan::raytrace()</span></code> 中，我们将会告诉管线可调用着色器对应的起始位置。我们将会在命中着色器绑定表之后增加可调用着色器绑定表。着色器绑定表的结构如下：</p>
+<figure class="align-default" id="id13">
+<img alt="../../../_images/sbt.png" src="../../../_images/sbt.png" />
+<figcaption>
+<p><span class="caption-text">着色器绑定表内部结构意图</span><a class="headerlink" href="#id13" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>着色器绑定表包装器将会返回我们需要的信息。相比于手动计算每个绑定表的偏移，我们可以通过包装器直接获得每个类型组对应的 <code class="docutils literal notranslate"><span class="pre">VkStridedDeviceAddressRegionKHR</span></code> 。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">regions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_sbtWrapper</span><span class="p">.</span><span class="n">getRegions</span><span class="p">();</span>
+<span class="n">vkCmdTraceRaysKHR</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">regions</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="o">&amp;</span><span class="n">regions</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="o">&amp;</span><span class="n">regions</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="w"> </span><span class="o">&amp;</span><span class="n">regions</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span><span class="w"> </span><span class="n">m_size</span><span class="p">.</span><span class="n">width</span><span class="p">,</span><span class="w"> </span><span class="n">m_size</span><span class="p">.</span><span class="n">height</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id11">
+<h2>调用可调用着色器<a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
+<p>在最近命中着色器中，相比于使用 <code class="docutils literal notranslate"><span class="pre">if-else</span></code> 判定，我们现在可以使用可调用着色器分别计算相应的光源类型数据。</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="n">cLight</span><span class="p">.</span><span class="n">inHitPosition</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">worldPos</span><span class="p">;</span>
+<span class="c1">//#define DONT_USE_CALLABLE</span>
+<span class="cp">#if defined(DONT_USE_CALLABLE)</span>
+<span class="w">  </span><span class="c1">// Point light</span>
+<span class="w">  </span><span class="k">if</span><span class="p">(</span><span class="n">pushC</span><span class="p">.</span><span class="n">lightType</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mo">0</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">vec3</span><span class="w">  </span><span class="n">lDir</span><span class="w">              </span><span class="o">=</span><span class="w"> </span><span class="n">pushC</span><span class="p">.</span><span class="n">lightPosition</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">cLight</span><span class="p">.</span><span class="n">inHitPosition</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">lightDistance</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="n">length</span><span class="p">(</span><span class="n">lDir</span><span class="p">);</span>
+<span class="w">    </span><span class="n">cLight</span><span class="p">.</span><span class="n">outIntensity</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="n">pushC</span><span class="p">.</span><span class="n">lightIntensity</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">lightDistance</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">lightDistance</span><span class="p">);</span>
+<span class="w">    </span><span class="n">cLight</span><span class="p">.</span><span class="n">outLightDir</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="n">normalize</span><span class="p">(</span><span class="n">lDir</span><span class="p">);</span>
+<span class="w">    </span><span class="n">cLight</span><span class="p">.</span><span class="n">outLightDistance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lightDistance</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="p">(</span><span class="n">pushC</span><span class="p">.</span><span class="n">lightType</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">vec3</span><span class="w"> </span><span class="n">lDir</span><span class="w">               </span><span class="o">=</span><span class="w"> </span><span class="n">pushC</span><span class="p">.</span><span class="n">lightPosition</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">cLight</span><span class="p">.</span><span class="n">inHitPosition</span><span class="p">;</span>
+<span class="w">    </span><span class="n">cLight</span><span class="p">.</span><span class="n">outLightDistance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">length</span><span class="p">(</span><span class="n">lDir</span><span class="p">);</span>
+<span class="w">    </span><span class="n">cLight</span><span class="p">.</span><span class="n">outIntensity</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="n">pushC</span><span class="p">.</span><span class="n">lightIntensity</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">cLight</span><span class="p">.</span><span class="n">outLightDistance</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">cLight</span><span class="p">.</span><span class="n">outLightDistance</span><span class="p">);</span>
+<span class="w">    </span><span class="n">cLight</span><span class="p">.</span><span class="n">outLightDir</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">normalize</span><span class="p">(</span><span class="n">lDir</span><span class="p">);</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">theta</span><span class="w">         </span><span class="o">=</span><span class="w"> </span><span class="n">dot</span><span class="p">(</span><span class="n">cLight</span><span class="p">.</span><span class="n">outLightDir</span><span class="p">,</span><span class="w"> </span><span class="n">normalize</span><span class="p">(</span><span class="o">-</span><span class="n">pushC</span><span class="p">.</span><span class="n">lightDirection</span><span class="p">));</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">epsilon</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="n">pushC</span><span class="p">.</span><span class="n">lightSpotCutoff</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">pushC</span><span class="p">.</span><span class="n">lightSpotOuterCutoff</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">spotIntensity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">clamp</span><span class="p">((</span><span class="n">theta</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">pushC</span><span class="p">.</span><span class="n">lightSpotOuterCutoff</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">epsilon</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">);</span>
+<span class="w">    </span><span class="n">cLight</span><span class="p">.</span><span class="n">outIntensity</span><span class="w"> </span><span class="o">*=</span><span class="w"> </span><span class="n">spotIntensity</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">else</span><span class="w">  </span><span class="c1">// Directional light</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">cLight</span><span class="p">.</span><span class="n">outLightDir</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="n">normalize</span><span class="p">(</span><span class="o">-</span><span class="n">pushC</span><span class="p">.</span><span class="n">lightDirection</span><span class="p">);</span>
+<span class="w">    </span><span class="n">cLight</span><span class="p">.</span><span class="n">outIntensity</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span><span class="p">;</span>
+<span class="w">    </span><span class="n">cLight</span><span class="p">.</span><span class="n">outLightDistance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10000000</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="cp">#else</span>
+<span class="w">  </span><span class="n">executeCallableEXT</span><span class="p">(</span><span class="n">pushC</span><span class="p">.</span><span class="n">lightType</span><span class="p">,</span><span class="w"> </span><span class="mo">0</span><span class="p">);</span>
+<span class="cp">#endif</span>
+</pre></div>
+</div>
+<div class="note admonition">
+<p class="admonition-title">DONT_USE_CALLABLE</p>
+<p>使用宏 <code class="docutils literal notranslate"><span class="pre">DONT_USE_CALLABLE</span></code> 来设置使用可调用着色器还是使用 <code class="docutils literal notranslate"><span class="pre">if-else</span></code> 进行计算。</p>
 </div>
 </section>
 </section>
@@ -388,6 +618,14 @@
 <li><a class="reference internal" href="#">可调用着色器</a><ul>
 <li><a class="reference internal" href="#id4">教程</a></li>
 <li><a class="reference internal" href="#id5">数据存储</a></li>
+<li><a class="reference internal" href="#id6">执行</a></li>
+<li><a class="reference internal" href="#id7">可调用着色器加入着色器绑定表中</a><ul>
+<li><a class="reference internal" href="#id8">创建可调用着色器</a></li>
+<li><a class="reference internal" href="#id9">可调用着色器</a></li>
+<li><a class="reference internal" href="#id10">着色器绑定表</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id11">调用可调用着色器</a></li>
 </ul>
 </li>
 </ul>
