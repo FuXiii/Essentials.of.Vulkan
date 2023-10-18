@@ -361,6 +361,10 @@
 <li><p class="sd-card-text">2023/10/15 增加 <code class="docutils literal notranslate"><span class="pre">VkDeviceSize</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2023/10/15 增加 <code class="docutils literal notranslate"><span class="pre">VkBufferUsageFlags</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2023/10/15 增加 <code class="docutils literal notranslate"><span class="pre">VkSharingMode</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2023/10/18 增加 <code class="docutils literal notranslate"><span class="pre">图片</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2023/10/18 增加 <code class="docutils literal notranslate"><span class="pre">vkCreateImage</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2023/10/18 增加 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2023/10/18 增加 <code class="docutils literal notranslate"><span class="pre">VkImageType</span></code> 章节。</p></li>
 </ul>
 </div>
 </details><p>由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 比较复杂，为了更好的入门 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> ，还是大致过一遍 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的核心思路，这对以后的学习很有帮助。</p>
@@ -1005,9 +1009,9 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <div class="note admonition">
 <p class="admonition-title">队列族</p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中设备队列是按照 <code class="docutils literal notranslate"><span class="pre">族</span></code> 进行管理的，前面我们知道一个物理设备上的可能会有多个设备队列支持相同的功能域，这些支持相同功能域的设备队列算作同一族。</p>
-<figure class="align-default" id="id24">
+<figure class="align-default" id="id25">
 <img alt="_images/vk_queue_family_struct.svg" src="_images/vk_queue_family_struct.svg" /><figcaption>
-<p><span class="caption-text">如上图中。队列0、1、2三个队列属于队列族A，则这三个队列支持计算、图形和转移功能。队列3属于队列族B，则该队列支持计算和转移功能。</span><a class="headerlink" href="#id24" title="Link to this image">#</a></p>
+<p><span class="caption-text">如上图中。队列0、1、2三个队列属于队列族A，则这三个队列支持计算、图形和转移功能。队列3属于队列族B，则该队列支持计算和转移功能。</span><a class="headerlink" href="#id25" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 </div>
@@ -1512,9 +1516,9 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <section id="id18">
 <h4>VkPhysicalDeviceMemoryProperties 结构图<a class="headerlink" href="#id18" title="Link to this heading">#</a></h4>
 <p>为了更清晰的理解 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties</span></code> ，在此给出一张 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties</span></code> 结构参考图：</p>
-<figure class="align-default" id="id25">
+<figure class="align-default" id="id26">
 <img alt="_images/VkPhysicalDeviceMemoryProperties_struct.svg" src="_images/VkPhysicalDeviceMemoryProperties_struct.svg" /><figcaption>
-<p><span class="caption-text">如图所示为一种可能的结构。第一种内存类型对应着第三个内存堆，第二种内存类型对应着第一个内存堆，第三种内存类型对应着第二个内存堆。</span><a class="headerlink" href="#id25" title="Link to this image">#</a></p>
+<p><span class="caption-text">如图所示为一种可能的结构。第一种内存类型对应着第三个内存堆，第二种内存类型对应着第一个内存堆，第三种内存类型对应着第二个内存堆。</span><a class="headerlink" href="#id26" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <p>接下来就能够通过 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties</span></code> 获取内存信息了，和之前很多函数一样，首先获取 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties</span></code> 函数实现：</p>
@@ -1838,6 +1842,109 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </div>
 </section>
 </section>
+<section id="id24">
+<h3>图片<a class="headerlink" href="#id24" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">图片</span></code> 为一维、二维或三维块内存结构的资源。每个内存块都有相同且特定的格式。与缓存不同的是，图片的内存块格式是强制要求明确指定的，与缓存相同的是图片创建时也需要指明其用途，当然这是为了内存的内部优化。在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中图片资源使用 <code class="docutils literal notranslate"><span class="pre">VkImage</span></code> 句柄表示。</p>
+<p>图片资源通过 <code class="docutils literal notranslate"><span class="pre">vkCreateImage</span></code> 函数创建。其定义如下：</p>
+<section id="vkcreateimage">
+<h4>vkCreateImage<a class="headerlink" href="#vkcreateimage" title="Link to this heading">#</a></h4>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="n">VkResult</span><span class="w"> </span><span class="nf">vkCreateImage</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkImageCreateInfo</span><span class="o">*</span><span class="w">                    </span><span class="n">pCreateInfo</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkAllocationCallbacks</span><span class="o">*</span><span class="w">                </span><span class="n">pAllocator</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkImage</span><span class="o">*</span><span class="w">                                    </span><span class="n">pImage</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">device</span> 对应的 <code class="docutils literal notranslate"><span class="pre">VkDevice</span></code> 逻辑设备句柄。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pCreateInfo</span> 创建图片的配置信息。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pAllocator</span> 内存分配器。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pImage</span> 创建的图片结果。</p></li>
+</ul>
+<p>与创建缓存资源类似，我们来看一下 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo</span></code> 的配置信息定义：</p>
+</section>
+<section id="vkimagecreateinfo">
+<h4>VkImageCreateInfo<a class="headerlink" href="#vkimagecreateinfo" title="Link to this heading">#</a></h4>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkImageCreateInfo</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VkStructureType</span><span class="w">          </span><span class="n">sType</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w">              </span><span class="n">pNext</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkImageCreateFlags</span><span class="w">       </span><span class="n">flags</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkImageType</span><span class="w">              </span><span class="n">imageType</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkFormat</span><span class="w">                 </span><span class="n">format</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkExtent3D</span><span class="w">               </span><span class="n">extent</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                 </span><span class="n">mipLevels</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                 </span><span class="n">arrayLayers</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkSampleCountFlagBits</span><span class="w">    </span><span class="n">samples</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkImageTiling</span><span class="w">            </span><span class="n">tiling</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkImageUsageFlags</span><span class="w">        </span><span class="n">usage</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkSharingMode</span><span class="w">            </span><span class="n">sharingMode</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                 </span><span class="n">queueFamilyIndexCount</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint32_t</span><span class="o">*</span><span class="w">          </span><span class="n">pQueueFamilyIndices</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkImageLayout</span><span class="w">            </span><span class="n">initialLayout</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkImageCreateInfo</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 是该结构体的类型枚举值，必须是 <code class="docutils literal notranslate"><span class="pre">VkStructureType::VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pNext</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向其他结构体来扩展该结构体。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">flags</span> 图片额外标志位配置。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">imageType</span> 图片的类型。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">format</span> 图片格式。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">extent</span> 图片大小。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">mipLevels</span> 多级渐远纹理级别。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">arrayLayers</span> 层级数量。<span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 大于 <code class="docutils literal notranslate"><span class="pre">0</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">samples</span> 采样点数量。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">tiling</span> 瓦片排布。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">usage</span> 图片的用途。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sharingMode</span> 共享模式。用于配置缓存是否可在设备队列间进行共享。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">queueFamilyIndexCount</span> 对应 <code class="docutils literal notranslate"><span class="pre">pQueueFamilyIndices</span></code> 的元素数量。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pQueueFamilyIndices</span> 对应类型为 <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code> 的数组。用于配置需要互相共享访问该缓存的那些队列族索引。如果 <code class="docutils literal notranslate"><span class="pre">sharingMode</span></code> 不是 <code class="docutils literal notranslate"><span class="pre">VK_SHARING_MODE_CONCURRENT</span></code> 的话，该项将被忽略。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">initialLayout</span> 初始化布局</p></li>
+</ul>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">imageType</span></code> 的 <code class="docutils literal notranslate"><span class="pre">VkImageType</span></code> 类型定义如下：</p>
+</section>
+<section id="vkimagetype">
+<h4>VkImageType<a class="headerlink" href="#vkimagetype" title="Link to this heading">#</a></h4>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkImageType</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VK_IMAGE_TYPE_1D</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_IMAGE_TYPE_2D</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_IMAGE_TYPE_3D</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkImageType</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_IMAGE_TYPE_1D</span> 表示一维图片。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_IMAGE_TYPE_2D</span> 表示二维图片。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_IMAGE_TYPE_3D</span> 表示三维图片。</p></li>
+</ul>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">extent</span></code> 的 <code class="docutils literal notranslate"><span class="pre">VkExtent3D</span></code> 类型定义如下：</p>
+</section>
+<section id="vkextent3d">
+<h4>VkExtent3D<a class="headerlink" href="#vkextent3d" title="Link to this heading">#</a></h4>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkExtent3D</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">    </span><span class="n">width</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">    </span><span class="n">height</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">    </span><span class="n">depth</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkExtent3D</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">width</span> 表示宽。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">height</span> 表示高。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">depth</span> 表示深度。</p></li>
+</ul>
+<p>图片的 <code class="docutils literal notranslate"><span class="pre">extent</span></code> 大小和 <code class="docutils literal notranslate"><span class="pre">arrayLayers</span></code> 层级与其 <code class="docutils literal notranslate"><span class="pre">imageType</span></code> 图片类型有关：</p>
+<ul class="simple">
+<li><p>当图片为 <code class="docutils literal notranslate"><span class="pre">VK_IMAGE_TYPE_1D</span></code> 时 <code class="docutils literal notranslate"><span class="pre">extent.depth</span></code> 和 <code class="docutils literal notranslate"><span class="pre">extent.height</span></code> 两者皆 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 为 <code class="docutils literal notranslate"><span class="pre">1</span></code> 。</p></li>
+<li><p>当图片为 <code class="docutils literal notranslate"><span class="pre">VK_IMAGE_TYPE_2D</span></code> 时 <code class="docutils literal notranslate"><span class="pre">extent.depth</span></code> <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 为 <code class="docutils literal notranslate"><span class="pre">1</span></code> 。</p></li>
+<li><p>当图片为 <code class="docutils literal notranslate"><span class="pre">VK_IMAGE_TYPE_3D</span></code> 时 <code class="docutils literal notranslate"><span class="pre">arrayLayers</span></code> <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 为 <code class="docutils literal notranslate"><span class="pre">1</span></code> 。</p></li>
+</ul>
+</section>
+</section>
 </section>
 </section>
 
@@ -2006,6 +2113,13 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <li><a class="reference internal" href="#vkbuffercreateinfo">VkBufferCreateInfo</a></li>
 <li><a class="reference internal" href="#vkbufferusageflags">VkBufferUsageFlags</a></li>
 <li><a class="reference internal" href="#vksharingmode">VkSharingMode</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id24">图片</a><ul>
+<li><a class="reference internal" href="#vkcreateimage">vkCreateImage</a></li>
+<li><a class="reference internal" href="#vkimagecreateinfo">VkImageCreateInfo</a></li>
+<li><a class="reference internal" href="#vkimagetype">VkImageType</a></li>
+<li><a class="reference internal" href="#vkextent3d">VkExtent3D</a></li>
 </ul>
 </li>
 </ul>

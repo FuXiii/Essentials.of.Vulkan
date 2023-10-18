@@ -96,6 +96,10 @@
    * 2023/10/15 增加 ``VkDeviceSize`` 章节。
    * 2023/10/15 增加 ``VkBufferUsageFlags`` 章节。
    * 2023/10/15 增加 ``VkSharingMode`` 章节。
+   * 2023/10/18 增加 ``图片`` 章节。
+   * 2023/10/18 增加 ``vkCreateImage`` 章节。
+   * 2023/10/18 增加 ``VkImageCreateInfo`` 章节。
+   * 2023/10/18 增加 ``VkImageType`` 章节。
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -1835,6 +1839,114 @@ VkSharingMode
    * :bdg-secondary:`VK_BUFFER_USAGE_TRANSFER_DST_BIT` 表示该缓存将会作为数据传输的目标，用于之后的数据拷贝（具体如何将数据拷贝进该缓存将在之后的章节进行讲解）。
    * :bdg-secondary:`VK_BUFFER_USAGE_VERTEX_BUFFER_BIT` 表示该缓存将会作为顶点缓存进行内存优化。
    
+图片
+********************************
+
+``图片`` 为一维、二维或三维块内存结构的资源。每个内存块都有相同且特定的格式。与缓存不同的是，图片的内存块格式是强制要求明确指定的，与缓存相同的是图片创建时也需要指明其用途，当然这是为了内存的内部优化。在 ``Vulkan`` 中图片资源使用 ``VkImage`` 句柄表示。
+
+图片资源通过 ``vkCreateImage`` 函数创建。其定义如下：
+
+vkCreateImage
+--------------------------------
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   VkResult vkCreateImage(
+       VkDevice                                    device,
+       const VkImageCreateInfo*                    pCreateInfo,
+       const VkAllocationCallbacks*                pAllocator,
+       VkImage*                                    pImage);
+
+* :bdg-secondary:`device` 对应的 ``VkDevice`` 逻辑设备句柄。
+* :bdg-secondary:`pCreateInfo` 创建图片的配置信息。
+* :bdg-secondary:`pAllocator` 内存分配器。
+* :bdg-secondary:`pImage` 创建的图片结果。
+
+与创建缓存资源类似，我们来看一下 ``VkImageCreateInfo`` 的配置信息定义：
+
+VkImageCreateInfo
+--------------------------------
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef struct VkImageCreateInfo {
+       VkStructureType          sType;
+       const void*              pNext;
+       VkImageCreateFlags       flags;
+       VkImageType              imageType;
+       VkFormat                 format;
+       VkExtent3D               extent;
+       uint32_t                 mipLevels;
+       uint32_t                 arrayLayers;
+       VkSampleCountFlagBits    samples;
+       VkImageTiling            tiling;
+       VkImageUsageFlags        usage;
+       VkSharingMode            sharingMode;
+       uint32_t                 queueFamilyIndexCount;
+       const uint32_t*          pQueueFamilyIndices;
+       VkImageLayout            initialLayout;
+   } VkImageCreateInfo;
+
+* :bdg-secondary:`sType` 是该结构体的类型枚举值，必须是 ``VkStructureType::VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO`` 。
+* :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
+* :bdg-secondary:`flags` 图片额外标志位配置。
+* :bdg-secondary:`imageType` 图片的类型。
+* :bdg-secondary:`format` 图片格式。
+* :bdg-secondary:`extent` 图片大小。
+* :bdg-secondary:`mipLevels` 多级渐远纹理级别。
+* :bdg-secondary:`arrayLayers` 层级数量。:bdg-danger:`必须` 大于 ``0`` 。
+* :bdg-secondary:`samples` 采样点数量。
+* :bdg-secondary:`tiling` 瓦片排布。
+* :bdg-secondary:`usage` 图片的用途。
+* :bdg-secondary:`sharingMode` 共享模式。用于配置缓存是否可在设备队列间进行共享。
+* :bdg-secondary:`queueFamilyIndexCount` 对应 ``pQueueFamilyIndices`` 的元素数量。
+* :bdg-secondary:`pQueueFamilyIndices` 对应类型为 ``uint32_t`` 的数组。用于配置需要互相共享访问该缓存的那些队列族索引。如果 ``sharingMode`` 不是 ``VK_SHARING_MODE_CONCURRENT`` 的话，该项将被忽略。
+* :bdg-secondary:`initialLayout` 初始化布局
+
+其中 ``imageType`` 的 ``VkImageType`` 类型定义如下：
+
+VkImageType
+--------------------------------
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef enum VkImageType {
+       VK_IMAGE_TYPE_1D = 0,
+       VK_IMAGE_TYPE_2D = 1,
+       VK_IMAGE_TYPE_3D = 2,
+   } VkImageType;
+
+* :bdg-secondary:`VK_IMAGE_TYPE_1D` 表示一维图片。
+* :bdg-secondary:`VK_IMAGE_TYPE_2D` 表示二维图片。
+* :bdg-secondary:`VK_IMAGE_TYPE_3D` 表示三维图片。
+
+其中 ``extent`` 的 ``VkExtent3D`` 类型定义如下：
+
+VkExtent3D
+--------------------------------
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef struct VkExtent3D {
+       uint32_t    width;
+       uint32_t    height;
+       uint32_t    depth;
+   } VkExtent3D;
+
+* :bdg-secondary:`width` 表示宽。
+* :bdg-secondary:`height` 表示高。
+* :bdg-secondary:`depth` 表示深度。
+
+图片的 ``extent`` 大小和 ``arrayLayers`` 层级与其 ``imageType`` 图片类型有关：
+
+* 当图片为 ``VK_IMAGE_TYPE_1D`` 时 ``extent.depth`` 和 ``extent.height`` 两者皆 :bdg-danger:`必须` 为 ``1`` 。
+* 当图片为 ``VK_IMAGE_TYPE_2D`` 时 ``extent.depth`` :bdg-danger:`必须` 为 ``1`` 。
+* 当图片为 ``VK_IMAGE_TYPE_3D`` 时 ``arrayLayers`` :bdg-danger:`必须` 为 ``1`` 。
+
 ..
    内存
 
