@@ -365,6 +365,13 @@
 <li><p class="sd-card-text">2023/10/18 增加 <code class="docutils literal notranslate"><span class="pre">vkCreateImage</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2023/10/18 增加 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2023/10/18 增加 <code class="docutils literal notranslate"><span class="pre">VkImageType</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2023/10/18 增加 <code class="docutils literal notranslate"><span class="pre">VkExtent3D</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2023/10/19 增加 <code class="docutils literal notranslate"><span class="pre">VkSampleCountFlagBits</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2023/10/19 增加 <code class="docutils literal notranslate"><span class="pre">VkImageTiling</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2023/10/19 增加 <code class="docutils literal notranslate"><span class="pre">VkImageUsageFlags</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2023/10/19 增加 <code class="docutils literal notranslate"><span class="pre">VkFormat</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2023/10/19 增加 <code class="docutils literal notranslate"><span class="pre">VkImageLayout</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2023/10/19 增加 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo</span> <span class="pre">其他参数和综述</span></code> 章节。</p></li>
 </ul>
 </div>
 </details><p>由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 比较复杂，为了更好的入门 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> ，还是大致过一遍 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的核心思路，这对以后的学习很有帮助。</p>
@@ -1009,9 +1016,9 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <div class="note admonition">
 <p class="admonition-title">队列族</p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中设备队列是按照 <code class="docutils literal notranslate"><span class="pre">族</span></code> 进行管理的，前面我们知道一个物理设备上的可能会有多个设备队列支持相同的功能域，这些支持相同功能域的设备队列算作同一族。</p>
-<figure class="align-default" id="id25">
+<figure class="align-default" id="id26">
 <img alt="_images/vk_queue_family_struct.svg" src="_images/vk_queue_family_struct.svg" /><figcaption>
-<p><span class="caption-text">如上图中。队列0、1、2三个队列属于队列族A，则这三个队列支持计算、图形和转移功能。队列3属于队列族B，则该队列支持计算和转移功能。</span><a class="headerlink" href="#id25" title="Link to this image">#</a></p>
+<p><span class="caption-text">如上图中。队列0、1、2三个队列属于队列族A，则这三个队列支持计算、图形和转移功能。队列3属于队列族B，则该队列支持计算和转移功能。</span><a class="headerlink" href="#id26" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 </div>
@@ -1516,9 +1523,9 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <section id="id18">
 <h4>VkPhysicalDeviceMemoryProperties 结构图<a class="headerlink" href="#id18" title="Link to this heading">#</a></h4>
 <p>为了更清晰的理解 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties</span></code> ，在此给出一张 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties</span></code> 结构参考图：</p>
-<figure class="align-default" id="id26">
+<figure class="align-default" id="id27">
 <img alt="_images/VkPhysicalDeviceMemoryProperties_struct.svg" src="_images/VkPhysicalDeviceMemoryProperties_struct.svg" /><figcaption>
-<p><span class="caption-text">如图所示为一种可能的结构。第一种内存类型对应着第三个内存堆，第二种内存类型对应着第一个内存堆，第三种内存类型对应着第二个内存堆。</span><a class="headerlink" href="#id26" title="Link to this image">#</a></p>
+<p><span class="caption-text">如图所示为一种可能的结构。第一种内存类型对应着第三个内存堆，第二种内存类型对应着第一个内存堆，第三种内存类型对应着第二个内存堆。</span><a class="headerlink" href="#id27" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <p>接下来就能够通过 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties</span></code> 获取内存信息了，和之前很多函数一样，首先获取 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties</span></code> 函数实现：</p>
@@ -1920,6 +1927,24 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_IMAGE_TYPE_2D</span> 表示二维图片。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_IMAGE_TYPE_3D</span> 表示三维图片。</p></li>
 </ul>
+</section>
+<section id="vkformat">
+<h4>VkFormat<a class="headerlink" href="#vkformat" title="Link to this heading">#</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">VkFormat</span></code> 即代表着每个像素的数据格式。在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中声明了大量的格式枚举，这里我们挑几个经典的进行讲解。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkFormat</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="n">VK_FORMAT_B8G8R8A8_UNORM</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">44</span><span class="p">,</span>
+<span class="w">   </span><span class="p">...</span>
+<span class="w">   </span><span class="n">VK_FORMAT_B8G8R8A8_SRGB</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">50</span><span class="p">,</span>
+<span class="w">   </span><span class="p">...</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkFormat</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_FORMAT_B8G8R8A8_UNORM</span> 表示有 <code class="docutils literal notranslate"><span class="pre">BGRA</span></code> 蓝、绿、红和透明四个分量，每个分量占 <code class="docutils literal notranslate"><span class="pre">8</span></code> 比特。 <code class="docutils literal notranslate"><span class="pre">UNORM</span></code> 表示无符号归一化（ <code class="docutils literal notranslate"><span class="pre">unsigned</span> <span class="pre">normalized</span></code> ），也就是颜色值的有限范围为 <span class="math notranslate nohighlight">\([0,1]\)</span> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_FORMAT_B8G8R8A8_SRGB</span> 表示有 <code class="docutils literal notranslate"><span class="pre">BGRA</span></code> 蓝、绿、红和透明四个分量，每个分量占 <code class="docutils literal notranslate"><span class="pre">8</span></code> 比特。 <code class="docutils literal notranslate"><span class="pre">SRGB</span></code> 表示使用 <code class="docutils literal notranslate"><span class="pre">sRGB</span></code> 标准红绿蓝协议（ <code class="docutils literal notranslate"><span class="pre">standard</span> <span class="pre">Red</span> <span class="pre">Green</span> <span class="pre">Blue</span></code> ） 。</p></li>
+</ul>
+<p>还有其他各种各样的格式，而最常用的也就是 <code class="docutils literal notranslate"><span class="pre">RGBA</span></code> 这样的红绿蓝和透明四个分量的组合格式。更多格式将会在单独章节进行讲解。</p>
 <p>其中 <code class="docutils literal notranslate"><span class="pre">extent</span></code> 的 <code class="docutils literal notranslate"><span class="pre">VkExtent3D</span></code> 类型定义如下：</p>
 </section>
 <section id="vkextent3d">
@@ -1943,6 +1968,95 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <li><p>当图片为 <code class="docutils literal notranslate"><span class="pre">VK_IMAGE_TYPE_2D</span></code> 时 <code class="docutils literal notranslate"><span class="pre">extent.depth</span></code> <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 为 <code class="docutils literal notranslate"><span class="pre">1</span></code> 。</p></li>
 <li><p>当图片为 <code class="docutils literal notranslate"><span class="pre">VK_IMAGE_TYPE_3D</span></code> 时 <code class="docutils literal notranslate"><span class="pre">arrayLayers</span></code> <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 为 <code class="docutils literal notranslate"><span class="pre">1</span></code> 。</p></li>
 </ul>
+<p><code class="docutils literal notranslate"><span class="pre">VkSampleCountFlagBits</span></code> 其定义如下：</p>
+</section>
+<section id="vksamplecountflagbits">
+<h4>VkSampleCountFlagBits<a class="headerlink" href="#vksamplecountflagbits" title="Link to this heading">#</a></h4>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkSampleCountFlagBits</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VK_SAMPLE_COUNT_1_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000001</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_SAMPLE_COUNT_2_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000002</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_SAMPLE_COUNT_4_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000004</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_SAMPLE_COUNT_8_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000008</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_SAMPLE_COUNT_16_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000010</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_SAMPLE_COUNT_32_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000020</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_SAMPLE_COUNT_64_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000040</span><span class="p">,</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkSampleCountFlagBits</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_SAMPLE_COUNT_1_BIT</span> 图片的每个像素有 <code class="docutils literal notranslate"><span class="pre">1</span></code> 个采样点。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_SAMPLE_COUNT_2_BIT</span> 图片的每个像素有 <code class="docutils literal notranslate"><span class="pre">2</span></code> 个采样点。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_SAMPLE_COUNT_4_BIT</span> 图片的每个像素有 <code class="docutils literal notranslate"><span class="pre">4</span></code> 个采样点。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_SAMPLE_COUNT_8_BIT</span> 图片的每个像素有 <code class="docutils literal notranslate"><span class="pre">8</span></code> 个采样点。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_SAMPLE_COUNT_16_BIT</span> 图片的每个像素有 <code class="docutils literal notranslate"><span class="pre">16</span></code> 个采样点。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_SAMPLE_COUNT_32_BIT</span> 图片的每个像素有 <code class="docutils literal notranslate"><span class="pre">32</span></code> 个采样点。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_SAMPLE_COUNT_64_BIT</span> 图片的每个像素有 <code class="docutils literal notranslate"><span class="pre">64</span></code> 个采样点。</p></li>
+</ul>
+<p>该 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo::samples</span></code> 是用于配置图片中的每一个像素由多少个子像素构成，这些子像素会在多采样阶段合并作为整个像素的结果。这在抗锯齿方面非常有用。</p>
+<p><code class="docutils literal notranslate"><span class="pre">VkImageTiling</span></code> 其定义如下：</p>
+</section>
+<section id="vkimagetiling">
+<h4>VkImageTiling<a class="headerlink" href="#vkimagetiling" title="Link to this heading">#</a></h4>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkImageTiling</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">VK_IMAGE_TILING_OPTIMAL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="n">VK_IMAGE_TILING_LINEAR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkImageTiling</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_IMAGE_TILING_OPTIMAL</span> 图片的瓦片按照 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 本地优化方式排布。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_IMAGE_TILING_LINEAR</span> 图片的瓦片按照线性方式排布。</p></li>
+</ul>
+<p>资源在 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端和在 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端，其内部的内存结构是不一样的，这个我们反复强调过。 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 为了得到更高的性能将图片的多个像素合成一个瓦片并使用内部的一种高效结构，这也就是 <code class="docutils literal notranslate"><span class="pre">VK_IMAGE_TILING_OPTIMAL</span></code> 的目的，这种结构在 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端是不能被识别的，一般处于 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端的 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 擅长处理线性连续的资源数据，
+所以想要在 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端对 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端的资源进行读写，需要现将 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端的资源转成 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端能够识别的排布，这也就是 <code class="docutils literal notranslate"><span class="pre">VK_IMAGE_TILING_LINEAR</span></code> 的目的。</p>
+</section>
+<section id="vkimageusageflags">
+<h4>VkImageUsageFlags<a class="headerlink" href="#vkimageusageflags" title="Link to this heading">#</a></h4>
+<p>与缓存类似，为了更高的性能，您需要指定图片的用途， <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中图片的用途如下：</p>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_IMAGE_USAGE_TRANSFER_SRC_BIT</span> 将该图片作为数据传输的源。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_IMAGE_USAGE_TRANSFER_DST_BIT</span> 将该图片作为数据传输的目标。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_IMAGE_USAGE_SAMPLED_BIT</span> 将该图片作为可采样图片。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_IMAGE_USAGE_STORAGE_BIT</span> 将该图片作为可存储图片。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT</span> 将该图片作为颜色附件。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT</span> 将该图片作为深度-模板附件。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT</span> 将该图片作为暂存附件。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT</span> 将该图片作为输入附件。</p></li>
+</ul>
+<p>在这里我们仅关注 <code class="docutils literal notranslate"><span class="pre">VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT</span></code> 和 <code class="docutils literal notranslate"><span class="pre">VK_IMAGE_USAGE_SAMPLED_BIT</span></code> 。在渲染时，需要告诉 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 渲染到哪张图片上，此时作为渲染目标的图片需要使用 <code class="docutils literal notranslate"><span class="pre">VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT</span></code> 创建。其他的用途将会在单独章节中进行讲解。</p>
+<div class="note admonition">
+<p class="admonition-title">VK_IMAGE_USAGE_TRANSFER_SRC_BIT 和 VK_IMAGE_USAGE_TRANSFER_DST_BIT</p>
+<p>这两种用途与缓存的 <code class="docutils literal notranslate"><span class="pre">VK_BUFFER_USAGE_TRANSFER_SRC_BIT</span></code> 和 <code class="docutils literal notranslate"><span class="pre">VK_IMAGE_USAGE_TRANSFER_DST_BIT</span></code> 相似。都是用资源间数据传输的。</p>
+</div>
+</section>
+<section id="vkimagelayout">
+<h4>VkImageLayout<a class="headerlink" href="#vkimagelayout" title="Link to this heading">#</a></h4>
+<p>为了进一步优化图片， <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中需要对图片进行布局设置，特定布局下的图片在特定用途下将会有更加优良的性能表现。 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中同样提供的大量的图片布局枚举供我们使用，在这里也挑几个经典的进行讲解。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// Provided by VK_VERSION_1_0</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkImageLayout</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="n">VK_IMAGE_LAYOUT_UNDEFINED</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">   </span><span class="n">VK_IMAGE_LAYOUT_GENERAL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">   </span><span class="n">VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">   </span><span class="p">...</span>
+<span class="w">   </span><span class="n">VK_IMAGE_LAYOUT_PREINITIALIZED</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span>
+<span class="w">   </span><span class="p">...</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkImageLayout</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_IMAGE_LAYOUT_UNDEFINED</span> 表示未定义布局。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_IMAGE_LAYOUT_GENERAL</span> 表示通用布局。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL</span> 表示颜色附件布局。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_IMAGE_LAYOUT_PREINITIALIZED</span> 表示图片的内存中已经存有特定布局的数据。也就是图片已被提前初始化完成。该布局的目的是将 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端的数据写入图片中，并且目前该布局只能用于线性图片中（ <code class="docutils literal notranslate"><span class="pre">VkImageTiling::VK_IMAGE_TILING_LINEAR</span></code> ）。</p></li>
+</ul>
+<p>在通过 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo</span></code> 创建图片时 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 要求 <code class="docutils literal notranslate"><span class="pre">initialLayout</span></code> 的布局 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 为 <code class="docutils literal notranslate"><span class="pre">VK_IMAGE_LAYOUT_UNDEFINED</span></code> 或 <code class="docutils literal notranslate"><span class="pre">VK_IMAGE_LAYOUT_PREINITIALIZED</span></code> 。但大多数情况下图片都没有预制的数据，所以在创建图片时 <code class="docutils literal notranslate"><span class="pre">initialLayout</span></code> 的布局一般都是 <code class="docutils literal notranslate"><span class="pre">VK_IMAGE_LAYOUT_UNDEFINED</span></code> 。</p>
+<p>当图片内的布局为 <code class="docutils literal notranslate"><span class="pre">VK_IMAGE_LAYOUT_UNDEFINED</span></code> 时表示内部的数据布局是未定义布局，这时 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 并不知道如何解析该图片，为了能让 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 识别出该资源，需要将布局从 <code class="docutils literal notranslate"><span class="pre">VK_IMAGE_LAYOUT_UNDEFINED</span></code> 转换至其他布局。是的布局可以转换。不同阶段转换成何时的布局会得到更加高效的性能表现。同样 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 也考虑到布局转来转去过于繁琐，所以
+提供了 <code class="docutils literal notranslate"><span class="pre">VK_IMAGE_LAYOUT_GENERAL</span></code> 通用布局，该布局是通用的，在任何阶段都可以使用，代价就是稍稍降低了一点点性能代价，但好处是不再需要管理负载的图片布局，而 <code class="docutils literal notranslate"><span class="pre">VK_IMAGE_LAYOUT_GENERAL</span></code> 布局也作为很多引擎的首选布局（因为真的很方便）。</p>
+</section>
+<section id="id25">
+<h4>VkImageCreateInfo 其他参数和综述<a class="headerlink" href="#id25" title="Link to this heading">#</a></h4>
 </section>
 </section>
 </section>
@@ -2119,7 +2233,13 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <li><a class="reference internal" href="#vkcreateimage">vkCreateImage</a></li>
 <li><a class="reference internal" href="#vkimagecreateinfo">VkImageCreateInfo</a></li>
 <li><a class="reference internal" href="#vkimagetype">VkImageType</a></li>
+<li><a class="reference internal" href="#vkformat">VkFormat</a></li>
 <li><a class="reference internal" href="#vkextent3d">VkExtent3D</a></li>
+<li><a class="reference internal" href="#vksamplecountflagbits">VkSampleCountFlagBits</a></li>
+<li><a class="reference internal" href="#vkimagetiling">VkImageTiling</a></li>
+<li><a class="reference internal" href="#vkimageusageflags">VkImageUsageFlags</a></li>
+<li><a class="reference internal" href="#vkimagelayout">VkImageLayout</a></li>
+<li><a class="reference internal" href="#id25">VkImageCreateInfo 其他参数和综述</a></li>
 </ul>
 </li>
 </ul>
@@ -2145,6 +2265,8 @@ Linux 获取</label><div class="sd-tab-content docutils">
     <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
     <script src="_static/translations.js?v=beaddf03"></script>
     <script src="_static/design-tabs.js?v=36754332"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="https://unpkg.com/mermaid@10.2.0/dist/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
     <script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>

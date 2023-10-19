@@ -100,6 +100,13 @@
    * 2023/10/18 增加 ``vkCreateImage`` 章节。
    * 2023/10/18 增加 ``VkImageCreateInfo`` 章节。
    * 2023/10/18 增加 ``VkImageType`` 章节。
+   * 2023/10/18 增加 ``VkExtent3D`` 章节。
+   * 2023/10/19 增加 ``VkSampleCountFlagBits`` 章节。
+   * 2023/10/19 增加 ``VkImageTiling`` 章节。
+   * 2023/10/19 增加 ``VkImageUsageFlags`` 章节。
+   * 2023/10/19 增加 ``VkFormat`` 章节。
+   * 2023/10/19 增加 ``VkImageLayout`` 章节。
+   * 2023/10/19 增加 ``VkImageCreateInfo 其他参数和综述`` 章节。
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -1923,6 +1930,26 @@ VkImageType
 * :bdg-secondary:`VK_IMAGE_TYPE_2D` 表示二维图片。
 * :bdg-secondary:`VK_IMAGE_TYPE_3D` 表示三维图片。
 
+VkFormat
+--------------------------------
+
+``VkFormat`` 即代表着每个像素的数据格式。在 ``Vulkan`` 中声明了大量的格式枚举，这里我们挑几个经典的进行讲解。
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef enum VkFormat {
+      VK_FORMAT_B8G8R8A8_UNORM = 44,
+      ...
+      VK_FORMAT_B8G8R8A8_SRGB = 50,
+      ...
+   } VkFormat;
+
+* :bdg-secondary:`VK_FORMAT_B8G8R8A8_UNORM` 表示有 ``BGRA`` 蓝、绿、红和透明四个分量，每个分量占 ``8`` 比特。 ``UNORM`` 表示无符号归一化（ ``unsigned normalized`` ），也就是颜色值的有限范围为 :math:`[0,1]` 。
+* :bdg-secondary:`VK_FORMAT_B8G8R8A8_SRGB` 表示有 ``BGRA`` 蓝、绿、红和透明四个分量，每个分量占 ``8`` 比特。 ``SRGB`` 表示使用 ``sRGB`` 标准红绿蓝协议（ ``standard Red Green Blue`` ） 。
+
+还有其他各种各样的格式，而最常用的也就是 ``RGBA`` 这样的红绿蓝和透明四个分量的组合格式。更多格式将会在单独章节进行讲解。
+
 其中 ``extent`` 的 ``VkExtent3D`` 类型定义如下：
 
 VkExtent3D
@@ -1946,6 +1973,119 @@ VkExtent3D
 * 当图片为 ``VK_IMAGE_TYPE_1D`` 时 ``extent.depth`` 和 ``extent.height`` 两者皆 :bdg-danger:`必须` 为 ``1`` 。
 * 当图片为 ``VK_IMAGE_TYPE_2D`` 时 ``extent.depth`` :bdg-danger:`必须` 为 ``1`` 。
 * 当图片为 ``VK_IMAGE_TYPE_3D`` 时 ``arrayLayers`` :bdg-danger:`必须` 为 ``1`` 。
+
+``VkSampleCountFlagBits`` 其定义如下：
+
+VkSampleCountFlagBits
+--------------------------------
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef enum VkSampleCountFlagBits {
+       VK_SAMPLE_COUNT_1_BIT = 0x00000001,
+       VK_SAMPLE_COUNT_2_BIT = 0x00000002,
+       VK_SAMPLE_COUNT_4_BIT = 0x00000004,
+       VK_SAMPLE_COUNT_8_BIT = 0x00000008,
+       VK_SAMPLE_COUNT_16_BIT = 0x00000010,
+       VK_SAMPLE_COUNT_32_BIT = 0x00000020,
+       VK_SAMPLE_COUNT_64_BIT = 0x00000040,
+   } VkSampleCountFlagBits;
+
+* :bdg-secondary:`VK_SAMPLE_COUNT_1_BIT` 图片的每个像素有 ``1`` 个采样点。
+* :bdg-secondary:`VK_SAMPLE_COUNT_2_BIT` 图片的每个像素有 ``2`` 个采样点。
+* :bdg-secondary:`VK_SAMPLE_COUNT_4_BIT` 图片的每个像素有 ``4`` 个采样点。
+* :bdg-secondary:`VK_SAMPLE_COUNT_8_BIT` 图片的每个像素有 ``8`` 个采样点。
+* :bdg-secondary:`VK_SAMPLE_COUNT_16_BIT` 图片的每个像素有 ``16`` 个采样点。
+* :bdg-secondary:`VK_SAMPLE_COUNT_32_BIT` 图片的每个像素有 ``32`` 个采样点。
+* :bdg-secondary:`VK_SAMPLE_COUNT_64_BIT` 图片的每个像素有 ``64`` 个采样点。
+
+该 ``VkImageCreateInfo::samples`` 是用于配置图片中的每一个像素由多少个子像素构成，这些子像素会在多采样阶段合并作为整个像素的结果。这在抗锯齿方面非常有用。
+
+``VkImageTiling`` 其定义如下：
+
+VkImageTiling
+--------------------------------
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef enum VkImageTiling {
+     VK_IMAGE_TILING_OPTIMAL = 0,
+     VK_IMAGE_TILING_LINEAR = 1,
+   } VkImageTiling;
+
+* :bdg-secondary:`VK_IMAGE_TILING_OPTIMAL` 图片的瓦片按照 ``GPU`` 本地优化方式排布。
+* :bdg-secondary:`VK_IMAGE_TILING_LINEAR` 图片的瓦片按照线性方式排布。
+
+资源在 ``Host`` 端和在 ``Device`` 端，其内部的内存结构是不一样的，这个我们反复强调过。 ``GPU`` 为了得到更高的性能将图片的多个像素合成一个瓦片并使用内部的一种高效结构，这也就是 ``VK_IMAGE_TILING_OPTIMAL`` 的目的，这种结构在 ``Host`` 端是不能被识别的，一般处于 ``Host`` 端的 ``CPU`` 擅长处理线性连续的资源数据，
+所以想要在 ``Host`` 端对 ``Device`` 端的资源进行读写，需要现将 ``Device`` 端的资源转成 ``Host`` 端能够识别的排布，这也就是 ``VK_IMAGE_TILING_LINEAR`` 的目的。
+
+VkImageUsageFlags
+--------------------------------
+
+与缓存类似，为了更高的性能，您需要指定图片的用途， ``Vulkan`` 中图片的用途如下：
+
+.. code::c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef enum VkImageUsageFlagBits {
+      VK_IMAGE_USAGE_TRANSFER_SRC_BIT = 0x00000001,
+      VK_IMAGE_USAGE_TRANSFER_DST_BIT = 0x00000002,
+      VK_IMAGE_USAGE_SAMPLED_BIT = 0x00000004,
+      VK_IMAGE_USAGE_STORAGE_BIT = 0x00000008,
+      VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT = 0x00000010,
+      VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT = 0x00000020,
+      VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT = 0x00000040,
+      VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT = 0x00000080,
+      ...
+   } VkImageUsageFlagBits;
+
+* :bdg-secondary:`VK_IMAGE_USAGE_TRANSFER_SRC_BIT` 将该图片作为数据传输的源。
+* :bdg-secondary:`VK_IMAGE_USAGE_TRANSFER_DST_BIT` 将该图片作为数据传输的目标。
+* :bdg-secondary:`VK_IMAGE_USAGE_SAMPLED_BIT` 将该图片作为可采样图片。
+* :bdg-secondary:`VK_IMAGE_USAGE_STORAGE_BIT` 将该图片作为可存储图片。
+* :bdg-secondary:`VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT` 将该图片作为颜色附件。
+* :bdg-secondary:`VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT` 将该图片作为深度-模板附件。
+* :bdg-secondary:`VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT` 将该图片作为暂存附件。
+* :bdg-secondary:`VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT` 将该图片作为输入附件。
+
+在这里我们仅关注 ``VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT`` 和 ``VK_IMAGE_USAGE_SAMPLED_BIT`` 。在渲染时，需要告诉 ``GPU`` 渲染到哪张图片上，此时作为渲染目标的图片需要使用 ``VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT`` 创建。其他的用途将会在单独章节中进行讲解。
+
+.. admonition:: VK_IMAGE_USAGE_TRANSFER_SRC_BIT 和 VK_IMAGE_USAGE_TRANSFER_DST_BIT
+   :class: note
+
+   这两种用途与缓存的 ``VK_BUFFER_USAGE_TRANSFER_SRC_BIT`` 和 ``VK_IMAGE_USAGE_TRANSFER_DST_BIT`` 相似。都是用资源间数据传输的。
+
+VkImageLayout
+--------------------------------
+
+为了进一步优化图片， ``Vulkan`` 中需要对图片进行布局设置，特定布局下的图片在特定用途下将会有更加优良的性能表现。 ``Vulkan`` 中同样提供的大量的图片布局枚举供我们使用，在这里也挑几个经典的进行讲解。
+
+.. code:: c++
+
+   // Provided by VK_VERSION_1_0
+   typedef enum VkImageLayout {
+      VK_IMAGE_LAYOUT_UNDEFINED = 0,
+      VK_IMAGE_LAYOUT_GENERAL = 1,
+      VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL = 2,
+      ...
+      VK_IMAGE_LAYOUT_PREINITIALIZED = 8,
+      ...
+   } VkImageLayout;
+
+* :bdg-secondary:`VK_IMAGE_LAYOUT_UNDEFINED` 表示未定义布局。
+* :bdg-secondary:`VK_IMAGE_LAYOUT_GENERAL` 表示通用布局。
+* :bdg-secondary:`VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL` 表示颜色附件布局。
+* :bdg-secondary:`VK_IMAGE_LAYOUT_PREINITIALIZED` 表示图片的内存中已经存有特定布局的数据。也就是图片已被提前初始化完成。该布局的目的是将 ``Host`` 端的数据写入图片中，并且目前该布局只能用于线性图片中（ ``VkImageTiling::VK_IMAGE_TILING_LINEAR`` ）。
+
+在通过 ``VkImageCreateInfo`` 创建图片时 ``Vulkan`` 要求 ``initialLayout`` 的布局 :bdg-danger:`必须` 为 ``VK_IMAGE_LAYOUT_UNDEFINED`` 或 ``VK_IMAGE_LAYOUT_PREINITIALIZED`` 。但大多数情况下图片都没有预制的数据，所以在创建图片时 ``initialLayout`` 的布局一般都是 ``VK_IMAGE_LAYOUT_UNDEFINED`` 。
+
+当图片内的布局为 ``VK_IMAGE_LAYOUT_UNDEFINED`` 时表示内部的数据布局是未定义布局，这时 ``GPU`` 并不知道如何解析该图片，为了能让 ``GPU`` 识别出该资源，需要将布局从 ``VK_IMAGE_LAYOUT_UNDEFINED`` 转换至其他布局。是的布局可以转换。不同阶段转换成何时的布局会得到更加高效的性能表现。同样 ``Vulkan`` 也考虑到布局转来转去过于繁琐，所以
+提供了 ``VK_IMAGE_LAYOUT_GENERAL`` 通用布局，该布局是通用的，在任何阶段都可以使用，代价就是稍稍降低了一点点性能代价，但好处是不再需要管理负载的图片布局，而 ``VK_IMAGE_LAYOUT_GENERAL`` 布局也作为很多引擎的首选布局（因为真的很方便）。
+
+VkImageCreateInfo 其他参数和综述
+--------------------------------------------
 
 ..
    内存
