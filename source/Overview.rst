@@ -107,6 +107,10 @@
    * 2023/10/19 增加 ``VkFormat`` 章节。
    * 2023/10/19 增加 ``VkImageLayout`` 章节。
    * 2023/10/19 增加 ``VkImageCreateInfo 其他参数和综述`` 章节。
+   * 2023/10/21 更新 ``VkImageLayout`` 章节。修正一些语句不通顺的地方。
+   * 2023/10/21 更新 ``VkImageUsageFlags`` 章节。
+   * 2023/10/21 更新 ``VkImageCreateInfo 其他参数和综述`` 章节。
+   * 2023/10/21 更新 ``综述`` 章节。
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -1813,6 +1817,7 @@ VkSharingMode
       Color color;
    };
 
+   // 组建一个三角形
    std::vector<PositionAndColor> position_and_colors;
    position_and_colors.push_back(PositionAndColor{{0.0f, -0.5f, 0.0f}, {1.f, 0.f, 0.f}});
    position_and_colors.push_back(PositionAndColor{{0.5f, 0.5f, 0.0f}, {0.f, 1.f, 0.f}});
@@ -2026,7 +2031,7 @@ VkImageUsageFlags
 
 与缓存类似，为了更高的性能，您需要指定图片的用途， ``Vulkan`` 中图片的用途如下：
 
-.. code::c++
+.. code:: c++
 
    // 由 VK_VERSION_1_0 提供
    typedef enum VkImageUsageFlagBits {
@@ -2050,7 +2055,10 @@ VkImageUsageFlags
 * :bdg-secondary:`VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT` 将该图片作为暂存附件。
 * :bdg-secondary:`VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT` 将该图片作为输入附件。
 
-在这里我们仅关注 ``VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT`` 和 ``VK_IMAGE_USAGE_SAMPLED_BIT`` 。在渲染时，需要告诉 ``GPU`` 渲染到哪张图片上，此时作为渲染目标的图片需要使用 ``VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT`` 创建。其他的用途将会在单独章节中进行讲解。
+在这里我们仅关注 ``VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT`` 和 ``VK_IMAGE_USAGE_SAMPLED_BIT`` 。
+
+* ``VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT`` 在渲染时，需要告诉 ``GPU`` 渲染到哪张图片上，此时作为渲染目标的图片需要使用 ``VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT`` 创建。其他的用途将会在单独章节中进行讲解。
+* ``VK_IMAGE_USAGE_SAMPLED_BIT`` 用于表示该图片将用于渲染时纹理采样。
 
 .. admonition:: VK_IMAGE_USAGE_TRANSFER_SRC_BIT 和 VK_IMAGE_USAGE_TRANSFER_DST_BIT
    :class: note
@@ -2077,16 +2085,89 @@ VkImageLayout
 * :bdg-secondary:`VK_IMAGE_LAYOUT_UNDEFINED` 表示未定义布局。
 * :bdg-secondary:`VK_IMAGE_LAYOUT_GENERAL` 表示通用布局。
 * :bdg-secondary:`VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL` 表示颜色附件布局。
-* :bdg-secondary:`VK_IMAGE_LAYOUT_PREINITIALIZED` 表示图片的内存中已经存有特定布局的数据。也就是图片已被提前初始化完成。该布局的目的是将 ``Host`` 端的数据写入图片中，并且目前该布局只能用于线性图片中（ ``VkImageTiling::VK_IMAGE_TILING_LINEAR`` ）。
+* :bdg-secondary:`VK_IMAGE_LAYOUT_PREINITIALIZED` 表示内存中已经存有特定布局的数据将用于图片。也就是图片已被提前初始化完成。该布局的目的是将 ``Host`` 端的数据写入图片中，并且目前该布局只能用于线性图片中（ ``VkImageTiling::VK_IMAGE_TILING_LINEAR`` ）。
 
 在通过 ``VkImageCreateInfo`` 创建图片时 ``Vulkan`` 要求 ``initialLayout`` 的布局 :bdg-danger:`必须` 为 ``VK_IMAGE_LAYOUT_UNDEFINED`` 或 ``VK_IMAGE_LAYOUT_PREINITIALIZED`` 。但大多数情况下图片都没有预制的数据，所以在创建图片时 ``initialLayout`` 的布局一般都是 ``VK_IMAGE_LAYOUT_UNDEFINED`` 。
 
-当图片内的布局为 ``VK_IMAGE_LAYOUT_UNDEFINED`` 时表示内部的数据布局是未定义布局，这时 ``GPU`` 并不知道如何解析该图片，为了能让 ``GPU`` 识别出该资源，需要将布局从 ``VK_IMAGE_LAYOUT_UNDEFINED`` 转换至其他布局。是的布局可以转换。不同阶段转换成何时的布局会得到更加高效的性能表现。同样 ``Vulkan`` 也考虑到布局转来转去过于繁琐，所以
-提供了 ``VK_IMAGE_LAYOUT_GENERAL`` 通用布局，该布局是通用的，在任何阶段都可以使用，代价就是稍稍降低了一点点性能代价，但好处是不再需要管理负载的图片布局，而 ``VK_IMAGE_LAYOUT_GENERAL`` 布局也作为很多引擎的首选布局（因为真的很方便）。
+当图片内的布局为 ``VK_IMAGE_LAYOUT_UNDEFINED`` 时表示内部的数据布局是未定义的，这时 ``GPU`` 并不知道如何解析该图片，为了能让 ``GPU`` 识别出该资源，需要将布局从 ``VK_IMAGE_LAYOUT_UNDEFINED`` 转换至其他布局。是的，布局可以转换。不同阶段转换成对应阶段的特定布局会得到更加高效的性能表现（比如在渲染结果输出阶段将图片的布局转换成 ``VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL`` ）。同样 ``Vulkan`` 也考虑到布局转来转去过于繁琐，所以
+提供了 ``VK_IMAGE_LAYOUT_GENERAL`` 通用布局，该布局是通用的，在任何阶段都可以使用，代价就是稍稍降低了一点点性能，但好处是不再需要管理图片的布局，而 ``VK_IMAGE_LAYOUT_GENERAL`` 布局也作为很多引擎的首选布局（因为真的很方便）。
 
 VkImageCreateInfo 其他参数和综述
 --------------------------------------------
 
+* :bdg-secondary:`VkImageCreateInfo::mipLevels` 用于图片的多级渐远级别。对于多级渐远将会在专门的章节中讲解。
+* :bdg-secondary:`VkImageCreateInfo::arrayLayers` 用于配置图片的层级。一般在创建 ``CubeMap`` （天空盒）时与 ``VkImageCreateInfo::flags`` 配合使用。这一部分将会在专门的章节中讲解。
+
+而对于如下参数则与 ``VkBufferCreateInfo`` 中的概念相同。
+
+* :bdg-secondary:`VkImageCreateInfo::sharingMode` 
+* :bdg-secondary:`VkImageCreateInfo::queueFamilyIndexCount` 
+* :bdg-secondary:`VkImageCreateInfo::pQueueFamilyIndices` 
+
+这些参数都是用于配置该资源在哪些队列中进行数据共享。
+
+综述
+^^^^^^^^^^^^^^^^^^^^
+
+对于 ``Vulkan`` 中的 ``VkImage`` 图片资源有如下特点：
+
+* 所有图片都是以三维图片进行表示的（一维、二维图片只是相应的扩展维度度量缩减到了 ``1`` ）。并使用 ``VkImageCreateInfo::extent`` 配置每个维度的像素数量。
+* ``VkImageCreateInfo::format`` 用于表示图片的单个像素的数据格式。
+* 每个像素中都有逻辑子像素，类似于将一个像素按照九宫格的方式进行分割，具体分成几宫格是使用 ``VkImageCreateInfo::samples`` 进行配置的。如果配置为 ``VkImageUsageFlagBits::VK_SAMPLE_COUNT_1_BIT`` 则表示当前像素即为最终像素。其它的配置都会将一个像素分割成多个小像素，并在渲染的多采样阶段将多个小像素的值合并，并做为最终像素值保存。
+* 图片在 ``Host`` 端和 ``Device`` 端的排布不同。具体何种排布使用 ``VkImageCreateInfo::tiling`` 进行配置。
+* 图片具有布局属性。通过特定阶段将图片转换成特定布局将会提升性能表现。
+
+现在来尝试创建一个图片，该图片具有如下特点：
+
+* 该图片为二维图片。:code:`VkImageCreateInfo::imageType = VkImageType::VK_IMAGE_TYPE_2D`
+* 每个像素都有 ``RGBA`` 四个分量，每个分量 ``8`` 比特，并使用 ``sRGB`` 标准。:code:`VkImageCreateInfo::format = VkFormat::VK_FORMAT_B8G8R8A8_SRGB`
+* 图片大小为 :math:`1920 \times 1080` 。:code:`VkImageCreateInfo::extent = VkExtent3D{width = 1920, height = 1080, depth = 1}`
+* 该图片将在 ``GPU`` 中作为颜色附件使用。 :code:`VkImageCreateInfo::usage = VkImageUsageFlagBits::VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT`
+* 没有多级渐远。 :code:`VkImageCreateInfo::mipLevels = 1`
+* 没有子像素。 :code:`VkImageCreateInfo::samples = VkSampleCountFlagBits::VK_SAMPLE_COUNT_1_BIT`
+* 仅在 ``GPU`` 中访问。 :code:`VkImageCreateInfo::tiling = VkImageTiling::VK_IMAGE_TILING_OPTIMAL`
+
+在调用 ``vkCreateImage`` 前首先获取该函数的驱动实现：
+
+.. code:: c++
+
+   VkDevice device = 之前成功创建的逻辑设备句柄;
+
+   PFN_vkCreateImage vkCreateImage = (PFN_vkCreateImage)vkGetDeviceProcAddr(device, "vkCreateImage");
+
+之后就可以调用 ``vkCreateImage`` 创建图片了：
+
+.. code:: c++
+
+   VkDevice device = 之前成功创建的逻辑设备;
+   
+   VkExtent3D extent = {};
+   extent.width = 1920;
+   extent.height = 1080;
+   extent.depth = 1;
+
+   VkImageCreateInfo  image_create_info = {};
+   image_create_info.sType = VkStructureType::VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+   image_create_info.pNext = nullptr;
+   image_create_info.flags = 0;
+   image_create_info.imageType = VkImageType::VK_IMAGE_TYPE_2D;
+   image_create_info.format = VkFormat::VK_FORMAT_B8G8R8A8_SRGB;
+   image_create_info.extent = extent;
+   image_create_info.mipLevels = 1;
+   image_create_info.arrayLayers = 1;
+   image_create_info.samples = VkSampleCountFlagBits::VK_SAMPLE_COUNT_1_BIT;
+   image_create_info.tiling = VkImageTiling::VK_IMAGE_TILING_OPTIMAL;
+   image_create_info.usage = VkImageUsageFlagBits::VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+   image_create_info.sharingMode = VkSharingMode::VK_SHARING_MODE_EXCLUSIVE;
+   image_create_info.queueFamilyIndexCount = 0;
+   image_create_info.pQueueFamilyIndices = nullptr;
+   image_create_info.initialLayout = VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED ;
+
+   VkImage image = VK_NULL_HANDLE;
+   
+   VkResult result = vkCreateImage(device, &image_create_info, nullptr, &image);
+
+   assert(result == VkResult::VK_SUCCESS) //是否创建成功
 ..
    内存
 
