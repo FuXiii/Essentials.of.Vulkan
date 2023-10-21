@@ -13,6 +13,7 @@
     * 2023/10/21 增加 ``着色器`` 章节
     * 2023/10/21 增加 ``片元着色器相关配置`` 章节
     * 2023/10/21 增加 ``片元着色器`` 章节
+    * 2023/10/21 增加 ``激活扩展`` 章节
 
 `文献源`_
 
@@ -66,6 +67,16 @@ hello_vulkan (源文件)
 ************************
 
 您可以直接移除所有名为 ``raytrace.*`` 的着色器。
+
+激活扩展
+####################
+
+在激活加速结构扩展后面增加对于 ``VK_KHR_ray_query`` 扩展的激活：
+
+.. code:: c++
+
+    VkPhysicalDeviceRayQueryFeaturesKHR rayQueryFeatures{VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_QUERY_FEATURES_KHR};
+    contextInfo.addDeviceExtension(VK_KHR_RAY_QUERY_EXTENSION_NAME, false, &rayQueryFeatures);
 
 片元着色器相关配置
 ####################
