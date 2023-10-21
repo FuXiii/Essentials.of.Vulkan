@@ -279,13 +279,14 @@
 <li><p class="sd-card-text">2023/10/21 增加 <code class="docutils literal notranslate"><span class="pre">着色器</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/10/21 增加 <code class="docutils literal notranslate"><span class="pre">片元着色器相关配置</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/10/21 增加 <code class="docutils literal notranslate"><span class="pre">片元着色器</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/10/21 增加 <code class="docutils literal notranslate"><span class="pre">激活扩展</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p><a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing_rayquery">文献源</a></p>
-<figure class="align-default" id="id10">
+<figure class="align-default" id="id11">
 <img alt="../../../_images/rayquery.png" src="../../../_images/rayquery.png" />
 <figcaption>
-<p><span class="caption-text">光线查询结果示意图</span><a class="headerlink" href="#id10" title="Link to this image">#</a></p>
+<p><span class="caption-text">光线查询结果示意图</span><a class="headerlink" href="#id11" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <section id="id4">
@@ -322,7 +323,15 @@
 </section>
 </section>
 <section id="id8">
-<h2>片元着色器相关配置<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<h2>激活扩展<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<p>在激活加速结构扩展后面增加对于 <code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_query</span></code> 扩展的激活：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkPhysicalDeviceRayQueryFeaturesKHR</span><span class="w"> </span><span class="n">rayQueryFeatures</span><span class="p">{</span><span class="n">VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_QUERY_FEATURES_KHR</span><span class="p">};</span>
+<span class="n">contextInfo</span><span class="p">.</span><span class="n">addDeviceExtension</span><span class="p">(</span><span class="n">VK_KHR_RAY_QUERY_EXTENSION_NAME</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">rayQueryFeatures</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="id9">
+<h2>片元着色器相关配置<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
 <p>在 <code class="docutils literal notranslate"><span class="pre">HelloVulkan::createDescriptorSetLayout</span></code> 中增加在加速结构描述符中增加片元着色器的访问配置。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 顶层加速结构</span>
 <span class="n">m_descSetLayoutBind</span><span class="p">.</span><span class="n">addBinding</span><span class="p">(</span><span class="n">eTlas</span><span class="p">,</span><span class="w"> </span><span class="n">VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_FRAGMENT_BIT</span><span class="p">);</span>
@@ -343,8 +352,8 @@
 <span class="n">writes</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">m_descSetLayoutBind</span><span class="p">.</span><span class="n">makeWrite</span><span class="p">(</span><span class="n">m_descSet</span><span class="p">,</span><span class="w"> </span><span class="n">eTlas</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">descASInfo</span><span class="p">));</span>
 </pre></div>
 </div>
-<section id="id9">
-<h3>片元着色器<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
+<section id="id10">
+<h3>片元着色器<a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
 <p>最后需要修改片元着色器，我们将增加光线与加速结构的相交查询用于追踪生成阴影的光线。</p>
 <p>首先。着色器的版本需要升级到 <code class="docutils literal notranslate"><span class="pre">460</span></code> ：</p>
 <div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="cp">#version 460</span>
@@ -469,8 +478,9 @@
 <li><a class="reference internal" href="#id7">着色器</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id8">片元着色器相关配置</a><ul>
-<li><a class="reference internal" href="#id9">片元着色器</a></li>
+<li><a class="reference internal" href="#id8">激活扩展</a></li>
+<li><a class="reference internal" href="#id9">片元着色器相关配置</a><ul>
+<li><a class="reference internal" href="#id10">片元着色器</a></li>
 </ul>
 </li>
 </ul>
