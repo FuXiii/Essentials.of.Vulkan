@@ -381,6 +381,7 @@
 <li><p class="sd-card-text">2023/10/22 增加 <code class="docutils literal notranslate"><span class="pre">vkGetBufferMemoryRequirements</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2023/10/22 增加 <code class="docutils literal notranslate"><span class="pre">vkGetImageMemoryRequirements</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2023/10/22 增加 <code class="docutils literal notranslate"><span class="pre">VkMemoryRequirements</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2023/10/22 增加 <code class="docutils literal notranslate"><span class="pre">memoryTypeBits</span></code> 章节。</p></li>
 </ul>
 </div>
 </details><p>由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 比较复杂，为了更好的入门 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> ，还是大致过一遍 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的核心思路，这对以后的学习很有帮助。</p>
@@ -2216,6 +2217,8 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <p>当创建内存时需要指定内存分配的大小，也就是 <code class="docutils literal notranslate"><span class="pre">VkMemoryAllocateInfo::allocationSize</span></code> ，该大小应不小于 <code class="docutils literal notranslate"><span class="pre">VkMemoryRequirements::size</span></code> 大小。</p>
 <p>对于 <code class="docutils literal notranslate"><span class="pre">VkMemoryRequirements::alignment</span></code> 内存对齐不是 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准的重点，但考虑到完整性将会在专门的章节中进行讲解。这里简单说明一下。在芯片中对于内存的访问并不是一个比特一个比特访问的，而是为了提高效率将多个比特为一组， 芯片一组一组的进行读取的，所以数据需要写到各组的正确位置，这样芯片一组组读取就能够获得正确的内容了，而一组的比特数量一般为内存对齐大小的整数倍。</p>
 <p>而此时我们需要重点关注一下 <code class="docutils literal notranslate"><span class="pre">VkMemoryRequirements::memoryTypeBits</span></code> 所表述的意义：</p>
+<section id="memorytypebits">
+<h4>memoryTypeBits<a class="headerlink" href="#memorytypebits" title="Link to this heading">#</a></h4>
 <p>通过 <a class="reference internal" href="#memory"><span class="std std-ref">内存</span></a> 章节我们知道一台 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 上存在有多个 <code class="docutils literal notranslate"><span class="pre">VkMemoryType</span></code> （ <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties::memoryTypes[VK_MAX_MEMORY_TYPES]</span></code> ），并且每个 <code class="docutils literal notranslate"><span class="pre">VkMemoryType</span></code> 都有对应的的内存堆。这样一台 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 上就存在有多个内存堆。可能其中某几个内存堆都支持分配该资源的内存，此时需要告知我们都有哪些堆支持分配该资源内存，而堆与 <code class="docutils literal notranslate"><span class="pre">VkMemoryType</span></code> 对应，所以 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 应该
 告诉我们都有哪些 <code class="docutils literal notranslate"><span class="pre">VkMemoryType</span></code> 支持该资源的内存分配。这应该返回一个数组才对，而 <code class="docutils literal notranslate"><span class="pre">VkMemoryRequirements::memoryTypeBits</span></code> 类型为 <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code> 为一个正整数，而不是一个数组，为什么会这样？</p>
 <div class="note admonition">
@@ -2235,6 +2238,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </ul>
 <p>就这样通过一个 <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code> 就存储了一个“数组” ，而 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties::memoryTypes</span></code> 数组的最大长度为 <code class="docutils literal notranslate"><span class="pre">VK_MAX_MEMORY_TYPES</span></code> 即 <code class="docutils literal notranslate"><span class="pre">32</span></code> ，这样一个 <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code> 有 <code class="docutils literal notranslate"><span class="pre">32</span></code> 位就可以囊括整个数组长度 。这种数据存储方式一般叫按位存储或标志位等。</p>
 <p>如此我们就知道资源的内存应该分配在哪一个内存类型上了。进而就知道在哪个内存堆上进行的内存分配。</p>
+</section>
 </section>
 </section>
 </section>
@@ -2427,7 +2431,10 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <li><a class="reference internal" href="#id27">资源与内存</a><ul>
 <li><a class="reference internal" href="#vkgetbuffermemoryrequirements">vkGetBufferMemoryRequirements</a></li>
 <li><a class="reference internal" href="#vkgetimagememoryrequirements">vkGetImageMemoryRequirements</a></li>
-<li><a class="reference internal" href="#vkmemoryrequirements">VkMemoryRequirements</a></li>
+<li><a class="reference internal" href="#vkmemoryrequirements">VkMemoryRequirements</a><ul>
+<li><a class="reference internal" href="#memorytypebits">memoryTypeBits</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
