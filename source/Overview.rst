@@ -115,6 +115,7 @@
    * 2023/10/22 增加 ``vkGetBufferMemoryRequirements`` 章节。
    * 2023/10/22 增加 ``vkGetImageMemoryRequirements`` 章节。
    * 2023/10/22 增加 ``VkMemoryRequirements`` 章节。
+   * 2023/10/22 增加 ``memoryTypeBits`` 章节。
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -2240,6 +2241,9 @@ VkMemoryRequirements
 对于 ``VkMemoryRequirements::alignment`` 内存对齐不是 ``Vulkan`` 标准的重点，但考虑到完整性将会在专门的章节中进行讲解。这里简单说明一下。在芯片中对于内存的访问并不是一个比特一个比特访问的，而是为了提高效率将多个比特为一组， 芯片一组一组的进行读取的，所以数据需要写到各组的正确位置，这样芯片一组组读取就能够获得正确的内容了，而一组的比特数量一般为内存对齐大小的整数倍。
 
 而此时我们需要重点关注一下 ``VkMemoryRequirements::memoryTypeBits`` 所表述的意义：
+
+memoryTypeBits
+--------------------
 
 通过 :ref:`Memory` 章节我们知道一台 ``GPU`` 上存在有多个 ``VkMemoryType`` （ ``VkPhysicalDeviceMemoryProperties::memoryTypes[VK_MAX_MEMORY_TYPES]`` ），并且每个 ``VkMemoryType`` 都有对应的的内存堆。这样一台 ``GPU`` 上就存在有多个内存堆。可能其中某几个内存堆都支持分配该资源的内存，此时需要告知我们都有哪些堆支持分配该资源内存，而堆与 ``VkMemoryType`` 对应，所以 ``Vulkan`` 应该
 告诉我们都有哪些 ``VkMemoryType`` 支持该资源的内存分配。这应该返回一个数组才对，而 ``VkMemoryRequirements::memoryTypeBits`` 类型为 ``uint32_t`` 为一个正整数，而不是一个数组，为什么会这样？
