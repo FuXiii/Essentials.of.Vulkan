@@ -377,6 +377,10 @@
 <li><p class="sd-card-text">2023/10/21 更新 <code class="docutils literal notranslate"><span class="pre">VkImageUsageFlags</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2023/10/21 更新 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo</span> <span class="pre">其他参数和综述</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2023/10/21 更新 <code class="docutils literal notranslate"><span class="pre">综述</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2023/10/22 增加 <code class="docutils literal notranslate"><span class="pre">资源与内存</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2023/10/22 增加 <code class="docutils literal notranslate"><span class="pre">vkGetBufferMemoryRequirements</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2023/10/22 增加 <code class="docutils literal notranslate"><span class="pre">vkGetImageMemoryRequirements</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2023/10/22 增加 <code class="docutils literal notranslate"><span class="pre">VkMemoryRequirements</span></code> 章节。</p></li>
 </ul>
 </div>
 </details><p>由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 比较复杂，为了更好的入门 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> ，还是大致过一遍 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的核心思路，这对以后的学习很有帮助。</p>
@@ -1021,9 +1025,9 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <div class="note admonition">
 <p class="admonition-title">队列族</p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中设备队列是按照 <code class="docutils literal notranslate"><span class="pre">族</span></code> 进行管理的，前面我们知道一个物理设备上的可能会有多个设备队列支持相同的功能域，这些支持相同功能域的设备队列算作同一族。</p>
-<figure class="align-default" id="id27">
+<figure class="align-default" id="id28">
 <img alt="_images/vk_queue_family_struct.svg" src="_images/vk_queue_family_struct.svg" /><figcaption>
-<p><span class="caption-text">如上图中。队列0、1、2三个队列属于队列族A，则这三个队列支持计算、图形和转移功能。队列3属于队列族B，则该队列支持计算和转移功能。</span><a class="headerlink" href="#id27" title="Link to this image">#</a></p>
+<p><span class="caption-text">如上图中。队列0、1、2三个队列属于队列族A，则这三个队列支持计算、图形和转移功能。队列3属于队列族B，则该队列支持计算和转移功能。</span><a class="headerlink" href="#id28" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 </div>
@@ -1345,8 +1349,8 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </div>
 </section>
 </section>
-<section id="id15">
-<h2>内存<a class="headerlink" href="#id15" title="Link to this heading">#</a></h2>
+<section id="memory">
+<span id="id15"></span><h2>内存<a class="headerlink" href="#memory" title="Link to this heading">#</a></h2>
 <section id="id16">
 <h3>内存分类<a class="headerlink" href="#id16" title="Link to this heading">#</a></h3>
 <p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中函数主要分为两类：</p>
@@ -1528,9 +1532,9 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <section id="id18">
 <h4>VkPhysicalDeviceMemoryProperties 结构图<a class="headerlink" href="#id18" title="Link to this heading">#</a></h4>
 <p>为了更清晰的理解 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties</span></code> ，在此给出一张 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties</span></code> 结构参考图：</p>
-<figure class="align-default" id="id28">
+<figure class="align-default" id="id29">
 <img alt="_images/VkPhysicalDeviceMemoryProperties_struct.svg" src="_images/VkPhysicalDeviceMemoryProperties_struct.svg" /><figcaption>
-<p><span class="caption-text">如图所示为一种可能的结构。第一种内存类型对应着第三个内存堆，第二种内存类型对应着第一个内存堆，第三种内存类型对应着第二个内存堆。</span><a class="headerlink" href="#id28" title="Link to this image">#</a></p>
+<p><span class="caption-text">如图所示为一种可能的结构。第一种内存类型对应着第三个内存堆，第二种内存类型对应着第一个内存堆，第三种内存类型对应着第二个内存堆。</span><a class="headerlink" href="#id29" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <p>接下来就能够通过 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties</span></code> 获取内存信息了，和之前很多函数一样，首先获取 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties</span></code> 函数实现：</p>
@@ -2058,7 +2062,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <section id="vkimagelayout">
 <h4>VkImageLayout<a class="headerlink" href="#vkimagelayout" title="Link to this heading">#</a></h4>
 <p>为了进一步优化图片， <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中需要对图片进行布局设置，特定布局下的图片在特定用途下将会有更加优良的性能表现。 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中同样提供的大量的图片布局枚举供我们使用，在这里也挑几个经典的进行讲解。</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// Provided by VK_VERSION_1_0</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkImageLayout</span><span class="w"> </span><span class="p">{</span>
 <span class="w">   </span><span class="n">VK_IMAGE_LAYOUT_UNDEFINED</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
 <span class="w">   </span><span class="n">VK_IMAGE_LAYOUT_GENERAL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
@@ -2152,6 +2156,85 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </div>
 </section>
 </section>
+</section>
+</section>
+<section id="id27">
+<h2>资源与内存<a class="headerlink" href="#id27" title="Link to this heading">#</a></h2>
+<p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中创建一个资源（ <code class="docutils literal notranslate"><span class="pre">VkImage</span></code> 或 <code class="docutils literal notranslate"><span class="pre">VkBuffer</span></code> ）仅仅表示一个资源符号，其内部仅有对于该资源的描述，没有确切的内存空间。所以在创建资源之后需要绑定一个内存，这样就给了该资源完整的一生。 <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">✧(๑≖ ◡ ≖๑)</span></p>
+<p>在创建完资源后，需要绑定内存，这就需要创建内存，创建内存需要设置 <code class="docutils literal notranslate"><span class="pre">VkMemoryAllocateInfo::allocationSize</span></code> 内存分配的大小。但是此时该资源需要多大的内存呢？ <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 为我们提供了两个函数来获取相应资源需要的内存信息：</p>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">vkGetBufferMemoryRequirements(…)</span> 获取缓存资源需要的内存信息</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">vkGetImageMemoryRequirements(…)</span> 获取图片资源需要的内存信息</p></li>
+</ul>
+<p>这两个函数的定义如下：</p>
+<section id="vkgetbuffermemoryrequirements">
+<h3>vkGetBufferMemoryRequirements<a class="headerlink" href="#vkgetbuffermemoryrequirements" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">vkGetBufferMemoryRequirements</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkBuffer</span><span class="w">                                    </span><span class="n">buffer</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkMemoryRequirements</span><span class="o">*</span><span class="w">                       </span><span class="n">pMemoryRequirements</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">device</span> 对应的 <code class="docutils literal notranslate"><span class="pre">VkDevice</span></code> 逻辑设备句柄。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">buffer</span> 要获取内存信息的目标缓存资源句柄。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pMemoryRequirements</span> 获取的内存结果信息。</p></li>
+</ul>
+</section>
+<section id="vkgetimagememoryrequirements">
+<h3>vkGetImageMemoryRequirements<a class="headerlink" href="#vkgetimagememoryrequirements" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">vkGetImageMemoryRequirements</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkImage</span><span class="w">                                     </span><span class="n">image</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkMemoryRequirements</span><span class="o">*</span><span class="w">                       </span><span class="n">pMemoryRequirements</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">device</span> 对应的 <code class="docutils literal notranslate"><span class="pre">VkDevice</span></code> 逻辑设备句柄。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">image</span> 要获取内存信息的目标图片资源句柄。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pMemoryRequirements</span> 写入需要的内存结果信息。</p></li>
+</ul>
+<p>其中的 <code class="docutils literal notranslate"><span class="pre">VkMemoryRequirements</span></code> 定义如下：</p>
+</section>
+<section id="vkmemoryrequirements">
+<h3>VkMemoryRequirements<a class="headerlink" href="#vkmemoryrequirements" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkMemoryRequirements</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VkDeviceSize</span><span class="w">    </span><span class="n">size</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkDeviceSize</span><span class="w">    </span><span class="n">alignment</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">        </span><span class="n">memoryTypeBits</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkMemoryRequirements</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">size</span> 资源需要的内存大小。单位为字节。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">alignment</span> 内存对齐的大小。单位为字节。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">memoryTypeBits</span> 支持的内存类型标志位所对应的的索引值。</p></li>
+</ul>
+<p>当创建内存时需要指定内存分配的大小，也就是 <code class="docutils literal notranslate"><span class="pre">VkMemoryAllocateInfo::allocationSize</span></code> ，该大小应不小于 <code class="docutils literal notranslate"><span class="pre">VkMemoryRequirements::size</span></code> 大小。</p>
+<p>对于 <code class="docutils literal notranslate"><span class="pre">VkMemoryRequirements::alignment</span></code> 内存对齐不是 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准的重点，但考虑到完整性将会在专门的章节中进行讲解。这里简单说明一下。在芯片中对于内存的访问并不是一个比特一个比特访问的，而是为了提高效率将多个比特为一组， 芯片一组一组的进行读取的，所以数据需要写到各组的正确位置，这样芯片一组组读取就能够获得正确的内容了，而一组的比特数量一般为内存对齐大小的整数倍。</p>
+<p>而此时我们需要重点关注一下 <code class="docutils literal notranslate"><span class="pre">VkMemoryRequirements::memoryTypeBits</span></code> 所表述的意义：</p>
+<p>通过 <a class="reference internal" href="#memory"><span class="std std-ref">内存</span></a> 章节我们知道一台 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 上存在有多个 <code class="docutils literal notranslate"><span class="pre">VkMemoryType</span></code> （ <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties::memoryTypes[VK_MAX_MEMORY_TYPES]</span></code> ），并且每个 <code class="docutils literal notranslate"><span class="pre">VkMemoryType</span></code> 都有对应的的内存堆。这样一台 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 上就存在有多个内存堆。可能其中某几个内存堆都支持分配该资源的内存，此时需要告知我们都有哪些堆支持分配该资源内存，而堆与 <code class="docutils literal notranslate"><span class="pre">VkMemoryType</span></code> 对应，所以 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 应该
+告诉我们都有哪些 <code class="docutils literal notranslate"><span class="pre">VkMemoryType</span></code> 支持该资源的内存分配。这应该返回一个数组才对，而 <code class="docutils literal notranslate"><span class="pre">VkMemoryRequirements::memoryTypeBits</span></code> 类型为 <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code> 为一个正整数，而不是一个数组，为什么会这样？</p>
+<div class="note admonition">
+<p class="admonition-title">VK_MAX_MEMORY_TYPES</p>
+<p><code class="docutils literal notranslate"><span class="pre">VK_MAX_MEMORY_TYPES</span></code> 的值为 <code class="docutils literal notranslate"><span class="pre">32</span></code>。 定义如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#define VK_MAX_MEMORY_TYPES 32U</span>
+</pre></div>
+</div>
+</div>
+<p>这是通过 <code class="docutils literal notranslate"><span class="pre">VkMemoryRequirements::memoryTypeBits</span></code> 的标志位进行“数组”表示的。 <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code> 由 <code class="docutils literal notranslate"><span class="pre">32</span></code> 位比特组成，如果某一位的比特值为 <code class="docutils literal notranslate"><span class="pre">1</span></code> 则相应位数作为支持的 <code class="docutils literal notranslate"><span class="pre">VkMemoryType</span></code> 数组索引。比如：</p>
+<p><code class="docutils literal notranslate"><span class="pre">VkMemoryRequirements::memoryTypeBits</span></code> 为 <code class="docutils literal notranslate"><span class="pre">113</span></code> 的话其对应的二进制为 <code class="docutils literal notranslate"><span class="pre">0000</span> <span class="pre">0000</span> <span class="pre">0000</span> <span class="pre">0000</span> <span class="pre">0000</span> <span class="pre">0000</span> <span class="pre">0100</span> <span class="pre">1011</span></code> 则表示：</p>
+<ul class="simple">
+<li><p>第 <code class="docutils literal notranslate"><span class="pre">0</span></code> 位的比特为 <code class="docutils literal notranslate"><span class="pre">1</span></code> : <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties::memoryTypes[0]</span></code> 类型内存支持分配该资源。</p></li>
+<li><p>第 <code class="docutils literal notranslate"><span class="pre">1</span></code> 位的比特为 <code class="docutils literal notranslate"><span class="pre">1</span></code> : <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties::memoryTypes[1]</span></code> 类型内存支持分配该资源。</p></li>
+<li><p>第 <code class="docutils literal notranslate"><span class="pre">3</span></code> 位的比特为 <code class="docutils literal notranslate"><span class="pre">1</span></code> : <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties::memoryTypes[3]</span></code> 类型内存支持分配该资源。</p></li>
+<li><p>第 <code class="docutils literal notranslate"><span class="pre">6</span></code> 位的比特为 <code class="docutils literal notranslate"><span class="pre">1</span></code> : <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties::memoryTypes[6]</span></code> 类型内存支持分配该资源。</p></li>
+</ul>
+<p>就这样通过一个 <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code> 就存储了一个“数组” ，而 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties::memoryTypes</span></code> 数组的最大长度为 <code class="docutils literal notranslate"><span class="pre">VK_MAX_MEMORY_TYPES</span></code> 即 <code class="docutils literal notranslate"><span class="pre">32</span></code> ，这样一个 <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code> 有 <code class="docutils literal notranslate"><span class="pre">32</span></code> 位就可以囊括整个数组长度 。这种数据存储方式一般叫按位存储或标志位等。</p>
+<p>如此我们就知道资源的内存应该分配在哪一个内存类型上了。进而就知道在哪个内存堆上进行的内存分配。</p>
 </section>
 </section>
 </section>
@@ -2289,7 +2372,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <li><a class="reference internal" href="#vkgetdevicequeue">vkGetDeviceQueue</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id15">内存</a><ul>
+<li><a class="reference internal" href="#memory">内存</a><ul>
 <li><a class="reference internal" href="#id16">内存分类</a></li>
 <li><a class="reference internal" href="#id17">获取 Vulkan 支持的内存信息</a><ul>
 <li><a class="reference internal" href="#vkgetphysicaldevicememoryproperties">vkGetPhysicalDeviceMemoryProperties</a></li>
@@ -2339,6 +2422,12 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </li>
 </ul>
 </li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id27">资源与内存</a><ul>
+<li><a class="reference internal" href="#vkgetbuffermemoryrequirements">vkGetBufferMemoryRequirements</a></li>
+<li><a class="reference internal" href="#vkgetimagememoryrequirements">vkGetImageMemoryRequirements</a></li>
+<li><a class="reference internal" href="#vkmemoryrequirements">VkMemoryRequirements</a></li>
 </ul>
 </li>
 </ul>
