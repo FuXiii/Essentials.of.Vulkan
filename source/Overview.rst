@@ -111,6 +111,10 @@
    * 2023/10/21 更新 ``VkImageUsageFlags`` 章节。
    * 2023/10/21 更新 ``VkImageCreateInfo 其他参数和综述`` 章节。
    * 2023/10/21 更新 ``综述`` 章节。
+   * 2023/10/22 增加 ``资源与内存`` 章节。
+   * 2023/10/22 增加 ``vkGetBufferMemoryRequirements`` 章节。
+   * 2023/10/22 增加 ``vkGetImageMemoryRequirements`` 章节。
+   * 2023/10/22 增加 ``VkMemoryRequirements`` 章节。
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -1223,6 +1227,8 @@ vkGetDeviceQueue
    * ``queueFamilyIndex`` 为之前获取的 ``support_graphics_queue_family_index``
    * ``queueIndex`` 为 ``0``
 
+.. _Memory:
+
 内存
 ############################
 
@@ -2072,7 +2078,7 @@ VkImageLayout
 
 .. code:: c++
 
-   // Provided by VK_VERSION_1_0
+   // 由 VK_VERSION_1_0 提供
    typedef enum VkImageLayout {
       VK_IMAGE_LAYOUT_UNDEFINED = 0,
       VK_IMAGE_LAYOUT_GENERAL = 1,
@@ -2168,6 +2174,98 @@ VkImageCreateInfo 其他参数和综述
    VkResult result = vkCreateImage(device, &image_create_info, nullptr, &image);
 
    assert(result == VkResult::VK_SUCCESS) //是否创建成功
+
+资源与内存
+############################
+
+在 ``Vulkan`` 中创建一个资源（ ``VkImage`` 或 ``VkBuffer`` ）仅仅表示一个资源符号，其内部仅有对于该资源的描述，没有确切的内存空间。所以在创建资源之后需要绑定一个内存，这样就给了该资源完整的一生。 :bdg-primary:`✧(๑≖ ◡ ≖๑)` 
+
+在创建完资源后，需要绑定内存，这就需要创建内存，创建内存需要设置 ``VkMemoryAllocateInfo::allocationSize`` 内存分配的大小。但是此时该资源需要多大的内存呢？ ``Vulkan`` 为我们提供了两个函数来获取相应资源需要的内存信息：
+
+* :bdg-secondary:`vkGetBufferMemoryRequirements(...)` 获取缓存资源需要的内存信息
+* :bdg-secondary:`vkGetImageMemoryRequirements(...)` 获取图片资源需要的内存信息
+
+这两个函数的定义如下：
+
+vkGetBufferMemoryRequirements
+***************************************
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   void vkGetBufferMemoryRequirements(
+       VkDevice                                    device,
+       VkBuffer                                    buffer,
+       VkMemoryRequirements*                       pMemoryRequirements);
+
+* :bdg-secondary:`device` 对应的 ``VkDevice`` 逻辑设备句柄。
+* :bdg-secondary:`buffer` 要获取内存信息的目标缓存资源句柄。
+* :bdg-secondary:`pMemoryRequirements` 获取的内存结果信息。
+
+vkGetImageMemoryRequirements
+***************************************
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   void vkGetImageMemoryRequirements(
+       VkDevice                                    device,
+       VkImage                                     image,
+       VkMemoryRequirements*                       pMemoryRequirements);
+
+* :bdg-secondary:`device` 对应的 ``VkDevice`` 逻辑设备句柄。
+* :bdg-secondary:`image` 要获取内存信息的目标图片资源句柄。
+* :bdg-secondary:`pMemoryRequirements` 写入需要的内存结果信息。
+
+其中的 ``VkMemoryRequirements`` 定义如下：
+
+VkMemoryRequirements
+***************************************
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef struct VkMemoryRequirements {
+       VkDeviceSize    size;
+       VkDeviceSize    alignment;
+       uint32_t        memoryTypeBits;
+   } VkMemoryRequirements;
+
+* :bdg-secondary:`size` 资源需要的内存大小。单位为字节。
+* :bdg-secondary:`alignment` 内存对齐的大小。单位为字节。
+* :bdg-secondary:`memoryTypeBits` 支持的内存类型标志位所对应的的索引值。
+
+当创建内存时需要指定内存分配的大小，也就是 ``VkMemoryAllocateInfo::allocationSize`` ，该大小应不小于 ``VkMemoryRequirements::size`` 大小。
+
+对于 ``VkMemoryRequirements::alignment`` 内存对齐不是 ``Vulkan`` 标准的重点，但考虑到完整性将会在专门的章节中进行讲解。这里简单说明一下。在芯片中对于内存的访问并不是一个比特一个比特访问的，而是为了提高效率将多个比特为一组， 芯片一组一组的进行读取的，所以数据需要写到各组的正确位置，这样芯片一组组读取就能够获得正确的内容了，而一组的比特数量一般为内存对齐大小的整数倍。
+
+而此时我们需要重点关注一下 ``VkMemoryRequirements::memoryTypeBits`` 所表述的意义：
+
+通过 :ref:`Memory` 章节我们知道一台 ``GPU`` 上存在有多个 ``VkMemoryType`` （ ``VkPhysicalDeviceMemoryProperties::memoryTypes[VK_MAX_MEMORY_TYPES]`` ），并且每个 ``VkMemoryType`` 都有对应的的内存堆。这样一台 ``GPU`` 上就存在有多个内存堆。可能其中某几个内存堆都支持分配该资源的内存，此时需要告知我们都有哪些堆支持分配该资源内存，而堆与 ``VkMemoryType`` 对应，所以 ``Vulkan`` 应该
+告诉我们都有哪些 ``VkMemoryType`` 支持该资源的内存分配。这应该返回一个数组才对，而 ``VkMemoryRequirements::memoryTypeBits`` 类型为 ``uint32_t`` 为一个正整数，而不是一个数组，为什么会这样？
+
+.. admonition:: VK_MAX_MEMORY_TYPES
+   :class: note
+
+   ``VK_MAX_MEMORY_TYPES`` 的值为 ``32``。 定义如下：
+
+   .. code:: c++
+
+      #define VK_MAX_MEMORY_TYPES 32U
+
+这是通过 ``VkMemoryRequirements::memoryTypeBits`` 的标志位进行“数组”表示的。 ``uint32_t`` 由 ``32`` 位比特组成，如果某一位的比特值为 ``1`` 则相应位数作为支持的 ``VkMemoryType`` 数组索引。比如：
+
+``VkMemoryRequirements::memoryTypeBits`` 为 ``113`` 的话其对应的二进制为 ``0000 0000 0000 0000 0000 0000 0100 1011`` 则表示：
+
+* 第 ``0`` 位的比特为 ``1`` : ``VkPhysicalDeviceMemoryProperties::memoryTypes[0]`` 类型内存支持分配该资源。
+* 第 ``1`` 位的比特为 ``1`` : ``VkPhysicalDeviceMemoryProperties::memoryTypes[1]`` 类型内存支持分配该资源。
+* 第 ``3`` 位的比特为 ``1`` : ``VkPhysicalDeviceMemoryProperties::memoryTypes[3]`` 类型内存支持分配该资源。
+* 第 ``6`` 位的比特为 ``1`` : ``VkPhysicalDeviceMemoryProperties::memoryTypes[6]`` 类型内存支持分配该资源。
+
+就这样通过一个 ``uint32_t`` 就存储了一个“数组” ，而 ``VkPhysicalDeviceMemoryProperties::memoryTypes`` 数组的最大长度为 ``VK_MAX_MEMORY_TYPES`` 即 ``32`` ，这样一个 ``uint32_t`` 有 ``32`` 位就可以囊括整个数组长度 。这种数据存储方式一般叫按位存储或标志位等。
+
+如此我们就知道资源的内存应该分配在哪一个内存类型上了。进而就知道在哪个内存堆上进行的内存分配。
+
 ..
    内存
 
