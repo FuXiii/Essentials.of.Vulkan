@@ -3,11 +3,11 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="索引" href="../../../genindex.html" /><link rel="search" title="搜索" href="../../../search.html" /><link rel="next" title="glTF 场景" href="glTFScene.html" /><link rel="prev" title="可调用着色器" href="CallableShaders.html" />
-        <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/Literature/NVIDIAVulkanRayTracingTutorial/extensions/RayQuery.html" />
+<link rel="index" title="索引" href="../../../genindex.html" /><link rel="search" title="搜索" href="../../../search.html" /><link rel="next" title="Vulkan迷你路径追踪" href="../../vk_mini_path_tracer.html" /><link rel="prev" title="光线查询" href="RayQuery.html" />
+        <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/Literature/NVIDIAVulkanRayTracingTutorial/extensions/glTFScene.html" />
 
     <link rel="shortcut icon" href="../../../_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
-        <title>光线查询 - Vulkan入门精要</title>
+        <title>glTF 场景 - Vulkan入门精要</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b20cc3f5" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -183,8 +183,8 @@
 <li class="toctree-l3"><a class="reference internal" href="Animation.html">动态更新</a></li>
 <li class="toctree-l3"><a class="reference internal" href="IntersectionShader.html">相交着色器</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CallableShaders.html">可调用着色器</a></li>
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">光线查询</a></li>
-<li class="toctree-l3"><a class="reference internal" href="glTFScene.html">glTF 场景</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RayQuery.html">光线查询</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">glTF 场景</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../vk_mini_path_tracer.html">Vulkan迷你路径追踪</a></li>
@@ -240,7 +240,7 @@
         </a>
         <div class="content-icon-container">
           <div class="edit-this-page">
-  <a class="muted-link" href="https://github.com/FuXiii/Essentials.of.Vulkan/edit/main/source/Literature/NVIDIAVulkanRayTracingTutorial/extensions/RayQuery.rst" title="Edit this page">
+  <a class="muted-link" href="https://github.com/FuXiii/Essentials.of.Vulkan/edit/main/source/Literature/NVIDIAVulkanRayTracingTutorial/extensions/glTFScene.rst" title="Edit this page">
     <svg aria-hidden="true" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
@@ -262,8 +262,8 @@
           </label>
         </div>
         <article role="main">
-          <section id="id1">
-<h1>光线查询<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
+          <section id="gltf">
+<h1>glTF 场景<a class="headerlink" href="#gltf" title="Link to this heading">#</a></h1>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header sd-bg-muted sd-bg-text-muted">
 <span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-history" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M1.643 3.143L.427 1.927A.25.25 0 000 2.104V5.75c0 .138.112.25.25.25h3.646a.25.25 0 00.177-.427L2.715 4.215a6.5 6.5 0 11-1.18 4.458.75.75 0 10-1.493.154 8.001 8.001 0 101.6-5.684zM7.75 4a.75.75 0 01.75.75v2.992l2.028.812a.75.75 0 01-.557 1.392l-2.5-1A.75.75 0 017 8.25v-3.5A.75.75 0 017.75 4z"></path></svg></span>更新记录<div class="sd-summary-down docutils">
@@ -272,128 +272,87 @@
 <svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
 </summary><div class="sd-summary-content sd-card-body docutils">
 <ul class="simple">
-<li><p class="sd-card-text">2023/10/21 增加该扩展文档</p></li>
-<li><p class="sd-card-text">2023/10/21 增加 <code class="docutils literal notranslate"><span class="pre">教程</span></code> 章节</p></li>
-<li><p class="sd-card-text">2023/10/21 增加 <code class="docutils literal notranslate"><span class="pre">清除</span></code> 章节</p></li>
-<li><p class="sd-card-text">2023/10/21 增加 <code class="docutils literal notranslate"><span class="pre">hello_vulkan</span> <span class="pre">(头文件)</span></code> 章节</p></li>
-<li><p class="sd-card-text">2023/10/21 增加 <code class="docutils literal notranslate"><span class="pre">hello_vulkan</span> <span class="pre">(源文件)</span></code> 章节</p></li>
-<li><p class="sd-card-text">2023/10/21 增加 <code class="docutils literal notranslate"><span class="pre">着色器</span></code> 章节</p></li>
-<li><p class="sd-card-text">2023/10/21 增加 <code class="docutils literal notranslate"><span class="pre">片元着色器相关配置</span></code> 章节</p></li>
-<li><p class="sd-card-text">2023/10/21 增加 <code class="docutils literal notranslate"><span class="pre">片元着色器</span></code> 章节</p></li>
-<li><p class="sd-card-text">2023/10/21 增加 <code class="docutils literal notranslate"><span class="pre">激活扩展</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/10/24 增加该扩展文档</p></li>
+<li><p class="sd-card-text">2023/10/24 增加 <code class="docutils literal notranslate"><span class="pre">教程</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/10/24 增加 <code class="docutils literal notranslate"><span class="pre">场景数据</span></code> 章节</p></li>
 </ul>
 </div>
-</details><p><a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing_rayquery">文献源</a></p>
-<figure class="align-default" id="id11">
-<img alt="../../../_images/rayquery.png" src="../../../_images/rayquery.png" />
+</details><p><a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing_gltf">文献源</a></p>
+<figure class="align-default" id="id6">
+<img alt="../../../_images/vk_ray_tracing_gltf_KHR.png" src="../../../_images/vk_ray_tracing_gltf_KHR.png" />
 <figcaption>
-<p><span class="caption-text">光线查询结果示意图</span><a class="headerlink" href="#id11" title="Link to this image">#</a></p>
+<p><span class="caption-text">glTF 场景光栅化结果示意图</span><a class="headerlink" href="#id6" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
+<section id="id3">
+<h2>教程<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<p>该教程为对 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> <a class="reference external" href="../NVIDIAVulkanRayTracingTutorial.html">光线追踪教程</a> 示例的修改。之前是加载单个的 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 模型，在该示例中将会加载包含多个物体的 <code class="docutils literal notranslate"><span class="pre">glTF</span></code> 场景。</p>
+<p>该示例并不是介绍如何渲染的，但是使用了比 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 更加复杂的数据。</p>
+<p>如果您想查阅更加完善的版本，请查阅：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/nvpro-samples/vk_raytrace">vk_raytrace</a></p></li>
+<li><p><a class="reference external" href="https://github.com/nvpro-samples/vk_shaded_gltfscene">vk_shaded_gltfscene</a></p></li>
+</ul>
+</section>
 <section id="id4">
-<h2>教程<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
-<p>该教程为 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> <a class="reference external" href="../NVIDIAVulkanRayTracingTutorial.html">光线追踪教程</a> 的扩展。</p>
-<p>该教程将使用 <a class="reference external" href="https://github.com/KhronosGroup/GLSL/blob/master/extensions/ext/GLSL_EXT_ray_query.txt">GLSL_EXT_ray_query</a> 扩展。该扩展运行在任意一个着色器中进行光线相交查询。在本示例中我们将通过在片元着色器中进行查询投射到阴影中的那一部分光线来生成阴影。</p>
-<p>与其他添加新内容代码的示例不同，这次我们要删减代码。本例中不再需要着色器绑定表和光追管线，而加速结构是唯一需要留下的资源。</p>
-<p>我们将从 <a class="reference external" href="../NVIDIAVulkanRayTracingTutorial.html">光线追踪教程</a> 开始移除所有与光线追踪相关的代码，除了将底层加速结构和顶层加速结构进行保留。</p>
-</section>
-<section id="id5">
-<h2>清除<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
-<p>首先清除所有不需要的代码。</p>
-<section id="hello-vulkan">
-<h3>hello_vulkan (头文件)<a class="headerlink" href="#hello-vulkan" title="Link to this heading">#</a></h3>
-<p>仅留下加速结构相关代码，其他没有用的都去掉：</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// #VKRay</span>
-<span class="kt">void</span><span class="w"> </span><span class="nf">initRayTracing</span><span class="p">();</span>
-<span class="k">auto</span><span class="w"> </span><span class="n">objectToVkGeometryKHR</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ObjModel</span><span class="o">&amp;</span><span class="w"> </span><span class="n">model</span><span class="p">);</span>
-<span class="kt">void</span><span class="w"> </span><span class="nf">createBottomLevelAS</span><span class="p">();</span>
-<span class="kt">void</span><span class="w"> </span><span class="nf">createTopLevelAS</span><span class="p">();</span>
-
-<span class="n">VkPhysicalDeviceRayTracingPipelinePropertiesKHR</span><span class="w"> </span><span class="n">m_rtProperties</span><span class="p">{</span><span class="n">VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_PROPERTIES_KHR</span><span class="p">};</span>
-<span class="n">nvvk</span><span class="o">::</span><span class="n">RaytracingBuilderKHR</span><span class="w">                      </span><span class="n">m_rtBuilder</span><span class="p">;</span>
+<h2>场景数据<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<p>对于 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 模型加载的数据最终会存入四个缓存中：</p>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">顶点缓存</span> 对于顶点位置、法线、纹理坐标和颜色的数组。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">索引缓存</span> 顶点的索引数组，每三个组成一个三角形。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">材质缓存</span> <code class="docutils literal notranslate"><span class="pre">wavefront</span></code> 材质。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">材质索引缓存</span> 每个三角形的材质索引。</p></li>
+</ul>
+<p>由于 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 模型可以有多个，所以对于这些缓存也可以有多个。</p>
+<p>但对于 <code class="docutils literal notranslate"><span class="pre">glTF</span></code> 场景，为了方便，数据的组织有点不一样。相较于每个 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 模型分别创建顶点、位置、法线和其他各种属性数缓存，在 <code class="docutils literal notranslate"><span class="pre">glTF</span></code> 中我们将场景中所有的几何体的顶点、索引和其他属性都分别存入相应的单一缓存中。
+对于每个几何体本身使用对应的元素数量和偏移进行获取。</p>
+<p>对于该示例，不再需要接下来对于 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 的相关代码，将其移除：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">ObjModel</span><span class="o">&gt;</span><span class="w">    </span><span class="n">m_objModel</span><span class="p">;</span><span class="w">   </span><span class="c1">// host 端的模型数据</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">ObjDesc</span><span class="o">&gt;</span><span class="w">     </span><span class="n">m_objDesc</span><span class="p">;</span><span class="w">    </span><span class="c1">// 用于设备获取模型描述信息</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">ObjInstance</span><span class="o">&gt;</span><span class="w"> </span><span class="n">m_instances</span><span class="p">;</span><span class="w">  </span><span class="c1">// 场景模型的实体</span>
 </pre></div>
 </div>
-</section>
-<section id="id6">
-<h3>hello_vulkan (源文件)<a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
-<p>对于源文件，移除之前相关的所有代码。</p>
-</section>
-<section id="id7">
-<h3>着色器<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
-<p>您可以直接移除所有名为 <code class="docutils literal notranslate"><span class="pre">raytrace.*</span></code> 的着色器。</p>
-</section>
-</section>
-<section id="id8">
-<h2>激活扩展<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
-<p>在激活加速结构扩展后面增加对于 <code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_query</span></code> 扩展的激活：</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkPhysicalDeviceRayQueryFeaturesKHR</span><span class="w"> </span><span class="n">rayQueryFeatures</span><span class="p">{</span><span class="n">VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_QUERY_FEATURES_KHR</span><span class="p">};</span>
-<span class="n">contextInfo</span><span class="p">.</span><span class="n">addDeviceExtension</span><span class="p">(</span><span class="n">VK_KHR_RAY_QUERY_EXTENSION_NAME</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">rayQueryFeatures</span><span class="p">);</span>
-</pre></div>
-</div>
-</section>
-<section id="id9">
-<h2>片元着色器相关配置<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
-<p>在 <code class="docutils literal notranslate"><span class="pre">HelloVulkan::createDescriptorSetLayout</span></code> 中增加在加速结构描述符中增加片元着色器的访问配置。</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 顶层加速结构</span>
-<span class="n">m_descSetLayoutBind</span><span class="p">.</span><span class="n">addBinding</span><span class="p">(</span><span class="n">eTlas</span><span class="p">,</span><span class="w"> </span><span class="n">VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_FRAGMENT_BIT</span><span class="p">);</span>
-</pre></div>
-</div>
-<p>由于目前只有一个描述符集，将 <code class="docutils literal notranslate"><span class="pre">eTlas</span></code> 的值设置为 <code class="docutils literal notranslate"><span class="pre">3</span></code> ，设置如下：</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">eGlobals</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">  </span><span class="c1">// 包含相机矩阵的全局统一符</span>
-<span class="n">eObjDescs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">  </span><span class="c1">// 访问物体的描述</span>
-<span class="n">eTextures</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">  </span><span class="c1">// 访问纹理</span>
-<span class="n">eTlas</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="w">   </span><span class="c1">// 顶层加速结构</span>
-</pre></div>
-</div>
-<p>在 <code class="docutils literal notranslate"><span class="pre">HelloVulkan::updateDescriptorSet</span></code> 将对应的描述符写入描述符集：</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkAccelerationStructureKHR</span><span class="w">                   </span><span class="n">tlas</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_rtBuilder</span><span class="p">.</span><span class="n">getAccelerationStructure</span><span class="p">();</span>
-<span class="n">VkWriteDescriptorSetAccelerationStructureKHR</span><span class="w"> </span><span class="n">descASInfo</span><span class="p">{</span><span class="n">VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_ACCELERATION_STRUCTURE_KHR</span><span class="p">};</span>
-<span class="n">descASInfo</span><span class="p">.</span><span class="n">accelerationStructureCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
-<span class="n">descASInfo</span><span class="p">.</span><span class="n">pAccelerationStructures</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">tlas</span><span class="p">;</span>
-<span class="n">writes</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">m_descSetLayoutBind</span><span class="p">.</span><span class="n">makeWrite</span><span class="p">(</span><span class="n">m_descSet</span><span class="p">,</span><span class="w"> </span><span class="n">eTlas</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">descASInfo</span><span class="p">));</span>
-</pre></div>
-</div>
-<section id="id10">
-<h3>片元着色器<a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
-<p>最后需要修改片元着色器，我们将增加光线与加速结构的相交查询用于追踪生成阴影的光线。</p>
-<p>首先。着色器的版本需要升级到 <code class="docutils literal notranslate"><span class="pre">460</span></code> ：</p>
-<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="cp">#version 460</span>
-</pre></div>
-</div>
-<p>之后添加新的扩展：</p>
-<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="cp">#extension GL_EXT_ray_tracing : enable</span>
-<span class="cp">#extension GL_EXT_ray_query : enable</span>
-</pre></div>
-</div>
-<p>我们增加描述符布局（ <code class="docutils literal notranslate"><span class="pre">layout</span></code> ）来访问顶层加速结构：</p>
-<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="k">layout</span><span class="p">(</span><span class="n">binding</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">eTlas</span><span class="p">)</span><span class="w"> </span><span class="k">uniform</span><span class="w"> </span><span class="n">accelerationStructureEXT</span><span class="w"> </span><span class="n">topLevelAS</span><span class="p">;</span>
-</pre></div>
-</div>
-<p>在着色器的结尾处增加如下代码，发起光线查询。目前我们仅仅关注与是否发生了相交，我们尽可能保持简单：</p>
-<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="c1">// 阴影的光线查询</span>
-<span class="kt">vec3</span><span class="w">  </span><span class="n">origin</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">i_worldPos</span><span class="p">;</span>
-<span class="kt">vec3</span><span class="w">  </span><span class="n">direction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">L</span><span class="p">;</span><span class="w">  </span><span class="c1">// vector to light</span>
-<span class="kt">float</span><span class="w"> </span><span class="n">tMin</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="mf">0.01</span><span class="n">f</span><span class="p">;</span>
-<span class="kt">float</span><span class="w"> </span><span class="n">tMax</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="n">lightDistance</span><span class="p">;</span>
-
-<span class="c1">// 初始化一个光线查询对象，目前并不发起光线遍历</span>
-<span class="n">rayQueryEXT</span><span class="w"> </span><span class="n">rayQuery</span><span class="p">;</span>
-<span class="n">rayQueryInitializeEXT</span><span class="p">(</span><span class="n">rayQuery</span><span class="p">,</span><span class="w"> </span><span class="n">topLevelAS</span><span class="p">,</span><span class="w"> </span><span class="nb">gl_RayFlagsTerminateOnFirstHitEXT</span><span class="p">,</span><span class="w"> </span><span class="mh">0xFF</span><span class="p">,</span><span class="w"> </span><span class="n">origin</span><span class="p">,</span><span class="w"> </span><span class="n">tMin</span><span class="p">,</span><span class="w"> </span><span class="n">direction</span><span class="p">,</span><span class="w"> </span><span class="n">tMax</span><span class="p">);</span>
-
-<span class="c1">// 发起光线遍历: 如果遍历结束返回 false</span>
-<span class="k">while</span><span class="p">(</span><span class="n">rayQueryProceedEXT</span><span class="p">(</span><span class="n">rayQuery</span><span class="p">))</span>
+<p>在 <code class="docutils literal notranslate"><span class="pre">host_device.h</span></code> 中我们将增加新的数据结构： <code class="docutils literal notranslate"><span class="pre">PrimMeshInfo</span></code> ， <code class="docutils literal notranslate"><span class="pre">SceneDesc</span></code> 和 <code class="docutils literal notranslate"><span class="pre">GltfShadeMaterial</span></code> 。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 用于在最近命中着色器中获取图元信息</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">PrimMeshInfo</span>
 <span class="p">{</span>
-<span class="p">}</span>
+<span class="w">  </span><span class="n">uint</span><span class="w"> </span><span class="n">indexOffset</span><span class="p">;</span>
+<span class="w">  </span><span class="n">uint</span><span class="w"> </span><span class="n">vertexOffset</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w">  </span><span class="n">materialIndex</span><span class="p">;</span>
+<span class="p">};</span>
 
-<span class="c1">// 如果放生了相交，返回相交的类型</span>
-<span class="k">if</span><span class="p">(</span><span class="n">rayQueryGetIntersectionTypeEXT</span><span class="p">(</span><span class="n">rayQuery</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="nb">gl_RayQueryCommittedIntersectionNoneEXT</span><span class="p">)</span>
+<span class="c1">// 场景的缓存地址</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">SceneDesc</span>
 <span class="p">{</span>
-<span class="w">  </span><span class="c1">// 发生了相交 == 阴影</span>
-<span class="w">  </span><span class="n">o_color</span><span class="w"> </span><span class="o">*=</span><span class="w"> </span><span class="mf">0.1</span><span class="p">;</span>
-<span class="p">}</span>
+<span class="w">  </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">vertexAddress</span><span class="p">;</span><span class="w">    </span><span class="c1">// 顶点缓存地址</span>
+<span class="w">  </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">normalAddress</span><span class="p">;</span><span class="w">    </span><span class="c1">// 法线缓存地址</span>
+<span class="w">  </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">uvAddress</span><span class="p">;</span><span class="w">        </span><span class="c1">// 纹理坐标缓存地址</span>
+<span class="w">  </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">indexAddress</span><span class="p">;</span><span class="w">     </span><span class="c1">// 索引缓存地址</span>
+<span class="w">  </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">materialAddress</span><span class="p">;</span><span class="w">  </span><span class="c1">// 材质缓存地址 (GltfShadeMaterial)</span>
+<span class="w">  </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">primInfoAddress</span><span class="p">;</span><span class="w">  </span><span class="c1">// 网格图元缓存地址 (PrimMeshInfo)</span>
+<span class="p">};</span>
 </pre></div>
 </div>
-</section>
+<p>同样， <code class="docutils literal notranslate"><span class="pre">glTF</span></code> 材质也用于光照渲染。该示例使用的是 <code class="docutils literal notranslate"><span class="pre">glTF</span> <span class="pre">PBR</span></code> 的简化版。如果您对完整的 <code class="docutils literal notranslate"><span class="pre">PBR</span></code> (基于物理的渲染) 感兴趣，可以阅览 <a class="reference external" href="https://github.com/nvpro-samples/vk_raytrace">vk_raytrace</a> 。</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="n">GltfShadeMaterial</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">vec4</span><span class="w"> </span><span class="n">pbrBaseColorFactor</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">vec3</span><span class="w"> </span><span class="n">emissiveFactor</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w">  </span><span class="n">pbrBaseColorTexture</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>同时为了存储场景分配的所有缓存，相关声明如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">nvh</span><span class="o">::</span><span class="n">GltfScene</span><span class="w"> </span><span class="n">m_gltfScene</span><span class="p">;</span>
+<span class="n">nvvk</span><span class="o">::</span><span class="n">Buffer</span><span class="w">   </span><span class="n">m_vertexBuffer</span><span class="p">;</span>
+<span class="n">nvvk</span><span class="o">::</span><span class="n">Buffer</span><span class="w">   </span><span class="n">m_normalBuffer</span><span class="p">;</span>
+<span class="n">nvvk</span><span class="o">::</span><span class="n">Buffer</span><span class="w">   </span><span class="n">m_uvBuffer</span><span class="p">;</span>
+<span class="n">nvvk</span><span class="o">::</span><span class="n">Buffer</span><span class="w">   </span><span class="n">m_indexBuffer</span><span class="p">;</span>
+<span class="n">nvvk</span><span class="o">::</span><span class="n">Buffer</span><span class="w">   </span><span class="n">m_materialBuffer</span><span class="p">;</span>
+<span class="n">nvvk</span><span class="o">::</span><span class="n">Buffer</span><span class="w">   </span><span class="n">m_primInfo</span><span class="p">;</span>
+<span class="n">nvvk</span><span class="o">::</span><span class="n">Buffer</span><span class="w">   </span><span class="n">m_sceneDesc</span><span class="p">;</span>
+</pre></div>
+</div>
 </section>
 </section>
 
@@ -402,18 +361,18 @@
       <footer>
         
 <div class="related-pages">
-    <a class="next-page" href="glTFScene.html">
+    <a class="next-page" href="../../vk_mini_path_tracer.html">
         <div class="page-info">
             <div class="context">
                 <span>Next</span>
             </div>
-            <div class="title">glTF 场景</div>
+            <div class="title">Vulkan迷你路径追踪</div>
         </div>
         <svg class="furo-related-icon">
             <use href="#svg-arrow-right"></use>
         </svg>
     </a>
-    <a class="prev-page" href="CallableShaders.html">
+    <a class="prev-page" href="RayQuery.html">
         <svg class="furo-related-icon">
             <use href="#svg-arrow-right"></use>
         </svg>
@@ -422,7 +381,7 @@
                 <span>Previous</span>
             </div>
             
-            <div class="title">可调用着色器</div>
+            <div class="title">光线查询</div>
             
         </div>
     </a>
@@ -471,19 +430,9 @@
     <div class="toc-tree-container" style="width: 500px;">
         <div class="toc-tree" style="width: 500px;">
             <ul>
-<li><a class="reference internal" href="#">光线查询</a><ul>
-<li><a class="reference internal" href="#id4">教程</a></li>
-<li><a class="reference internal" href="#id5">清除</a><ul>
-<li><a class="reference internal" href="#hello-vulkan">hello_vulkan (头文件)</a></li>
-<li><a class="reference internal" href="#id6">hello_vulkan (源文件)</a></li>
-<li><a class="reference internal" href="#id7">着色器</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#id8">激活扩展</a></li>
-<li><a class="reference internal" href="#id9">片元着色器相关配置</a><ul>
-<li><a class="reference internal" href="#id10">片元着色器</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#">glTF 场景</a><ul>
+<li><a class="reference internal" href="#id3">教程</a></li>
+<li><a class="reference internal" href="#id4">场景数据</a></li>
 </ul>
 </li>
 </ul>

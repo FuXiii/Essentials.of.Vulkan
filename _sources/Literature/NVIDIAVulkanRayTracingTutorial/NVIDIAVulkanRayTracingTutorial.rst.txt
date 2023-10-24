@@ -82,6 +82,7 @@ NVIDIA Vulkan 光线追踪教程
     * 2023/10/7 增加 ``相交着色器`` 文档链接
     * 2023/10/16 增加 ``可调用着色器`` 文档链接
     * 2023/10/21 增加 ``光线查询`` 文档链接
+    * 2023/10/21 增加 ``glTF 场景`` 文档链接
 
 `文献源`_
 
@@ -2434,3 +2435,4 @@ NVIDIA Vulkan 光线追踪教程
    extensions/IntersectionShader.rst
    extensions/CallableShaders.rst
    extensions/RayQuery.rst
+   extensions/glTFScene.rst
