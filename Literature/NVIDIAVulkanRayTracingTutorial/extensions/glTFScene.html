@@ -275,13 +275,17 @@
 <li><p class="sd-card-text">2023/10/24 增加该扩展文档</p></li>
 <li><p class="sd-card-text">2023/10/24 增加 <code class="docutils literal notranslate"><span class="pre">教程</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/10/24 增加 <code class="docutils literal notranslate"><span class="pre">场景数据</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/10/26 增加 <code class="docutils literal notranslate"><span class="pre">加载</span> <span class="pre">glTF</span> <span class="pre">场景</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/10/26 增加 <code class="docutils literal notranslate"><span class="pre">加载场景</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/10/26 增加 <code class="docutils literal notranslate"><span class="pre">几何体转底层加速结构</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/10/26 增加 <code class="docutils literal notranslate"><span class="pre">创建顶层加速结构</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p><a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing_gltf">文献源</a></p>
-<figure class="align-default" id="id6">
+<figure class="align-default" id="id10">
 <img alt="../../../_images/vk_ray_tracing_gltf_KHR.png" src="../../../_images/vk_ray_tracing_gltf_KHR.png" />
 <figcaption>
-<p><span class="caption-text">glTF 场景光栅化结果示意图</span><a class="headerlink" href="#id6" title="Link to this image">#</a></p>
+<p><span class="caption-text">glTF 场景光栅化结果示意图</span><a class="headerlink" href="#id10" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <section id="id3">
@@ -352,6 +356,175 @@
 <span class="n">nvvk</span><span class="o">::</span><span class="n">Buffer</span><span class="w">   </span><span class="n">m_primInfo</span><span class="p">;</span>
 <span class="n">nvvk</span><span class="o">::</span><span class="n">Buffer</span><span class="w">   </span><span class="n">m_sceneDesc</span><span class="p">;</span>
 </pre></div>
+</div>
+</section>
+<section id="id6">
+<h2>加载 glTF 场景<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<p>我们这里将会使用 <a class="reference external" href="https://github.com/syoyo/tinygltf">TinyGLTF</a> 加载 <code class="docutils literal notranslate"><span class="pre">glTF</span></code> ，之后为了屏蔽掉繁琐的场景解析遍历，将会使用 <a class="reference external" href="https://github.com/nvpro-samples/nvpro_core/tree/master/nvh#gltfscenehpp">gltfScene</a> 来帮助我们将场景进行压缩。</p>
+<section id="id7">
+<h3>加载场景<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
+<p>相较于加载一个模型，这次我们将加载一个场景，所以我们使用 <code class="docutils literal notranslate"><span class="pre">loadScene()</span></code> 来代替 <code class="docutils literal notranslate"><span class="pre">loadModel()</span></code> 加载场景。</p>
+<p><code class="docutils literal notranslate"><span class="pre">loadScene()</span></code> 函数在源文件中的开头将会引入 <code class="docutils literal notranslate"><span class="pre">TinyGLTF</span></code> 。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">tinygltf</span><span class="o">::</span><span class="n">Model</span><span class="w">    </span><span class="n">tmodel</span><span class="p">;</span>
+<span class="n">tinygltf</span><span class="o">::</span><span class="n">TinyGLTF</span><span class="w"> </span><span class="n">tcontext</span><span class="p">;</span>
+<span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w">        </span><span class="n">warn</span><span class="p">,</span><span class="w"> </span><span class="n">error</span><span class="p">;</span>
+<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">tcontext</span><span class="p">.</span><span class="n">LoadASCIIFromFile</span><span class="p">(</span><span class="o">&amp;</span><span class="n">tmodel</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">error</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">warn</span><span class="p">,</span><span class="w"> </span><span class="n">filename</span><span class="p">))</span>
+<span class="w">  </span><span class="n">assert</span><span class="p">(</span><span class="o">!</span><span class="s">&quot;Error while loading scene&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>之后我们将使用 <code class="docutils literal notranslate"><span class="pre">gltfScene</span></code> 来帮助我们压缩和提炼我们需要的数据。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">m_gltfScene</span><span class="p">.</span><span class="n">importMaterials</span><span class="p">(</span><span class="n">tmodel</span><span class="p">);</span>
+<span class="n">m_gltfScene</span><span class="p">.</span><span class="n">importDrawableNodes</span><span class="p">(</span><span class="n">tmodel</span><span class="p">,</span>
+<span class="w">                                </span><span class="n">nvh</span><span class="o">::</span><span class="n">GltfAttributes</span><span class="o">::</span><span class="n">Normal</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">nvh</span><span class="o">::</span><span class="n">GltfAttributes</span><span class="o">::</span><span class="n">Texcoord_0</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>接下来就是分配缓存并存储数据。比如，顶点位置，法线，纹理坐标等等。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 在设备上创建换次年并拷贝顶点，索引和材质信息</span>
+<span class="n">nvvk</span><span class="o">::</span><span class="n">CommandPool</span><span class="w"> </span><span class="nf">cmdBufGet</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">m_graphicsQueueIndex</span><span class="p">);</span>
+<span class="n">VkCommandBuffer</span><span class="w">   </span><span class="n">cmdBuf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cmdBufGet</span><span class="p">.</span><span class="n">createCommandBuffer</span><span class="p">();</span>
+
+<span class="n">m_vertexBuffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_alloc</span><span class="p">.</span><span class="n">createBuffer</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="n">m_gltfScene</span><span class="p">.</span><span class="n">m_positions</span><span class="p">,</span>
+<span class="w">                                      </span><span class="n">VK_BUFFER_USAGE_VERTEX_BUFFER_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_STORAGE_BUFFER_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT</span>
+<span class="w">                                          </span><span class="o">|</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR</span><span class="p">);</span>
+<span class="n">m_indexBuffer</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">m_alloc</span><span class="p">.</span><span class="n">createBuffer</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="n">m_gltfScene</span><span class="p">.</span><span class="n">m_indices</span><span class="p">,</span>
+<span class="w">                                     </span><span class="n">VK_BUFFER_USAGE_INDEX_BUFFER_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_STORAGE_BUFFER_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT</span>
+<span class="w">                                         </span><span class="o">|</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR</span><span class="p">);</span>
+<span class="n">m_normalBuffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_alloc</span><span class="p">.</span><span class="n">createBuffer</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="n">m_gltfScene</span><span class="p">.</span><span class="n">m_normals</span><span class="p">,</span>
+<span class="w">                                      </span><span class="n">VK_BUFFER_USAGE_VERTEX_BUFFER_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_STORAGE_BUFFER_BIT</span>
+<span class="w">                                          </span><span class="o">|</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT</span><span class="p">);</span>
+<span class="n">m_uvBuffer</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="n">m_alloc</span><span class="p">.</span><span class="n">createBuffer</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="n">m_gltfScene</span><span class="p">.</span><span class="n">m_texcoords0</span><span class="p">,</span>
+<span class="w">                                  </span><span class="n">VK_BUFFER_USAGE_VERTEX_BUFFER_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_STORAGE_BUFFER_BIT</span>
+<span class="w">                                      </span><span class="o">|</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>由于该示例的材质是一个简化版本，这里我们将从 <code class="docutils literal notranslate"><span class="pre">glTF</span></code> 材质中提取我们需要的部分。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 仅获取我们需要的材质数据</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">GltfShadeMaterial</span><span class="o">&gt;</span><span class="w"> </span><span class="n">shadeMaterials</span><span class="p">;</span>
+<span class="k">for</span><span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">m_gltfScene</span><span class="p">.</span><span class="n">m_materials</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">shadeMaterials</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">GltfShadeMaterial</span><span class="p">{</span><span class="n">m</span><span class="p">.</span><span class="n">baseColorFactor</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">.</span><span class="n">emissiveFactor</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">.</span><span class="n">baseColorTexture</span><span class="p">});</span>
+<span class="p">}</span>
+<span class="n">m_materialBuffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_alloc</span><span class="p">.</span><span class="n">createBuffer</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="n">shadeMaterials</span><span class="p">,</span>
+<span class="w">                                        </span><span class="n">VK_BUFFER_USAGE_STORAGE_BUFFER_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>为了能够在最近命中着色器中找到命中位置，同时也能获取其它属性，我们将存储几何的偏移信息。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 如下是用于在最近命中着色器中找到网格的图元信息</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">PrimMeshInfo</span><span class="o">&gt;</span><span class="w"> </span><span class="n">primLookup</span><span class="p">;</span>
+<span class="k">for</span><span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">primMesh</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">m_gltfScene</span><span class="p">.</span><span class="n">m_primMeshes</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">primLookup</span><span class="p">.</span><span class="n">push_back</span><span class="p">({</span><span class="n">primMesh</span><span class="p">.</span><span class="n">firstIndex</span><span class="p">,</span><span class="w"> </span><span class="n">primMesh</span><span class="p">.</span><span class="n">vertexOffset</span><span class="p">,</span><span class="w"> </span><span class="n">primMesh</span><span class="p">.</span><span class="n">materialIndex</span><span class="p">});</span>
+<span class="p">}</span>
+<span class="n">m_rtPrimLookup</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">m_alloc</span><span class="p">.</span><span class="n">createBuffer</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="n">primLookup</span><span class="p">,</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_STORAGE_BUFFER_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="note admonition">
+<p class="admonition-title">std::vector&lt;PrimMeshInfo&gt; primLookup</p>
+<p>在本示例中一共有 <code class="docutils literal notranslate"><span class="pre">10</span></code> 个物体（ <code class="docutils literal notranslate"><span class="pre">5</span></code> 面墙， <code class="docutils literal notranslate"><span class="pre">3</span></code> 个矩形， <code class="docutils literal notranslate"><span class="pre">2</span></code> 个球体）。然而解析完 <code class="docutils literal notranslate"><span class="pre">glTF</span></code> 场景后 <code class="docutils literal notranslate"><span class="pre">primLookup</span></code> 中有 <code class="docutils literal notranslate"><span class="pre">9</span></code> 个元素（模型）。其中顶面和底面墙体共用同一个网格。</p>
+</div>
+<p>最后创建一个缓存存储所以缓存的引用：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">SceneDesc</span><span class="w"> </span><span class="n">sceneDesc</span><span class="p">;</span>
+<span class="n">sceneDesc</span><span class="p">.</span><span class="n">vertexAddress</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="n">nvvk</span><span class="o">::</span><span class="n">getBufferDeviceAddress</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">m_vertexBuffer</span><span class="p">.</span><span class="n">buffer</span><span class="p">);</span>
+<span class="n">sceneDesc</span><span class="p">.</span><span class="n">indexAddress</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">nvvk</span><span class="o">::</span><span class="n">getBufferDeviceAddress</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">m_indexBuffer</span><span class="p">.</span><span class="n">buffer</span><span class="p">);</span>
+<span class="n">sceneDesc</span><span class="p">.</span><span class="n">normalAddress</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="n">nvvk</span><span class="o">::</span><span class="n">getBufferDeviceAddress</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">m_normalBuffer</span><span class="p">.</span><span class="n">buffer</span><span class="p">);</span>
+<span class="n">sceneDesc</span><span class="p">.</span><span class="n">uvAddress</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="n">nvvk</span><span class="o">::</span><span class="n">getBufferDeviceAddress</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">m_uvBuffer</span><span class="p">.</span><span class="n">buffer</span><span class="p">);</span>
+<span class="n">sceneDesc</span><span class="p">.</span><span class="n">materialAddress</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nvvk</span><span class="o">::</span><span class="n">getBufferDeviceAddress</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">m_materialBuffer</span><span class="p">.</span><span class="n">buffer</span><span class="p">);</span>
+<span class="n">sceneDesc</span><span class="p">.</span><span class="n">primInfoAddress</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nvvk</span><span class="o">::</span><span class="n">getBufferDeviceAddress</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">m_primInfo</span><span class="p">.</span><span class="n">buffer</span><span class="p">);</span>
+<span class="n">m_sceneDesc</span><span class="w">               </span><span class="o">=</span><span class="w"> </span><span class="n">m_alloc</span><span class="p">.</span><span class="n">createBuffer</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">SceneDesc</span><span class="p">),</span><span class="w"> </span><span class="o">&amp;</span><span class="n">sceneDesc</span><span class="p">,</span>
+<span class="w">                                   </span><span class="n">VK_BUFFER_USAGE_STORAGE_BUFFER_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>在退出该函数之前，我们需要创建纹理（默认场景中没有纹理）并提交指令缓存。最后等到所有的数据拷贝完成。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="c1">// 创建所有找到的纹理</span>
+<span class="w">  </span><span class="n">createTextureImages</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="n">tmodel</span><span class="p">);</span>
+<span class="w">  </span><span class="n">cmdBufGet</span><span class="p">.</span><span class="n">submitAndWait</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">);</span>
+<span class="w">  </span><span class="n">m_alloc</span><span class="p">.</span><span class="n">finalizeAndReleaseStaging</span><span class="p">();</span>
+
+
+<span class="w">  </span><span class="n">NAME_VK</span><span class="p">(</span><span class="n">m_vertexBuffer</span><span class="p">.</span><span class="n">buffer</span><span class="p">);</span>
+<span class="w">  </span><span class="n">NAME_VK</span><span class="p">(</span><span class="n">m_indexBuffer</span><span class="p">.</span><span class="n">buffer</span><span class="p">);</span>
+<span class="w">  </span><span class="n">NAME_VK</span><span class="p">(</span><span class="n">m_normalBuffer</span><span class="p">.</span><span class="n">buffer</span><span class="p">);</span>
+<span class="w">  </span><span class="n">NAME_VK</span><span class="p">(</span><span class="n">m_uvBuffer</span><span class="p">.</span><span class="n">buffer</span><span class="p">);</span>
+<span class="w">  </span><span class="n">NAME_VK</span><span class="p">(</span><span class="n">m_materialBuffer</span><span class="p">.</span><span class="n">buffer</span><span class="p">);</span>
+<span class="w">  </span><span class="n">NAME_VK</span><span class="p">(</span><span class="n">m_primInfo</span><span class="p">.</span><span class="n">buffer</span><span class="p">);</span>
+<span class="w">  </span><span class="n">NAME_VK</span><span class="p">(</span><span class="n">m_sceneDesc</span><span class="p">.</span><span class="n">buffer</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="note admonition">
+<p class="admonition-title">NAME_VK</p>
+<p>宏 <code class="docutils literal notranslate"><span class="pre">NAME_VK</span></code> 是用于简化 <code class="docutils literal notranslate"><span class="pre">Nsight</span> <span class="pre">Graphics</span></code> 中 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 对象命名，用于调试时获取相应的创建信息。</p>
+</div>
+</section>
+</section>
+<section id="id8">
+<h2>几何体转底层加速结构<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<p>我们不再使用 <code class="docutils literal notranslate"><span class="pre">objectToVkGeometryKHR()</span></code> 而会使用 <code class="docutils literal notranslate"><span class="pre">primitiveToVkGeometry(const</span> <span class="pre">nvh::GltfPrimMesh&amp;</span> <span class="pre">prim)</span></code> 。该函数与之前的相似，仅仅是输入不同，这里 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildRangeInfoKHR</span></code> 将会设置偏移数据。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">//--------------------------------------------------------------------------------------------------</span>
+<span class="c1">// 将 glTF 中的网格转换成底层加速结构中的几何图元</span>
+<span class="c1">//</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">HelloVulkan</span><span class="o">::</span><span class="n">primitiveToGeometry</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">nvh</span><span class="o">::</span><span class="n">GltfPrimMesh</span><span class="o">&amp;</span><span class="w"> </span><span class="n">prim</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="c1">// 底层加速结构的构建需要原始的设备内存地址</span>
+<span class="w">  </span><span class="n">VkDeviceAddress</span><span class="w"> </span><span class="n">vertexAddress</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nvvk</span><span class="o">::</span><span class="n">getBufferDeviceAddress</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">m_vertexBuffer</span><span class="p">.</span><span class="n">buffer</span><span class="p">);</span>
+<span class="w">  </span><span class="n">VkDeviceAddress</span><span class="w"> </span><span class="n">indexAddress</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">nvvk</span><span class="o">::</span><span class="n">getBufferDeviceAddress</span><span class="p">(</span><span class="n">m_device</span><span class="p">,</span><span class="w"> </span><span class="n">m_indexBuffer</span><span class="p">.</span><span class="n">buffer</span><span class="p">);</span>
+
+<span class="w">  </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">maxPrimitiveCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">prim</span><span class="p">.</span><span class="n">indexCount</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// 设置顶点数组缓存</span>
+<span class="w">  </span><span class="n">VkAccelerationStructureGeometryTrianglesDataKHR</span><span class="w"> </span><span class="n">triangles</span><span class="p">{</span><span class="n">VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_TRIANGLES_DATA_KHR</span><span class="p">};</span>
+<span class="w">  </span><span class="n">triangles</span><span class="p">.</span><span class="n">vertexFormat</span><span class="w">             </span><span class="o">=</span><span class="w"> </span><span class="n">VK_FORMAT_R32G32B32_SFLOAT</span><span class="p">;</span><span class="w">  </span><span class="c1">// vec3 vertex position data.</span>
+<span class="w">  </span><span class="n">triangles</span><span class="p">.</span><span class="n">vertexData</span><span class="p">.</span><span class="n">deviceAddress</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vertexAddress</span><span class="p">;</span>
+<span class="w">  </span><span class="n">triangles</span><span class="p">.</span><span class="n">vertexStride</span><span class="w">             </span><span class="o">=</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">nvmath</span><span class="o">::</span><span class="n">vec3f</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">// 设置索引缓存（32比特无符号整形）</span>
+<span class="w">  </span><span class="n">triangles</span><span class="p">.</span><span class="n">indexType</span><span class="w">               </span><span class="o">=</span><span class="w"> </span><span class="n">VK_INDEX_TYPE_UINT32</span><span class="p">;</span>
+<span class="w">  </span><span class="n">triangles</span><span class="p">.</span><span class="n">indexData</span><span class="p">.</span><span class="n">deviceAddress</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">indexAddress</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">// 底层加速结构本身的变换为单位矩阵（无变换）</span>
+<span class="w">  </span><span class="c1">//triangles.transformData = {};</span>
+<span class="w">  </span><span class="n">triangles</span><span class="p">.</span><span class="n">maxVertex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">prim</span><span class="p">.</span><span class="n">vertexCount</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// 将之前的三角形设置为不透明</span>
+<span class="w">  </span><span class="n">VkAccelerationStructureGeometryKHR</span><span class="w"> </span><span class="n">asGeom</span><span class="p">{</span><span class="n">VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR</span><span class="p">};</span>
+<span class="w">  </span><span class="n">asGeom</span><span class="p">.</span><span class="n">geometryType</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="n">VK_GEOMETRY_TYPE_TRIANGLES_KHR</span><span class="p">;</span>
+<span class="w">  </span><span class="n">asGeom</span><span class="p">.</span><span class="n">flags</span><span class="w">              </span><span class="o">=</span><span class="w"> </span><span class="n">VK_GEOMETRY_NO_DUPLICATE_ANY_HIT_INVOCATION_BIT_KHR</span><span class="p">;</span><span class="w">  </span><span class="c1">// 对任意命中的限制</span>
+<span class="w">  </span><span class="n">asGeom</span><span class="p">.</span><span class="n">geometry</span><span class="p">.</span><span class="n">triangles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">triangles</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">VkAccelerationStructureBuildRangeInfoKHR</span><span class="w"> </span><span class="n">offset</span><span class="p">;</span>
+<span class="w">  </span><span class="n">offset</span><span class="p">.</span><span class="n">firstVertex</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="n">prim</span><span class="p">.</span><span class="n">vertexOffset</span><span class="p">;</span>
+<span class="w">  </span><span class="n">offset</span><span class="p">.</span><span class="n">primitiveCount</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">prim</span><span class="p">.</span><span class="n">indexCount</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span>
+<span class="w">  </span><span class="n">offset</span><span class="p">.</span><span class="n">primitiveOffset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">prim</span><span class="p">.</span><span class="n">firstIndex</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">uint32_t</span><span class="p">);</span>
+<span class="w">  </span><span class="n">offset</span><span class="p">.</span><span class="n">transformOffset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// 目前我们一个底层加速结构对应一个几何体，但其实可以加入更多几何体</span>
+<span class="w">  </span><span class="n">nvvk</span><span class="o">::</span><span class="n">RaytracingBuilderKHR</span><span class="o">::</span><span class="n">BlasInput</span><span class="w"> </span><span class="n">input</span><span class="p">;</span>
+<span class="w">  </span><span class="n">input</span><span class="p">.</span><span class="n">asGeometry</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">asGeom</span><span class="p">);</span>
+<span class="w">  </span><span class="n">input</span><span class="p">.</span><span class="n">asBuildOffsetInfo</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">offset</span><span class="p">);</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">input</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="id9">
+<h2>创建顶层加速结构<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
+<p>基本上与之前的没什么区别，除了索引数据存在 <code class="docutils literal notranslate"><span class="pre">primMesh</span></code> 中。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">for</span><span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">m_gltfScene</span><span class="p">.</span><span class="n">m_nodes</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">VkAccelerationStructureInstanceKHR</span><span class="w"> </span><span class="n">rayInst</span><span class="p">;</span>
+<span class="w">  </span><span class="n">rayInst</span><span class="p">.</span><span class="n">transform</span><span class="w">                      </span><span class="o">=</span><span class="w"> </span><span class="n">nvvk</span><span class="o">::</span><span class="n">toTransformMatrixKHR</span><span class="p">(</span><span class="n">node</span><span class="p">.</span><span class="n">worldMatrix</span><span class="p">);</span>
+<span class="w">  </span><span class="n">rayInst</span><span class="p">.</span><span class="n">instanceCustomIndex</span><span class="w">            </span><span class="o">=</span><span class="w"> </span><span class="n">node</span><span class="p">.</span><span class="n">primMesh</span><span class="p">;</span><span class="w">  </span><span class="c1">// gl_InstanceCustomIndexEXT: 用于寻找图元</span>
+<span class="w">  </span><span class="n">rayInst</span><span class="p">.</span><span class="n">accelerationStructureReference</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_rtBuilder</span><span class="p">.</span><span class="n">getBlasDeviceAddress</span><span class="p">(</span><span class="n">node</span><span class="p">.</span><span class="n">primMesh</span><span class="p">);</span>
+<span class="w">  </span><span class="n">rayInst</span><span class="p">.</span><span class="n">flags</span><span class="w">                          </span><span class="o">=</span><span class="w"> </span><span class="n">VK_GEOMETRY_INSTANCE_TRIANGLE_FACING_CULL_DISABLE_BIT_KHR</span><span class="p">;</span>
+<span class="w">  </span><span class="n">rayInst</span><span class="p">.</span><span class="n">mask</span><span class="w">                           </span><span class="o">=</span><span class="w"> </span><span class="mh">0xFF</span><span class="p">;</span>
+<span class="w">  </span><span class="n">rayInst</span><span class="p">.</span><span class="n">instanceShaderBindingTableRecordOffset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w">  </span><span class="c1">// 所有的物体都是用相同的命中组</span>
+<span class="w">  </span><span class="n">tlas</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">rayInst</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="note admonition">
+<p class="admonition-title">m_gltfScene.m_nodes</p>
+<p>长度为 <code class="docutils literal notranslate"><span class="pre">10</span></code> ，每个元素分别对应场景中的 <code class="docutils literal notranslate"><span class="pre">10</span></code> 个物体。</p>
 </div>
 </section>
 </section>
@@ -433,6 +606,12 @@
 <li><a class="reference internal" href="#">glTF 场景</a><ul>
 <li><a class="reference internal" href="#id3">教程</a></li>
 <li><a class="reference internal" href="#id4">场景数据</a></li>
+<li><a class="reference internal" href="#id6">加载 glTF 场景</a><ul>
+<li><a class="reference internal" href="#id7">加载场景</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id8">几何体转底层加速结构</a></li>
+<li><a class="reference internal" href="#id9">创建顶层加速结构</a></li>
 </ul>
 </li>
 </ul>
