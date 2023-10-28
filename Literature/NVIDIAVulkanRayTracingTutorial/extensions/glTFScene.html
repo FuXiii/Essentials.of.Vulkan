@@ -279,13 +279,25 @@
 <li><p class="sd-card-text">2023/10/26 增加 <code class="docutils literal notranslate"><span class="pre">加载场景</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/10/26 增加 <code class="docutils literal notranslate"><span class="pre">几何体转底层加速结构</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/10/26 增加 <code class="docutils literal notranslate"><span class="pre">创建顶层加速结构</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/10/28 增加 <code class="docutils literal notranslate"><span class="pre">光栅化渲染</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/10/28 增加 <code class="docutils literal notranslate"><span class="pre">光线追踪修改</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/10/28 增加 <code class="docutils literal notranslate"><span class="pre">描述符和管线修改</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/10/28 增加 <code class="docutils literal notranslate"><span class="pre">着色器</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/10/28 增加 <code class="docutils literal notranslate"><span class="pre">其他改变</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/10/28 增加 <code class="docutils literal notranslate"><span class="pre">相机位置</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/10/28 增加 <code class="docutils literal notranslate"><span class="pre">场景</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/10/28 增加 <code class="docutils literal notranslate"><span class="pre">简单路径（光线）追踪</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/10/28 增加 <code class="docutils literal notranslate"><span class="pre">光线生成着色器</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/10/28 增加 <code class="docutils literal notranslate"><span class="pre">最近命中着色器</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/10/28 增加 <code class="docutils literal notranslate"><span class="pre">createCoordinateSystem</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/10/28 增加 <code class="docutils literal notranslate"><span class="pre">samplingHemisphere</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p><a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing_gltf">文献源</a></p>
-<figure class="align-default" id="id10">
+<figure class="align-default" id="id24">
 <img alt="../../../_images/vk_ray_tracing_gltf_KHR.png" src="../../../_images/vk_ray_tracing_gltf_KHR.png" />
 <figcaption>
-<p><span class="caption-text">glTF 场景光栅化结果示意图</span><a class="headerlink" href="#id10" title="Link to this image">#</a></p>
+<p><span class="caption-text">glTF 场景光栅化结果示意图</span><a class="headerlink" href="#id24" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <section id="id3">
@@ -527,6 +539,244 @@
 <p>长度为 <code class="docutils literal notranslate"><span class="pre">10</span></code> ，每个元素分别对应场景中的 <code class="docutils literal notranslate"><span class="pre">10</span></code> 个物体。</p>
 </div>
 </section>
+<section id="id10">
+<h2>光栅化渲染<a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
+<p>光栅化比较简单。着色器将会使用顶点，法线和纹理坐标。对于每一个物体节点，我们会将传入该图元使用的材质 <code class="docutils literal notranslate"><span class="pre">ID</span></code> 。由于我们压缩了场景，所以可以遍历所有的可绘制节点进行绘制。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">VkBuffer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">vertexBuffers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">m_vertexBuffer</span><span class="p">.</span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="n">m_normalBuffer</span><span class="p">.</span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="n">m_uvBuffer</span><span class="p">.</span><span class="n">buffer</span><span class="p">};</span>
+<span class="n">vkCmdBindVertexBuffers</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">vertexBuffers</span><span class="p">.</span><span class="n">size</span><span class="p">()),</span><span class="w"> </span><span class="n">vertexBuffers</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span><span class="w"> </span><span class="n">offsets</span><span class="p">.</span><span class="n">data</span><span class="p">());</span>
+<span class="n">vkCmdBindIndexBuffer</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="n">m_indexBuffer</span><span class="p">.</span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">VK_INDEX_TYPE_UINT32</span><span class="p">);</span>
+
+<span class="kt">uint32_t</span><span class="w"> </span><span class="n">idxNode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="k">for</span><span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">m_gltfScene</span><span class="p">.</span><span class="n">m_nodes</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">primitive</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_gltfScene</span><span class="p">.</span><span class="n">m_primMeshes</span><span class="p">[</span><span class="n">node</span><span class="p">.</span><span class="n">primMesh</span><span class="p">];</span>
+
+<span class="w">  </span><span class="n">m_pcRaster</span><span class="p">.</span><span class="n">modelMatrix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">node</span><span class="p">.</span><span class="n">worldMatrix</span><span class="p">;</span>
+<span class="w">  </span><span class="n">m_pcRaster</span><span class="p">.</span><span class="n">objIndex</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">node</span><span class="p">.</span><span class="n">primMesh</span><span class="p">;</span>
+<span class="w">  </span><span class="n">m_pcRaster</span><span class="p">.</span><span class="n">materialId</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">primitive</span><span class="p">.</span><span class="n">materialIndex</span><span class="p">;</span>
+<span class="w">  </span><span class="n">vkCmdPushConstants</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="n">m_pipelineLayout</span><span class="p">,</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_VERTEX_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_FRAGMENT_BIT</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">                     </span><span class="k">sizeof</span><span class="p">(</span><span class="n">PushConstantRaster</span><span class="p">),</span><span class="w"> </span><span class="o">&amp;</span><span class="n">m_pcRaster</span><span class="p">);</span>
+<span class="w">  </span><span class="n">vkCmdDrawIndexed</span><span class="p">(</span><span class="n">cmdBuf</span><span class="p">,</span><span class="w"> </span><span class="n">primitive</span><span class="p">.</span><span class="n">indexCount</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">primitive</span><span class="p">.</span><span class="n">firstIndex</span><span class="p">,</span><span class="w"> </span><span class="n">primitive</span><span class="p">.</span><span class="n">vertexOffset</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="id11">
+<h2>光线追踪修改<a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
+<p>在 <code class="docutils literal notranslate"><span class="pre">createRtDescriptorSet()</span></code> 中唯一的改变就是为了当命中三角形时能够获取相应的图元信息而传入的图元信息缓存。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="n">m_rtDescSetLayoutBind</span><span class="p">.</span><span class="n">addBinding</span><span class="p">(</span><span class="n">ePrimLookup</span><span class="p">,</span><span class="w"> </span><span class="n">VK_DESCRIPTOR_TYPE_STORAGE_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">                                   </span><span class="n">VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_ANY_HIT_BIT_KHR</span><span class="p">);</span><span class="w">  </span><span class="c1">// Primitive info</span>
+<span class="c1">// ...</span>
+<span class="w">  </span><span class="n">VkDescriptorBufferInfo</span><span class="w"> </span><span class="n">primitiveInfoDesc</span><span class="p">{</span><span class="n">m_rtPrimLookup</span><span class="p">.</span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">VK_WHOLE_SIZE</span><span class="p">};</span>
+<span class="c1">// ...</span>
+<span class="w">  </span><span class="n">writes</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">m_rtDescSetLayoutBind</span><span class="p">.</span><span class="n">makeWrite</span><span class="p">(</span><span class="n">m_rtDescSet</span><span class="p">,</span><span class="w"> </span><span class="n">ePrimLookup</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">primitiveInfoDesc</span><span class="p">));</span>
+</pre></div>
+</div>
+</section>
+<section id="id12">
+<h2>描述符和管线修改<a class="headerlink" href="#id12" title="Link to this heading">#</a></h2>
+<p>由于我们对于顶点位置。法线和纹理坐标使用三个不同的缓存。相应的 <code class="docutils literal notranslate"><span class="pre">createDescriptorSetLayout()</span></code> ， <code class="docutils literal notranslate"><span class="pre">updateDescriptorSet()</span></code> 和 <code class="docutils literal notranslate"><span class="pre">createGraphicsPipeline()</span></code> 也需要适配这三个不同的缓存。具体可参考 <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/blob/master/ray_tracing_gltf/hello_vulkan.cpp">hello_vulkan</a> 。</p>
+</section>
+<section id="id13">
+<h2>着色器<a class="headerlink" href="#id13" title="Link to this heading">#</a></h2>
+<p>此时（还未进行基于物理的光追）着色器与之前的没什么区别，并且并没有实现完整的 <code class="docutils literal notranslate"><span class="pre">glTF</span></code> 的基于物理的着色模型，着色器仅仅适配新的输入数据格式。</p>
+<ul class="simple">
+<li><p>光栅化： <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/blob/master/ray_tracing_gltf/shaders/vert_shader.vert">vert_shader</a> ， <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/blob/master/ray_tracing_gltf/shaders/frag_shader.frag">frag_shader</a></p></li>
+<li><p>光线追踪 <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/blob/master/ray_tracing_gltf/shaders/raytrace.rgen">RayGen</a> ， <a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/blob/master/ray_tracing_gltf/shaders/raytrace.rchit">ClosestHit</a></p></li>
+</ul>
+</section>
+<section id="id14">
+<h2>其他改变<a class="headerlink" href="#id14" title="Link to this heading">#</a></h2>
+<p>还要其他的一些改变，场景不同，相机和光源位置也就不同。</p>
+<section id="id15">
+<h3>相机位置<a class="headerlink" href="#id15" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">CameraManip</span><span class="p">.</span><span class="n">setLookat</span><span class="p">(</span><span class="n">nvmath</span><span class="o">::</span><span class="n">vec3f</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">15</span><span class="p">),</span><span class="w"> </span><span class="n">nvmath</span><span class="o">::</span><span class="n">vec3f</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span><span class="w"> </span><span class="n">nvmath</span><span class="o">::</span><span class="n">vec3f</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">));</span>
+</pre></div>
+</div>
+</section>
+<section id="id16">
+<h3>场景<a class="headerlink" href="#id16" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">helloVk</span><span class="p">.</span><span class="n">loadScene</span><span class="p">(</span><span class="n">nvh</span><span class="o">::</span><span class="n">findFile</span><span class="p">(</span><span class="s">&quot;media/scenes/cornellBox.gltf&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">defaultSearchPaths</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">));</span>
+</pre></div>
+</div>
+</section>
+<section id="id17">
+<h3>光源位置<a class="headerlink" href="#id17" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">nvmath</span><span class="o">::</span><span class="n">vec3f</span><span class="w"> </span><span class="n">lightPosition</span><span class="p">{</span><span class="mf">0.f</span><span class="p">,</span><span class="w"> </span><span class="mf">4.5f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.f</span><span class="p">};</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id18">
+<h2>简单路径（光线）追踪<a class="headerlink" href="#id18" title="Link to this heading">#</a></h2>
+<p>为了将当前示例实现一个简单的 <a class="reference external" href="https://en.wikipedia.org/wiki/Path_tracing">路径追踪</a> 我们需要修改 <code class="docutils literal notranslate"><span class="pre">RayGen</span></code> （光线生成）和 <code class="docutils literal notranslate"><span class="pre">ClosestHit</span></code> （最近命中）着色器。在正式开始修改前，我们需要修改应用使其能够向着色器中传递当前的渲染帧序号，这样就能积累采样（降噪）。</p>
+<div class="note admonition">
+<p class="admonition-title">积累采样（降噪）</p>
+<p>此处的降噪完整教程可参考 <a class="reference external" href="./JitterCamera.html">相机抖动抗锯齿教程</a></p>
+</div>
+<figure class="align-default" id="id25">
+<img alt="../../../_images/vk_ray_tracing_gltf_KHR_2.png" src="../../../_images/vk_ray_tracing_gltf_KHR_2.png" />
+<figcaption>
+<p><span class="caption-text">glTF 场景光追结果示意图</span><a class="headerlink" href="#id25" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>在 <code class="docutils literal notranslate"><span class="pre">hello_vulkan.cpp</span></code> 中增加如下两个函数：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">//--------------------------------------------------------------------------------------------------</span>
+<span class="c1">// 如果相机矩阵发生了改变，重置帧序号（-1）</span>
+<span class="c1">// 否则递增帧序号</span>
+<span class="c1">//</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">HelloVulkan::updateFrame</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">nvmath</span><span class="o">::</span><span class="n">mat4f</span><span class="w"> </span><span class="n">refCamMatrix</span><span class="p">;</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">float</span><span class="w">         </span><span class="n">refFov</span><span class="p">{</span><span class="n">CameraManip</span><span class="p">.</span><span class="n">getFov</span><span class="p">()};</span>
+
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">m</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="n">CameraManip</span><span class="p">.</span><span class="n">getMatrix</span><span class="p">();</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w">  </span><span class="n">fov</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CameraManip</span><span class="p">.</span><span class="n">getFov</span><span class="p">();</span>
+
+<span class="w">  </span><span class="k">if</span><span class="p">(</span><span class="n">memcmp</span><span class="p">(</span><span class="o">&amp;</span><span class="n">refCamMatrix</span><span class="p">.</span><span class="n">a00</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">m</span><span class="p">.</span><span class="n">a00</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">nvmath</span><span class="o">::</span><span class="n">mat4f</span><span class="p">))</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">refFov</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">fov</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">resetFrame</span><span class="p">();</span>
+<span class="w">    </span><span class="n">refCamMatrix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m</span><span class="p">;</span>
+<span class="w">    </span><span class="n">refFov</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="n">fov</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="n">m_pcRay</span><span class="p">.</span><span class="n">frame</span><span class="o">++</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">HelloVulkan::resetFrame</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">m_pcRay</span><span class="p">.</span><span class="n">frame</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">-1</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>并在 <code class="docutils literal notranslate"><span class="pre">raytrace()</span></code> 函数开头调用 <code class="docutils literal notranslate"><span class="pre">updateFrame()</span></code> 。</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">hello_vulkan.cpp</span></code> 中增加对应的说明：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">updateFrame</span><span class="p">();</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">resetFrame</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>并在着色器的 <code class="docutils literal notranslate"><span class="pre">RtPushConstant</span></code> 结构体中增加一个 <code class="docutils literal notranslate"><span class="pre">frame</span></code> 成员。用于将帧序号传入着色器。</p>
+</section>
+<section id="id21">
+<h2>光线生成着色器<a class="headerlink" href="#id21" title="Link to this heading">#</a></h2>
+<p>对于光线生成着色器的修改很少。首先，其将会使用时钟时间来生成随机数种子。这是通过增加 <a class="reference external" href="https://www.khronos.org/registry/OpenGL/extensions/ARB/ARB_shader_clock.txt">ARB_shader_clock</a> 扩展实现的。</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="cp">#extension GL_ARB_shader_clock : enable</span>
+</pre></div>
+</div>
+<p>随机数的生成器位于 <code class="docutils literal notranslate"><span class="pre">sampling.glsl</span></code> 中，在着色器中使用 <code class="docutils literal notranslate"><span class="pre">#include</span></code> 将其引用进来。</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">main()</span></code> 中我们将会使用如下代码初始化随机数种子：</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="c1">// 初始化随机数种子</span>
+<span class="kt">uint</span><span class="w"> </span><span class="n">seed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tea</span><span class="p">(</span><span class="nb">gl_LaunchIDEXT</span><span class="p">.</span><span class="n">y</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">gl_LaunchSizeEXT</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">gl_LaunchIDEXT</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="p">(</span><span class="n">clockARB</span><span class="p">()));</span>
+</pre></div>
+</div>
+<p>为了积累采样结果而不是仅向目标图片中写入，我们需要使用前一帧的数据。</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="c1">// 随时间积累</span>
+<span class="k">if</span><span class="p">(</span><span class="n">pcRay</span><span class="p">.</span><span class="n">frame</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mo">0</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">a</span><span class="w">         </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span><span class="n">f</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="kt">float</span><span class="p">(</span><span class="n">pcRay</span><span class="p">.</span><span class="n">frame</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">vec3</span><span class="w">  </span><span class="n">old_color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">imageLoad</span><span class="p">(</span><span class="n">image</span><span class="p">,</span><span class="w"> </span><span class="kt">ivec2</span><span class="p">(</span><span class="nb">gl_LaunchIDEXT</span><span class="p">.</span><span class="n">xy</span><span class="p">)).</span><span class="n">xyz</span><span class="p">;</span>
+<span class="w">  </span><span class="n">imageStore</span><span class="p">(</span><span class="n">image</span><span class="p">,</span><span class="w"> </span><span class="kt">ivec2</span><span class="p">(</span><span class="nb">gl_LaunchIDEXT</span><span class="p">.</span><span class="n">xy</span><span class="p">),</span><span class="w"> </span><span class="kt">vec4</span><span class="p">(</span><span class="n">mix</span><span class="p">(</span><span class="n">old_color</span><span class="p">,</span><span class="w"> </span><span class="n">hitValue</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">),</span><span class="w"> </span><span class="mf">1.</span><span class="n">f</span><span class="p">));</span>
+<span class="p">}</span>
+<span class="k">else</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="c1">// 如果为第一帧或相机矩阵发生变化，需要重新刷新渲染结果</span>
+<span class="w">  </span><span class="n">imageStore</span><span class="p">(</span><span class="n">image</span><span class="p">,</span><span class="w"> </span><span class="kt">ivec2</span><span class="p">(</span><span class="nb">gl_LaunchIDEXT</span><span class="p">.</span><span class="n">xy</span><span class="p">),</span><span class="w"> </span><span class="kt">vec4</span><span class="p">(</span><span class="n">hitValue</span><span class="p">,</span><span class="w"> </span><span class="mf">1.</span><span class="n">f</span><span class="p">));</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>光追时我们也需要 <code class="docutils literal notranslate"><span class="pre">seed</span></code> 和 <code class="docutils literal notranslate"><span class="pre">depth</span></code> 信息。将其加入到光追负载中。</p>
+<div class="note admonition">
+<p class="admonition-title">depth</p>
+<p>这里的 <code class="docutils literal notranslate"><span class="pre">depth</span></code> 不是深度。而是光追的递归追踪次数。</p>
+</div>
+<p>在 <code class="docutils literal notranslate"><span class="pre">raycommon.glsl</span></code> 中修改成如下：</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="n">hitPayload</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">vec3</span><span class="w"> </span><span class="n">hitValue</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">uint</span><span class="w"> </span><span class="n">seed</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">uint</span><span class="w"> </span><span class="n">depth</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</section>
+<section id="id22">
+<h2>最近命中着色器<a class="headerlink" href="#id22" title="Link to this heading">#</a></h2>
+<p>需要修改实现光线的递归追踪直到递归到第 <code class="docutils literal notranslate"><span class="pre">10</span></code> 次（硬代码）或者击中了发光元素（光源）。</p>
+<p>在着色器追踪唯一需要保留的信息就是计算的命中信息：位置和法线。所以所有的 <code class="code docutils literal notranslate"><span class="pre">//</span> <span class="pre">Vector</span> <span class="pre">toward</span> <span class="pre">the</span> <span class="pre">light</span></code> 到结尾的代码都可以去掉了，并使用如下代码代替：</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="c1">// https://en.wikipedia.org/wiki/Path_tracing</span>
+<span class="c1">// 该物体的材质</span>
+<span class="n">GltfMaterial</span><span class="w"> </span><span class="n">mat</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="n">materials</span><span class="p">[</span><span class="n">nonuniformEXT</span><span class="p">(</span><span class="n">matIndex</span><span class="p">)];</span>
+<span class="kt">vec3</span><span class="w">         </span><span class="n">emittance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mat</span><span class="p">.</span><span class="n">emissiveFactor</span><span class="p">;</span>
+
+<span class="c1">// 从当前命中位置随机生成一个方向，用于继续追踪（递归）</span>
+<span class="kt">vec3</span><span class="w"> </span><span class="n">tangent</span><span class="p">,</span><span class="w"> </span><span class="n">bitangent</span><span class="p">;</span>
+<span class="n">createCoordinateSystem</span><span class="p">(</span><span class="n">world_normal</span><span class="p">,</span><span class="w"> </span><span class="n">tangent</span><span class="p">,</span><span class="w"> </span><span class="n">bitangent</span><span class="p">);</span>
+<span class="kt">vec3</span><span class="w"> </span><span class="n">rayOrigin</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">world_position</span><span class="p">;</span>
+<span class="kt">vec3</span><span class="w"> </span><span class="n">rayDirection</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">samplingHemisphere</span><span class="p">(</span><span class="n">prd</span><span class="p">.</span><span class="n">seed</span><span class="p">,</span><span class="w"> </span><span class="n">tangent</span><span class="p">,</span><span class="w"> </span><span class="n">bitangent</span><span class="p">,</span><span class="w"> </span><span class="n">world_normal</span><span class="p">);</span>
+
+<span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">cos_theta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dot</span><span class="p">(</span><span class="n">rayDirection</span><span class="p">,</span><span class="w"> </span><span class="n">world_normal</span><span class="p">);</span>
+<span class="c1">// 半球域选择该光线方向（rayDirection）的概率密度函数</span>
+<span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cos_theta</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">M_PI</span><span class="p">;</span>
+
+<span class="c1">// 计算该光线的BRDF（双线反射分布函数） ，假设为兰伯特反射（Lambertian reflection，也叫理想反射，所有方向均匀反射）)</span>
+<span class="kt">vec3</span><span class="w"> </span><span class="n">albedo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mat</span><span class="p">.</span><span class="n">pbrBaseColorFactor</span><span class="p">.</span><span class="n">xyz</span><span class="p">;</span>
+<span class="k">if</span><span class="p">(</span><span class="n">mat</span><span class="p">.</span><span class="n">pbrBaseColorTexture</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">uint</span><span class="w"> </span><span class="n">txtId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mat</span><span class="p">.</span><span class="n">pbrBaseColorTexture</span><span class="p">;</span>
+<span class="w">  </span><span class="n">albedo</span><span class="w"> </span><span class="o">*=</span><span class="w"> </span><span class="n">texture</span><span class="p">(</span><span class="n">texturesMap</span><span class="p">[</span><span class="n">nonuniformEXT</span><span class="p">(</span><span class="n">txtId</span><span class="p">)],</span><span class="w"> </span><span class="n">texcoord0</span><span class="p">).</span><span class="n">xyz</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kt">vec3</span><span class="w"> </span><span class="n">BRDF</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">albedo</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">M_PI</span><span class="p">;</span>
+
+<span class="c1">// 递归追踪光线</span>
+<span class="k">if</span><span class="p">(</span><span class="n">prd</span><span class="p">.</span><span class="n">depth</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">prd</span><span class="p">.</span><span class="n">depth</span><span class="o">++</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">tMin</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mf">0.001</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">tMax</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mf">100000000.0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">uint</span><span class="w">  </span><span class="n">flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">gl_RayFlagsOpaqueEXT</span><span class="p">;</span>
+<span class="w">  </span><span class="n">traceRayEXT</span><span class="p">(</span><span class="n">topLevelAS</span><span class="p">,</span><span class="w">    </span><span class="c1">// acceleration structure</span>
+<span class="w">              </span><span class="n">flags</span><span class="p">,</span><span class="w">         </span><span class="c1">// rayFlags</span>
+<span class="w">              </span><span class="mh">0xFF</span><span class="p">,</span><span class="w">          </span><span class="c1">// cullMask</span>
+<span class="w">              </span><span class="mo">0</span><span class="p">,</span><span class="w">             </span><span class="c1">// sbtRecordOffset</span>
+<span class="w">              </span><span class="mo">0</span><span class="p">,</span><span class="w">             </span><span class="c1">// sbtRecordStride</span>
+<span class="w">              </span><span class="mo">0</span><span class="p">,</span><span class="w">             </span><span class="c1">// missIndex</span>
+<span class="w">              </span><span class="n">rayOrigin</span><span class="p">,</span><span class="w">     </span><span class="c1">// ray origin</span>
+<span class="w">              </span><span class="n">tMin</span><span class="p">,</span><span class="w">          </span><span class="c1">// ray min range</span>
+<span class="w">              </span><span class="n">rayDirection</span><span class="p">,</span><span class="w">  </span><span class="c1">// ray direction</span>
+<span class="w">              </span><span class="n">tMax</span><span class="p">,</span><span class="w">          </span><span class="c1">// ray max range</span>
+<span class="w">              </span><span class="mo">0</span><span class="w">              </span><span class="c1">// payload (location = 0)</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="p">}</span>
+<span class="kt">vec3</span><span class="w"> </span><span class="n">incoming</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">prd</span><span class="p">.</span><span class="n">hitValue</span><span class="p">;</span>
+
+<span class="c1">// 在此处应用渲染等式.</span>
+<span class="n">prd</span><span class="p">.</span><span class="n">hitValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">emittance</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">BRDF</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">incoming</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">cos_theta</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">p</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>光追中我们并没有实现像光栅化渲染中的点光源。而是仅使用发光物体来照亮该场景。</p>
+</div>
+<section id="createcoordinatesystem">
+<h3>createCoordinateSystem<a class="headerlink" href="#createcoordinatesystem" title="Link to this heading">#</a></h3>
+</section>
+<section id="samplinghemisphere">
+<h3>samplingHemisphere<a class="headerlink" href="#samplinghemisphere" title="Link to this heading">#</a></h3>
+</section>
+</section>
+<section id="id23">
+<h2>未命中着色器<a class="headerlink" href="#id23" title="Link to this heading">#</a></h2>
+<p>为了避免环境中的光线计算。简单返回一个单色。</p>
+<div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="p">(</span><span class="n">prd</span><span class="p">.</span><span class="n">depth</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mo">0</span><span class="p">)</span>
+<span class="w">    </span><span class="n">prd</span><span class="p">.</span><span class="n">hitValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">clearColor</span><span class="p">.</span><span class="n">xyz</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">0.8</span><span class="p">;</span>
+<span class="w">  </span><span class="k">else</span>
+<span class="w">    </span><span class="n">prd</span><span class="p">.</span><span class="n">hitValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">vec3</span><span class="p">(</span><span class="mf">0.01</span><span class="p">);</span><span class="w">  </span><span class="c1">// 返回一个简单的环境颜色</span>
+<span class="w">  </span><span class="n">prd</span><span class="p">.</span><span class="n">depth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="p">;</span><span class="w">              </span><span class="c1">// 结束追踪递归</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
 </section>
 
         </article>
@@ -612,6 +862,24 @@
 </li>
 <li><a class="reference internal" href="#id8">几何体转底层加速结构</a></li>
 <li><a class="reference internal" href="#id9">创建顶层加速结构</a></li>
+<li><a class="reference internal" href="#id10">光栅化渲染</a></li>
+<li><a class="reference internal" href="#id11">光线追踪修改</a></li>
+<li><a class="reference internal" href="#id12">描述符和管线修改</a></li>
+<li><a class="reference internal" href="#id13">着色器</a></li>
+<li><a class="reference internal" href="#id14">其他改变</a><ul>
+<li><a class="reference internal" href="#id15">相机位置</a></li>
+<li><a class="reference internal" href="#id16">场景</a></li>
+<li><a class="reference internal" href="#id17">光源位置</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id18">简单路径（光线）追踪</a></li>
+<li><a class="reference internal" href="#id21">光线生成着色器</a></li>
+<li><a class="reference internal" href="#id22">最近命中着色器</a><ul>
+<li><a class="reference internal" href="#createcoordinatesystem">createCoordinateSystem</a></li>
+<li><a class="reference internal" href="#samplinghemisphere">samplingHemisphere</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id23">未命中着色器</a></li>
 </ul>
 </li>
 </ul>
