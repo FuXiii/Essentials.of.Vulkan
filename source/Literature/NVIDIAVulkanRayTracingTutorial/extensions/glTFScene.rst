@@ -12,6 +12,18 @@ glTF 场景
     * 2023/10/26 增加 ``加载场景`` 章节
     * 2023/10/26 增加 ``几何体转底层加速结构`` 章节
     * 2023/10/26 增加 ``创建顶层加速结构`` 章节
+    * 2023/10/28 增加 ``光栅化渲染`` 章节
+    * 2023/10/28 增加 ``光线追踪修改`` 章节
+    * 2023/10/28 增加 ``描述符和管线修改`` 章节
+    * 2023/10/28 增加 ``着色器`` 章节
+    * 2023/10/28 增加 ``其他改变`` 章节
+    * 2023/10/28 增加 ``相机位置`` 章节
+    * 2023/10/28 增加 ``场景`` 章节
+    * 2023/10/28 增加 ``简单路径（光线）追踪`` 章节
+    * 2023/10/28 增加 ``光线生成着色器`` 章节
+    * 2023/10/28 增加 ``最近命中着色器`` 章节
+    * 2023/10/28 增加 ``createCoordinateSystem`` 章节
+    * 2023/10/28 增加 ``samplingHemisphere`` 章节
 
 `文献源`_
 
@@ -297,5 +309,269 @@ glTF 场景
 
     长度为 ``10`` ，每个元素分别对应场景中的 ``10`` 个物体。
 
+光栅化渲染
+####################
 
+光栅化比较简单。着色器将会使用顶点，法线和纹理坐标。对于每一个物体节点，我们会将传入该图元使用的材质 ``ID`` 。由于我们压缩了场景，所以可以遍历所有的可绘制节点进行绘制。
 
+.. code:: c++
+
+  std::vector<VkBuffer> vertexBuffers = {m_vertexBuffer.buffer, m_normalBuffer.buffer, m_uvBuffer.buffer};
+  vkCmdBindVertexBuffers(cmdBuf, 0, static_cast<uint32_t>(vertexBuffers.size()), vertexBuffers.data(), offsets.data());
+  vkCmdBindIndexBuffer(cmdBuf, m_indexBuffer.buffer, 0, VK_INDEX_TYPE_UINT32);
+
+  uint32_t idxNode = 0;
+  for(auto& node : m_gltfScene.m_nodes)
+  {
+    auto& primitive = m_gltfScene.m_primMeshes[node.primMesh];
+
+    m_pcRaster.modelMatrix = node.worldMatrix;
+    m_pcRaster.objIndex    = node.primMesh;
+    m_pcRaster.materialId  = primitive.materialIndex;
+    vkCmdPushConstants(cmdBuf, m_pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0,
+                       sizeof(PushConstantRaster), &m_pcRaster);
+    vkCmdDrawIndexed(cmdBuf, primitive.indexCount, 1, primitive.firstIndex, primitive.vertexOffset, 0);
+  }
+
+光线追踪修改
+####################
+
+在 ``createRtDescriptorSet()`` 中唯一的改变就是为了当命中三角形时能够获取相应的图元信息而传入的图元信息缓存。
+
+.. code:: c++
+
+    m_rtDescSetLayoutBind.addBinding(ePrimLookup, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1,
+                                     VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_ANY_HIT_BIT_KHR);  // Primitive info
+  // ...
+    VkDescriptorBufferInfo primitiveInfoDesc{m_rtPrimLookup.buffer, 0, VK_WHOLE_SIZE};
+  // ...
+    writes.emplace_back(m_rtDescSetLayoutBind.makeWrite(m_rtDescSet, ePrimLookup, &primitiveInfoDesc));
+
+描述符和管线修改
+####################
+
+由于我们对于顶点位置。法线和纹理坐标使用三个不同的缓存。相应的 ``createDescriptorSetLayout()`` ， ``updateDescriptorSet()`` 和 ``createGraphicsPipeline()`` 也需要适配这三个不同的缓存。具体可参考 `hello_vulkan <https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/blob/master/ray_tracing_gltf/hello_vulkan.cpp>`_ 。
+
+着色器
+####################
+
+此时（还未进行基于物理的光追）着色器与之前的没什么区别，并且并没有实现完整的 ``glTF`` 的基于物理的着色模型，着色器仅仅适配新的输入数据格式。
+
+* 光栅化： `vert_shader <https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/blob/master/ray_tracing_gltf/shaders/vert_shader.vert>`_ ， `frag_shader <https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/blob/master/ray_tracing_gltf/shaders/frag_shader.frag>`_
+* 光线追踪 `RayGen <https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/blob/master/ray_tracing_gltf/shaders/raytrace.rgen>`_ ， `ClosestHit <https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/blob/master/ray_tracing_gltf/shaders/raytrace.rchit>`_
+
+其他改变
+####################
+
+还要其他的一些改变，场景不同，相机和光源位置也就不同。
+
+相机位置
+**********
+
+.. code:: c++
+
+  CameraManip.setLookat(nvmath::vec3f(0, 0, 15), nvmath::vec3f(0, 0, 0), nvmath::vec3f(0, 1, 0));
+
+场景
+**********
+
+.. code:: c++
+
+  helloVk.loadScene(nvh::findFile("media/scenes/cornellBox.gltf", defaultSearchPaths, true));
+
+光源位置
+**********
+
+.. code:: c++
+
+  nvmath::vec3f lightPosition{0.f, 4.5f, 0.f};
+
+简单路径（光线）追踪
+####################
+
+为了将当前示例实现一个简单的 `路径追踪 <https://en.wikipedia.org/wiki/Path_tracing>`_ 我们需要修改 ``RayGen`` （光线生成）和 ``ClosestHit`` （最近命中）着色器。在正式开始修改前，我们需要修改应用使其能够向着色器中传递当前的渲染帧序号，这样就能积累采样（降噪）。
+
+.. admonition:: 积累采样（降噪）
+    :class: note
+
+    此处的降噪完整教程可参考 `相机抖动抗锯齿教程 <./JitterCamera.html>`_
+
+.. figure:: ../../../_static/vk_ray_tracing_gltf_KHR_2.png
+
+    glTF 场景光追结果示意图
+
+在 ``hello_vulkan.cpp`` 中增加如下两个函数：
+
+.. code:: c++
+
+  //--------------------------------------------------------------------------------------------------
+  // 如果相机矩阵发生了改变，重置帧序号（-1）
+  // 否则递增帧序号
+  //
+  void HelloVulkan::updateFrame()
+  {
+    static nvmath::mat4f refCamMatrix;
+    static float         refFov{CameraManip.getFov()};
+
+    const auto& m   = CameraManip.getMatrix();
+    const auto  fov = CameraManip.getFov();
+
+    if(memcmp(&refCamMatrix.a00, &m.a00, sizeof(nvmath::mat4f)) != 0 || refFov != fov)
+    {
+      resetFrame();
+      refCamMatrix = m;
+      refFov       = fov;
+    }
+    m_pcRay.frame++;
+  }
+
+  void HelloVulkan::resetFrame()
+  {
+    m_pcRay.frame = -1;
+  }
+
+并在 ``raytrace()`` 函数开头调用 ``updateFrame()`` 。
+
+在 ``hello_vulkan.cpp`` 中增加对应的说明：
+
+.. code:: c++
+
+  void updateFrame();
+  void resetFrame();
+
+并在着色器的 ``RtPushConstant`` 结构体中增加一个 ``frame`` 成员。用于将帧序号传入着色器。
+
+光线生成着色器
+####################
+
+对于光线生成着色器的修改很少。首先，其将会使用时钟时间来生成随机数种子。这是通过增加 `ARB_shader_clock <https://www.khronos.org/registry/OpenGL/extensions/ARB/ARB_shader_clock.txt>`_ 扩展实现的。
+
+.. code:: glsl
+
+  #extension GL_ARB_shader_clock : enable
+
+随机数的生成器位于 ``sampling.glsl`` 中，在着色器中使用 ``#include`` 将其引用进来。
+
+在 ``main()`` 中我们将会使用如下代码初始化随机数种子：
+
+.. code:: glsl
+
+  // 初始化随机数种子
+  uint seed = tea(gl_LaunchIDEXT.y * gl_LaunchSizeEXT.x + gl_LaunchIDEXT.x, int(clockARB()));
+
+为了积累采样结果而不是仅向目标图片中写入，我们需要使用前一帧的数据。
+
+.. code:: glsl
+
+  // 随时间积累
+  if(pcRay.frame > 0)
+  {
+    float a         = 1.0f / float(pcRay.frame + 1);
+    vec3  old_color = imageLoad(image, ivec2(gl_LaunchIDEXT.xy)).xyz;
+    imageStore(image, ivec2(gl_LaunchIDEXT.xy), vec4(mix(old_color, hitValue, a), 1.f));
+  }
+  else
+  {
+    // 如果为第一帧或相机矩阵发生变化，需要重新刷新渲染结果
+    imageStore(image, ivec2(gl_LaunchIDEXT.xy), vec4(hitValue, 1.f));
+  }
+
+光追时我们也需要 ``seed`` 和 ``depth`` 信息。将其加入到光追负载中。
+
+.. admonition:: depth
+    :class: note
+
+    这里的 ``depth`` 不是深度。而是光追的递归追踪次数。
+
+在 ``raycommon.glsl`` 中修改成如下：
+
+.. code:: glsl
+
+  struct hitPayload
+  {
+    vec3 hitValue;
+    uint seed;
+    uint depth;
+  };
+
+最近命中着色器
+####################
+
+需要修改实现光线的递归追踪直到递归到第 ``10`` 次（硬代码）或者击中了发光元素（光源）。
+
+在着色器追踪唯一需要保留的信息就是计算的命中信息：位置和法线。所以所有的 :code:`// Vector toward the light` 到结尾的代码都可以去掉了，并使用如下代码代替：
+
+.. code:: glsl
+
+  // https://en.wikipedia.org/wiki/Path_tracing
+  // 该物体的材质
+  GltfMaterial mat       = materials[nonuniformEXT(matIndex)];
+  vec3         emittance = mat.emissiveFactor;
+
+  // 从当前命中位置随机生成一个方向，用于继续追踪（递归）
+  vec3 tangent, bitangent;
+  createCoordinateSystem(world_normal, tangent, bitangent);
+  vec3 rayOrigin    = world_position;
+  vec3 rayDirection = samplingHemisphere(prd.seed, tangent, bitangent, world_normal);
+
+  const float cos_theta = dot(rayDirection, world_normal);
+  // 半球域选择该光线方向（rayDirection）的概率密度函数
+  const float p = cos_theta / M_PI;
+
+  // 计算该光线的BRDF（双线反射分布函数） ，假设为兰伯特反射（Lambertian reflection，也叫理想反射，所有方向均匀反射）)
+  vec3 albedo = mat.pbrBaseColorFactor.xyz;
+  if(mat.pbrBaseColorTexture > -1)
+  {
+    uint txtId = mat.pbrBaseColorTexture;
+    albedo *= texture(texturesMap[nonuniformEXT(txtId)], texcoord0).xyz;
+  }
+  vec3 BRDF = albedo / M_PI;
+
+  // 递归追踪光线
+  if(prd.depth < 10)
+  {
+    prd.depth++;
+    float tMin  = 0.001;
+    float tMax  = 100000000.0;
+    uint  flags = gl_RayFlagsOpaqueEXT;
+    traceRayEXT(topLevelAS,    // acceleration structure
+                flags,         // rayFlags
+                0xFF,          // cullMask
+                0,             // sbtRecordOffset
+                0,             // sbtRecordStride
+                0,             // missIndex
+                rayOrigin,     // ray origin
+                tMin,          // ray min range
+                rayDirection,  // ray direction
+                tMax,          // ray max range
+                0              // payload (location = 0)
+    );
+  }
+  vec3 incoming = prd.hitValue;
+
+  // 在此处应用渲染等式.
+  prd.hitValue = emittance + (BRDF * incoming * cos_theta / p);
+
+.. note:: 光追中我们并没有实现像光栅化渲染中的点光源。而是仅使用发光物体来照亮该场景。
+
+createCoordinateSystem
+******************************
+
+samplingHemisphere
+******************************
+
+未命中着色器
+####################
+
+为了避免环境中的光线计算。简单返回一个单色。
+
+.. code:: glsl
+
+  void main()
+  {
+    if(prd.depth == 0)
+      prd.hitValue = clearColor.xyz * 0.8;
+    else
+      prd.hitValue = vec3(0.01);  // 返回一个简单的环境颜色
+    prd.depth = 100;              // 结束追踪递归
+  }
