@@ -584,6 +584,28 @@ createCoordinateSystem
 samplingHemisphere
 ******************************
 
+.. code:: c++
+
+  vec3 samplingHemisphere(inout uint seed, in vec3 x, in vec3 y, in vec3 z)
+  {
+  #define M_PI 3.14159265
+
+    float r1 = rnd(seed);
+    float r2 = rnd(seed);
+    float sq = sqrt(r1);
+
+    vec3 direction = vec3(cos(2 * M_PI * r2) * sq, sin(2 * M_PI * r2) * sq, sqrt(1. - r1));
+    direction      = direction.x * x + direction.y * y + direction.z * z;
+
+    return direction;
+  }
+
+该函数使用 ``seed`` 生产随机数，并使用 ``x`` ， ``y`` 和 ``z`` 作为正交基返回一个随机向量。其中 ``r1`` 和 ``r2`` 为两个 ``[0, 1]`` 的随机数。
+
+其原理图解如下：
+
+.. figure:: ../../../_static/samplingHemisphere.png
+
 未命中着色器
 ####################
 
