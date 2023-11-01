@@ -25,6 +25,7 @@ glTF 场景
     * 2023/10/28 增加 ``createCoordinateSystem`` 章节
     * 2023/10/28 增加 ``samplingHemisphere`` 章节
     * 2023/11/1 更新 ``createCoordinateSystem`` 章节
+    * 2023/11/1 更新 ``samplingHemisphere`` 章节
 
 `文献源`_
 
