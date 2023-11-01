@@ -24,6 +24,7 @@ glTF 场景
     * 2023/10/28 增加 ``最近命中着色器`` 章节
     * 2023/10/28 增加 ``createCoordinateSystem`` 章节
     * 2023/10/28 增加 ``samplingHemisphere`` 章节
+    * 2023/11/1 更新 ``createCoordinateSystem`` 章节
 
 `文献源`_
 
@@ -556,6 +557,29 @@ glTF 场景
 
 createCoordinateSystem
 ******************************
+
+.. code:: c++
+
+  void createCoordinateSystem(in vec3 N, out vec3 Nt, out vec3 Nb)
+  {
+    if(abs(N.x) > abs(N.y))
+      Nt = vec3(N.z, 0, -N.x) / sqrt(N.x * N.x + N.z * N.z);
+    else
+      Nt = vec3(0, -N.z, N.y) / sqrt(N.y * N.y + N.z * N.z);
+    Nb = cross(N, Nt);
+  }
+
+该函数组要是用于返回由法线 ``N`` 为基准生成的一个正交基。
+
+其中 :code:`Nt = vec3(N.z, 0, -N.x) / sqrt(N.x * N.x + N.z * N.z);`  是法线向量 ``N`` 与向量 ``(0, 1, 0)`` 叉乘后进行单位化（除以向量模长）。如此得到一个与法线 ``N`` 垂直的向量 ``Nt`` 。
+
+之后 :code:`Nb = cross(N, Nt)` 是 ``Nt`` 向量与法向量 ``N`` 再次叉乘，获取与这两个向量都垂直的向量 ``Nb`` 。
+
+这样使用 ``N`` ， ``Nt`` 和 ``Nb`` 就可以组成一个正交基（一个三维坐标系）。
+
+图解如下：（这里使用 ``(0, 0, 1)`` 向量与法线向量 ``N`` 做叉乘）
+
+.. figure:: ../../../_static/createCoordinateSystem.png
 
 samplingHemisphere
 ******************************
