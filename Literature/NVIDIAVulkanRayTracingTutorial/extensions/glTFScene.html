@@ -294,13 +294,16 @@
 <li><p class="sd-card-text">2023/10/28 增加 <code class="docutils literal notranslate"><span class="pre">samplingHemisphere</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/11/1 更新 <code class="docutils literal notranslate"><span class="pre">createCoordinateSystem</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/11/1 更新 <code class="docutils literal notranslate"><span class="pre">samplingHemisphere</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/11/2 增加 <code class="docutils literal notranslate"><span class="pre">快速光线追踪</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/11/2 增加 <code class="docutils literal notranslate"><span class="pre">最近命中</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/11/2 增加 <code class="docutils literal notranslate"><span class="pre">光线生成</span></code> 章节</p></li>
 </ul>
 </div>
 </details><p><a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing_gltf">文献源</a></p>
-<figure class="align-default" id="id24">
+<figure class="align-default" id="id28">
 <img alt="../../../_images/vk_ray_tracing_gltf_KHR.png" src="../../../_images/vk_ray_tracing_gltf_KHR.png" />
 <figcaption>
-<p><span class="caption-text">glTF 场景光栅化结果示意图</span><a class="headerlink" href="#id24" title="Link to this image">#</a></p>
+<p><span class="caption-text">glTF 场景光栅化结果示意图</span><a class="headerlink" href="#id28" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <section id="id3">
@@ -617,10 +620,10 @@
 <p class="admonition-title">积累采样（降噪）</p>
 <p>此处的降噪完整教程可参考 <a class="reference external" href="./JitterCamera.html">相机抖动抗锯齿教程</a></p>
 </div>
-<figure class="align-default" id="id25">
+<figure class="align-default" id="id29">
 <img alt="../../../_images/vk_ray_tracing_gltf_KHR_2.png" src="../../../_images/vk_ray_tracing_gltf_KHR_2.png" />
 <figcaption>
-<p><span class="caption-text">glTF 场景光追结果示意图</span><a class="headerlink" href="#id25" title="Link to this image">#</a></p>
+<p><span class="caption-text">glTF 场景光追结果示意图</span><a class="headerlink" href="#id29" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <p>在 <code class="docutils literal notranslate"><span class="pre">hello_vulkan.cpp</span></code> 中增加如下两个函数：</p>
@@ -818,6 +821,76 @@
 </pre></div>
 </div>
 </section>
+<section id="id24">
+<h2>快速光线追踪<a class="headerlink" href="#id24" title="Link to this heading">#</a></h2>
+<p>之前是通过递归追踪光线实现的，这并不是最优的追踪方式，就像 <a class="reference external" href="./Reflections.html">反射</a> 中，最好是在光线生成着色器中进行光线递归追踪。</p>
+<p>接下来的改变可以使得渲染效率提高 <code class="docutils literal notranslate"><span class="pre">3</span></code> 倍。</p>
+<p>为了提高效率，我们需要扩展光线负载，用于最近命中着色器中的数据传递给光线生成着色器。扩展的数据包括光线起点、对应的光线方向和 <code class="docutils literal notranslate"><span class="pre">BRDF</span></code> 的权重。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">hitPayload</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">vec3</span><span class="w"> </span><span class="n">hitValue</span><span class="p">;</span>
+<span class="w">  </span><span class="n">uint</span><span class="w"> </span><span class="n">seed</span><span class="p">;</span>
+<span class="w">  </span><span class="n">uint</span><span class="w"> </span><span class="n">depth</span><span class="p">;</span>
+<span class="w">  </span><span class="n">vec3</span><span class="w"> </span><span class="n">rayOrigin</span><span class="p">;</span>
+<span class="w">  </span><span class="n">vec3</span><span class="w"> </span><span class="n">rayDirection</span><span class="p">;</span>
+<span class="w">  </span><span class="n">vec3</span><span class="w"> </span><span class="n">weight</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</section>
+<section id="id26">
+<h2>最近命中<a class="headerlink" href="#id26" title="Link to this heading">#</a></h2>
+<p>在最近命中着色器中我们不再需要递归追踪了，所以在递归追踪之前我们存储负载信息并返回。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">prd</span><span class="p">.</span><span class="n">rayOrigin</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">rayOrigin</span><span class="p">;</span>
+<span class="n">prd</span><span class="p">.</span><span class="n">rayDirection</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rayDirection</span><span class="p">;</span>
+<span class="n">prd</span><span class="p">.</span><span class="n">hitValue</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="n">emittance</span><span class="p">;</span>
+<span class="n">prd</span><span class="p">.</span><span class="n">weight</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="n">BRDF</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">cos_theta</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">p</span><span class="p">;</span>
+<span class="k">return</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<section id="id27">
+<h2>光线生成<a class="headerlink" href="#id27" title="Link to this heading">#</a></h2>
+<p>现在光线生产着色器最为光线循环追踪的场所。</p>
+<p>首先初始化负载和变量以便之后进行积累。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">prd</span><span class="p">.</span><span class="n">rayOrigin</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">origin</span><span class="p">.</span><span class="n">xyz</span><span class="p">;</span>
+<span class="n">prd</span><span class="p">.</span><span class="n">rayDirection</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">direction</span><span class="p">.</span><span class="n">xyz</span><span class="p">;</span>
+<span class="n">prd</span><span class="p">.</span><span class="n">weight</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="n">vec3</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+
+<span class="n">vec3</span><span class="w"> </span><span class="n">curWeight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vec3</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="n">vec3</span><span class="w"> </span><span class="n">hitValue</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">vec3</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>好了，现在就可以开始循环调用追踪函数了，如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">for</span><span class="p">(;</span><span class="w"> </span><span class="n">prd</span><span class="p">.</span><span class="n">depth</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span><span class="w"> </span><span class="n">prd</span><span class="p">.</span><span class="n">depth</span><span class="o">++</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">traceRayEXT</span><span class="p">(</span><span class="n">topLevelAS</span><span class="p">,</span><span class="w">        </span><span class="c1">// acceleration structure</span>
+<span class="w">              </span><span class="n">rayFlags</span><span class="p">,</span><span class="w">          </span><span class="c1">// rayFlags</span>
+<span class="w">              </span><span class="mh">0xFF</span><span class="p">,</span><span class="w">              </span><span class="c1">// cullMask</span>
+<span class="w">              </span><span class="mi">0</span><span class="p">,</span><span class="w">                 </span><span class="c1">// sbtRecordOffset</span>
+<span class="w">              </span><span class="mi">0</span><span class="p">,</span><span class="w">                 </span><span class="c1">// sbtRecordStride</span>
+<span class="w">              </span><span class="mi">0</span><span class="p">,</span><span class="w">                 </span><span class="c1">// missIndex</span>
+<span class="w">              </span><span class="n">prd</span><span class="p">.</span><span class="n">rayOrigin</span><span class="p">,</span><span class="w">     </span><span class="c1">// ray origin</span>
+<span class="w">              </span><span class="n">tMin</span><span class="p">,</span><span class="w">              </span><span class="c1">// ray min range</span>
+<span class="w">              </span><span class="n">prd</span><span class="p">.</span><span class="n">rayDirection</span><span class="p">,</span><span class="w">  </span><span class="c1">// ray direction</span>
+<span class="w">              </span><span class="n">tMax</span><span class="p">,</span><span class="w">              </span><span class="c1">// ray max range</span>
+<span class="w">              </span><span class="mi">0</span><span class="w">                  </span><span class="c1">// payload (location = 0)</span>
+<span class="w">  </span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">hitValue</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">prd</span><span class="p">.</span><span class="n">hitValue</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">curWeight</span><span class="p">;</span>
+<span class="w">  </span><span class="n">curWeight</span><span class="w"> </span><span class="o">*=</span><span class="w"> </span><span class="n">prd</span><span class="p">.</span><span class="n">weight</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="note admonition">
+<p class="admonition-title">prd.depth &lt; 10</p>
+<p>此处的追踪深度 <code class="docutils literal notranslate"><span class="pre">10</span></code> 为硬编码。更好的做法是通过 <code class="docutils literal notranslate"><span class="pre">push</span> <span class="pre">constant</span></code> 来传入数据。</p>
+</div>
+<div class="note admonition">
+<p class="admonition-title">hitValue</p>
+<p>不要忘记在 <code class="docutils literal notranslate"><span class="pre">imageStore</span></code> 时使用 <code class="docutils literal notranslate"><span class="pre">hitValue</span></code> 。</p>
+</div>
+</section>
 </section>
 
         </article>
@@ -921,6 +994,9 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#id23">未命中着色器</a></li>
+<li><a class="reference internal" href="#id24">快速光线追踪</a></li>
+<li><a class="reference internal" href="#id26">最近命中</a></li>
+<li><a class="reference internal" href="#id27">光线生成</a></li>
 </ul>
 </li>
 </ul>
