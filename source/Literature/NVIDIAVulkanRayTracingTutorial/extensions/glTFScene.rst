@@ -26,6 +26,9 @@ glTF 场景
     * 2023/10/28 增加 ``samplingHemisphere`` 章节
     * 2023/11/1 更新 ``createCoordinateSystem`` 章节
     * 2023/11/1 更新 ``samplingHemisphere`` 章节
+    * 2023/11/2 增加 ``快速光线追踪`` 章节
+    * 2023/11/2 增加 ``最近命中`` 章节
+    * 2023/11/2 增加 ``光线生成`` 章节
 
 `文献源`_
 
@@ -622,3 +625,86 @@ samplingHemisphere
       prd.hitValue = vec3(0.01);  // 返回一个简单的环境颜色
     prd.depth = 100;              // 结束追踪递归
   }
+
+快速光线追踪
+####################
+
+之前是通过递归追踪光线实现的，这并不是最优的追踪方式，就像 `反射 <./Reflections.html>`_ 中，最好是在光线生成着色器中进行光线递归追踪。
+
+接下来的改变可以使得渲染效率提高 ``3`` 倍。
+
+为了提高效率，我们需要扩展光线负载，用于最近命中着色器中的数据传递给光线生成着色器。扩展的数据包括光线起点、对应的光线方向和 ``BRDF`` 的权重。
+
+.. code:: c++
+
+  struct hitPayload
+  {
+    vec3 hitValue;
+    uint seed;
+    uint depth;
+    vec3 rayOrigin;
+    vec3 rayDirection;
+    vec3 weight;
+  };
+
+最近命中
+####################
+
+在最近命中着色器中我们不再需要递归追踪了，所以在递归追踪之前我们存储负载信息并返回。
+
+.. code:: c++
+
+  prd.rayOrigin    = rayOrigin;
+  prd.rayDirection = rayDirection;
+  prd.hitValue     = emittance;
+  prd.weight       = BRDF * cos_theta / p;
+  return;
+
+光线生成
+####################
+
+现在光线生产着色器最为光线循环追踪的场所。
+
+首先初始化负载和变量以便之后进行积累。
+
+.. code:: c++
+
+  prd.rayOrigin    = origin.xyz;
+  prd.rayDirection = direction.xyz;
+  prd.weight       = vec3(0);
+
+  vec3 curWeight = vec3(1);
+  vec3 hitValue  = vec3(0);
+
+好了，现在就可以开始循环调用追踪函数了，如下：
+
+.. code:: c++
+
+  for(; prd.depth < 10; prd.depth++)
+  {
+    traceRayEXT(topLevelAS,        // acceleration structure
+                rayFlags,          // rayFlags
+                0xFF,              // cullMask
+                0,                 // sbtRecordOffset
+                0,                 // sbtRecordStride
+                0,                 // missIndex
+                prd.rayOrigin,     // ray origin
+                tMin,              // ray min range
+                prd.rayDirection,  // ray direction
+                tMax,              // ray max range
+                0                  // payload (location = 0)
+    );
+
+    hitValue += prd.hitValue * curWeight;
+    curWeight *= prd.weight;
+  }
+
+.. admonition:: prd.depth < 10
+    :class: note
+
+    此处的追踪深度 ``10`` 为硬编码。更好的做法是通过 ``push constant`` 来传入数据。
+
+.. admonition:: hitValue
+    :class: note
+
+    不要忘记在 ``imageStore`` 时使用 ``hitValue`` 。
