@@ -282,6 +282,7 @@
 <li><p class="sd-card-text">2023/10/17 增加 <code class="docutils literal notranslate"><span class="pre">可调用着色器</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/10/17 增加 <code class="docutils literal notranslate"><span class="pre">着色器绑定表</span></code> 章节</p></li>
 <li><p class="sd-card-text">2023/10/17 增加 <code class="docutils literal notranslate"><span class="pre">调用可调用着色器</span></code> 章节</p></li>
+<li><p class="sd-card-text">2023/11/4 更新 <code class="docutils literal notranslate"><span class="pre">教程</span></code> 章节。增加对于可调用着色器使用范围的注解</p></li>
 </ul>
 </div>
 </details><p><a class="reference external" href="https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/tree/master/ray_tracing_callable">文献源</a></p>
@@ -295,6 +296,10 @@
 <h2>教程<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
 <p>该教程为 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> <a class="reference external" href="../NVIDIAVulkanRayTracingTutorial.html">光线追踪教程</a> 的扩展。</p>
 <p>实时光追支持在光线生成着色器、最近命中着色器、未命中着色器或者其他可调用着色器中使用 <code class="docutils literal notranslate"><span class="pre">可调用着色器</span></code> 。可调用着色器的调用有点类似间接函数的调用，不需要将这些着色器链接进可执行程序中。</p>
+<div class="note admonition">
+<p class="admonition-title">可调用着色器使用范围</p>
+<p>在 <a class="reference external" href="https://github.com/KhronosGroup/GLSL/blob/master/extensions/ext/GLSL_EXT_ray_tracing.txt">GLSL_EXT_ray_tracing</a> 文档中规定，可调用着色器只能在光线生产着色器、最近命中着色器、未命中着色器和可调用着色器中使用。而像传统的顶点着色器和片源着色器等目前不能使用可调用着色器。</p>
+</div>
 </section>
 <section id="id5">
 <h2>数据存储<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
