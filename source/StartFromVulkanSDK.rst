@@ -23,6 +23,7 @@
    * 2023/6/23 增加 ``Templates`` 章节
    * 2023/6/29 更新 ``安装 Vulkan SDK`` 章节，改成 ``Tab`` 标签呈现
    * 2023/7/10 增加 ``查看 Vulkan 所有相关信息`` 章节
+   * 2024/1/2 更新 ``Vulkan的库`` 章节。修正不推荐使用 ``vulkan-1.lib`` 的跳转说明链接。
 
 ``Khronos`` 这次推出了 ``Vulkan`` 官方的软件开发工具包 `Vulkan SDK <https://vulkan.lunarg.com/home/welcome>`_ ，这避免了像 ``OpenGL`` 开发环境混乱的情形再次上演。
 
@@ -499,7 +500,7 @@ Vulkan的库
    :class: attention
 
    现在已经不推荐使用静态库链接到 ``Vulkan`` 了。而是推荐直接使用 ``Vulkan`` 的动态库，也就是 ``Vulkan`` 运行时的那个动态库， ``Windows`` 下为 ``vulkan-1.dll`` ，
-   在 ``Linux`` 操作系统中为 ``libvulkan.so.1`` 或 ``libvulkan.so`` 。有关原因请查阅 `Vulkan-Loader <https://github.com/KhronosGroup/Vulkan-Loader/blob/main/docs/LoaderApplicationInterface.md#static-linking>`_ 文档
+   在 ``Linux`` 操作系统中为 ``libvulkan.so.1`` 或 ``libvulkan.so`` 。有关原因请查阅 `加载 Vulkan 动态库 <./Overview.html#id5>`_ 章节。
 
 Vulkan SDK 内容
 ######################
