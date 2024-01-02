@@ -117,6 +117,11 @@
    * 2023/10/22 增加 ``VkMemoryRequirements`` 章节。
    * 2023/10/22 增加 ``memoryTypeBits`` 章节。
    * 2024/1/2 更新 ``篇幅`` 说明。
+   * 2024/1/2 更新 ``加载 Vulkan 动态库`` 章节。修正一些用词。
+   * 2024/1/2 增加 ``Vulkan 的句柄`` 章节。
+   * 2024/1/2 增加 ``Dispatchable`` 章节。
+   * 2024/1/2 增加 ``Non-dispatchable`` 章节。
+   * 2024/1/3 增加 ``句柄的使用`` 章节。
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -144,6 +149,84 @@ Vulkan 能为我们做什么
 
 其中 ``光栅化渲染`` 应该是最主要的功能了（同时也是 ``Vulkan`` 的核心功能）。该章节也主要以 ``光栅化渲染`` 为核心进行纵览。
 
+Vulkan 的句柄
+######################
+
+在 ``Vulkan`` 中所有 ``对象`` 都是以 ``句柄`` 的形式呈现的。在 ``Vulkan`` 中有两种句柄：
+
+* :bdg-secondary:`dispatchable` 可调度句柄。
+* :bdg-secondary:`non-dispatchable` 不可调度句柄。
+
+Dispatchable
+************************
+
+可调度句柄有如下特点：
+
+* 拥有具体类型定义的指针。
+* 在生命周期内，其句柄值都是唯一的。
+
+在 ``vulkan_core.h`` 的头文件中使用 ``VK_DEFINE_HANDLE(object)`` 宏来定义，该宏的定义如下：
+
+.. code:: c++
+
+   #define VK_DEFINE_HANDLE(object) typedef struct object##_T* object;
+
+其中 ``VkInstance`` 句柄就是使用该宏定义的可调度句柄：
+
+.. code:: c++
+
+   VK_DEFINE_HANDLE(VkInstance)
+   // 等价于如下定义
+   typedef struct VkInstance_T* VkInstance;
+
+Non-dispatchable
+************************
+
+不可调度句柄有如下特点：
+ 
+* 是一个 ``64`` 位整形。
+* 具体存储的数据是驱动内部自定义的。
+* 句柄本身可能用于存储对象数据，所以句柄值不是唯一的（但这不影响该句柄的销毁）
+
+.. note::
+
+   也不绝对，其说明如下。
+ 
+在 ``vulkan_core.h`` 的头文件中使用 ``VK_DEFINE_NON_DISPATCHABLE_HANDLE(object)`` 宏来定义，该宏的定义如下：
+
+.. code:: c++
+
+   #ifndef VK_USE_64_BIT_PTR_DEFINES
+      #if defined(__LP64__) || defined(_WIN64) || (defined(__x86_64__) && !defined(__ILP32__) ) || defined(_M_X64) || defined(__ia64) || defined (_M_IA64) || defined(__aarch64__) || defined(__powerpc64__)
+         #define VK_USE_64_BIT_PTR_DEFINES 1
+      #else
+         #define VK_USE_64_BIT_PTR_DEFINES 0
+      #endif
+   #endif
+
+   #ifndef VK_DEFINE_NON_DISPATCHABLE_HANDLE
+      #if (VK_USE_64_BIT_PTR_DEFINES==1)
+         #define VK_DEFINE_NON_DISPATCHABLE_HANDLE(object) typedef struct object##_T *object;
+      #else
+         #define VK_DEFINE_NON_DISPATCHABLE_HANDLE(object) typedef uint64_t object;
+      #endif
+   #endif
+
+通过上面的代码我们可以知道， ``Vulkan`` 会先确认当前平台是否支持 ``64`` 位的指针，如果支持则 ``不可调度句柄`` 定义与 ``可调度句柄`` 定义相同。否则使用 ``64`` 位整形表示该句柄。
+
+其中 ``VkBuffer`` 句柄就是使用该宏定义的不可调度句柄：
+
+.. code:: c++  
+
+   VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkBuffer)
+   // 等价于如下定义
+   typedef struct VkBuffer_T* VkBuffer; // 支持64位指针
+   typedef uint64_t VkBuffer; // 不支持64位指针
+
+句柄的使用
+************************
+
+
 Vulkan 的接口
 ######################
 
@@ -161,7 +244,7 @@ Vulkan 的接口
 加载 Vulkan 动态库
 ************************
 
-``Vulkan`` 中提供了 ``Vulkan Loader`` 进行 ``Vulkan`` 标准实现接口的获取。根据前文介绍我们知道 ``Vulkan Loader`` 对应着 ``Vulkan`` 的动态库，所以我们第一步就是加载 ``Vulkan`` 的动态库。
+``Vulkan`` 中提供了 ``Vulkan Loader`` 用于 ``Vulkan`` 标准接口函数的获取。根据前文介绍我们知道 ``Vulkan Loader`` 对应着 ``Vulkan`` 的动态库，所以我们第一步就是加载 ``Vulkan`` 的动态库。
 
 .. admonition:: Vulkan 的动态库
    :class: note
