@@ -2489,7 +2489,7 @@ memoryTypeBits
 
    if(device_memory == VK_NULL_HANDLE)
    {
-      throw std::runtime_error("没有找到支持该资源的的内存类型（堆）");
+      throw std::runtime_error("没有找到支持该资源的内存类型（堆）");
    }
 
 这样我们就成功在正确的内存类型上分配了内存。
