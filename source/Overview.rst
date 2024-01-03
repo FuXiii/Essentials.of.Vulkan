@@ -116,6 +116,18 @@
    * 2023/10/22 增加 ``vkGetImageMemoryRequirements`` 章节。
    * 2023/10/22 增加 ``VkMemoryRequirements`` 章节。
    * 2023/10/22 增加 ``memoryTypeBits`` 章节。
+   * 2024/1/2 更新 ``篇幅`` 说明。
+   * 2024/1/2 更新 ``加载 Vulkan 动态库`` 章节。修正一些用词。
+   * 2024/1/2 增加 ``Vulkan 的句柄`` 章节。
+   * 2024/1/2 增加 ``Dispatchable`` 章节。
+   * 2024/1/2 增加 ``Non-dispatchable`` 章节。
+   * 2024/1/3 增加 ``句柄的使用`` 章节。
+   * 2024/1/3 更新 ``Non-dispatchable`` 章节。
+   * 2024/1/3 增加 ``句柄初始化`` 章节。
+   * 2024/1/3 更新 ``篇幅`` 章节。去掉分章计划。
+   * 2024/1/3 增加 ``资源与内存的绑定`` 章节。
+   * 2024/1/3 增加 ``vkBindBufferMemory`` 章节。
+   * 2024/1/3 增加 ``vkBindImageMemory`` 章节。
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -139,12 +151,166 @@ Vulkan 能为我们做什么
 
 其中 ``光栅化渲染`` 应该是最主要的功能了（同时也是 ``Vulkan`` 的核心功能）。该章节也主要以 ``光栅化渲染`` 为核心进行纵览。
 
+Vulkan 的句柄
+######################
+
+在 ``Vulkan`` 中所有 ``对象`` 都是以 ``句柄`` 的形式呈现的。在 ``Vulkan`` 中有两种句柄：
+
+* :bdg-secondary:`Dispatchable` 可调度句柄。
+* :bdg-secondary:`Non-dispatchable` 不可调度句柄。
+
+Dispatchable
+************************
+
+可调度句柄有如下特点：
+
+* 拥有具体类型定义的指针。
+* 在生命周期内，其句柄值是唯一的。
+
+在 ``vulkan_core.h`` 的头文件中使用 ``VK_DEFINE_HANDLE(object)`` 宏来定义，该宏的定义如下：
+
+.. code:: c++
+
+   #define VK_DEFINE_HANDLE(object) typedef struct object##_T* object;
+
+其中 ``VkInstance`` 句柄就是使用该宏定义的可调度句柄：
+
+.. code:: c++
+
+   VK_DEFINE_HANDLE(VkInstance)
+   // 等价于如下定义
+   typedef struct VkInstance_T* VkInstance;
+
+Non-dispatchable
+************************
+
+不可调度句柄有如下特点：
+ 
+* 是一个 ``64`` 位整形。
+* 具体存储的数据是驱动内部自定义的。
+* 句柄本身可能用于存储对象数据，所以句柄值不是唯一的（但这不影响该句柄的销毁）
+
+.. note::
+
+   * :bdg-secondary:`是一个64位整形` 也不绝对，其说明如下。
+   * :bdg-secondary:`句柄值不是唯一的` 如果设备激活 ``privateData`` 特性了的话，不可调度的句柄在生命周期内，其句柄值是唯一的。
+ 
+在 ``vulkan_core.h`` 的头文件中使用 ``VK_DEFINE_NON_DISPATCHABLE_HANDLE(object)`` 宏来定义，该宏的定义如下：
+
+.. code:: c++
+
+   #ifndef VK_USE_64_BIT_PTR_DEFINES
+      #if defined(__LP64__) || defined(_WIN64) || (defined(__x86_64__) && !defined(__ILP32__) ) || defined(_M_X64) || defined(__ia64) || defined (_M_IA64) || defined(__aarch64__) || defined(__powerpc64__)
+         #define VK_USE_64_BIT_PTR_DEFINES 1
+      #else
+         #define VK_USE_64_BIT_PTR_DEFINES 0
+      #endif
+   #endif
+
+   #ifndef VK_DEFINE_NON_DISPATCHABLE_HANDLE
+      #if (VK_USE_64_BIT_PTR_DEFINES==1)
+         #define VK_DEFINE_NON_DISPATCHABLE_HANDLE(object) typedef struct object##_T *object;
+      #else
+         #define VK_DEFINE_NON_DISPATCHABLE_HANDLE(object) typedef uint64_t object;
+      #endif
+   #endif
+
+通过上面的代码我们可以知道， ``Vulkan`` 会先确认当前平台是否支持 ``64`` 位的指针，如果支持则 ``不可调度句柄`` 定义与 ``可调度句柄`` 定义相同。否则使用 ``64`` 位整形表示该句柄。
+
+其中 ``VkBuffer`` 句柄就是使用该宏定义的不可调度句柄：
+
+.. code:: c++  
+
+   VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkBuffer)
+   // 等价于如下定义
+   typedef struct VkBuffer_T* VkBuffer; // 支持64位指针
+   typedef uint64_t VkBuffer; // 不支持64位指针
+
+句柄的使用
+************************
+
+在 ``Vulkan`` 中已经声明了一系列的句柄类型供我们使用：
+
+.. code:: c++
+
+   VK_DEFINE_HANDLE(VkInstance)
+   VK_DEFINE_HANDLE(VkPhysicalDevice)
+   VK_DEFINE_HANDLE(VkDevice)
+   VK_DEFINE_HANDLE(VkQueue)
+   VK_DEFINE_HANDLE(VkCommandBuffer)
+   VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkBuffer)
+   VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkImage)
+   VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkSemaphore)
+   VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkFence)
+   VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDeviceMemory)
+   VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkEvent)
+   VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkQueryPool)
+   VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkBufferView)
+   VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkImageView)
+   VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkShaderModule)
+   VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkPipelineCache)
+   VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkPipelineLayout)
+   VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkPipeline)
+   VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkRenderPass)
+   VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDescriptorSetLayout)
+   VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkSampler)
+   VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDescriptorSet)
+   VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDescriptorPool)
+   VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkFramebuffer)
+   VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkCommandPool)
+
+.. note::
+
+   此处为核心句柄， ``Vulkan`` 还有很多其他用于扩展功能的句柄。
+
+.. important::
+
+   ``Vulkan`` 的句柄有明确的子父级关系，也就是 ``B`` 句柄是由 ``A`` 句柄创建出来的，因此 ``A`` 为 ``B`` 的父句柄。 ``Vulkan`` 要求子句柄仅能被自己的父句柄使用。比如 ``VkInstance`` 句柄就是 ``VkPhysicalDevice`` 的父句柄。
+
+如此，我们就可以使用这些已经声明好的句柄了，比如声明一个 ``VkInstance`` 句柄：
+
+.. code:: c++
+
+   VkInstance instance;
+   //等价于
+   VkInstance_T* instance;
+
+句柄初始化
+************************
+
+不同编译器对于没有明确初始值变量默认值策略不同，为此 ``Vulkan`` 声明了 ``VK_NULL_HANDLE`` 宏定义用于明确句柄的初始值。其定义如下：
+
+.. code:: c++
+
+   #ifndef VK_DEFINE_NON_DISPATCHABLE_HANDLE
+       #if (VK_USE_64_BIT_PTR_DEFINES==1)
+           #if (defined(__cplusplus) && (__cplusplus >= 201103L)) || (defined(_MSVC_LANG) && (_MSVC_LANG >= 201103L))
+               #define VK_NULL_HANDLE nullptr
+           #else
+               #define VK_NULL_HANDLE ((void*)0)
+           #endif
+       #else
+           #define VK_NULL_HANDLE 0ULL
+       #endif
+   #endif
+   #ifndef VK_NULL_HANDLE
+       #define VK_NULL_HANDLE 0
+   #endif
+
+可以看到 ``VK_NULL_HANDLE`` 要么是个明确的空指针，要么就是 ``0`` 。如此，我们就可以初始化句柄了：
+
+.. code:: c++
+
+   VkInstance instance = VK_NULL_HANDLE;
+
 Vulkan 的接口
 ######################
 
 ``Vulkan`` 的接口，也就是 ``Vulkan`` 函数，最开始是使用 ``C`` 语言发布的，有些繁琐，后来推出了 ``C++`` 版本的接口，现在 ``Python`` 、 ``Java`` 和 ``C#`` 等高级语言也陆续支持开发 ``Vulkan`` ，支持 ``Vulkan`` 的家族也在慢慢壮大。
 
-本教程主要是用最原始的 ``C`` 语言版本进行讲解。
+.. important::
+
+   本教程主要是用最原始的 ``C`` 语言版本进行讲解。
 
 获取 Vulkan 接口
 ######################
@@ -154,7 +320,7 @@ Vulkan 的接口
 加载 Vulkan 动态库
 ************************
 
-``Vulkan`` 中提供了 ``Vulkan Loader`` 进行 ``Vulkan`` 标准实现接口的获取。根据前文介绍我们知道 ``Vulkan Loader`` 对应着 ``Vulkan`` 的动态库，所以我们第一步就是加载 ``Vulkan`` 的动态库。
+``Vulkan`` 中提供了 ``Vulkan Loader`` 用于 ``Vulkan`` 标准接口函数的获取。根据前文介绍我们知道 ``Vulkan Loader`` 对应着 ``Vulkan`` 的动态库，所以我们第一步就是加载 ``Vulkan`` 的动态库。
 
 .. admonition:: Vulkan 的动态库
    :class: note
@@ -2269,6 +2435,77 @@ memoryTypeBits
 就这样通过一个 ``uint32_t`` 就存储了一个“数组” ，而 ``VkPhysicalDeviceMemoryProperties::memoryTypes`` 数组的最大长度为 ``VK_MAX_MEMORY_TYPES`` 即 ``32`` ，这样一个 ``uint32_t`` 有 ``32`` 位就可以囊括整个数组长度 。这种数据存储方式一般叫按位存储或标志位等。
 
 如此我们就知道资源的内存应该分配在哪一个内存类型上了。进而就知道在哪个内存堆上进行的内存分配。
+
+资源与内存的绑定
+***************************************
+
+现在我们知道如何创建资源和内存，并且能够获取到在哪个内存类型（堆）上分配内存。如此，我们就可以进行资源绑定了。大致流程如下：
+
+.. mermaid::
+
+   flowchart TB
+
+      CreateResource["创建资源"]
+      GetMemoryRequirement["获取资源的内存要求"]
+      AllocateMemory["根据要求分配内存"]
+      Binding["资源与内存绑定"]
+
+      CreateResource-->GetMemoryRequirement
+      GetMemoryRequirement-->AllocateMemory
+      AllocateMemory-->Binding
+
+假如说我们现在已经成功创建了一个 ``VkBuffer`` 的话，现在我们需要筛选要在哪一个内存类型（堆）上分配内存，如下：
+
+.. code:: c++
+
+   VkDevice device = 逻辑设备句柄;
+   VkBuffer buffer = 之前成功创建的缓存资源句柄;
+
+   VkDeviceMemory device_memory = VK_NULL_HANDLE;
+
+   VkMemoryRequirements memory_requirements = {};
+   vkGetBufferMemoryRequirements(device, buffer, &memory_requirements);
+
+   for(uint32_t memory_type_index = 0; memory_type_index < VK_MAX_MEMORY_TYPES; memory_type_index++)
+   {
+      if(((memory_requirements.memoryTypeBits >> memory_type_index) & 0x01) == 0x01)
+      {
+         // 说明 VkPhysicalDeviceMemoryProperties::memoryTypes[memory_type_index] 上可以分配内存
+         // 这里为了简单，遍历所有匹配的内存类型，并尝试内存分配，如果内存分配成功就跳出，否则继续尝试分配内存。
+
+         VkMemoryAllocateInfo memory_allocate_info = {};
+         memory_allocate_info.sType = VkStructureType::VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+         memory_allocate_info.pNext = nullptr;
+         memory_allocate_info.allocationSize = memory_requirements.size;
+         memory_allocate_info.memoryTypeIndex = memory_type_index;
+
+         VkResult allocate_memory_result = vkAllocateMemory(device, &memory_allocate_info, nullptr, &device_memory);
+         if(allocate_memory_result == VkResult::VK_SUCCESS)
+         {
+            break;// 成功创建的话就跳出
+         }
+      }
+   }
+
+   if(device_memory == VK_NULL_HANDLE)
+   {
+      throw std::runtime_error("没有找到支持该资源的内存类型（堆）");
+   }
+
+这样我们就成功在正确的内存类型上分配了内存。
+
+.. note:: 
+
+   ``VkImage`` 资源的内存筛选与分配，除了获取内存分配信息使用的是 ``vkGetImageMemoryRequirements`` 函数，其他和 ``VkBuffer`` 的流程是相同的。
+
+接下来就可以通过调用 ``vkBindBufferMemory`` 和 ``vkBindImageMemory`` 分别将缓存和图片资源与内存进行绑定了。
+
+vkBindBufferMemory
+----------------------
+
+vkBindImageMemory
+----------------------
+
 
 ..
    内存
