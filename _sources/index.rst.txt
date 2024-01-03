@@ -16,6 +16,13 @@
    * 2023/9/22 增加 ``环境配置`` 文档链接
    * 2023/9/23 增加 ``Android 平台适配`` 文档链接
    * 2023/10/31 增加 ``Visual Studio Code`` 文档链接
+   * 2024/1/2 增加 ``最初之物 VkInstance`` 文档链接
+   * 2024/1/2 增加 ``物理设备`` 文档链接
+   * 2024/1/2 增加 ``设备队列`` 文档链接
+   * 2024/1/2 增加 ``逻辑设备`` 文档链接
+   * 2024/1/2 增加 ``内存`` 文档链接
+   * 2024/1/2 增加 ``资源`` 文档链接
+   * 2024/1/2 增加 ``资源与内存`` 文档链接
 
 .. image:: https://img.shields.io/badge/QQ%20Group-128656761-deepgreen?logo=tencentqq
    :target: https://jq.qq.com/?_wv=1027&k=rZGd2LHr
@@ -70,6 +77,13 @@
    ./StartFromVulkanSDK.rst
    ./EnvironmentalConfig.rst
    ./Overview.rst
+   ./Instance.rst
+   ./PhysicalDevice.rst
+   ./DeviceQueue.rst
+   ./LogicDevice.rst
+   ./Memory.rst
+   ./Resource.rst
+   ./ResourceAndMemory.rst
 
 .. toctree::
    :caption: 文献翻译
