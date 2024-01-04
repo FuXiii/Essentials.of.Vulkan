@@ -403,6 +403,12 @@
 <li><p class="sd-card-text">2024/1/3 增加 <code class="docutils literal notranslate"><span class="pre">资源与内存的绑定</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/1/3 增加 <code class="docutils literal notranslate"><span class="pre">vkBindBufferMemory</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/1/3 增加 <code class="docutils literal notranslate"><span class="pre">vkBindImageMemory</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/1/4 更新 <code class="docutils literal notranslate"><span class="pre">vkBindBufferMemory</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/1/4 更新 <code class="docutils literal notranslate"><span class="pre">vkBindImageMemory</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/1/4 增加 <code class="docutils literal notranslate"><span class="pre">数据传输</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/1/4 增加 <code class="docutils literal notranslate"><span class="pre">通过CPU向内存中传输数据</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/1/4 增加 <code class="docutils literal notranslate"><span class="pre">vkMapMemory</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/1/4 增加 <code class="docutils literal notranslate"><span class="pre">vkUnmapMemory</span></code> 章节。</p></li>
 </ul>
 </div>
 </details><p>由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 比较复杂，为了更好的入门 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> ，还是大致过一遍 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的核心思路，这对以后的学习很有帮助。</p>
@@ -804,7 +810,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 <ul class="simple">
-<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 是该结构体的类型枚举值，必须是 <code class="docutils literal notranslate"><span class="pre">VkStructureType::VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 是该结构体的类型枚举值， <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 是 <code class="docutils literal notranslate"><span class="pre">VkStructureType::VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO</span></code> 。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pNext</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向其他结构体来扩展该结构体。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">flags</span> 是 <code class="docutils literal notranslate"><span class="pre">VkInstanceCreateFlagBits</span></code> 所表示的位域值，用于设置 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 的行为。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pApplicationInfo</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向应用信息结构体，用于  <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 的细节设置。</p></li>
@@ -880,7 +886,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 <ul class="simple">
-<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 是该结构体的类型枚举值，必须是 <code class="docutils literal notranslate"><span class="pre">VkStructureType::VK_STRUCTURE_TYPE_APPLICATION_INFO</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 是该结构体的类型枚举值， <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须`是 ``VkStructureType::VK_STRUCTURE_TYPE_APPLICATION_INFO`</span> 。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pNext</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向其他结构体来扩展该结构体。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pApplicationName</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向一个以空字符为结尾的 <code class="docutils literal notranslate"><span class="pre">UTF-8</span></code> 字符串，用于表示用户自定义应用名称。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">applicationVersion</span> 一个无符号整型，用于用户自定义应用版本。</p></li>
@@ -1011,7 +1017,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pPhysicalDeviceCount</span> 是用于指定或获取的物理设备数量。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pPhysicalDevices</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么是数量不小于 <code class="docutils literal notranslate"><span class="pre">pPhysicalDeviceCount</span></code> 的 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDevice</span></code> 数组。</p></li>
 </ul>
-<p>如果 <code class="docutils literal notranslate"><span class="pre">pPhysicalDevices</span></code> 是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 的话 <code class="docutils literal notranslate"><span class="pre">vkEnumeratePhysicalDevices</span></code> 函数将会将查询到支持 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的设备数量写入 <code class="docutils literal notranslate"><span class="pre">pPhysicalDeviceCount</span></code> 所指向的内存中，所以 <code class="docutils literal notranslate"><span class="pre">pPhysicalDeviceCount</span></code> 必须是一个有效指针。</p>
+<p>如果 <code class="docutils literal notranslate"><span class="pre">pPhysicalDevices</span></code> 是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 的话 <code class="docutils literal notranslate"><span class="pre">vkEnumeratePhysicalDevices</span></code> 函数将会将查询到支持 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的设备数量写入 <code class="docutils literal notranslate"><span class="pre">pPhysicalDeviceCount</span></code> 所指向的内存中，所以 <code class="docutils literal notranslate"><span class="pre">pPhysicalDeviceCount</span></code> <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 是一个有效指针。</p>
 <p>如果 <code class="docutils literal notranslate"><span class="pre">pPhysicalDevices</span></code> 不是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 的话 <code class="docutils literal notranslate"><span class="pre">vkEnumeratePhysicalDevices</span></code> 函数将会将 <code class="docutils literal notranslate"><span class="pre">pPhysicalDeviceCount</span></code> 数量的有效 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDevice</span></code> 句柄依次写入 <code class="docutils literal notranslate"><span class="pre">pPhysicalDevices</span></code> 指向的数组中。如果 <code class="docutils literal notranslate"><span class="pre">pPhysicalDeviceCount</span></code> 指定的数量小于支持 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的设备数量的话， <code class="docutils literal notranslate"><span class="pre">vkEnumeratePhysicalDevices</span></code> 将会写入 <code class="docutils literal notranslate"><span class="pre">pPhysicalDeviceCount</span></code> 个物理设备句柄到数组中并返回 <code class="docutils literal notranslate"><span class="pre">VK_INCOMPLETE</span></code> 表示并不是所有设备都写入数组返回。</p>
 <p>如果一切正常 <code class="docutils literal notranslate"><span class="pre">vkEnumeratePhysicalDevices</span></code> 将会返回 <code class="docutils literal notranslate"><span class="pre">VK_SUCCESS</span></code> 。</p>
 <div class="admonition note">
@@ -1178,7 +1184,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pQueueFamilyProperties</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么是数量不小于 <code class="docutils literal notranslate"><span class="pre">pQueueFamilyPropertyCount</span></code> 的 <code class="docutils literal notranslate"><span class="pre">VkQueueFamilyProperties</span></code> 数组。</p></li>
 </ul>
 <p>该函数的用法与 <code class="docutils literal notranslate"><span class="pre">vkEnumeratePhysicalDevices</span></code> 函数是一样的。</p>
-<p>如果 <code class="docutils literal notranslate"><span class="pre">pQueueFamilyProperties</span></code> 是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 的话 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceQueueFamilyProperties</span></code> 函数将会将查询到的设备队列族数量写入 <code class="docutils literal notranslate"><span class="pre">pQueueFamilyPropertyCount</span></code> 所指向的内存中，所以 <code class="docutils literal notranslate"><span class="pre">pQueueFamilyPropertyCount</span></code> 必须是一个有效指针。</p>
+<p>如果 <code class="docutils literal notranslate"><span class="pre">pQueueFamilyProperties</span></code> 是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 的话 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceQueueFamilyProperties</span></code> 函数将会将查询到的设备队列族数量写入 <code class="docutils literal notranslate"><span class="pre">pQueueFamilyPropertyCount</span></code> 所指向的内存中，所以 <code class="docutils literal notranslate"><span class="pre">pQueueFamilyPropertyCount</span></code> <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 是一个有效指针。</p>
 <p>如果 <code class="docutils literal notranslate"><span class="pre">pQueueFamilyProperties</span></code> 不是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 的话 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceQueueFamilyProperties</span></code> 函数将会将 <code class="docutils literal notranslate"><span class="pre">pQueueFamilyPropertyCount</span></code> 数量的 <code class="docutils literal notranslate"><span class="pre">VkQueueFamilyProperties</span></code> 数据依次写入 <code class="docutils literal notranslate"><span class="pre">pQueueFamilyProperties</span></code> 指向的数组中。如果 <code class="docutils literal notranslate"><span class="pre">pQueueFamilyPropertyCount</span></code> 指定的数量小于支持 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的设备队列数量的话， <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceQueueFamilyProperties</span></code> 将会写入 <code class="docutils literal notranslate"><span class="pre">pQueueFamilyPropertyCount</span></code> 个设备队列族信息。</p>
 <div class="admonition note">
 <p class="admonition-title">备注</p>
@@ -1187,9 +1193,9 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <div class="note admonition">
 <p class="admonition-title">队列族</p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中设备队列是按照 <code class="docutils literal notranslate"><span class="pre">族</span></code> 进行管理的，前面我们知道一个物理设备上的可能会有多个设备队列支持相同的功能域，这些支持相同功能域的设备队列算作同一族。</p>
-<figure class="align-default" id="id32">
+<figure class="align-default" id="id34">
 <img alt="_images/vk_queue_family_struct.svg" src="_images/vk_queue_family_struct.svg" /><figcaption>
-<p><span class="caption-text">如上图中。队列0、1、2三个队列属于队列族A，则这三个队列支持计算、图形和转移功能。队列3属于队列族B，则该队列支持计算和转移功能。</span><a class="headerlink" href="#id32" title="Link to this image">#</a></p>
+<p><span class="caption-text">如上图中。队列0、1、2三个队列属于队列族A，则这三个队列支持计算、图形和转移功能。队列3属于队列族B，则该队列支持计算和转移功能。</span><a class="headerlink" href="#id34" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 </div>
@@ -1348,7 +1354,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 <ul class="simple">
-<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 是该结构体的类型枚举值，必须是 <code class="docutils literal notranslate"><span class="pre">VkStructureType::VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 是该结构体的类型枚举值， <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 是 <code class="docutils literal notranslate"><span class="pre">VkStructureType::VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO</span></code> 。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pNext</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向其他结构体来扩展该结构体。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">flags</span> 标志位，保留为将来使用。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">queueCreateInfoCount</span> 为 <code class="docutils literal notranslate"><span class="pre">pQueueCreateInfos</span></code> 数组的数量。</p></li>
@@ -1375,7 +1381,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 <ul class="simple">
-<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 是该结构体的类型枚举值，必须是 <code class="docutils literal notranslate"><span class="pre">VkStructureType::VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 是该结构体的类型枚举值， <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 是 <code class="docutils literal notranslate"><span class="pre">VkStructureType::VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO</span></code> 。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pNext</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向其他结构体来扩展该结构体。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">flags</span> 标志位。用于设置目标设备队列的行为。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">queueFamilyIndex</span> 对应的队列族在 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceQueueFamilyProperties</span></code> 函数返回的 <code class="docutils literal notranslate"><span class="pre">pQueueFamilyProperties</span></code> 数组中的索引值。</p></li>
@@ -1694,9 +1700,9 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <section id="id21">
 <h4>VkPhysicalDeviceMemoryProperties 结构图<a class="headerlink" href="#id21" title="Link to this heading">#</a></h4>
 <p>为了更清晰的理解 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties</span></code> ，在此给出一张 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties</span></code> 结构参考图：</p>
-<figure class="align-default" id="id33">
+<figure class="align-default" id="id35">
 <img alt="_images/VkPhysicalDeviceMemoryProperties_struct.svg" src="_images/VkPhysicalDeviceMemoryProperties_struct.svg" /><figcaption>
-<p><span class="caption-text">如图所示为一种可能的结构。第一种内存类型对应着第三个内存堆，第二种内存类型对应着第一个内存堆，第三种内存类型对应着第二个内存堆。</span><a class="headerlink" href="#id33" title="Link to this image">#</a></p>
+<p><span class="caption-text">如图所示为一种可能的结构。第一种内存类型对应着第三个内存堆，第二种内存类型对应着第一个内存堆，第三种内存类型对应着第二个内存堆。</span><a class="headerlink" href="#id35" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <p>接下来就能够通过 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties</span></code> 获取内存信息了，和之前很多函数一样，首先获取 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties</span></code> 函数实现：</p>
@@ -1773,7 +1779,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </ul>
 <p>其中 <code class="docutils literal notranslate"><span class="pre">VkMemoryAllocateInfo</span></code> 定义如下：</p>
 <section id="vkmemoryallocateinfo">
-<h5>VkMemoryAllocateInfo<a class="headerlink" href="#vkmemoryallocateinfo" title="Link to this heading">#</a></h5>
+<span id="id24"></span><h5>VkMemoryAllocateInfo<a class="headerlink" href="#vkmemoryallocateinfo" title="Link to this heading">#</a></h5>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkMemoryAllocateInfo</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="n">VkStructureType</span><span class="w">                         </span><span class="n">sType</span><span class="p">;</span>
@@ -1784,7 +1790,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 <ul class="simple">
-<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 是该结构体的类型枚举值，必须是 <code class="docutils literal notranslate"><span class="pre">VkStructureType::VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 是该结构体的类型枚举值， <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 是 <code class="docutils literal notranslate"><span class="pre">VkStructureType::VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO</span></code> 。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pNext</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向其他结构体来扩展该结构体。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">allocationSize</span> 为要分配的内存大小。单位为字节。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">memoryTypeIndex</span> 为在 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties::memoryTypes</span></code> 数组对应的 <code class="docutils literal notranslate"><span class="pre">memoryTypeIndex</span></code> 索引处的堆上分配内存。</p></li>
@@ -1816,8 +1822,8 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </div>
 </section>
 </section>
-<section id="id24">
-<h4>回收内存<a class="headerlink" href="#id24" title="Link to this heading">#</a></h4>
+<section id="id25">
+<h4>回收内存<a class="headerlink" href="#id25" title="Link to this heading">#</a></h4>
 <p>内存成功分配完之后，可以通过 <code class="docutils literal notranslate"><span class="pre">vkFreeMemory</span></code> 函数进行回收。其定义如下：</p>
 <section id="vkfreememory">
 <h5>vkFreeMemory<a class="headerlink" href="#vkfreememory" title="Link to this heading">#</a></h5>
@@ -1850,8 +1856,8 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </section>
 </section>
 </section>
-<section id="id25">
-<h2>资源<a class="headerlink" href="#id25" title="Link to this heading">#</a></h2>
+<section id="id26">
+<h2>资源<a class="headerlink" href="#id26" title="Link to this heading">#</a></h2>
 <p>分配内存的目的是存储数据并用于计算，之后储存获得的结果。但在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中，并不能直接对内存进行操作，内存只能绑定到具体 <code class="docutils literal notranslate"><span class="pre">资源</span></code> 上才能够使用。这是由于 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 的并行性，在并行处理多块特定结构的数据时能够得到更优效率，而 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 非常善于处理连续内存。为了能够使得用户分配的内存在 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 上尽可能的高速处理， <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 为用户提供了 <code class="docutils literal notranslate"><span class="pre">资源</span></code> 来为用户屏蔽掉复杂的 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 内存结构。</p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中为我们提供了 <code class="docutils literal notranslate"><span class="pre">2</span></code> 种资源：</p>
 <ol class="arabic simple">
@@ -1860,8 +1866,8 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </ol>
 <p><code class="docutils literal notranslate"><span class="pre">缓存</span></code> 资源和 <code class="docutils literal notranslate"><span class="pre">图片</span></code> 资源都需要绑定一块特定内存才能够使用。对于 <code class="docutils literal notranslate"><span class="pre">缓存</span></code> 可以简单理解为其代表一块连续的内存（虽然在实际存储中内部的结构可能是非常复杂的），其内存可以存储任何数据。对于 <code class="docutils literal notranslate"><span class="pre">图片</span></code> 可以简单理解为一个二维或三维的数组（也可以是一维的，但用的较少），其内部可以存储特定格式的数据（ <code class="docutils literal notranslate"><span class="pre">缓存</span></code> 内部数据对格式没有要求，但 <code class="docutils literal notranslate"><span class="pre">图片</span></code> 有要求，其目的是高速并行）。</p>
 <p>所以创建完内存后，下一步就是创建要绑定的资源。</p>
-<section id="id26">
-<h3>缓存<a class="headerlink" href="#id26" title="Link to this heading">#</a></h3>
+<section id="id27">
+<h3>缓存<a class="headerlink" href="#id27" title="Link to this heading">#</a></h3>
 <p>现在我们知道 <code class="docutils literal notranslate"><span class="pre">缓存</span></code> 代表一段连续的内存，其内部拥有自己的优化格式。不同用途的缓存，其内部的格式不尽相同，具体创建何种用途的缓存与开发需求有关，并在创建缓存时通过 <code class="docutils literal notranslate"><span class="pre">VkBufferCreateInfo</span></code> 指定相关信息。</p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中通过 <code class="docutils literal notranslate"><span class="pre">vkCreateBuffer</span></code> 函数创建缓存。</p>
 <section id="vkcreatebuffer">
@@ -1898,7 +1904,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 <ul class="simple">
-<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 是该结构体的类型枚举值，必须是 <code class="docutils literal notranslate"><span class="pre">VkStructureType::VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 是该结构体的类型枚举值， <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 是 <code class="docutils literal notranslate"><span class="pre">VkStructureType::VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO</span></code> 。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pNext</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向其他结构体来扩展该结构体。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">flags</span> 缓存额外标志位配置。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">size</span> 创建的缓存大小。单位为字节。</p></li>
@@ -2021,8 +2027,8 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </div>
 </section>
 </section>
-<section id="id27">
-<h3>图片<a class="headerlink" href="#id27" title="Link to this heading">#</a></h3>
+<section id="id28">
+<h3>图片<a class="headerlink" href="#id28" title="Link to this heading">#</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">图片</span></code> 为一维、二维或三维块内存结构的资源。每个内存块都有相同且特定的格式。与缓存不同的是，图片的内存块格式是强制要求明确指定的，与缓存相同的是图片创建时也需要指明其用途，当然这是为了内存的内部优化。在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中图片资源使用 <code class="docutils literal notranslate"><span class="pre">VkImage</span></code> 句柄表示。</p>
 <p>图片资源通过 <code class="docutils literal notranslate"><span class="pre">vkCreateImage</span></code> 函数创建。其定义如下：</p>
 <section id="vkcreateimage">
@@ -2066,7 +2072,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 <ul class="simple">
-<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 是该结构体的类型枚举值，必须是 <code class="docutils literal notranslate"><span class="pre">VkStructureType::VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 是该结构体的类型枚举值， <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 是 <code class="docutils literal notranslate"><span class="pre">VkStructureType::VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO</span></code> 。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pNext</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向其他结构体来扩展该结构体。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">flags</span> 图片额外标志位配置。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">imageType</span> 图片的类型。</p></li>
@@ -2245,8 +2251,8 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <p>当图片内的布局为 <code class="docutils literal notranslate"><span class="pre">VK_IMAGE_LAYOUT_UNDEFINED</span></code> 时表示内部的数据布局是未定义的，这时 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 并不知道如何解析该图片，为了能让 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 识别出该资源，需要将布局从 <code class="docutils literal notranslate"><span class="pre">VK_IMAGE_LAYOUT_UNDEFINED</span></code> 转换至其他布局。是的，布局可以转换。不同阶段转换成对应阶段的特定布局会得到更加高效的性能表现（比如在渲染结果输出阶段将图片的布局转换成 <code class="docutils literal notranslate"><span class="pre">VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL</span></code> ）。同样 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 也考虑到布局转来转去过于繁琐，所以
 提供了 <code class="docutils literal notranslate"><span class="pre">VK_IMAGE_LAYOUT_GENERAL</span></code> 通用布局，该布局是通用的，在任何阶段都可以使用，代价就是稍稍降低了一点点性能，但好处是不再需要管理图片的布局，而 <code class="docutils literal notranslate"><span class="pre">VK_IMAGE_LAYOUT_GENERAL</span></code> 布局也作为很多引擎的首选布局（因为真的很方便）。</p>
 </section>
-<section id="id28">
-<h4>VkImageCreateInfo 其他参数和综述<a class="headerlink" href="#id28" title="Link to this heading">#</a></h4>
+<section id="id29">
+<h4>VkImageCreateInfo 其他参数和综述<a class="headerlink" href="#id29" title="Link to this heading">#</a></h4>
 <ul class="simple">
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VkImageCreateInfo::mipLevels</span> 用于图片的多级渐远级别。对于多级渐远将会在专门的章节中讲解。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VkImageCreateInfo::arrayLayers</span> 用于配置图片的层级。一般在创建 <code class="docutils literal notranslate"><span class="pre">CubeMap</span></code> （天空盒）时与 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo::flags</span></code> 配合使用。这一部分将会在专门的章节中讲解。</p></li>
@@ -2258,8 +2264,8 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VkImageCreateInfo::pQueueFamilyIndices</span></p></li>
 </ul>
 <p>这些参数都是用于配置该资源在哪些队列中进行数据共享。</p>
-<section id="id29">
-<h5>综述<a class="headerlink" href="#id29" title="Link to this heading">#</a></h5>
+<section id="id30">
+<h5>综述<a class="headerlink" href="#id30" title="Link to this heading">#</a></h5>
 <p>对于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">VkImage</span></code> 图片资源有如下特点：</p>
 <ul class="simple">
 <li><p>所有图片都是以三维图片进行表示的（一维、二维图片只是相应的扩展维度度量缩减到了 <code class="docutils literal notranslate"><span class="pre">1</span></code> ）。并使用 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo::extent</span></code> 配置每个维度的像素数量。</p></li>
@@ -2320,8 +2326,8 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </section>
 </section>
 </section>
-<section id="id30">
-<h2>资源与内存<a class="headerlink" href="#id30" title="Link to this heading">#</a></h2>
+<section id="id31">
+<h2>资源与内存<a class="headerlink" href="#id31" title="Link to this heading">#</a></h2>
 <p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中创建一个资源（ <code class="docutils literal notranslate"><span class="pre">VkImage</span></code> 或 <code class="docutils literal notranslate"><span class="pre">VkBuffer</span></code> ）仅仅表示一个资源符号，其内部仅有对于该资源的描述，没有确切的内存空间。所以在创建资源之后需要绑定一个内存，这样就给了该资源完整的一生。 <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">✧(๑≖ ◡ ≖๑)</span></p>
 <p>在创建完资源后，需要绑定内存，这就需要创建内存，创建内存需要设置 <code class="docutils literal notranslate"><span class="pre">VkMemoryAllocateInfo::allocationSize</span></code> 内存分配的大小。但是此时该资源需要多大的内存呢？ <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 为我们提供了两个函数来获取相应资源需要的内存信息：</p>
 <ul class="simple">
@@ -2401,8 +2407,8 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <p>如此我们就知道资源的内存应该分配在哪一个内存类型上了。进而就知道在哪个内存堆上进行的内存分配。</p>
 </section>
 </section>
-<section id="id31">
-<h3>资源与内存的绑定<a class="headerlink" href="#id31" title="Link to this heading">#</a></h3>
+<section id="id32">
+<h3>资源与内存的绑定<a class="headerlink" href="#id32" title="Link to this heading">#</a></h3>
 <p>现在我们知道如何创建资源和内存，并且能够获取到在哪个内存类型（堆）上分配内存。如此，我们就可以进行资源绑定了。大致流程如下：</p>
 <div class="mermaid">
             flowchart TB
@@ -2459,10 +2465,147 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <p>接下来就可以通过调用 <code class="docutils literal notranslate"><span class="pre">vkBindBufferMemory</span></code> 和 <code class="docutils literal notranslate"><span class="pre">vkBindImageMemory</span></code> 分别将缓存和图片资源与内存进行绑定了。</p>
 <section id="vkbindbuffermemory">
 <h4>vkBindBufferMemory<a class="headerlink" href="#vkbindbuffermemory" title="Link to this heading">#</a></h4>
+<p>将缓存与内存进行绑定，通过 <code class="docutils literal notranslate"><span class="pre">vkBindBufferMemory</span></code> 函数进行绑定，其定义如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="n">VkResult</span><span class="w"> </span><span class="nf">vkBindBufferMemory</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkBuffer</span><span class="w">                                    </span><span class="n">buffer</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkDeviceMemory</span><span class="w">                              </span><span class="n">memory</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkDeviceSize</span><span class="w">                                </span><span class="n">memoryOffset</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">device</span> 对应的 <code class="docutils literal notranslate"><span class="pre">VkDevice</span></code> 逻辑设备句柄。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">buffer</span> 要绑定的目标缓存句柄。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">memory</span> 要绑定的目标缓存句柄。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">memoryOffset</span> 以 <code class="docutils literal notranslate"><span class="pre">memory</span></code> 对应的 <code class="docutils literal notranslate"><span class="pre">memoryOffset</span></code> 偏移处作为资源的起始内存。单位为 <code class="docutils literal notranslate"><span class="pre">字节</span></code> 。</p></li>
+</ul>
+<p>该函数比较简洁明了，将 <code class="docutils literal notranslate"><span class="pre">buffer</span></code> 和 <code class="docutils literal notranslate"><span class="pre">memory</span></code> 进行绑定。此时注意 <code class="docutils literal notranslate"><span class="pre">memoryOffset</span></code> 成员。在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 官方对于内存推荐的做法是分配一块大内存，之后将这块大内存分成多块用于存储不同的资源，这时就需要指定资源的内存偏移，以此来设置资源的起始内存位置。
+但此时我们给出的示例中的内存分配都是刚刚好的（整个内存块全部被资源占有），所以此时 <code class="docutils literal notranslate"><span class="pre">memoryOffset</span></code> 为 <code class="docutils literal notranslate"><span class="pre">0</span></code> 。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkDevice</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">逻辑设备句柄</span><span class="p">;</span>
+<span class="n">VkBuffer</span><span class="w"> </span><span class="n">buffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前成功创建的缓存资源句柄</span><span class="p">;</span>
+<span class="n">VkDeviceMemory</span><span class="w"> </span><span class="n">device_memory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前成功创建的内存句柄</span><span class="p">;</span>
+
+<span class="n">VkResult</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vkBindBufferMemory</span><span class="p">(</span><span class="n">device</span><span class="p">,</span><span class="w"> </span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="n">device_memory</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="k">if</span><span class="p">(</span><span class="n">result</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">VkResult</span><span class="o">::</span><span class="n">VK_SUCCESS</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="s">&quot;缓存绑定内存失败&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </section>
 <section id="vkbindimagememory">
 <h4>vkBindImageMemory<a class="headerlink" href="#vkbindimagememory" title="Link to this heading">#</a></h4>
+<p>与缓存绑定内存类似，图片通过 <code class="docutils literal notranslate"><span class="pre">vkBindImageMemory</span></code> 进行内存绑定。其定义如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="n">VkResult</span><span class="w"> </span><span class="nf">vkBindImageMemory</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkImage</span><span class="w">                                     </span><span class="n">image</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkDeviceMemory</span><span class="w">                              </span><span class="n">memory</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkDeviceSize</span><span class="w">                                </span><span class="n">memoryOffset</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">device</span> 对应的 <code class="docutils literal notranslate"><span class="pre">VkDevice</span></code> 逻辑设备句柄。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">image</span> 要绑定的目标图片句柄。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">memory</span> 要绑定的目标缓存句柄。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">memoryOffset</span> 以 <code class="docutils literal notranslate"><span class="pre">memory</span></code> 对应的 <code class="docutils literal notranslate"><span class="pre">memoryOffset</span></code> 偏移处作为资源的起始内存。单位为 <code class="docutils literal notranslate"><span class="pre">字节</span></code> 。</p></li>
+</ul>
+<p>与缓存绑定内存类似，这里就不再赘述。</p>
 </section>
+</section>
+</section>
+<section id="id33">
+<h2>数据传输<a class="headerlink" href="#id33" title="Link to this heading">#</a></h2>
+<p>现在我们有了内存，有了资源，并且资源与内存进行了绑定。一切看起来是那么的美好。<span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">｡ (ˊᗜˋ*) ｡</span> 但是现在内存中的数据没有任何意义（没有任何赋值，仅仅为默认值），我们需要向内存中写入数据，来存储意义非凡的数据才是我们想要的。</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中传输数据有很多种途径，大体可以分成两类：</p>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">通过CPU向内存中传输数据</span></p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">通过GPU向内存中传输数据</span></p></li>
+</ul>
+<section id="cpu">
+<h3>通过CPU向内存中传输数据<a class="headerlink" href="#cpu" title="Link to this heading">#</a></h3>
+<p>当分配 <code class="docutils literal notranslate"><span class="pre">VkDeviceMemory</span></code> 内存时需要指定 <a class="reference internal" href="#vkmemoryallocateinfo"><span class="std std-ref">VkMemoryAllocateInfo</span></a> 中的内存类型索引 <code class="docutils literal notranslate"><span class="pre">VkMemoryAllocateInfo::memoryTypeIndex</span></code> 。如果该内存类型支持 <code class="docutils literal notranslate"><span class="pre">VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT</span></code> （也就是可以被 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 访问到）的话，分配的设备内存可以进行 <code class="docutils literal notranslate"><span class="pre">内存映射</span></code> 。</p>
+<div class="note admonition">
+<p class="admonition-title">内存映射</p>
+<p>所谓 <code class="docutils literal notranslate"><span class="pre">内存映射</span></code> 就是将 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的 <code class="docutils literal notranslate"><span class="pre">VkDeviceMemory</span></code> 内存映射到一个指针上，对该指针所指向的内存进行读写就是直接向 <code class="docutils literal notranslate"><span class="pre">VkDeviceMemory</span></code> 所代表的设备内存中进行读写。</p>
+</div>
+<div class="admonition important">
+<p class="admonition-title">重要</p>
+<p><code class="docutils literal notranslate"><span class="pre">VkDeviceMemory</span></code> 设备内存 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 在支持 <code class="docutils literal notranslate"><span class="pre">VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT</span></code> 的内存类型上进行分配。</p>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中是通过 <code class="docutils literal notranslate"><span class="pre">vkMapMemory</span></code> 函数将内存进行映射，其定义如下：</p>
+<section id="vkmapmemory">
+<h4>vkMapMemory<a class="headerlink" href="#vkmapmemory" title="Link to this heading">#</a></h4>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="n">VkResult</span><span class="w"> </span><span class="nf">vkMapMemory</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkDeviceMemory</span><span class="w">                              </span><span class="n">memory</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkDeviceSize</span><span class="w">                                </span><span class="n">offset</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkDeviceSize</span><span class="w">                                </span><span class="n">size</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkMemoryMapFlags</span><span class="w">                            </span><span class="n">flags</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">void</span><span class="o">**</span><span class="w">                                      </span><span class="n">ppData</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">device</span> 对应的 <code class="docutils literal notranslate"><span class="pre">VkDevice</span></code> 逻辑设备句柄。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">memory</span> 要映射的目标缓存句柄。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">offset</span> 映射的内存偏移。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">size</span> 映射的内存大小。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">flags</span> 保留成员，用于未来时使用。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">ppData</span> 映射结果。</p></li>
+</ul>
+<p>如此我们就可以对设备内存进行内存映射了：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkDevice</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">逻辑设备句柄</span><span class="p">;</span>
+<span class="n">VkDeviceMemory</span><span class="w"> </span><span class="n">device_memory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前成功在</span><span class="w"> </span><span class="n">VkMemoryPropertyFlagBits</span><span class="o">::</span><span class="n">VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT</span><span class="w"> </span><span class="n">上创建的内存句柄</span><span class="p">;</span>
+<span class="n">VkDeviceSize</span><span class="w"> </span><span class="n">memory_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1024</span><span class="p">;</span><span class="w"> </span><span class="c1">// 假如内存的大小为 1024 byte</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">memory_ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+
+<span class="n">VkResult</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vkMapMemory</span><span class="p">(</span><span class="n">device</span><span class="p">,</span><span class="w"> </span><span class="n">device_memory</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">memory_size</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">memory_ptr</span><span class="p">);</span>
+<span class="k">if</span><span class="p">(</span><span class="n">result</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">VkResult</span><span class="o">::</span><span class="n">VK_SUCCESS</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="s">&quot;内存映射失败&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">您准备好的数据</span><span class="p">;</span>
+
+<span class="n">memcpy</span><span class="p">(</span><span class="n">memory_ptr</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">memory_size</span><span class="p">);</span><span class="w"> </span><span class="c1">// 将准备好的数据拷贝至设备内存中</span>
+</pre></div>
+</div>
+<div class="admonition important">
+<p class="admonition-title">重要</p>
+<p>如果设备内存已经通过 <code class="docutils literal notranslate"><span class="pre">vkMapMemory</span></code> 映射完成，处于 <code class="docutils literal notranslate"><span class="pre">映射态</span></code> ，则 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">不能</span> 再次调用  <code class="docutils literal notranslate"><span class="pre">vkMapMemory</span></code> 再一次映射内存。</p>
+</div>
+<p>映射完成后您可以取消设备内存的映射，这是通过调用 <code class="docutils literal notranslate"><span class="pre">vkUnmapMemory</span></code> 函数解除内存映射：</p>
+</section>
+<section id="vkunmapmemory">
+<h4>vkUnmapMemory<a class="headerlink" href="#vkunmapmemory" title="Link to this heading">#</a></h4>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">vkUnmapMemory</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkDeviceMemory</span><span class="w">                              </span><span class="n">memory</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">device</span> 对应的 <code class="docutils literal notranslate"><span class="pre">VkDevice</span></code> 逻辑设备句柄。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">memory</span> 要取消映射的目标缓存句柄。</p></li>
+</ul>
+<div class="admonition important">
+<p class="admonition-title">重要</p>
+<p>要解除映射的设备内存 <code class="docutils literal notranslate"><span class="pre">memory</span></code> 当前 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 已经通过 <code class="docutils literal notranslate"><span class="pre">vkMapMemory</span></code> 调用处于 <code class="docutils literal notranslate"><span class="pre">映射态</span></code> 。</p>
+</div>
+<p>当解除映射之后，之前映射的指针将失效，如果想重新获取映射指针，再次调用 <code class="docutils literal notranslate"><span class="pre">vkMapMemory</span></code> 进行映射即可。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkDevice</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">逻辑设备句柄</span><span class="p">;</span>
+<span class="n">VkDeviceMemory</span><span class="w"> </span><span class="n">device_memory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前完成内存映射的设备内存</span><span class="p">;</span>
+
+<span class="n">vkUnmapMemory</span><span class="p">(</span><span class="n">device</span><span class="p">,</span><span class="w"> </span><span class="n">device_memory</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="gpu">
+<h3>通过GPU向内存中传输数据<a class="headerlink" href="#gpu" title="Link to this heading">#</a></h3>
 </section>
 </section>
 </section>
@@ -2625,7 +2768,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <li><a class="reference internal" href="#vkmemoryallocateinfo">VkMemoryAllocateInfo</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id24">回收内存</a><ul>
+<li><a class="reference internal" href="#id25">回收内存</a><ul>
 <li><a class="reference internal" href="#vkfreememory">vkFreeMemory</a></li>
 </ul>
 </li>
@@ -2633,15 +2776,15 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id25">资源</a><ul>
-<li><a class="reference internal" href="#id26">缓存</a><ul>
+<li><a class="reference internal" href="#id26">资源</a><ul>
+<li><a class="reference internal" href="#id27">缓存</a><ul>
 <li><a class="reference internal" href="#vkcreatebuffer">vkCreateBuffer</a></li>
 <li><a class="reference internal" href="#vkbuffercreateinfo">VkBufferCreateInfo</a></li>
 <li><a class="reference internal" href="#vkbufferusageflags">VkBufferUsageFlags</a></li>
 <li><a class="reference internal" href="#vksharingmode">VkSharingMode</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id27">图片</a><ul>
+<li><a class="reference internal" href="#id28">图片</a><ul>
 <li><a class="reference internal" href="#vkcreateimage">vkCreateImage</a></li>
 <li><a class="reference internal" href="#vkimagecreateinfo">VkImageCreateInfo</a></li>
 <li><a class="reference internal" href="#vkimagetype">VkImageType</a></li>
@@ -2651,26 +2794,35 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <li><a class="reference internal" href="#vkimagetiling">VkImageTiling</a></li>
 <li><a class="reference internal" href="#vkimageusageflags">VkImageUsageFlags</a></li>
 <li><a class="reference internal" href="#vkimagelayout">VkImageLayout</a></li>
-<li><a class="reference internal" href="#id28">VkImageCreateInfo 其他参数和综述</a><ul>
-<li><a class="reference internal" href="#id29">综述</a></li>
+<li><a class="reference internal" href="#id29">VkImageCreateInfo 其他参数和综述</a><ul>
+<li><a class="reference internal" href="#id30">综述</a></li>
 </ul>
 </li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id30">资源与内存</a><ul>
+<li><a class="reference internal" href="#id31">资源与内存</a><ul>
 <li><a class="reference internal" href="#vkgetbuffermemoryrequirements">vkGetBufferMemoryRequirements</a></li>
 <li><a class="reference internal" href="#vkgetimagememoryrequirements">vkGetImageMemoryRequirements</a></li>
 <li><a class="reference internal" href="#vkmemoryrequirements">VkMemoryRequirements</a><ul>
 <li><a class="reference internal" href="#memorytypebits">memoryTypeBits</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id31">资源与内存的绑定</a><ul>
+<li><a class="reference internal" href="#id32">资源与内存的绑定</a><ul>
 <li><a class="reference internal" href="#vkbindbuffermemory">vkBindBufferMemory</a></li>
 <li><a class="reference internal" href="#vkbindimagememory">vkBindImageMemory</a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id33">数据传输</a><ul>
+<li><a class="reference internal" href="#cpu">通过CPU向内存中传输数据</a><ul>
+<li><a class="reference internal" href="#vkmapmemory">vkMapMemory</a></li>
+<li><a class="reference internal" href="#vkunmapmemory">vkUnmapMemory</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#gpu">通过GPU向内存中传输数据</a></li>
 </ul>
 </li>
 </ul>

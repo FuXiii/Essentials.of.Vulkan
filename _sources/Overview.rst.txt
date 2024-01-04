@@ -128,6 +128,12 @@
    * 2024/1/3 增加 ``资源与内存的绑定`` 章节。
    * 2024/1/3 增加 ``vkBindBufferMemory`` 章节。
    * 2024/1/3 增加 ``vkBindImageMemory`` 章节。
+   * 2024/1/4 更新 ``vkBindBufferMemory`` 章节。
+   * 2024/1/4 更新 ``vkBindImageMemory`` 章节。
+   * 2024/1/4 增加 ``数据传输`` 章节。
+   * 2024/1/4 增加 ``通过CPU向内存中传输数据`` 章节。
+   * 2024/1/4 增加 ``vkMapMemory`` 章节。
+   * 2024/1/4 增加 ``vkUnmapMemory`` 章节。
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -567,7 +573,7 @@ VkInstanceCreateInfo
        const char* const*          ppEnabledExtensionNames;
    } VkInstanceCreateInfo;
 
-* :bdg-secondary:`sType` 是该结构体的类型枚举值，必须是 ``VkStructureType::VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO`` 。
+* :bdg-secondary:`sType` 是该结构体的类型枚举值， :bdg-danger:`必须` 是 ``VkStructureType::VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO`` 。
 * :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
 * :bdg-secondary:`flags` 是 ``VkInstanceCreateFlagBits`` 所表示的位域值，用于设置 ``VkInstance`` 的行为。
 * :bdg-secondary:`pApplicationInfo` 要么是 ``NULL`` 要么指向应用信息结构体，用于  ``VkInstance`` 的细节设置。
@@ -650,7 +656,7 @@ VkApplicationInfo
        uint32_t           apiVersion;
    } VkApplicationInfo;
 
-* :bdg-secondary:`sType` 是该结构体的类型枚举值，必须是 ``VkStructureType::VK_STRUCTURE_TYPE_APPLICATION_INFO`` 。
+* :bdg-secondary:`sType` 是该结构体的类型枚举值， :bdg-danger:`必须`是 ``VkStructureType::VK_STRUCTURE_TYPE_APPLICATION_INFO`` 。
 * :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
 * :bdg-secondary:`pApplicationName` 要么是 ``NULL`` 要么指向一个以空字符为结尾的 ``UTF-8`` 字符串，用于表示用户自定义应用名称。
 * :bdg-secondary:`applicationVersion` 一个无符号整型，用于用户自定义应用版本。
@@ -788,7 +794,7 @@ vkEnumeratePhysicalDevices
 * :bdg-secondary:`pPhysicalDeviceCount` 是用于指定或获取的物理设备数量。
 * :bdg-secondary:`pPhysicalDevices` 要么是 ``NULL`` 要么是数量不小于 ``pPhysicalDeviceCount`` 的 ``VkPhysicalDevice`` 数组。
 
-如果 ``pPhysicalDevices`` 是 ``NULL`` 的话 ``vkEnumeratePhysicalDevices`` 函数将会将查询到支持 ``Vulkan`` 的设备数量写入 ``pPhysicalDeviceCount`` 所指向的内存中，所以 ``pPhysicalDeviceCount`` 必须是一个有效指针。
+如果 ``pPhysicalDevices`` 是 ``NULL`` 的话 ``vkEnumeratePhysicalDevices`` 函数将会将查询到支持 ``Vulkan`` 的设备数量写入 ``pPhysicalDeviceCount`` 所指向的内存中，所以 ``pPhysicalDeviceCount`` :bdg-danger:`必须` 是一个有效指针。
 
 如果 ``pPhysicalDevices`` 不是 ``NULL`` 的话 ``vkEnumeratePhysicalDevices`` 函数将会将 ``pPhysicalDeviceCount`` 数量的有效 ``VkPhysicalDevice`` 句柄依次写入 ``pPhysicalDevices`` 指向的数组中。如果 ``pPhysicalDeviceCount`` 指定的数量小于支持 ``Vulkan`` 的设备数量的话， ``vkEnumeratePhysicalDevices`` 将会写入 ``pPhysicalDeviceCount`` 个物理设备句柄到数组中并返回 ``VK_INCOMPLETE`` 表示并不是所有设备都写入数组返回。
 
@@ -975,7 +981,7 @@ vkGetPhysicalDeviceQueueFamilyProperties
 
 该函数的用法与 ``vkEnumeratePhysicalDevices`` 函数是一样的。
 
-如果 ``pQueueFamilyProperties`` 是 ``NULL`` 的话 ``vkGetPhysicalDeviceQueueFamilyProperties`` 函数将会将查询到的设备队列族数量写入 ``pQueueFamilyPropertyCount`` 所指向的内存中，所以 ``pQueueFamilyPropertyCount`` 必须是一个有效指针。
+如果 ``pQueueFamilyProperties`` 是 ``NULL`` 的话 ``vkGetPhysicalDeviceQueueFamilyProperties`` 函数将会将查询到的设备队列族数量写入 ``pQueueFamilyPropertyCount`` 所指向的内存中，所以 ``pQueueFamilyPropertyCount`` :bdg-danger:`必须` 是一个有效指针。
 
 如果 ``pQueueFamilyProperties`` 不是 ``NULL`` 的话 ``vkGetPhysicalDeviceQueueFamilyProperties`` 函数将会将 ``pQueueFamilyPropertyCount`` 数量的 ``VkQueueFamilyProperties`` 数据依次写入 ``pQueueFamilyProperties`` 指向的数组中。如果 ``pQueueFamilyPropertyCount`` 指定的数量小于支持 ``Vulkan`` 的设备队列数量的话， ``vkGetPhysicalDeviceQueueFamilyProperties`` 将会写入 ``pQueueFamilyPropertyCount`` 个设备队列族信息。
 
@@ -1220,7 +1226,7 @@ VkDeviceCreateInfo
        const VkPhysicalDeviceFeatures*    pEnabledFeatures;
    } VkDeviceCreateInfo;
 
-* :bdg-secondary:`sType` 是该结构体的类型枚举值，必须是 ``VkStructureType::VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO`` 。
+* :bdg-secondary:`sType` 是该结构体的类型枚举值， :bdg-danger:`必须` 是 ``VkStructureType::VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO`` 。
 * :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
 * :bdg-secondary:`flags` 标志位，保留为将来使用。
 * :bdg-secondary:`queueCreateInfoCount` 为 ``pQueueCreateInfos`` 数组的数量。
@@ -1248,7 +1254,7 @@ VkDeviceQueueCreateInfo
        const float*                pQueuePriorities;
    } VkDeviceQueueCreateInfo;
 
-* :bdg-secondary:`sType` 是该结构体的类型枚举值，必须是 ``VkStructureType::VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO`` 。
+* :bdg-secondary:`sType` 是该结构体的类型枚举值， :bdg-danger:`必须` 是 ``VkStructureType::VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO`` 。
 * :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
 * :bdg-secondary:`flags` 标志位。用于设置目标设备队列的行为。
 * :bdg-secondary:`queueFamilyIndex` 对应的队列族在 ``vkGetPhysicalDeviceQueueFamilyProperties`` 函数返回的 ``pQueueFamilyProperties`` 数组中的索引值。
@@ -1749,6 +1755,8 @@ VkPhysicalDeviceMemoryProperties 结构图
 
 其中 ``VkMemoryAllocateInfo`` 定义如下：
 
+.. _VkMemoryAllocateInfo:
+
 VkMemoryAllocateInfo
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -1762,7 +1770,7 @@ VkMemoryAllocateInfo
      uint32_t                                memoryTypeIndex;
    } VkMemoryAllocateInfo;
 
-* :bdg-secondary:`sType` 是该结构体的类型枚举值，必须是 ``VkStructureType::VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO`` 。
+* :bdg-secondary:`sType` 是该结构体的类型枚举值， :bdg-danger:`必须` 是 ``VkStructureType::VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO`` 。
 * :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
 * :bdg-secondary:`allocationSize` 为要分配的内存大小。单位为字节。
 * :bdg-secondary:`memoryTypeIndex` 为在 ``VkPhysicalDeviceMemoryProperties::memoryTypes`` 数组对应的 ``memoryTypeIndex`` 索引处的堆上分配内存。
@@ -1893,7 +1901,7 @@ VkBufferCreateInfo
        const uint32_t*        pQueueFamilyIndices;
    } VkBufferCreateInfo;
 
-* :bdg-secondary:`sType` 是该结构体的类型枚举值，必须是 ``VkStructureType::VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO`` 。
+* :bdg-secondary:`sType` 是该结构体的类型枚举值， :bdg-danger:`必须` 是 ``VkStructureType::VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO`` 。
 * :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
 * :bdg-secondary:`flags` 缓存额外标志位配置。
 * :bdg-secondary:`size` 创建的缓存大小。单位为字节。
@@ -2074,7 +2082,7 @@ VkImageCreateInfo
        VkImageLayout            initialLayout;
    } VkImageCreateInfo;
 
-* :bdg-secondary:`sType` 是该结构体的类型枚举值，必须是 ``VkStructureType::VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO`` 。
+* :bdg-secondary:`sType` 是该结构体的类型枚举值， :bdg-danger:`必须` 是 ``VkStructureType::VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO`` 。
 * :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
 * :bdg-secondary:`flags` 图片额外标志位配置。
 * :bdg-secondary:`imageType` 图片的类型。
@@ -2503,8 +2511,161 @@ memoryTypeBits
 vkBindBufferMemory
 ----------------------
 
+将缓存与内存进行绑定，通过 ``vkBindBufferMemory`` 函数进行绑定，其定义如下：
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   VkResult vkBindBufferMemory(
+       VkDevice                                    device,
+       VkBuffer                                    buffer,
+       VkDeviceMemory                              memory,
+       VkDeviceSize                                memoryOffset);
+
+* :bdg-secondary:`device` 对应的 ``VkDevice`` 逻辑设备句柄。
+* :bdg-secondary:`buffer` 要绑定的目标缓存句柄。
+* :bdg-secondary:`memory` 要绑定的目标缓存句柄。
+* :bdg-secondary:`memoryOffset` 以 ``memory`` 对应的 ``memoryOffset`` 偏移处作为资源的起始内存。单位为 ``字节`` 。
+
+该函数比较简洁明了，将 ``buffer`` 和 ``memory`` 进行绑定。此时注意 ``memoryOffset`` 成员。在 ``Vulkan`` 官方对于内存推荐的做法是分配一块大内存，之后将这块大内存分成多块用于存储不同的资源，这时就需要指定资源的内存偏移，以此来设置资源的起始内存位置。
+但此时我们给出的示例中的内存分配都是刚刚好的（整个内存块全部被资源占有），所以此时 ``memoryOffset`` 为 ``0`` 。
+
+.. code:: c++
+
+   VkDevice device = 逻辑设备句柄;
+   VkBuffer buffer = 之前成功创建的缓存资源句柄;
+   VkDeviceMemory device_memory = 之前成功创建的内存句柄;
+
+   VkResult result = vkBindBufferMemory(device, buffer, device_memory, 0);
+   if(result != VkResult::VK_SUCCESS)
+   {
+      throw std::runtime_error("缓存绑定内存失败");
+   }
+
 vkBindImageMemory
 ----------------------
+
+与缓存绑定内存类似，图片通过 ``vkBindImageMemory`` 进行内存绑定。其定义如下：
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   VkResult vkBindImageMemory(
+       VkDevice                                    device,
+       VkImage                                     image,
+       VkDeviceMemory                              memory,
+       VkDeviceSize                                memoryOffset);   
+
+* :bdg-secondary:`device` 对应的 ``VkDevice`` 逻辑设备句柄。
+* :bdg-secondary:`image` 要绑定的目标图片句柄。
+* :bdg-secondary:`memory` 要绑定的目标缓存句柄。
+* :bdg-secondary:`memoryOffset` 以 ``memory`` 对应的 ``memoryOffset`` 偏移处作为资源的起始内存。单位为 ``字节`` 。
+
+与缓存绑定内存类似，这里就不再赘述。
+
+数据传输
+############################
+
+现在我们有了内存，有了资源，并且资源与内存进行了绑定。一切看起来是那么的美好。:bdg-primary:`｡ (ˊᗜˋ*) ｡` 但是现在内存中的数据没有任何意义（没有任何赋值，仅仅为默认值），我们需要向内存中写入数据，来存储意义非凡的数据才是我们想要的。
+
+在 ``Vulkan`` 中传输数据有很多种途径，大体可以分成两类：
+
+* :bdg-secondary:`通过CPU向内存中传输数据`
+* :bdg-secondary:`通过GPU向内存中传输数据`
+
+通过CPU向内存中传输数据
+***************************************
+
+当分配 ``VkDeviceMemory`` 内存时需要指定 :ref:`VkMemoryAllocateInfo` 中的内存类型索引 ``VkMemoryAllocateInfo::memoryTypeIndex`` 。如果该内存类型支持 ``VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT`` （也就是可以被 ``CPU`` 访问到）的话，分配的设备内存可以进行 ``内存映射`` 。
+
+.. admonition:: 内存映射
+   :class: note
+
+   所谓 ``内存映射`` 就是将 ``Vulkan`` 的 ``VkDeviceMemory`` 内存映射到一个指针上，对该指针所指向的内存进行读写就是直接向 ``VkDeviceMemory`` 所代表的设备内存中进行读写。
+
+.. important::
+
+   ``VkDeviceMemory`` 设备内存 :bdg-danger:`必须` 在支持 ``VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT`` 的内存类型上进行分配。
+
+``Vulkan`` 中是通过 ``vkMapMemory`` 函数将内存进行映射，其定义如下：
+
+vkMapMemory
+--------------
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   VkResult vkMapMemory(
+       VkDevice                                    device,
+       VkDeviceMemory                              memory,
+       VkDeviceSize                                offset,
+       VkDeviceSize                                size,
+       VkMemoryMapFlags                            flags,
+       void**                                      ppData);
+
+* :bdg-secondary:`device` 对应的 ``VkDevice`` 逻辑设备句柄。
+* :bdg-secondary:`memory` 要映射的目标缓存句柄。
+* :bdg-secondary:`offset` 映射的内存偏移。
+* :bdg-secondary:`size` 映射的内存大小。
+* :bdg-secondary:`flags` 保留成员，用于未来时使用。
+* :bdg-secondary:`ppData` 映射结果。
+
+如此我们就可以对设备内存进行内存映射了：
+
+.. code:: c++
+
+   VkDevice device = 逻辑设备句柄;
+   VkDeviceMemory device_memory = 之前成功在 VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT 上创建的内存句柄;
+   VkDeviceSize memory_size = 1024; // 假如内存的大小为 1024 byte
+
+   void *memory_ptr = nullptr;
+
+   VkResult result = vkMapMemory(device, device_memory, 0, memory_size, 0, &memory_ptr);
+   if(result != VkResult::VK_SUCCESS)
+   {
+      throw std::runtime_error("内存映射失败");
+   }
+
+   void* data = 您准备好的数据;
+
+   memcpy(memory_ptr, data, memory_size); // 将准备好的数据拷贝至设备内存中
+
+.. important::
+
+   如果设备内存已经通过 ``vkMapMemory`` 映射完成，处于 ``映射态`` ，则 :bdg-danger:`不能` 再次调用  ``vkMapMemory`` 再一次映射内存。
+
+映射完成后您可以取消设备内存的映射，这是通过调用 ``vkUnmapMemory`` 函数解除内存映射：
+
+vkUnmapMemory
+-----------------
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   void vkUnmapMemory(
+       VkDevice                                    device,
+       VkDeviceMemory                              memory);
+
+* :bdg-secondary:`device` 对应的 ``VkDevice`` 逻辑设备句柄。
+* :bdg-secondary:`memory` 要取消映射的目标缓存句柄。
+
+.. important::
+
+   要解除映射的设备内存 ``memory`` 当前 :bdg-danger:`必须` 已经通过 ``vkMapMemory`` 调用处于 ``映射态`` 。
+
+当解除映射之后，之前映射的指针将失效，如果想重新获取映射指针，再次调用 ``vkMapMemory`` 进行映射即可。
+
+.. code:: c++
+
+   VkDevice device = 逻辑设备句柄;
+   VkDeviceMemory device_memory = 之前完成内存映射的设备内存;
+
+   vkUnmapMemory(device, device_memory);
+
+
+通过GPU向内存中传输数据
+***************************************
+
 
 
 ..
@@ -2517,6 +2678,8 @@ vkBindImageMemory
    Image 图片
 
       color output image
+
+   VK_WHOLE_SIZE
 
    Image View
 
