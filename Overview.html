@@ -409,6 +409,7 @@
 <li><p class="sd-card-text">2024/1/4 增加 <code class="docutils literal notranslate"><span class="pre">通过CPU向内存中传输数据</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/1/4 增加 <code class="docutils literal notranslate"><span class="pre">vkMapMemory</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/1/4 增加 <code class="docutils literal notranslate"><span class="pre">vkUnmapMemory</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/1/5 更新 <code class="docutils literal notranslate"><span class="pre">通过GPU向内存中传输数据</span></code> 章节。</p></li>
 </ul>
 </div>
 </details><p>由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 比较复杂，为了更好的入门 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> ，还是大致过一遍 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的核心思路，这对以后的学习很有帮助。</p>
@@ -2606,6 +2607,86 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </section>
 <section id="gpu">
 <h3>通过GPU向内存中传输数据<a class="headerlink" href="#gpu" title="Link to this heading">#</a></h3>
+<p>为了能够控制 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 完成我们需要的工作， <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 为我们提供了一系列的 <code class="docutils literal notranslate"><span class="pre">指令</span></code> 接口，通过组合各种指令，控制 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 进行计算，其中就包括拥有数据传输（读写）功能的指令。</p>
+<p>其中拥有数据传输功能的指令有很多，这里并不打算展开深入讲解，但为了加深理解，这里简单讲解 <code class="docutils literal notranslate"><span class="pre">vkCmdCopyBuffer</span></code> 指令。该指令用于在 <code class="docutils literal notranslate"><span class="pre">Buffer</span></code> 间传输数据，其定义如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">vkCmdCopyBuffer</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkCommandBuffer</span><span class="w">                             </span><span class="n">commandBuffer</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkBuffer</span><span class="w">                                    </span><span class="n">srcBuffer</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkBuffer</span><span class="w">                                    </span><span class="n">dstBuffer</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                                    </span><span class="n">regionCount</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkBufferCopy</span><span class="o">*</span><span class="w">                         </span><span class="n">pRegions</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">commandBuffer</span> 指令缓存。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">srcBuffer</span> 源缓存。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">dstBuffer</span> 目标缓存。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">regionCount</span> 传输数量。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pRegions</span> 传输配置（数组）。且元素数量不能小于 <code class="docutils literal notranslate"><span class="pre">regionCount</span></code> 指定的数量。</p></li>
+</ul>
+<div class="note admonition">
+<p class="admonition-title">指令缓存</p>
+<p>之前说过， <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 是通过组合各种指令并执行来进行计算的， <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 为了效率最大化推出了 <code class="docutils literal notranslate"><span class="pre">指令缓存</span></code> ，您可以简单将其理解为指令包（容器），通过传输一包包指令来告诉 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 是如何工作的。具体细节将会在之后具体章节展开。</p>
+</div>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">VkBufferCopy</span></code> 中的成员意义非常直接，其定义如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkBufferCopy</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VkDeviceSize</span><span class="w">    </span><span class="n">srcOffset</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkDeviceSize</span><span class="w">    </span><span class="n">dstOffset</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkDeviceSize</span><span class="w">    </span><span class="n">size</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkBufferCopy</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">srcOffset</span> 源缓存偏移。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">dstOffset</span> 目标缓存偏移。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">size</span> 拷贝的大小。单位为 <code class="docutils literal notranslate"><span class="pre">字节</span></code> 。</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">vkCmdCopyBuffer</span></code> 作为 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 经典的数据传输指令，其中最经典的用法就是：将 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 的数据传输到 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 端内存中供 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 访问。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkDevice</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">逻辑设备句柄</span><span class="p">;</span>
+
+<span class="n">VkDeviceSize</span><span class="w"> </span><span class="n">memory_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1024</span><span class="p">;</span><span class="w"> </span><span class="c1">// 假如内存的大小都为 1024 byte</span>
+
+<span class="n">VkDeviceMemory</span><span class="w"> </span><span class="n">host_visible_device_memory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前成功在</span><span class="w"> </span><span class="n">VkMemoryPropertyFlagBits</span><span class="o">::</span><span class="n">VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT</span><span class="w"> </span><span class="n">上创建的内存句柄</span><span class="p">;</span><span class="w"> </span><span class="c1">// 此时该设备内存中数据为未定义值（未初始化）</span>
+<span class="n">VkDeviceMemory</span><span class="w"> </span><span class="n">device_local_device_memory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前成功在</span><span class="w"> </span><span class="n">VkMemoryPropertyFlagBits</span><span class="o">::</span><span class="n">VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT</span><span class="w"> </span><span class="n">上创建的内存句柄</span><span class="p">;</span><span class="w"> </span><span class="c1">// 此时该设备内存中数据已经被 GPU 写入完成</span>
+
+<span class="n">VkCommandBuffer</span><span class="w"> </span><span class="n">copy_buffer_command_buffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">用于记录缓存拷贝指令的指令缓存</span><span class="p">;</span>
+
+<span class="n">VkBufferCopy</span><span class="w"> </span><span class="n">buffer_copy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
+<span class="n">buffer_copy</span><span class="p">.</span><span class="n">srcOffset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="n">buffer_copy</span><span class="p">.</span><span class="n">dstOffset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="n">buffer_copy</span><span class="p">.</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">memory_size</span><span class="p">;</span>
+
+<span class="n">vkCmdCopyBuffer</span><span class="p">(</span><span class="n">copy_buffer_command_buffer</span><span class="p">,</span><span class="w"> </span><span class="n">device_local_device_memory</span><span class="p">,</span><span class="w"> </span><span class="n">host_visible_device_memory</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">buffer_copy</span><span class="p">);</span><span class="w"> </span><span class="c1">// 将缓存拷贝指令加入到指令缓存中</span>
+
+<span class="n">将指令缓存推送到GPU</span><span class="p">(</span><span class="n">copy_buffer_command_buffer</span><span class="p">);</span>
+
+<span class="n">等待GPU指令执行完成</span><span class="p">();</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">memory_ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="n">VkResult</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vkMapMemory</span><span class="p">(</span><span class="n">device</span><span class="p">,</span><span class="w"> </span><span class="n">host_visible_device_memory</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">memory_size</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">memory_ptr</span><span class="p">);</span>
+<span class="k">if</span><span class="p">(</span><span class="n">result</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">VkResult</span><span class="o">::</span><span class="n">VK_SUCCESS</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="s">&quot;内存映射失败&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">buffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">malloc</span><span class="p">(</span><span class="n">memory_size</span><span class="p">);</span>
+<span class="n">memcpy</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="n">memory_ptr</span><span class="p">,</span><span class="w"> </span><span class="n">memory_size</span><span class="p">);</span><span class="w"> </span><span class="c1">// 将传输至 CPU 可访问缓存中的数据拷贝至 CPU 可访问的内存中</span>
+
+<span class="n">vkUnmapMemory</span><span class="p">(</span><span class="n">device</span><span class="p">,</span><span class="w"> </span><span class="n">host_visible_device_memory</span><span class="p">);</span>
+
+<span class="c1">// 对 buffer 的其他操作 ...</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<ul class="simple">
+<li><p>将指令缓存推送到 <code class="docutils literal notranslate"><span class="pre">GPU</span></code></p></li>
+<li><p>等待 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 指令执行完成</p></li>
+</ul>
+<p>这两部分将会在后面的章节进行讲解。</p>
+</div>
 </section>
 </section>
 </section>
