@@ -134,6 +134,7 @@
    * 2024/1/4 增加 ``通过CPU向内存中传输数据`` 章节。
    * 2024/1/4 增加 ``vkMapMemory`` 章节。
    * 2024/1/4 增加 ``vkUnmapMemory`` 章节。
+   * 2024/1/5 更新 ``通过GPU向内存中传输数据`` 章节。
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -2662,11 +2663,93 @@ vkUnmapMemory
 
    vkUnmapMemory(device, device_memory);
 
-
 通过GPU向内存中传输数据
 ***************************************
 
+为了能够控制 ``GPU`` 完成我们需要的工作， ``Vulkan`` 为我们提供了一系列的 ``指令`` 接口，通过组合各种指令，控制 ``GPU`` 进行计算，其中就包括拥有数据传输（读写）功能的指令。
 
+其中拥有数据传输功能的指令有很多，这里并不打算展开深入讲解，但为了加深理解，这里简单讲解 ``vkCmdCopyBuffer`` 指令。该指令用于在 ``Buffer`` 间传输数据，其定义如下：
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   void vkCmdCopyBuffer(
+       VkCommandBuffer                             commandBuffer,
+       VkBuffer                                    srcBuffer,
+       VkBuffer                                    dstBuffer,
+       uint32_t                                    regionCount,
+       const VkBufferCopy*                         pRegions);
+
+* :bdg-secondary:`commandBuffer` 指令缓存。
+* :bdg-secondary:`srcBuffer` 源缓存。
+* :bdg-secondary:`dstBuffer` 目标缓存。
+* :bdg-secondary:`regionCount` 传输数量。
+* :bdg-secondary:`pRegions` 传输配置（数组）。且元素数量不能小于 ``regionCount`` 指定的数量。
+
+.. admonition:: 指令缓存
+   :class: note
+
+   之前说过， ``GPU`` 是通过组合各种指令并执行来进行计算的， ``Vulkan`` 为了效率最大化推出了 ``指令缓存`` ，您可以简单将其理解为指令包（容器），通过传输一包包指令来告诉 ``GPU`` 是如何工作的。具体细节将会在之后具体章节展开。
+
+其中 ``VkBufferCopy`` 中的成员意义非常直接，其定义如下：
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef struct VkBufferCopy {
+       VkDeviceSize    srcOffset;
+       VkDeviceSize    dstOffset;
+       VkDeviceSize    size;
+   } VkBufferCopy;
+
+* :bdg-secondary:`srcOffset` 源缓存偏移。
+* :bdg-secondary:`dstOffset` 目标缓存偏移。
+* :bdg-secondary:`size` 拷贝的大小。单位为 ``字节`` 。
+
+``vkCmdCopyBuffer`` 作为 ``GPU`` 经典的数据传输指令，其中最经典的用法就是：将 ``GPU`` 的数据传输到 ``CPU`` 端内存中供 ``CPU`` 访问。
+
+.. code:: c++
+
+   VkDevice device = 逻辑设备句柄;
+
+   VkDeviceSize memory_size = 1024; // 假如内存的大小都为 1024 byte
+
+   VkDeviceMemory host_visible_device_memory = 之前成功在 VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT 上创建的内存句柄; // 此时该设备内存中数据为未定义值（未初始化）
+   VkDeviceMemory device_local_device_memory = 之前成功在 VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT 上创建的内存句柄; // 此时该设备内存中数据已经被 GPU 写入完成
+
+   VkCommandBuffer copy_buffer_command_buffer = 用于记录缓存拷贝指令的指令缓存;
+
+   VkBufferCopy buffer_copy = {};
+   buffer_copy.srcOffset = 0;
+   buffer_copy.dstOffset = 0;
+   buffer_copy.size = memory_size;
+
+   vkCmdCopyBuffer(copy_buffer_command_buffer, device_local_device_memory, host_visible_device_memory, 1, &buffer_copy); // 将缓存拷贝指令加入到指令缓存中
+
+   将指令缓存推送到GPU(copy_buffer_command_buffer);
+
+   等待GPU指令执行完成();
+
+   void *memory_ptr = nullptr;
+   VkResult result = vkMapMemory(device, host_visible_device_memory, 0, memory_size, 0, &memory_ptr);
+   if(result != VkResult::VK_SUCCESS)
+   {
+      throw std::runtime_error("内存映射失败");
+   }
+
+   void* buffer = malloc(memory_size);
+   memcpy(buffer, memory_ptr, memory_size); // 将传输至 CPU 可访问缓存中的数据拷贝至 CPU 可访问的内存中
+
+   vkUnmapMemory(device, host_visible_device_memory);
+
+   // 对 buffer 的其他操作 ... 
+
+.. note::
+
+   * 将指令缓存推送到 ``GPU``
+   * 等待 ``GPU`` 指令执行完成
+
+   这两部分将会在后面的章节进行讲解。
 
 ..
    内存
