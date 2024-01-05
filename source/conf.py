@@ -8,7 +8,7 @@
 
 #project = 'Essentials.of.Vulkan'
 project = 'Vulkan入门精要'
-copyright = '2023, FuXii'
+copyright = '2023-2024, FuXii'
 author = 'FuXii'
 
 # -- General configuration ---------------------------------------------------
