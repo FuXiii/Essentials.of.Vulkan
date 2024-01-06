@@ -88,7 +88,9 @@ html_theme_options = {
 }
 
 html_css_files = [
-    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css",
+    'css/custom_sidebar_drawer.css',
+    'css/custom_content.css',
 ]
 
 html_js_files = [

@@ -135,6 +135,16 @@
    * 2024/1/4 增加 ``vkMapMemory`` 章节。
    * 2024/1/4 增加 ``vkUnmapMemory`` 章节。
    * 2024/1/5 更新 ``通过GPU向内存中传输数据`` 章节。
+   * 2024/1/6 更新 ``通过GPU向内存中传输数据`` 章节。增加对 ``srcBuffer`` 和 ``dstBuffer`` 的基本要求说明。
+   * 2024/1/6 增加 ``图片视图`` 章节。
+   * 2024/1/6 增加 ``vkCreateImageView`` 章节。
+   * 2024/1/6 增加 ``VkImageViewCreateInfo`` 章节。
+   * 2024/1/6 增加 ``VkImageViewType`` 章节。
+   * 2024/1/6 增加 ``VkImageSubresourceRange`` 章节。
+   * 2024/1/6 增加 ``VkImageAspectFlags`` 章节。
+   * 2024/1/6 增加 ``解析范围`` 章节。
+   * 2024/1/6 增加 ``VkComponentMapping`` 章节。
+   * 2024/1/6 增加 ``VkComponentSwizzle`` 章节。
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -2032,7 +2042,9 @@ VkSharingMode
 
    * :bdg-secondary:`VK_BUFFER_USAGE_TRANSFER_DST_BIT` 表示该缓存将会作为数据传输的目标，用于之后的数据拷贝（具体如何将数据拷贝进该缓存将在之后的章节进行讲解）。
    * :bdg-secondary:`VK_BUFFER_USAGE_VERTEX_BUFFER_BIT` 表示该缓存将会作为顶点缓存进行内存优化。
-   
+
+.. _Image:
+
 图片
 ********************************
 
@@ -2350,6 +2362,289 @@ VkImageCreateInfo 其他参数和综述
    VkResult result = vkCreateImage(device, &image_create_info, nullptr, &image);
 
    assert(result == VkResult::VK_SUCCESS) //是否创建成功
+
+图片视图
+********************************
+
+在 ``Vulkan`` 标准中仅仅创建完 ``VkImage`` 是不够的，还需要告诉 ``Vulkan`` 如何“解析”该图片。 ``VkImage`` 仅仅用于表示具有特定数据格式的数据块，并没有规定图片中数据的意义，此时就需要创建 ``VkImageView`` （图片视图）来声明图片数据的解析方式，这样 ``Vulkan`` 就知道如何使用该图片了。
+
+比如，创建了一个图片（ ``VkImage`` ），其内部拥有一个 :math:`512(width) \times 512(height) \times 6(depth)` 的三维图片数据，也就是说该图片是由 ``6`` 张 ``512`` :math:`\times` ``512`` 的二维图片组成三维图片。现在对于该图片可以有两种解释：
+
+1. 解析为一个三维图片
+
+.. figure:: ./_static/3d_image.png
+   :height: 295.5
+   :width: 327.5
+
+2. 解析为由 ``6`` 张图片拼成的一个正方体盒子
+
+.. figure:: ./_static/3d_image_cubemap.png
+   :height: 250.5
+   :width: 548
+
+为了指定如何解析图片数据， ``VkImageView`` 应运而生。
+
+vkCreateImageView
+------------------------
+
+可以通过调用 ``vkCreateImageView`` 创建 ``VkImageView`` ，其定义如下：
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   VkResult vkCreateImageView(
+       VkDevice                                    device,
+       const VkImageViewCreateInfo*                pCreateInfo,
+       const VkAllocationCallbacks*                pAllocator,
+       VkImageView*                                pView);
+
+* :bdg-secondary:`device` 对应的 ``VkDevice`` 逻辑设备句柄。
+* :bdg-secondary:`pCreateInfo` 对应图片视图的创建信息。
+* :bdg-secondary:`pAllocator` 内存分配器。
+* :bdg-secondary:`pView` 创建的图片视图结果。
+
+VkImageViewCreateInfo
+-----------------------
+
+其中 ``VkImageViewCreateInfo`` 定义如下：
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef struct VkImageViewCreateInfo {
+       VkStructureType            sType;
+       const void*                pNext;
+       VkImageViewCreateFlags     flags;
+       VkImage                    image;
+       VkImageViewType            viewType;
+       VkFormat                   format;
+       VkComponentMapping         components;
+       VkImageSubresourceRange    subresourceRange;
+   } VkImageViewCreateInfo;
+
+* :bdg-secondary:`sType` 是该结构体的类型枚举值， :bdg-danger:`必须` 是 ``VkStructureType::VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO`` 。
+* :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
+* :bdg-secondary:`flags` 图片视图的额外标志位配置。
+* :bdg-secondary:`image` 视图的目标图片。
+* :bdg-secondary:`viewType` 视图类型。
+* :bdg-secondary:`format` 视图用于解析 ``image`` 的像素数据格式。
+* :bdg-secondary:`components` 用于规定每个像素中的数据的映射关系。
+* :bdg-secondary:`subresourceRange` 用于规定该视图对于 ``image`` 的解析范围。
+
+VkImageViewType
+---------------------
+
+其中 ``VkImageViewType`` 的定义如下：
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef enum VkImageViewType {
+       VK_IMAGE_VIEW_TYPE_1D = 0,
+       VK_IMAGE_VIEW_TYPE_2D = 1,
+       VK_IMAGE_VIEW_TYPE_3D = 2,
+       VK_IMAGE_VIEW_TYPE_CUBE = 3,
+       VK_IMAGE_VIEW_TYPE_1D_ARRAY = 4,
+       VK_IMAGE_VIEW_TYPE_2D_ARRAY = 5,
+       VK_IMAGE_VIEW_TYPE_CUBE_ARRAY = 6,
+   } VkImageViewType;
+
+* :bdg-secondary:`VK_IMAGE_VIEW_TYPE_1D` 一维视图。
+* :bdg-secondary:`VK_IMAGE_VIEW_TYPE_2D` 二维视图。
+* :bdg-secondary:`VK_IMAGE_VIEW_TYPE_3D` 三维视图。
+* :bdg-secondary:`VK_IMAGE_VIEW_TYPE_CUBE` 立方体视图。
+* :bdg-secondary:`VK_IMAGE_VIEW_TYPE_1D_ARRAY` 一维数组视图。
+* :bdg-secondary:`VK_IMAGE_VIEW_TYPE_2D_ARRAY` 二维数组视图。
+* :bdg-secondary:`VK_IMAGE_VIEW_TYPE_CUBE_ARRAY` 立方体数组视图。
+
+这里图片视图类型与 ``VkImageType`` 有相对应，也有一些 ``VK_IMAGE_VIEW_TYPE_CUBE`` 和 ``VK_IMAGE_VIEW_TYPE_*_ARRAY`` 这样的解析类型。
+
+对于之前的举例中 :math:`512(width) \times 512(height) \times 6(depth)` 的三维图片数据的两种解析方式，根据 ``VkImageViewType`` 标准，其对应如下：
+
+1. 解析为一个三维图片。其对应 ``VK_IMAGE_VIEW_TYPE_3D``
+2. 解析为由 ``6`` 张图片拼成的一个正方体盒子。其对应 ``VK_IMAGE_VIEW_TYPE_CUBE``
+
+由此可见，就算 ``VkImageViewCreateInfo::image`` 相同，不同的图片视图配置，对于相同的图片也会有不同的解析结果。
+
+其他视图类型在这里就不一一展开讲解了，这将会在详细章节中进行讲解。但这里提一嘴 ``VK_IMAGE_VIEW_TYPE_2D`` ，该视图类型比较常用，常见于将图片解析成一个二维图片。
+
+VkComponentMapping
+--------------------------------------------
+
+``VkComponentMapping`` 用于规定各个像素的分量映射，其定义如下：
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef struct VkComponentMapping {
+       VkComponentSwizzle    r;
+       VkComponentSwizzle    g;
+       VkComponentSwizzle    b;
+       VkComponentSwizzle    a;
+   } VkComponentMapping;
+
+* :bdg-secondary:`r` 红色分量映射。控制该视图对于该分量的解析结果。
+* :bdg-secondary:`g` 绿色分量映射。控制该视图对于该分量的解析结果。
+* :bdg-secondary:`b` 蓝色分量映射。控制该视图对于该分量的解析结果。
+* :bdg-secondary:`a` 不透明分量映射。控制该视图对于该分量的解析结果。
+
+VkComponentSwizzle
+^^^^^^^^^^^^^^^^^^^
+
+.. code:: c++
+
+   // Provided by VK_VERSION_1_0
+   typedef enum VkComponentSwizzle {
+       VK_COMPONENT_SWIZZLE_IDENTITY = 0,
+       VK_COMPONENT_SWIZZLE_ZERO = 1,
+       VK_COMPONENT_SWIZZLE_ONE = 2,
+       VK_COMPONENT_SWIZZLE_R = 3,
+       VK_COMPONENT_SWIZZLE_G = 4,
+       VK_COMPONENT_SWIZZLE_B = 5,
+       VK_COMPONENT_SWIZZLE_A = 6,
+   } VkComponentSwizzle;
+
+* :bdg-secondary:`VK_COMPONENT_SWIZZLE_IDENTITY` 表示个颜色分量原封不动的映射。是什么颜色分量就映射至什么分量。红色分量映射到红色、绿色分量映射到绿色和蓝色分量映射到蓝色。
+* :bdg-secondary:`VK_COMPONENT_SWIZZLE_ZERO` 映射成 ``0`` 。
+* :bdg-secondary:`VK_COMPONENT_SWIZZLE_ONE` 映射成 ``1`` 。
+* :bdg-secondary:`VK_COMPONENT_SWIZZLE_R` 映射成红颜色分量值。
+* :bdg-secondary:`VK_COMPONENT_SWIZZLE_G` 映射成绿颜色分量值。
+* :bdg-secondary:`VK_COMPONENT_SWIZZLE_B` 映射成蓝颜色分量值。
+* :bdg-secondary:`VK_COMPONENT_SWIZZLE_A` 映射成透明分量值。
+
+不出意外，基本上都是使用 ``VkComponentSwizzle::VK_COMPONENT_SWIZZLE_IDENTITY`` ，即不对映射进行任何篡改。除非您有特殊需求。
+
+接下来讲解一下 ``VkImageViewCreateInfo::subresourceRange`` ，其定义如下
+
+VkImageSubresourceRange
+--------------------------------------------
+
+``VkImageSubresourceRange`` 用于限定该视图对于 ``image`` 的解析范围。其定义如下：
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef struct VkImageSubresourceRange {
+       VkImageAspectFlags    aspectMask;
+       uint32_t              baseMipLevel;
+       uint32_t              levelCount;
+       uint32_t              baseArrayLayer;
+       uint32_t              layerCount;
+   } VkImageSubresourceRange;
+
+* :bdg-secondary:`aspectMask` 指定图片按照哪一方面进行解析。
+* :bdg-secondary:`baseMipLevel` 多级渐远纹理的起始级别。
+* :bdg-secondary:`levelCount` 多级渐远纹理的级别数。
+* :bdg-secondary:`baseArrayLayer` 图片的起始层级。
+* :bdg-secondary:`layerCount` 图片的层级数。
+
+VkImageAspectFlags
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+其中 ``VkImageAspectFlags`` 定义如下：
+
+.. code:: c++
+
+   // Provided by VK_VERSION_1_0
+   typedef enum VkImageAspectFlagBits {
+       VK_IMAGE_ASPECT_COLOR_BIT = 0x00000001,
+       VK_IMAGE_ASPECT_DEPTH_BIT = 0x00000002,
+       VK_IMAGE_ASPECT_STENCIL_BIT = 0x00000004,
+       VK_IMAGE_ASPECT_METADATA_BIT = 0x00000008,
+       ...
+   } VkImageAspectFlagBits;
+
+* :bdg-secondary:`VK_IMAGE_ASPECT_COLOR_BIT` 将图片数据解析成颜色值。
+* :bdg-secondary:`VK_IMAGE_ASPECT_DEPTH_BIT` 将图片数据解析成深度值。
+* :bdg-secondary:`VK_IMAGE_ASPECT_STENCIL_BIT` 将图片数据解析成模板值。
+* :bdg-secondary:`VK_IMAGE_ASPECT_METADATA_BIT` 将图片数据解析成原始数据值。用于稀疏资源。
+
+其中 ``VK_IMAGE_ASPECT_COLOR_BIT`` 、 ``VK_IMAGE_ASPECT_DEPTH_BIT`` 和 ``VK_IMAGE_ASPECT_STENCIL_BIT`` 经常使用。
+
+.. admonition:: 深度和模板
+   :class: note
+
+   深度和模板将会在详细章节中展开。
+
+.. admonition:: 稀疏资源
+   :class: note
+
+   稀疏资源将会在详细章节中展开。
+
+目前我们对于多级渐远纹理是忽略的，也就是多级渐远级别只有图片本身的 ``0`` 级，对于多级渐远纹理将会在详细章节进行讲解。
+
+解析范围
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+通过前面对于 ``VkImageSubresourceRange`` 的说明，可以知道其是用于解析目标图片的范围，所谓 ``解析范围`` 换句话说就是：
+
+   对于图片视图的目标图片 ``VkImageViewCreateInfo::image`` ，哪一部分图片数据是该视图可见的，并且指定如何解析这一部分数据。
+
+通过之前的 :ref:`Image` 章节，我们知道 ``Vulkan`` 中的图片都是按照三维图片 ``数组`` 形式存储的：
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef struct VkImageCreateInfo {
+       ...
+       VkExtent3D               extent;
+       ...
+       uint32_t                 arrayLayers;
+       ...
+   } VkImageCreateInfo;
+
+其中的 ``VkImageSubresourceRange::baseArrayLayer`` 和 ``VkImageSubresourceRange::layerCount`` 就是用于限定该图片视图对于目标图片的哪些层级可见。
+
+比如，最常见的就是对于二维颜色图片的视图：
+
+.. code:: c++
+
+   VkDevice device = 逻辑设备句柄;
+
+   VkImage color_image = 之前创建像素是颜色格式的二维图片; // 假如为 512（width） × 512（height） × 1（depth） × 1（layer）
+                                                        // 像素格式为 VkFormat::VK_FORMAT_B8G8R8A8_SRGB
+
+   VkImageSubresourceRange color_image_subresource_range = {};
+   color_image_subresource_range.aspectMask = VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
+   color_image_subresource_range.baseMipLevel = 0;
+   color_image_subresource_range.levelCount = 1;
+   color_image_subresource_range.baseArrayLayer = 0;
+   color_image_subresource_range.layerCount = 1;
+
+   VkComponentMapping component_mapping = {};
+   component_mapping.r = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_IDENTITY;
+   component_mapping.g = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_IDENTITY;
+   component_mapping.b = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_IDENTITY;
+   component_mapping.a = VkComponentSwizzle::VK_COMPONENT_SWIZZLE_IDENTITY;
+
+   VkImageViewCreateInfo color_image_view_create_info = {};
+   color_image_view_create_info.sType = VkStructureType::VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+   color_image_view_create_info.pNext = nullptr;
+   color_image_view_create_info.flags = 0;
+   color_image_view_create_info.image = color_image;
+   color_image_view_create_info.viewType = VkImageViewType::VK_IMAGE_VIEW_TYPE_2D ;
+   color_image_view_create_info.format = VkFormat::VK_FORMAT_B8G8R8A8_SRGB;
+   color_image_view_create_info.components = component_mapping;
+   color_image_view_create_info.subresourceRange = color_image_subresource_range;
+
+   VkImageView color_image_view = VK_NULL_HANDLE;
+
+   VkResult result = vkCreateImageView(device, &color_image_view_create_info, nullptr, &color_image_view);
+   if(result != VkResult::VK_SUCCESS)
+   {
+      throw std::runtime_error("创建图片视图失败");
+   }
+
+其示意图如下：
+
+.. figure:: ./_static/image_and_view.png
+   :height: 260
+   :width: 274
+
+.. note:: 
+   
+   示意图中视图比图片大，其用意为表示视图的可视范围为整个图片，而不是视图可访问的数据大于图片已知数据集的意思。
+
 
 资源与内存
 ############################
@@ -2681,8 +2976,8 @@ vkUnmapMemory
        const VkBufferCopy*                         pRegions);
 
 * :bdg-secondary:`commandBuffer` 指令缓存。
-* :bdg-secondary:`srcBuffer` 源缓存。
-* :bdg-secondary:`dstBuffer` 目标缓存。
+* :bdg-secondary:`srcBuffer` 源缓存。需要其创建时 ``VkBufferCreateInfo::usage`` 包含 ``VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT`` 位域。
+* :bdg-secondary:`dstBuffer` 目标缓存。需要其创建时 ``VkBufferCreateInfo::usage`` 包含 ``VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT`` 位域。
 * :bdg-secondary:`regionCount` 传输数量。
 * :bdg-secondary:`pRegions` 传输配置（数组）。且元素数量不能小于 ``regionCount`` 指定的数量。
 
@@ -2766,9 +3061,9 @@ vkUnmapMemory
 
    Image View
 
-   surface
+   surface 扩展
 
-   交换链
+   交换链 扩展
 
    attachment
 
