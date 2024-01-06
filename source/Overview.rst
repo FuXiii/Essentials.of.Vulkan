@@ -135,6 +135,7 @@
    * 2024/1/4 增加 ``vkMapMemory`` 章节。
    * 2024/1/4 增加 ``vkUnmapMemory`` 章节。
    * 2024/1/5 更新 ``通过GPU向内存中传输数据`` 章节。
+   * 2024/1/6 更新 ``通过GPU向内存中传输数据`` 章节。增加对 ``srcBuffer`` 和 ``dstBuffer`` 的基本要求说明。
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -2681,8 +2682,8 @@ vkUnmapMemory
        const VkBufferCopy*                         pRegions);
 
 * :bdg-secondary:`commandBuffer` 指令缓存。
-* :bdg-secondary:`srcBuffer` 源缓存。
-* :bdg-secondary:`dstBuffer` 目标缓存。
+* :bdg-secondary:`srcBuffer` 源缓存。需要其创建时 ``VkBufferCreateInfo::usage`` 包含 ``VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT`` 位域。
+* :bdg-secondary:`dstBuffer` 目标缓存。需要其创建时 ``VkBufferCreateInfo::usage`` 包含 ``VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT`` 位域。
 * :bdg-secondary:`regionCount` 传输数量。
 * :bdg-secondary:`pRegions` 传输配置（数组）。且元素数量不能小于 ``regionCount`` 指定的数量。
 

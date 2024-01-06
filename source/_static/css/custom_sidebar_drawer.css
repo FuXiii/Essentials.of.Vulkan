@@ -1,0 +1,9 @@
+.sidebar-drawer {
+    background: var(--color-sidebar-background);
+    border-right: 1px solid var(--color-sidebar-background-border);
+    box-sizing: border-box;
+    display: flex;
+    justify-content: flex-start;
+    min-width: 15em;
+    width: 1em;
+}
