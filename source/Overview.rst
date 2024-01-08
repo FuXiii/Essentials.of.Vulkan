@@ -145,6 +145,8 @@
    * 2024/1/6 增加 ``解析范围`` 章节。
    * 2024/1/6 增加 ``VkComponentMapping`` 章节。
    * 2024/1/6 增加 ``VkComponentSwizzle`` 章节。
+   * 2024/1/8 增加 ``指令`` 章节。
+   * 2024/1/8 增加 ``指令缓存`` 章节。
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -3045,6 +3047,48 @@ vkUnmapMemory
    * 等待 ``GPU`` 指令执行完成
 
    这两部分将会在后面的章节进行讲解。
+
+指令
+############################
+
+``Vulkan`` 标准中提供了一系列的接口函数，其中有一部分函数将会作为 ``指令`` 通过 ``CPU`` 记录在 ``指令容器`` 中，之后可以将 ``指令容器`` 推送到 ``GPU`` 中执行。
+
+这种在 ``CPU`` 记录，在 ``GPU`` 上执行的函数叫做 ``指令`` 。
+
+在 ``Vulkan`` 中提供了各种各样的指令，比如：
+
+.. code:: c++
+
+   vkCmdFillBuffer(...);
+   vkCmdCopyBuffer(...);
+   vkCmdCopyBufferToImage(...);
+   vkCmdBlitImage(...)
+   vkCmdResolveImage(...);
+   vkCmdDraw(...);
+   vkCmdDispatch(...);
+   ...
+
+其中不难看出 ``Vulkan`` 中的所有指令都是以 ``vkCmd{指令名称}`` 的格式进行命名的，而且通过指令名称可以很直接看出其用途：
+
+* :bdg-secondary:`vkCmdFillBuffer` 填充缓存指令。用于初始化缓存中的数据。
+* :bdg-secondary:`vkCmdCopyBuffer` 缓存间数据拷贝指令。
+* :bdg-secondary:`vkCmdCopyBufferToImage` 缓存拷贝至据图片指令。
+* :bdg-secondary:`vkCmdBlitImage` 图片传输构建指令。
+* :bdg-secondary:`vkCmdResolveImage` 图片采样指令。
+* :bdg-secondary:`vkCmdDraw` 绘制指令。
+* :bdg-secondary:`vkCmdDispatch` 调度指令。
+
+具体指令如何使用，将会在详细章节进行讲解。
+
+上面我们知道指令都是记录在 ``指令容器`` 中，为此 ``Vulkan`` 为我们提供了 ``指令缓存`` 。
+
+指令缓存
+############################
+
+由于 ``CPU`` 与 ``GPU`` 沟通是通过 ``PCI`` 总线，这种传输方式相比于 ``CPU`` 与 ``内存条`` 间的访问速度慢上不少，所以为了最大效率的利用 ``PCI`` 总线，往往希望 ``CPU`` 在一次 ``PCI`` 数据传输中传输的数据越多越好。也就是此原因， ``Vulkan`` 为了尽可能多的一次性多提交指令，为我们提供了 ``VkCommandBuffer`` 句柄，用于代表 ``指令缓存`` 对象。
+
+
+
 
 ..
    内存
