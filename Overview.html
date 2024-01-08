@@ -422,6 +422,8 @@
 <li><p class="sd-card-text">2024/1/6 增加 <code class="docutils literal notranslate"><span class="pre">解析范围</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/1/6 增加 <code class="docutils literal notranslate"><span class="pre">VkComponentMapping</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/1/6 增加 <code class="docutils literal notranslate"><span class="pre">VkComponentSwizzle</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/1/8 增加 <code class="docutils literal notranslate"><span class="pre">指令</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/1/8 增加 <code class="docutils literal notranslate"><span class="pre">指令缓存</span></code> 章节。</p></li>
 </ul>
 </div>
 </details><p>由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 比较复杂，为了更好的入门 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> ，还是大致过一遍 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的核心思路，这对以后的学习很有帮助。</p>
@@ -1206,9 +1208,9 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <div class="note admonition">
 <p class="admonition-title">队列族</p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中设备队列是按照 <code class="docutils literal notranslate"><span class="pre">族</span></code> 进行管理的，前面我们知道一个物理设备上的可能会有多个设备队列支持相同的功能域，这些支持相同功能域的设备队列算作同一族。</p>
-<figure class="align-default" id="id36">
+<figure class="align-default" id="id38">
 <img alt="_images/vk_queue_family_struct.svg" src="_images/vk_queue_family_struct.svg" /><figcaption>
-<p><span class="caption-text">如上图中。队列0、1、2三个队列属于队列族A，则这三个队列支持计算、图形和转移功能。队列3属于队列族B，则该队列支持计算和转移功能。</span><a class="headerlink" href="#id36" title="Link to this image">#</a></p>
+<p><span class="caption-text">如上图中。队列0、1、2三个队列属于队列族A，则这三个队列支持计算、图形和转移功能。队列3属于队列族B，则该队列支持计算和转移功能。</span><a class="headerlink" href="#id38" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 </div>
@@ -1713,9 +1715,9 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <section id="id21">
 <h4>VkPhysicalDeviceMemoryProperties 结构图<a class="headerlink" href="#id21" title="Link to this heading">#</a></h4>
 <p>为了更清晰的理解 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties</span></code> ，在此给出一张 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties</span></code> 结构参考图：</p>
-<figure class="align-default" id="id37">
+<figure class="align-default" id="id39">
 <img alt="_images/VkPhysicalDeviceMemoryProperties_struct.svg" src="_images/VkPhysicalDeviceMemoryProperties_struct.svg" /><figcaption>
-<p><span class="caption-text">如图所示为一种可能的结构。第一种内存类型对应着第三个内存堆，第二种内存类型对应着第一个内存堆，第三种内存类型对应着第二个内存堆。</span><a class="headerlink" href="#id37" title="Link to this image">#</a></p>
+<p><span class="caption-text">如图所示为一种可能的结构。第一种内存类型对应着第三个内存堆，第二种内存类型对应着第一个内存堆，第三种内存类型对应着第二个内存堆。</span><a class="headerlink" href="#id39" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <p>接下来就能够通过 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties</span></code> 获取内存信息了，和之前很多函数一样，首先获取 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties</span></code> 函数实现：</p>
@@ -2958,6 +2960,38 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </div>
 </section>
 </section>
+<section id="id36">
+<h2>指令<a class="headerlink" href="#id36" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准中提供了一系列的接口函数，其中有一部分函数将会作为 <code class="docutils literal notranslate"><span class="pre">指令</span></code> 通过 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 记录在 <code class="docutils literal notranslate"><span class="pre">指令容器</span></code> 中，之后可以将 <code class="docutils literal notranslate"><span class="pre">指令容器</span></code> 推送到 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 中执行。</p>
+<p>这种在 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 记录，在 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 上执行的函数叫做 <code class="docutils literal notranslate"><span class="pre">指令</span></code> 。</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中提供了各种各样的指令，比如：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">vkCmdFillBuffer</span><span class="p">(...);</span>
+<span class="n">vkCmdCopyBuffer</span><span class="p">(...);</span>
+<span class="n">vkCmdCopyBufferToImage</span><span class="p">(...);</span>
+<span class="n">vkCmdBlitImage</span><span class="p">(...)</span>
+<span class="n">vkCmdResolveImage</span><span class="p">(...);</span>
+<span class="n">vkCmdDraw</span><span class="p">(...);</span>
+<span class="n">vkCmdDispatch</span><span class="p">(...);</span>
+<span class="p">...</span>
+</pre></div>
+</div>
+<p>其中不难看出 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中的所有指令都是以 <code class="docutils literal notranslate"><span class="pre">vkCmd{指令名称}</span></code> 的格式进行命名的，而且通过指令名称可以很直接看出其用途：</p>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">vkCmdFillBuffer</span> 填充缓存指令。用于初始化缓存中的数据。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">vkCmdCopyBuffer</span> 缓存间数据拷贝指令。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">vkCmdCopyBufferToImage</span> 缓存拷贝至据图片指令。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">vkCmdBlitImage</span> 图片传输构建指令。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">vkCmdResolveImage</span> 图片采样指令。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">vkCmdDraw</span> 绘制指令。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">vkCmdDispatch</span> 调度指令。</p></li>
+</ul>
+<p>具体指令如何使用，将会在详细章节进行讲解。</p>
+<p>上面我们知道指令都是记录在 <code class="docutils literal notranslate"><span class="pre">指令容器</span></code> 中，为此 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 为我们提供了 <code class="docutils literal notranslate"><span class="pre">指令缓存</span></code> 。</p>
+</section>
+<section id="id37">
+<h2>指令缓存<a class="headerlink" href="#id37" title="Link to this heading">#</a></h2>
+<p>由于 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 与 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 沟通是通过 <code class="docutils literal notranslate"><span class="pre">PCI</span></code> 总线，这种传输方式相比于 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 与 <code class="docutils literal notranslate"><span class="pre">内存条</span></code> 间的访问速度慢上不少，所以为了最大效率的利用 <code class="docutils literal notranslate"><span class="pre">PCI</span></code> 总线，往往希望 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 在一次 <code class="docutils literal notranslate"><span class="pre">PCI</span></code> 数据传输中传输的数据越多越好。也就是此原因， <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 为了尽可能多的一次性多提交指令，为我们提供了 <code class="docutils literal notranslate"><span class="pre">VkCommandBuffer</span></code> 句柄，用于代表 <code class="docutils literal notranslate"><span class="pre">指令缓存</span></code> 对象。</p>
+</section>
 </section>
 
         </article>
@@ -3190,6 +3224,8 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <li><a class="reference internal" href="#gpu">通过GPU向内存中传输数据</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#id36">指令</a></li>
+<li><a class="reference internal" href="#id37">指令缓存</a></li>
 </ul>
 </li>
 </ul>
