@@ -424,6 +424,11 @@
 <li><p class="sd-card-text">2024/1/6 增加 <code class="docutils literal notranslate"><span class="pre">VkComponentSwizzle</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/1/8 增加 <code class="docutils literal notranslate"><span class="pre">指令</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/1/8 增加 <code class="docutils literal notranslate"><span class="pre">指令缓存</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/1/9 更新 <code class="docutils literal notranslate"><span class="pre">指令缓存</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/1/9 增加 <code class="docutils literal notranslate"><span class="pre">指令缓存池</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/1/9 增加 <code class="docutils literal notranslate"><span class="pre">vkCreateCommandPool</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/1/9 增加 <code class="docutils literal notranslate"><span class="pre">VkCommandPoolCreateInfo</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/1/9 增加 <code class="docutils literal notranslate"><span class="pre">VkCommandPoolCreateFlagBits</span></code> 章节。</p></li>
 </ul>
 </div>
 </details><p>由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 比较复杂，为了更好的入门 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> ，还是大致过一遍 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的核心思路，这对以后的学习很有帮助。</p>
@@ -782,7 +787,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </div>
 <div class="note admonition">
 <p class="admonition-title">pAllocator</p>
-<p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中创建句柄是需要设置内存分配器的，也就是 <code class="docutils literal notranslate"><span class="pre">pAllocator</span></code> ，这对于统计内存使用情况和自定义非常重要，如果没有自定义分配器的话也可以是直接传 <code class="docutils literal notranslate"><span class="pre">nullptr</span></code> ，这将会使用 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 内置的分配器进行分配。</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中创建句柄是需要设置内存分配器的，也就是 <code class="docutils literal notranslate"><span class="pre">pAllocator</span></code> ，这对于统计内存使用情况和自定义内存分配非常重要，如果没有自定义分配器的话也可以是直接传 <code class="docutils literal notranslate"><span class="pre">nullptr</span></code> ，这将会使用 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 内置的分配器进行分配。</p>
 </div>
 <p>如果创建成功将会返回 <code class="docutils literal notranslate"><span class="pre">VkResult::VK_SUCCESS</span></code> 枚举值，否则将返回错误结果枚举值。</p>
 <div class="note admonition">
@@ -1164,8 +1169,8 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </div>
 </section>
 </section>
-<section id="id13">
-<h2>设备队列<a class="headerlink" href="#id13" title="Link to this heading">#</a></h2>
+<section id="devicequeue">
+<span id="id13"></span><h2>设备队列<a class="headerlink" href="#devicequeue" title="Link to this heading">#</a></h2>
 <p>接下来简单介绍一下 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中的设备队列。</p>
 <p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中的每一个 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDevice</span></code> 物理设备上都有一到多个设备队列。设备队列用于执行所有的用户任务指令，包括渲染、计算、查询、剔除和构建等等各种任务指令。</p>
 <p>每个设备队列支持一到多个功能域，这些功能域分为如下 <code class="docutils literal notranslate"><span class="pre">5</span></code> 种：</p>
@@ -1208,9 +1213,9 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <div class="note admonition">
 <p class="admonition-title">队列族</p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中设备队列是按照 <code class="docutils literal notranslate"><span class="pre">族</span></code> 进行管理的，前面我们知道一个物理设备上的可能会有多个设备队列支持相同的功能域，这些支持相同功能域的设备队列算作同一族。</p>
-<figure class="align-default" id="id38">
+<figure class="align-default" id="id39">
 <img alt="_images/vk_queue_family_struct.svg" src="_images/vk_queue_family_struct.svg" /><figcaption>
-<p><span class="caption-text">如上图中。队列0、1、2三个队列属于队列族A，则这三个队列支持计算、图形和转移功能。队列3属于队列族B，则该队列支持计算和转移功能。</span><a class="headerlink" href="#id38" title="Link to this image">#</a></p>
+<p><span class="caption-text">如上图中。队列0、1、2三个队列属于队列族A，则这三个队列支持计算、图形和转移功能。队列3属于队列族B，则该队列支持计算和转移功能。</span><a class="headerlink" href="#id39" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 </div>
@@ -1715,9 +1720,9 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <section id="id21">
 <h4>VkPhysicalDeviceMemoryProperties 结构图<a class="headerlink" href="#id21" title="Link to this heading">#</a></h4>
 <p>为了更清晰的理解 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties</span></code> ，在此给出一张 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties</span></code> 结构参考图：</p>
-<figure class="align-default" id="id39">
+<figure class="align-default" id="id40">
 <img alt="_images/VkPhysicalDeviceMemoryProperties_struct.svg" src="_images/VkPhysicalDeviceMemoryProperties_struct.svg" /><figcaption>
-<p><span class="caption-text">如图所示为一种可能的结构。第一种内存类型对应着第三个内存堆，第二种内存类型对应着第一个内存堆，第三种内存类型对应着第二个内存堆。</span><a class="headerlink" href="#id39" title="Link to this image">#</a></p>
+<p><span class="caption-text">如图所示为一种可能的结构。第一种内存类型对应着第三个内存堆，第二种内存类型对应着第一个内存堆，第三种内存类型对应着第二个内存堆。</span><a class="headerlink" href="#id40" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <p>接下来就能够通过 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties</span></code> 获取内存信息了，和之前很多函数一样，首先获取 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties</span></code> 函数实现：</p>
@@ -2991,6 +2996,93 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <section id="id37">
 <h2>指令缓存<a class="headerlink" href="#id37" title="Link to this heading">#</a></h2>
 <p>由于 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 与 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 沟通是通过 <code class="docutils literal notranslate"><span class="pre">PCI</span></code> 总线，这种传输方式相比于 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 与 <code class="docutils literal notranslate"><span class="pre">内存条</span></code> 间的访问速度慢上不少，所以为了最大效率的利用 <code class="docutils literal notranslate"><span class="pre">PCI</span></code> 总线，往往希望 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 在一次 <code class="docutils literal notranslate"><span class="pre">PCI</span></code> 数据传输中传输的数据越多越好。也就是此原因， <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 为了尽可能多的一次性多提交指令，为我们提供了 <code class="docutils literal notranslate"><span class="pre">VkCommandBuffer</span></code> 句柄，用于代表 <code class="docutils literal notranslate"><span class="pre">指令缓存</span></code> 对象。</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中，指令缓存使用 <code class="docutils literal notranslate"><span class="pre">VkCommandBuffer</span></code> 句柄表示。如果按照正常思路对于指令缓存的创建应该有一个名为 <code class="docutils literal notranslate"><span class="pre">vkCreateCommandBuffer(...)</span></code> 的函数，但是 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准在设计时考虑了更多。首先考虑到 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 有如下基本特点：</p>
+<ul class="simple">
+<li><p>支持多线程</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CPU</span></code> 与 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 沟通只能通过指令缓存</p></li>
+<li><p>渲染一个场景往往需要执行成千上万个指令缓存，进行各种高强度计算</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GPU</span></code> 本身具有强大的并行计算能力</p></li>
+</ul>
+<p>这就表示指令缓存其本身不论是创建还是执行都需要尽可能的提高效率，为此 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准将指令缓存使用 <code class="docutils literal notranslate"><span class="pre">池</span></code> 的方式管理。也就是 <code class="docutils literal notranslate"><span class="pre">指令缓存池</span></code> 。</p>
+<div class="note admonition">
+<p class="admonition-title">池</p>
+<p>所谓 <code class="docutils literal notranslate"><span class="pre">池</span></code> ，就是一片提前划分好的区域，当需要空间时，直接占有池子中的一块闲置区域，当不需要时直接还给 <code class="docutils literal notranslate"><span class="pre">池子</span></code> 。这不再需要繁琐的空间分配算法，由于空间已经分配完成，需要空间，直接使用即可。这对于性能来说非常高效。</p>
+</div>
+</section>
+<section id="id38">
+<h2>指令缓存池<a class="headerlink" href="#id38" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中使用 <code class="docutils literal notranslate"><span class="pre">VkCommandPool</span></code> 句柄代表 <code class="docutils literal notranslate"><span class="pre">指令缓存池</span></code> 。与其他句柄创建类型，其使用 <code class="docutils literal notranslate"><span class="pre">vkCreateCommandPool(...)</span></code> 函数创建指令缓存池。</p>
+<section id="vkcreatecommandpool">
+<h3>vkCreateCommandPool<a class="headerlink" href="#vkcreatecommandpool" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="n">VkResult</span><span class="w"> </span><span class="nf">vkCreateCommandPool</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkCommandPoolCreateInfo</span><span class="o">*</span><span class="w">              </span><span class="n">pCreateInfo</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkAllocationCallbacks</span><span class="o">*</span><span class="w">                </span><span class="n">pAllocator</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkCommandPool</span><span class="o">*</span><span class="w">                              </span><span class="n">pCommandPool</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">device</span> 对应的 <code class="docutils literal notranslate"><span class="pre">VkDevice</span></code> 逻辑设备句柄。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pCreateInfo</span> 指令缓存池的配置信息。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pAllocator</span> 内存分配器。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pCommandPool</span> 创建的目标指令缓存池。</p></li>
+</ul>
+<p>我们来看一下 <code class="docutils literal notranslate"><span class="pre">VkCommandPoolCreateInfo</span></code> 的定义，如下。</p>
+</section>
+<section id="vkcommandpoolcreateinfo">
+<h3>VkCommandPoolCreateInfo<a class="headerlink" href="#vkcommandpoolcreateinfo" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkCommandPoolCreateInfo</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VkStructureType</span><span class="w">             </span><span class="n">sType</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w">                 </span><span class="n">pNext</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkCommandPoolCreateFlags</span><span class="w">    </span><span class="n">flags</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                    </span><span class="n">queueFamilyIndex</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkCommandPoolCreateInfo</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 是该结构体的类型枚举值， <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 是 <code class="docutils literal notranslate"><span class="pre">VkStructureType::VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pNext</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向其他结构体来扩展该结构体。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">flags</span> 指令缓存池额外标志位配置。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">queueFamilyIndex</span> 目标队列族索引。</p></li>
+</ul>
+<p>其中重点关注一下 <code class="docutils literal notranslate"><span class="pre">queueFamilyIndex</span></code> 成员。根据 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准的要求，指令缓存池都是基于设备的其中一个 <a class="reference internal" href="#devicequeue"><span class="std std-ref">设备队列</span></a> 族创建的，并且该池中的所有队列缓存 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 推送到对应同族的设备队列中执行。</p>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">VkCommandPoolCreateFlags</span></code> 可用的枚举值定义在 <code class="docutils literal notranslate"><span class="pre">VkCommandPoolCreateFlagBits</span></code> 中，其定义如下：</p>
+</section>
+<section id="vkcommandpoolcreateflagbits">
+<h3>VkCommandPoolCreateFlagBits<a class="headerlink" href="#vkcommandpoolcreateflagbits" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkCommandPoolCreateFlagBits</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VK_COMMAND_POOL_CREATE_TRANSIENT_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000001</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000002</span><span class="p">,</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkCommandPoolCreateFlagBits</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_COMMAND_POOL_CREATE_TRANSIENT_BIT</span> 用于指定该指令缓存池中分配的指令缓存的寿命将会较短。这意味着该池中的指令缓存将会在较短的时间内重置或回收。该标志位可能用于底层驱动内部控制内存分配策略。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT</span> 用于指定该指令缓存池中分配的各个指令缓存可以单独进行重置。</p></li>
+</ul>
+<p>现在我们就可以在支持图形功能的队列上分配一个指令缓存池了：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkDevice</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">逻辑设备句柄</span><span class="p">;</span>
+<span class="kt">uint32_t</span><span class="w"> </span><span class="n">support_graphics_queue_family_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前获取到支持图形的队列族索引</span><span class="p">;</span>
+
+<span class="n">VkCommandPoolCreateInfo</span><span class="w"> </span><span class="n">command_pool_create_info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
+<span class="n">command_pool_create_info</span><span class="p">.</span><span class="n">sType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VkStructureType</span><span class="o">::</span><span class="n">VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO</span><span class="p">;</span>
+<span class="n">command_pool_create_info</span><span class="p">.</span><span class="n">pNext</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="n">command_pool_create_info</span><span class="p">.</span><span class="n">flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VkCommandPoolCreateFlagBits</span><span class="o">::</span><span class="n">VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT</span><span class="p">;</span>
+<span class="n">command_pool_create_info</span><span class="p">.</span><span class="n">queueFamilyIndex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">support_graphics_queue_family_index</span><span class="p">;</span>
+
+<span class="n">VkCommandPool</span><span class="w"> </span><span class="n">command_pool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_NULL_HANDLE</span><span class="p">;</span>
+
+<span class="n">VkResult</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vkCreateCommandPool</span><span class="p">(</span><span class="n">device</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">command_pool_create_info</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">command_pool</span><span class="p">);</span>
+<span class="k">if</span><span class="p">(</span><span class="n">result</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">VkResult</span><span class="o">::</span><span class="n">VK_SUCCESS</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="s">&quot;指令缓存池创建失败&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 
@@ -3107,7 +3199,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <li><a class="reference internal" href="#vkphysicaldevicetype">VkPhysicalDeviceType</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id13">设备队列</a><ul>
+<li><a class="reference internal" href="#devicequeue">设备队列</a><ul>
 <li><a class="reference internal" href="#id14">获取设备队列（族）信息</a><ul>
 <li><a class="reference internal" href="#vkgetphysicaldevicequeuefamilyproperties">vkGetPhysicalDeviceQueueFamilyProperties</a></li>
 <li><a class="reference internal" href="#vkqueuefamilyproperties">VkQueueFamilyProperties</a></li>
@@ -3226,6 +3318,12 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </li>
 <li><a class="reference internal" href="#id36">指令</a></li>
 <li><a class="reference internal" href="#id37">指令缓存</a></li>
+<li><a class="reference internal" href="#id38">指令缓存池</a><ul>
+<li><a class="reference internal" href="#vkcreatecommandpool">vkCreateCommandPool</a></li>
+<li><a class="reference internal" href="#vkcommandpoolcreateinfo">VkCommandPoolCreateInfo</a></li>
+<li><a class="reference internal" href="#vkcommandpoolcreateflagbits">VkCommandPoolCreateFlagBits</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

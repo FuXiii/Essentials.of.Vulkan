@@ -147,6 +147,11 @@
    * 2024/1/6 增加 ``VkComponentSwizzle`` 章节。
    * 2024/1/8 增加 ``指令`` 章节。
    * 2024/1/8 增加 ``指令缓存`` 章节。
+   * 2024/1/9 更新 ``指令缓存`` 章节。
+   * 2024/1/9 增加 ``指令缓存池`` 章节。
+   * 2024/1/9 增加 ``vkCreateCommandPool`` 章节。
+   * 2024/1/9 增加 ``VkCommandPoolCreateInfo`` 章节。
+   * 2024/1/9 增加 ``VkCommandPoolCreateFlagBits`` 章节。
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -535,7 +540,7 @@ vkCreateInstance
 .. admonition:: pAllocator
    :class: note
 
-   在 ``Vulkan`` 中创建句柄是需要设置内存分配器的，也就是 ``pAllocator`` ，这对于统计内存使用情况和自定义非常重要，如果没有自定义分配器的话也可以是直接传 ``nullptr`` ，这将会使用 ``Vulkan`` 内置的分配器进行分配。
+   在 ``Vulkan`` 中创建句柄是需要设置内存分配器的，也就是 ``pAllocator`` ，这对于统计内存使用情况和自定义内存分配非常重要，如果没有自定义分配器的话也可以是直接传 ``nullptr`` ，这将会使用 ``Vulkan`` 内置的分配器进行分配。
 
 如果创建成功将会返回 ``VkResult::VK_SUCCESS`` 枚举值，否则将返回错误结果枚举值。
 
@@ -949,6 +954,8 @@ VkPhysicalDeviceType
 
       std::cout << "Physical Device Name:" << physical_device_properties.deviceName << std::endl;
    }
+
+.. _DeviceQueue:
 
 设备队列
 ############################
@@ -3087,6 +3094,100 @@ vkUnmapMemory
 
 由于 ``CPU`` 与 ``GPU`` 沟通是通过 ``PCI`` 总线，这种传输方式相比于 ``CPU`` 与 ``内存条`` 间的访问速度慢上不少，所以为了最大效率的利用 ``PCI`` 总线，往往希望 ``CPU`` 在一次 ``PCI`` 数据传输中传输的数据越多越好。也就是此原因， ``Vulkan`` 为了尽可能多的一次性多提交指令，为我们提供了 ``VkCommandBuffer`` 句柄，用于代表 ``指令缓存`` 对象。
 
+在 ``Vulkan`` 中，指令缓存使用 ``VkCommandBuffer`` 句柄表示。如果按照正常思路对于指令缓存的创建应该有一个名为 ``vkCreateCommandBuffer(...)`` 的函数，但是 ``Vulkan`` 标准在设计时考虑了更多。首先考虑到 ``Vulkan`` 有如下基本特点：
+
+* 支持多线程
+* ``CPU`` 与 ``GPU`` 沟通只能通过指令缓存
+* 渲染一个场景往往需要执行成千上万个指令缓存，进行各种高强度计算
+* ``GPU`` 本身具有强大的并行计算能力
+
+这就表示指令缓存其本身不论是创建还是执行都需要尽可能的提高效率，为此 ``Vulkan`` 标准将指令缓存使用 ``池`` 的方式管理。也就是 ``指令缓存池`` 。
+
+.. admonition:: 池
+   :class: note
+
+   所谓 ``池`` ，就是一片提前划分好的区域，当需要空间时，直接占有池子中的一块闲置区域，当不需要时直接还给 ``池子`` 。这不再需要繁琐的空间分配算法，由于空间已经分配完成，需要空间，直接使用即可。这对于性能来说非常高效。
+
+指令缓存池
+############################
+
+``Vulkan`` 中使用 ``VkCommandPool`` 句柄代表 ``指令缓存池`` 。与其他句柄创建类型，其使用 ``vkCreateCommandPool(...)`` 函数创建指令缓存池。
+
+vkCreateCommandPool
+***************************************
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   VkResult vkCreateCommandPool(
+       VkDevice                                    device,
+       const VkCommandPoolCreateInfo*              pCreateInfo,
+       const VkAllocationCallbacks*                pAllocator,
+       VkCommandPool*                              pCommandPool);
+
+* :bdg-secondary:`device` 对应的 ``VkDevice`` 逻辑设备句柄。
+* :bdg-secondary:`pCreateInfo` 指令缓存池的配置信息。
+* :bdg-secondary:`pAllocator` 内存分配器。
+* :bdg-secondary:`pCommandPool` 创建的目标指令缓存池。
+
+我们来看一下 ``VkCommandPoolCreateInfo`` 的定义，如下。
+
+VkCommandPoolCreateInfo
+***************************************
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef struct VkCommandPoolCreateInfo {
+       VkStructureType             sType;
+       const void*                 pNext;
+       VkCommandPoolCreateFlags    flags;
+       uint32_t                    queueFamilyIndex;
+   } VkCommandPoolCreateInfo;
+
+* :bdg-secondary:`sType` 是该结构体的类型枚举值， :bdg-danger:`必须` 是 ``VkStructureType::VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO`` 。
+* :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
+* :bdg-secondary:`flags` 指令缓存池额外标志位配置。
+* :bdg-secondary:`queueFamilyIndex` 目标队列族索引。
+
+其中重点关注一下 ``queueFamilyIndex`` 成员。根据 ``Vulkan`` 标准的要求，指令缓存池都是基于设备的其中一个 :ref:`DeviceQueue` 族创建的，并且该池中的所有队列缓存 :bdg-danger:`必须` 推送到对应同族的设备队列中执行。
+
+其中 ``VkCommandPoolCreateFlags`` 可用的枚举值定义在 ``VkCommandPoolCreateFlagBits`` 中，其定义如下：
+
+VkCommandPoolCreateFlagBits
+***************************************
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef enum VkCommandPoolCreateFlagBits {
+       VK_COMMAND_POOL_CREATE_TRANSIENT_BIT = 0x00000001,
+       VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT = 0x00000002,
+   } VkCommandPoolCreateFlagBits;
+
+* :bdg-secondary:`VK_COMMAND_POOL_CREATE_TRANSIENT_BIT` 用于指定该指令缓存池中分配的指令缓存的寿命将会较短。这意味着该池中的指令缓存将会在较短的时间内重置或回收。该标志位可能用于底层驱动内部控制内存分配策略。
+* :bdg-secondary:`VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT` 用于指定该指令缓存池中分配的各个指令缓存可以单独进行重置。
+
+现在我们就可以在支持图形功能的队列上分配一个指令缓存池了：
+
+.. code:: c++
+
+   VkDevice device = 逻辑设备句柄;
+   uint32_t support_graphics_queue_family_index = 之前获取到支持图形的队列族索引;
+
+   VkCommandPoolCreateInfo command_pool_create_info = {};
+   command_pool_create_info.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+   command_pool_create_info.pNext = nullptr;
+   command_pool_create_info.flags = VkCommandPoolCreateFlagBits::VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+   command_pool_create_info.queueFamilyIndex = support_graphics_queue_family_index;
+
+   VkCommandPool command_pool = VK_NULL_HANDLE;
+
+   VkResult result = vkCreateCommandPool(device, &command_pool_create_info, nullptr, &command_pool);
+   if(result != VkResult::VK_SUCCESS)
+   {
+      throw std::runtime_error("指令缓存池创建失败");
+   }
 
 
 
