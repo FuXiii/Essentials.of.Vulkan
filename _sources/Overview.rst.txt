@@ -152,6 +152,10 @@
    * 2024/1/9 增加 ``vkCreateCommandPool`` 章节。
    * 2024/1/9 增加 ``VkCommandPoolCreateInfo`` 章节。
    * 2024/1/9 增加 ``VkCommandPoolCreateFlagBits`` 章节。
+   * 2024/1/10 增加 ``分配指令缓存`` 章节。
+   * 2024/1/10 增加 ``VkCommandBufferAllocateInfo`` 章节。
+   * 2024/1/10 增加 ``VkCommandBufferLevel`` 章节。
+   * 2024/1/10 增加 ``指令记录`` 章节。
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -3168,7 +3172,7 @@ VkCommandPoolCreateFlagBits
 * :bdg-secondary:`VK_COMMAND_POOL_CREATE_TRANSIENT_BIT` 用于指定该指令缓存池中分配的指令缓存的寿命将会较短。这意味着该池中的指令缓存将会在较短的时间内重置或回收。该标志位可能用于底层驱动内部控制内存分配策略。
 * :bdg-secondary:`VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT` 用于指定该指令缓存池中分配的各个指令缓存可以单独进行重置。
 
-现在我们就可以在支持图形功能的队列上分配一个指令缓存池了：
+现在我们就可以在支持图形功能的队列上创建一个指令缓存池了：
 
 .. code:: c++
 
@@ -3178,7 +3182,7 @@ VkCommandPoolCreateFlagBits
    VkCommandPoolCreateInfo command_pool_create_info = {};
    command_pool_create_info.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
    command_pool_create_info.pNext = nullptr;
-   command_pool_create_info.flags = VkCommandPoolCreateFlagBits::VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+   command_pool_create_info.flags = VkCommandPoolCreateFlagBits::VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT; // 使其分配的所有指令缓存都可以单独重置
    command_pool_create_info.queueFamilyIndex = support_graphics_queue_family_index;
 
    VkCommandPool command_pool = VK_NULL_HANDLE;
@@ -3189,6 +3193,100 @@ VkCommandPoolCreateFlagBits
       throw std::runtime_error("指令缓存池创建失败");
    }
 
+分配指令缓存
+############################
+
+在创建完指令缓存池之后，就可以从该池中分配指令缓存了。 我们可以通过 ``vkAllocateCommandBuffers`` 分配指令缓存。定义如下：
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   VkResult vkAllocateCommandBuffers(
+       VkDevice                                    device,
+       const VkCommandBufferAllocateInfo*          pAllocateInfo,
+       VkCommandBuffer*                            pCommandBuffers);
+
+* :bdg-secondary:`device` 对应的 ``VkDevice`` 逻辑设备句柄。
+* :bdg-secondary:`pAllocateInfo` 指令缓存的分配信息。
+* :bdg-secondary:`pCommandBuffers` 分配的目标指令缓存。
+
+其中 ``VkCommandBufferAllocateInfo`` 定义如下：
+
+VkCommandBufferAllocateInfo
+*********************************
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef struct VkCommandBufferAllocateInfo {
+       VkStructureType         sType;
+       const void*             pNext;
+       VkCommandPool           commandPool;
+       VkCommandBufferLevel    level;
+       uint32_t                commandBufferCount;
+   } VkCommandBufferAllocateInfo;
+
+* :bdg-secondary:`sType` 是该结构体的类型枚举值， :bdg-danger:`必须` 是 ``VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO`` 。
+* :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
+* :bdg-secondary:`commandPool` 指定在哪个指令缓存池中进行分配。
+* :bdg-secondary:`level` 指令缓存级别。
+* :bdg-secondary:`commandBufferCount` 要创建的指令缓存数量。
+
+其中 ``commandBufferCount`` 成员对应的数量为要从 ``commandPool`` 中分配的指令缓存数量，并会将分配结果写入 ``vkAllocateCommandBuffers(...)`` 的 ``pCommandBuffers`` 中，这也就表明 ``pCommandBuffers`` :bdg-danger:`必须` 是满足数量为 ``commandBufferCount`` 的数组。
+
+其中 ``VkCommandBufferLevel`` 用于表示分配的指令缓存级别，其定义如下：
+
+VkCommandBufferLevel
+*********************************
+
+.. code:: c++
+
+   // Provided by VK_VERSION_1_0
+   typedef enum VkCommandBufferLevel {
+       VK_COMMAND_BUFFER_LEVEL_PRIMARY = 0,
+       VK_COMMAND_BUFFER_LEVEL_SECONDARY = 1,
+   } VkCommandBufferLevel;
+
+* :bdg-secondary:`VK_COMMAND_BUFFER_LEVEL_PRIMARY` 指令该指令缓存级别为主要。
+* :bdg-secondary:`VK_COMMAND_BUFFER_LEVEL_SECONDARY` 指令该指令缓存级别为次要。
+
+所谓 ``主要`` 级别指令缓存，其表示该级别的指令缓存可以直接推给 ``GPU`` 进行执行，而 ``次要`` 指令缓存不能直接推送，只能依附于 ``主要`` 级指令缓存上，并由 ``主要`` 级指令缓存间接调用。
+
+.. admonition:: 主、次要指令缓存
+   :class: note
+
+   有关主、次要指令缓存将在详细章节展开。目前我们只关注 ``VK_COMMAND_BUFFER_LEVEL_PRIMARY`` 主要指令缓存即可。
+
+接下来我们就可以从指令缓存池中分配指令缓存了：
+
+.. code:: c++
+
+   VkDevice device = 逻辑设备句柄;
+   VkCommandPool command_pool = 之前创建的指令缓存池;
+
+   VkCommandBufferAllocateInfo command_buffer_allocate_info = {};
+   command_buffer_allocate_info.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+   command_buffer_allocate_info.pNext = nullptr;
+   command_buffer_allocate_info.commandPool = command_pool;
+   command_buffer_allocate_info.level = VkCommandBufferLevel::VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+   command_buffer_allocate_info.commandBufferCount = 3;
+
+   std::vector<VkCommandBuffer> command_buffers(3);
+
+   VkResult result = vkAllocateCommandBuffers(device, &command_buffer_allocate_info, command_buffers.data());
+
+   if(result != VkResult::VK_SUCCESS)
+   {
+      throw std::runtime_error("指令缓存分配失败");
+   }
+
+指令记录
+############################
+
+.. 
+   vkBegin
+
+   vkEnd
 
 
 ..
@@ -3215,6 +3313,8 @@ VkCommandPoolCreateFlagBits
    RenderPass
 
    FrameBuffer
+
+   池结构数据
 
    着色器
 
