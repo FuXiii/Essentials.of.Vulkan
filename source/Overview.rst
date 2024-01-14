@@ -156,6 +156,10 @@
    * 2024/1/10 增加 ``VkCommandBufferAllocateInfo`` 章节。
    * 2024/1/10 增加 ``VkCommandBufferLevel`` 章节。
    * 2024/1/10 增加 ``指令记录`` 章节。
+   * 2024/1/14 更新 ``指令记录`` 章节。
+   * 2024/1/14 增加 ``vkBeginCommandBuffer`` 章节。
+   * 2024/1/14 更新 ``VkCommandBufferLevel`` 章节。增加对 ``一级`` 和 ``二级`` 说明。
+   * 2024/1/14 增加 ``开启指令缓存`` 章节。
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -3241,7 +3245,7 @@ VkCommandBufferLevel
 
 .. code:: c++
 
-   // Provided by VK_VERSION_1_0
+   // 由 VK_VERSION_1_0 提供
    typedef enum VkCommandBufferLevel {
        VK_COMMAND_BUFFER_LEVEL_PRIMARY = 0,
        VK_COMMAND_BUFFER_LEVEL_SECONDARY = 1,
@@ -3256,6 +3260,8 @@ VkCommandBufferLevel
    :class: note
 
    有关主、次要指令缓存将在详细章节展开。目前我们只关注 ``VK_COMMAND_BUFFER_LEVEL_PRIMARY`` 主要指令缓存即可。
+
+   下文会出现 ``一级`` 和 ``二级`` （指令）缓存，分别代表 ``主要`` 级别和 ``次要`` 级别指令缓存。
 
 接下来我们就可以从指令缓存池中分配指令缓存了：
 
@@ -3280,8 +3286,99 @@ VkCommandBufferLevel
       throw std::runtime_error("指令缓存分配失败");
    }
 
-指令记录
+开启指令缓存
 ############################
+
+在通过 ``vkAllocateCommandBuffers`` 分配完指令缓存后，当前的指令缓存处于 ``初始状态`` 。为了能够在该指令缓存中记录指令， 我们需要状态切换至 ``记录状态`` 。这需要通过调用 ``vkBeginCommandBuffer`` 函数将 ``初始状态`` 的指令缓存切换至 ``记录状态`` 。其定义如下：
+
+vkBeginCommandBuffer
+***************************
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   VkResult vkBeginCommandBuffer(
+       VkCommandBuffer                             commandBuffer,
+       const VkCommandBufferBeginInfo*             pBeginInfo);
+
+* :bdg-secondary:`commandBuffer` 切换状态的指令缓存。且 :bdg-danger:`需要` 为 ``初始状态`` 。
+* :bdg-secondary:`pBeginInfo` 该指令缓存的状态配置信息。
+
+通过调用该函数如果返回 ``VkResult::VK_SUCCESS`` 说明 ``commandBuffer`` 从 ``初始状态`` 成功切换至 ``记录状态`` 。其中的 ``VkCommandBufferBeginInfo`` 定义如下：
+
+VkCommandBufferBeginInfo
+***************************
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef struct VkCommandBufferBeginInfo {
+       VkStructureType                          sType;
+       const void*                              pNext;
+       VkCommandBufferUsageFlags                flags;
+       const VkCommandBufferInheritanceInfo*    pInheritanceInfo;
+   } VkCommandBufferBeginInfo;
+
+* :bdg-secondary:`sType` 是该结构体的类型枚举值， :bdg-danger:`必须` 是 ``VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO`` 。
+* :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
+* :bdg-secondary:`flags` 额外标志位配置。
+* :bdg-secondary:`pInheritanceInfo` 用于指令缓存为二级缓存时。如果指令缓存为一级缓存时将忽略该成员。
+
+.. admonition:: pInheritanceInfo
+   :class: note
+
+   由于二级缓存将会在专门的章节展开，这里只使用一级缓存。所以忽略 ``pInheritanceInfo`` 成员。
+
+其中 ``VkCommandBufferUsageFlags`` 定义如下：
+
+VkCommandBufferUsageFlags
+***************************
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef enum VkCommandBufferUsageFlagBits {
+       VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT = 0x00000001,
+       VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT = 0x00000002,
+       VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT = 0x00000004,
+   } VkCommandBufferUsageFlagBits;
+
+* :bdg-secondary:`VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT` 表示该指令缓存将只会提交一次。并会在每次提交与提交之间再次重置指令缓存并记录指令。
+* :bdg-secondary:`VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT` 表示整个二级缓存都被限制在一个渲染过程（ ``Render Pass`` ）中。如果是一级缓存将会忽略该标志位。
+* :bdg-secondary:`VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT` 表示该指令缓存可在同一队列族中的各个队列上重复提交该指令缓存。
+
+.. admonition:: Render Pass
+   :class: note
+
+   为渲染过程，该过程会在内部有一个临时的上下文，用于在内部记录各种渲染状态，用于绘制各种图元。这将会在之后的专门章节进行讲解。
+
+.. admonition:: VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT 与 VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
+   :class: note
+
+   如果为一级缓存。则 ``VkCommandBufferBeginInfo::flags`` 中不能同时存在 ``VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT`` 和 ``VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT`` 位域。
+
+接下来我们就可以开启指令了，将 ``初始状态`` 的指令缓存切换至 ``记录状态``：
+
+.. code:: c++
+
+   VkCommandBuffer command_buffer = 之前创建的一级（主要级）指令缓存;
+
+   VkCommandBufferBeginInfo command_buffer_begin_info = {};
+   command_buffer_begin_info.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+   command_buffer_begin_info.pNext = nullptr;
+   command_buffer_begin_info.flags = VkCommandBufferUsageFlagBits::VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT; // 该指令缓存可以反复提交
+   command_buffer_begin_info.pInheritanceInfo = nullptr; // 由于我们使用的是一级指令缓存，该成员将会忽略
+
+   VkResult result = vkBeginCommandBuffer(command_buffer, &command_buffer_begin_info);
+
+   if(result != VkResult::VK_SUCCESS)
+   {
+      throw std::runtime_error("启用该指令缓存失败");
+   }
+
+指令记录
+###############
+
 
 .. 
    vkBegin
