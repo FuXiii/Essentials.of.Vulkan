@@ -160,6 +160,10 @@
    * 2024/1/14 增加 ``vkBeginCommandBuffer`` 章节。
    * 2024/1/14 更新 ``VkCommandBufferLevel`` 章节。增加对 ``一级`` 和 ``二级`` 说明。
    * 2024/1/14 增加 ``开启指令缓存`` 章节。
+   * 2024/1/14 更新 ``通过GPU向内存中传输数据`` 章节。增加 ``开启指令缓存指令记录`` 和 ``结束指令缓存指令记录`` 。
+   * 2024/1/14 增加 ``结束指令缓存`` 章节。
+   * 2024/1/14 增加 ``vkEndCommandBuffer`` 章节。
+   * 2024/1/14 更新 ``Vulkan 能为我们做什么`` 章节。修改该文档的 ``纵览目标``
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -181,7 +185,9 @@ Vulkan 能为我们做什么
 * 视频编解码
 * （通用）并行计算
 
-其中 ``光栅化渲染`` 应该是最主要的功能了（同时也是 ``Vulkan`` 的核心功能）。该章节也主要以 ``光栅化渲染`` 为核心进行纵览。
+其中 ``光栅化渲染`` 应该是最主要的功能了（同时也是 ``Vulkan`` 的核心功能）。
+
+该章节主要以所有功能通用开发流程为核心进行纵览。
 
 Vulkan 的句柄
 ######################
@@ -2975,6 +2981,8 @@ vkUnmapMemory
 
    vkUnmapMemory(device, device_memory);
 
+.. _TransformDataToGPU:
+
 通过GPU向内存中传输数据
 ***************************************
 
@@ -3031,12 +3039,16 @@ vkUnmapMemory
 
    VkCommandBuffer copy_buffer_command_buffer = 用于记录缓存拷贝指令的指令缓存;
 
+   开启指令缓存指令记录(copy_buffer_command_buffer);
+
    VkBufferCopy buffer_copy = {};
    buffer_copy.srcOffset = 0;
    buffer_copy.dstOffset = 0;
    buffer_copy.size = memory_size;
 
    vkCmdCopyBuffer(copy_buffer_command_buffer, device_local_device_memory, host_visible_device_memory, 1, &buffer_copy); // 将缓存拷贝指令加入到指令缓存中
+
+   结束指令缓存指令记录(copy_buffer_command_buffer);
 
    将指令缓存推送到GPU(copy_buffer_command_buffer);
 
@@ -3378,6 +3390,65 @@ VkCommandBufferUsageFlags
 
 指令记录
 ###############
+
+在 :ref:`TransformDataToGPU` 中给出了在指令缓存中记录 ``vkCmdCopyBuffer`` 指令的示例。我们可以在指令缓存处于 ``记录状态`` 后记录各种指令。
+
+通过之前的章节我们知道 ``Vulkan`` 提供了各种各样的不同功能的指令，这些指令都在指令缓存处于 ``记录状态`` 时记录指令。比如：
+
+.. code:: c++
+
+   VkCommandBuffer command_buffer = 之前创建的一级（主要级）指令缓存;
+   VkCommandBufferBeginInfo command_buffer_begin_info = 之前的指令缓存开启配置;
+
+   VkResult result = vkBeginCommandBuffer(command_buffer, &command_buffer_begin_info); 
+
+   if(result != VkResult::VK_SUCCESS)
+   {
+      throw std::runtime_error("启用该指令缓存失败");
+   }
+
+   // 现在指令缓存处于【记录状态】可以开始记录指令了
+   vkCmd开启渲染过程(command_buffer, ...); // 向 command_buffer 中记录一条【开启渲染过程】指令
+   vkCmd绑定几何数据(command_buffer, ...); // 向 command_buffer 中记录一条【绑定几何数据】指令
+   vkCmd绑定渲染接口数据(command_buffer, ...); // 向 command_buffer 中记录一条【绑定渲染接口数据】指令
+   vkCmd绑定渲染管线(command_buffer, ...); // 向 command_buffer 中记录一条【绑定渲染管线】指令
+   vkCmd绘制(command_buffer, ...); // 向 command_buffer 中记录一条【绘制】指令
+   vkCmd...(command_buffer, ...) // 向 command_buffer 中记录其他指令
+
+.. important:: ``Vulkan`` 为我们提供了各式各样功能不同的指令，具体指令定义和使用方式将在具体章节中展开。
+
+结束指令缓存
+############################
+
+当所有需要的指令都记录到了目标指令缓存之后，需要调用 ``vkEndCommandBuffer`` 结束指令缓存的 ``记录状态`` ，将其从 ``记录状态`` 转至成 ``可执行状态`` ，为将指令缓存推送到 ``GPU`` 做准备。其定义如下：
+
+vkEndCommandBuffer
+***************************
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   VkResult vkEndCommandBuffer(
+       VkCommandBuffer                             commandBuffer);
+
+* :bdg-secondary:`commandBuffer` 要结束记录的指令缓存。且 :bdg-danger:`需要` 为 ``记录状态`` 。
+
+结束指令缓存就相对简单：
+
+.. code:: c++
+
+   VkCommandBuffer command_buffer = 之前处于【记录状态】的指令缓存;
+   
+   VkResult result = vkEndCommandBuffer(command_buffer);
+
+   if(result != VkResult::VK_SUCCESS)
+   {
+      throw std::runtime_error("结束该指令缓存失败");
+   }
+
+指令推送
+############################
+
 
 
 .. 
