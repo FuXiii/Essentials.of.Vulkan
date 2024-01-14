@@ -433,6 +433,14 @@
 <li><p class="sd-card-text">2024/1/10 增加 <code class="docutils literal notranslate"><span class="pre">VkCommandBufferAllocateInfo</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/1/10 增加 <code class="docutils literal notranslate"><span class="pre">VkCommandBufferLevel</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/1/10 增加 <code class="docutils literal notranslate"><span class="pre">指令记录</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/1/14 更新 <code class="docutils literal notranslate"><span class="pre">指令记录</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/1/14 增加 <code class="docutils literal notranslate"><span class="pre">vkBeginCommandBuffer</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/1/14 更新 <code class="docutils literal notranslate"><span class="pre">VkCommandBufferLevel</span></code> 章节。增加对 <code class="docutils literal notranslate"><span class="pre">一级</span></code> 和 <code class="docutils literal notranslate"><span class="pre">二级</span></code> 说明。</p></li>
+<li><p class="sd-card-text">2024/1/14 增加 <code class="docutils literal notranslate"><span class="pre">开启指令缓存</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/1/14 更新 <code class="docutils literal notranslate"><span class="pre">通过GPU向内存中传输数据</span></code> 章节。增加 <code class="docutils literal notranslate"><span class="pre">开启指令缓存指令记录</span></code> 和 <code class="docutils literal notranslate"><span class="pre">结束指令缓存指令记录</span></code> 。</p></li>
+<li><p class="sd-card-text">2024/1/14 增加 <code class="docutils literal notranslate"><span class="pre">结束指令缓存</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/1/14 增加 <code class="docutils literal notranslate"><span class="pre">vkEndCommandBuffer</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/1/14 更新 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">能为我们做什么</span></code> 章节。修改该文档的 <code class="docutils literal notranslate"><span class="pre">纵览目标</span></code></p></li>
 </ul>
 </div>
 </details><p>由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 比较复杂，为了更好的入门 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> ，还是大致过一遍 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的核心思路，这对以后的学习很有帮助。</p>
@@ -451,7 +459,8 @@
 <li><p>视频编解码</p></li>
 <li><p>（通用）并行计算</p></li>
 </ul>
-<p>其中 <code class="docutils literal notranslate"><span class="pre">光栅化渲染</span></code> 应该是最主要的功能了（同时也是 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的核心功能）。该章节也主要以 <code class="docutils literal notranslate"><span class="pre">光栅化渲染</span></code> 为核心进行纵览。</p>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">光栅化渲染</span></code> 应该是最主要的功能了（同时也是 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的核心功能）。</p>
+<p>该章节主要以所有功能通用开发流程为核心进行纵览。</p>
 </section>
 <section id="id3">
 <h2>Vulkan 的句柄<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
@@ -1217,9 +1226,9 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <div class="note admonition">
 <p class="admonition-title">队列族</p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中设备队列是按照 <code class="docutils literal notranslate"><span class="pre">族</span></code> 进行管理的，前面我们知道一个物理设备上的可能会有多个设备队列支持相同的功能域，这些支持相同功能域的设备队列算作同一族。</p>
-<figure class="align-default" id="id41">
+<figure class="align-default" id="id44">
 <img alt="_images/vk_queue_family_struct.svg" src="_images/vk_queue_family_struct.svg" /><figcaption>
-<p><span class="caption-text">如上图中。队列0、1、2三个队列属于队列族A，则这三个队列支持计算、图形和转移功能。队列3属于队列族B，则该队列支持计算和转移功能。</span><a class="headerlink" href="#id41" title="Link to this image">#</a></p>
+<p><span class="caption-text">如上图中。队列0、1、2三个队列属于队列族A，则这三个队列支持计算、图形和转移功能。队列3属于队列族B，则该队列支持计算和转移功能。</span><a class="headerlink" href="#id44" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 </div>
@@ -1724,9 +1733,9 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <section id="id21">
 <h4>VkPhysicalDeviceMemoryProperties 结构图<a class="headerlink" href="#id21" title="Link to this heading">#</a></h4>
 <p>为了更清晰的理解 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties</span></code> ，在此给出一张 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties</span></code> 结构参考图：</p>
-<figure class="align-default" id="id42">
+<figure class="align-default" id="id45">
 <img alt="_images/VkPhysicalDeviceMemoryProperties_struct.svg" src="_images/VkPhysicalDeviceMemoryProperties_struct.svg" /><figcaption>
-<p><span class="caption-text">如图所示为一种可能的结构。第一种内存类型对应着第三个内存堆，第二种内存类型对应着第一个内存堆，第三种内存类型对应着第二个内存堆。</span><a class="headerlink" href="#id42" title="Link to this image">#</a></p>
+<p><span class="caption-text">如图所示为一种可能的结构。第一种内存类型对应着第三个内存堆，第二种内存类型对应着第一个内存堆，第三种内存类型对应着第二个内存堆。</span><a class="headerlink" href="#id45" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <p>接下来就能够通过 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties</span></code> 获取内存信息了，和之前很多函数一样，首先获取 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties</span></code> 函数实现：</p>
@@ -2886,7 +2895,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </section>
 </section>
 <section id="gpu">
-<h3>通过GPU向内存中传输数据<a class="headerlink" href="#gpu" title="Link to this heading">#</a></h3>
+<span id="transformdatatogpu"></span><h3>通过GPU向内存中传输数据<a class="headerlink" href="#gpu" title="Link to this heading">#</a></h3>
 <p>为了能够控制 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 完成我们需要的工作， <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 为我们提供了一系列的 <code class="docutils literal notranslate"><span class="pre">指令</span></code> 接口，通过组合各种指令，控制 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 进行计算，其中就包括拥有数据传输（读写）功能的指令。</p>
 <p>其中拥有数据传输功能的指令有很多，这里并不打算展开深入讲解，但为了加深理解，这里简单讲解 <code class="docutils literal notranslate"><span class="pre">vkCmdCopyBuffer</span></code> 指令。该指令用于在 <code class="docutils literal notranslate"><span class="pre">Buffer</span></code> 间传输数据，其定义如下：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
@@ -2933,12 +2942,16 @@ Linux 获取</label><div class="sd-tab-content docutils">
 
 <span class="n">VkCommandBuffer</span><span class="w"> </span><span class="n">copy_buffer_command_buffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">用于记录缓存拷贝指令的指令缓存</span><span class="p">;</span>
 
+<span class="n">开启指令缓存指令记录</span><span class="p">(</span><span class="n">copy_buffer_command_buffer</span><span class="p">);</span>
+
 <span class="n">VkBufferCopy</span><span class="w"> </span><span class="n">buffer_copy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
 <span class="n">buffer_copy</span><span class="p">.</span><span class="n">srcOffset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <span class="n">buffer_copy</span><span class="p">.</span><span class="n">dstOffset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <span class="n">buffer_copy</span><span class="p">.</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">memory_size</span><span class="p">;</span>
 
 <span class="n">vkCmdCopyBuffer</span><span class="p">(</span><span class="n">copy_buffer_command_buffer</span><span class="p">,</span><span class="w"> </span><span class="n">device_local_device_memory</span><span class="p">,</span><span class="w"> </span><span class="n">host_visible_device_memory</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">buffer_copy</span><span class="p">);</span><span class="w"> </span><span class="c1">// 将缓存拷贝指令加入到指令缓存中</span>
+
+<span class="n">结束指令缓存指令记录</span><span class="p">(</span><span class="n">copy_buffer_command_buffer</span><span class="p">);</span>
 
 <span class="n">将指令缓存推送到GPU</span><span class="p">(</span><span class="n">copy_buffer_command_buffer</span><span class="p">);</span>
 
@@ -3128,7 +3141,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </section>
 <section id="vkcommandbufferlevel">
 <h3>VkCommandBufferLevel<a class="headerlink" href="#vkcommandbufferlevel" title="Link to this heading">#</a></h3>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// Provided by VK_VERSION_1_0</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkCommandBufferLevel</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">VK_COMMAND_BUFFER_LEVEL_PRIMARY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
 <span class="w">    </span><span class="n">VK_COMMAND_BUFFER_LEVEL_SECONDARY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
@@ -3143,6 +3156,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <div class="note admonition">
 <p class="admonition-title">主、次要指令缓存</p>
 <p>有关主、次要指令缓存将在详细章节展开。目前我们只关注 <code class="docutils literal notranslate"><span class="pre">VK_COMMAND_BUFFER_LEVEL_PRIMARY</span></code> 主要指令缓存即可。</p>
+<p>下文会出现 <code class="docutils literal notranslate"><span class="pre">一级</span></code> 和 <code class="docutils literal notranslate"><span class="pre">二级</span></code> （指令）缓存，分别代表 <code class="docutils literal notranslate"><span class="pre">主要</span></code> 级别和 <code class="docutils literal notranslate"><span class="pre">次要</span></code> 级别指令缓存。</p>
 </div>
 <p>接下来我们就可以从指令缓存池中分配指令缓存了：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkDevice</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">逻辑设备句柄</span><span class="p">;</span>
@@ -3168,7 +3182,143 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </section>
 </section>
 <section id="id40">
-<h2>指令记录<a class="headerlink" href="#id40" title="Link to this heading">#</a></h2>
+<h2>开启指令缓存<a class="headerlink" href="#id40" title="Link to this heading">#</a></h2>
+<p>在通过 <code class="docutils literal notranslate"><span class="pre">vkAllocateCommandBuffers</span></code> 分配完指令缓存后，当前的指令缓存处于 <code class="docutils literal notranslate"><span class="pre">初始状态</span></code> 。为了能够在该指令缓存中记录指令， 我们需要状态切换至 <code class="docutils literal notranslate"><span class="pre">记录状态</span></code> 。这需要通过调用 <code class="docutils literal notranslate"><span class="pre">vkBeginCommandBuffer</span></code> 函数将 <code class="docutils literal notranslate"><span class="pre">初始状态</span></code> 的指令缓存切换至 <code class="docutils literal notranslate"><span class="pre">记录状态</span></code> 。其定义如下：</p>
+<section id="vkbegincommandbuffer">
+<h3>vkBeginCommandBuffer<a class="headerlink" href="#vkbegincommandbuffer" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="n">VkResult</span><span class="w"> </span><span class="nf">vkBeginCommandBuffer</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkCommandBuffer</span><span class="w">                             </span><span class="n">commandBuffer</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkCommandBufferBeginInfo</span><span class="o">*</span><span class="w">             </span><span class="n">pBeginInfo</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">commandBuffer</span> 切换状态的指令缓存。且 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">需要</span> 为 <code class="docutils literal notranslate"><span class="pre">初始状态</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pBeginInfo</span> 该指令缓存的状态配置信息。</p></li>
+</ul>
+<p>通过调用该函数如果返回 <code class="docutils literal notranslate"><span class="pre">VkResult::VK_SUCCESS</span></code> 说明 <code class="docutils literal notranslate"><span class="pre">commandBuffer</span></code> 从 <code class="docutils literal notranslate"><span class="pre">初始状态</span></code> 成功切换至 <code class="docutils literal notranslate"><span class="pre">记录状态</span></code> 。其中的 <code class="docutils literal notranslate"><span class="pre">VkCommandBufferBeginInfo</span></code> 定义如下：</p>
+</section>
+<section id="vkcommandbufferbegininfo">
+<h3>VkCommandBufferBeginInfo<a class="headerlink" href="#vkcommandbufferbegininfo" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkCommandBufferBeginInfo</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VkStructureType</span><span class="w">                          </span><span class="n">sType</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w">                              </span><span class="n">pNext</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkCommandBufferUsageFlags</span><span class="w">                </span><span class="n">flags</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkCommandBufferInheritanceInfo</span><span class="o">*</span><span class="w">    </span><span class="n">pInheritanceInfo</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkCommandBufferBeginInfo</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 是该结构体的类型枚举值， <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 是 <code class="docutils literal notranslate"><span class="pre">VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pNext</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向其他结构体来扩展该结构体。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">flags</span> 额外标志位配置。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pInheritanceInfo</span> 用于指令缓存为二级缓存时。如果指令缓存为一级缓存时将忽略该成员。</p></li>
+</ul>
+<div class="note admonition">
+<p class="admonition-title">pInheritanceInfo</p>
+<p>由于二级缓存将会在专门的章节展开，这里只使用一级缓存。所以忽略 <code class="docutils literal notranslate"><span class="pre">pInheritanceInfo</span></code> 成员。</p>
+</div>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">VkCommandBufferUsageFlags</span></code> 定义如下：</p>
+</section>
+<section id="vkcommandbufferusageflags">
+<h3>VkCommandBufferUsageFlags<a class="headerlink" href="#vkcommandbufferusageflags" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkCommandBufferUsageFlagBits</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000001</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000002</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000004</span><span class="p">,</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkCommandBufferUsageFlagBits</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT</span> 表示该指令缓存将只会提交一次。并会在每次提交与提交之间再次重置指令缓存并记录指令。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT</span> 表示整个二级缓存都被限制在一个渲染过程（ <code class="docutils literal notranslate"><span class="pre">Render</span> <span class="pre">Pass</span></code> ）中。如果是一级缓存将会忽略该标志位。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT</span> 表示该指令缓存可在同一队列族中的各个队列上重复提交该指令缓存。</p></li>
+</ul>
+<div class="note admonition">
+<p class="admonition-title">Render Pass</p>
+<p>为渲染过程，该过程会在内部有一个临时的上下文，用于在内部记录各种渲染状态，用于绘制各种图元。这将会在之后的专门章节进行讲解。</p>
+</div>
+<div class="note admonition">
+<p class="admonition-title">VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT 与 VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT</p>
+<p>如果为一级缓存。则 <code class="docutils literal notranslate"><span class="pre">VkCommandBufferBeginInfo::flags</span></code> 中不能同时存在 <code class="docutils literal notranslate"><span class="pre">VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT</span></code> 和 <code class="docutils literal notranslate"><span class="pre">VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT</span></code> 位域。</p>
+</div>
+<p>接下来我们就可以开启指令了，将 <code class="docutils literal notranslate"><span class="pre">初始状态</span></code> 的指令缓存切换至 <code class="docutils literal notranslate"><span class="pre">记录状态</span></code>：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkCommandBuffer</span><span class="w"> </span><span class="n">command_buffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前创建的一级</span><span class="err">（</span><span class="n">主要级</span><span class="err">）</span><span class="n">指令缓存</span><span class="p">;</span>
+
+<span class="n">VkCommandBufferBeginInfo</span><span class="w"> </span><span class="n">command_buffer_begin_info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
+<span class="n">command_buffer_begin_info</span><span class="p">.</span><span class="n">sType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VkStructureType</span><span class="o">::</span><span class="n">VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO</span><span class="p">;</span>
+<span class="n">command_buffer_begin_info</span><span class="p">.</span><span class="n">pNext</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="n">command_buffer_begin_info</span><span class="p">.</span><span class="n">flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VkCommandBufferUsageFlagBits</span><span class="o">::</span><span class="n">VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT</span><span class="p">;</span><span class="w"> </span><span class="c1">// 该指令缓存可以反复提交</span>
+<span class="n">command_buffer_begin_info</span><span class="p">.</span><span class="n">pInheritanceInfo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span><span class="w"> </span><span class="c1">// 由于我们使用的是一级指令缓存，该成员将会忽略</span>
+
+<span class="n">VkResult</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vkBeginCommandBuffer</span><span class="p">(</span><span class="n">command_buffer</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">command_buffer_begin_info</span><span class="p">);</span>
+
+<span class="k">if</span><span class="p">(</span><span class="n">result</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">VkResult</span><span class="o">::</span><span class="n">VK_SUCCESS</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="s">&quot;启用该指令缓存失败&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id41">
+<h2>指令记录<a class="headerlink" href="#id41" title="Link to this heading">#</a></h2>
+<p>在 <a class="reference internal" href="#transformdatatogpu"><span class="std std-ref">通过GPU向内存中传输数据</span></a> 中给出了在指令缓存中记录 <code class="docutils literal notranslate"><span class="pre">vkCmdCopyBuffer</span></code> 指令的示例。我们可以在指令缓存处于 <code class="docutils literal notranslate"><span class="pre">记录状态</span></code> 后记录各种指令。</p>
+<p>通过之前的章节我们知道 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 提供了各种各样的不同功能的指令，这些指令都在指令缓存处于 <code class="docutils literal notranslate"><span class="pre">记录状态</span></code> 时记录指令。比如：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkCommandBuffer</span><span class="w"> </span><span class="n">command_buffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前创建的一级</span><span class="err">（</span><span class="n">主要级</span><span class="err">）</span><span class="n">指令缓存</span><span class="p">;</span>
+<span class="n">VkCommandBufferBeginInfo</span><span class="w"> </span><span class="n">command_buffer_begin_info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前的指令缓存开启配置</span><span class="p">;</span>
+
+<span class="n">VkResult</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vkBeginCommandBuffer</span><span class="p">(</span><span class="n">command_buffer</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">command_buffer_begin_info</span><span class="p">);</span>
+
+<span class="k">if</span><span class="p">(</span><span class="n">result</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">VkResult</span><span class="o">::</span><span class="n">VK_SUCCESS</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="s">&quot;启用该指令缓存失败&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// 现在指令缓存处于【记录状态】可以开始记录指令了</span>
+<span class="n">vkCmd开启渲染过程</span><span class="p">(</span><span class="n">command_buffer</span><span class="p">,</span><span class="w"> </span><span class="p">...);</span><span class="w"> </span><span class="c1">// 向 command_buffer 中记录一条【开启渲染过程】指令</span>
+<span class="n">vkCmd绑定几何数据</span><span class="p">(</span><span class="n">command_buffer</span><span class="p">,</span><span class="w"> </span><span class="p">...);</span><span class="w"> </span><span class="c1">// 向 command_buffer 中记录一条【绑定几何数据】指令</span>
+<span class="n">vkCmd绑定渲染接口数据</span><span class="p">(</span><span class="n">command_buffer</span><span class="p">,</span><span class="w"> </span><span class="p">...);</span><span class="w"> </span><span class="c1">// 向 command_buffer 中记录一条【绑定渲染接口数据】指令</span>
+<span class="n">vkCmd绑定渲染管线</span><span class="p">(</span><span class="n">command_buffer</span><span class="p">,</span><span class="w"> </span><span class="p">...);</span><span class="w"> </span><span class="c1">// 向 command_buffer 中记录一条【绑定渲染管线】指令</span>
+<span class="n">vkCmd绘制</span><span class="p">(</span><span class="n">command_buffer</span><span class="p">,</span><span class="w"> </span><span class="p">...);</span><span class="w"> </span><span class="c1">// 向 command_buffer 中记录一条【绘制】指令</span>
+<span class="n">vkCmd</span><span class="p">...(</span><span class="n">command_buffer</span><span class="p">,</span><span class="w"> </span><span class="p">...)</span><span class="w"> </span><span class="c1">// 向 command_buffer 中记录其他指令</span>
+</pre></div>
+</div>
+<div class="admonition important">
+<p class="admonition-title">重要</p>
+<p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 为我们提供了各式各样功能不同的指令，具体指令定义和使用方式将在具体章节中展开。</p>
+</div>
+</section>
+<section id="id42">
+<h2>结束指令缓存<a class="headerlink" href="#id42" title="Link to this heading">#</a></h2>
+<p>当所有需要的指令都记录到了目标指令缓存之后，需要调用 <code class="docutils literal notranslate"><span class="pre">vkEndCommandBuffer</span></code> 结束指令缓存的 <code class="docutils literal notranslate"><span class="pre">记录状态</span></code> ，将其从 <code class="docutils literal notranslate"><span class="pre">记录状态</span></code> 转至成 <code class="docutils literal notranslate"><span class="pre">可执行状态</span></code> ，为将指令缓存推送到 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 做准备。其定义如下：</p>
+<section id="vkendcommandbuffer">
+<h3>vkEndCommandBuffer<a class="headerlink" href="#vkendcommandbuffer" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="n">VkResult</span><span class="w"> </span><span class="nf">vkEndCommandBuffer</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkCommandBuffer</span><span class="w">                             </span><span class="n">commandBuffer</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">commandBuffer</span> 要结束记录的指令缓存。且 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">需要</span> 为 <code class="docutils literal notranslate"><span class="pre">记录状态</span></code> 。</p></li>
+</ul>
+<p>结束指令缓存就相对简单：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkCommandBuffer</span><span class="w"> </span><span class="n">command_buffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前处于</span><span class="err">【</span><span class="n">记录状态</span><span class="err">】</span><span class="n">的指令缓存</span><span class="p">;</span>
+
+<span class="n">VkResult</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vkEndCommandBuffer</span><span class="p">(</span><span class="n">command_buffer</span><span class="p">);</span>
+
+<span class="k">if</span><span class="p">(</span><span class="n">result</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">VkResult</span><span class="o">::</span><span class="n">VK_SUCCESS</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="s">&quot;结束该指令缓存失败&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id43">
+<h2>指令推送<a class="headerlink" href="#id43" title="Link to this heading">#</a></h2>
 </section>
 </section>
 
@@ -3415,7 +3565,18 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <li><a class="reference internal" href="#vkcommandbufferlevel">VkCommandBufferLevel</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id40">指令记录</a></li>
+<li><a class="reference internal" href="#id40">开启指令缓存</a><ul>
+<li><a class="reference internal" href="#vkbegincommandbuffer">vkBeginCommandBuffer</a></li>
+<li><a class="reference internal" href="#vkcommandbufferbegininfo">VkCommandBufferBeginInfo</a></li>
+<li><a class="reference internal" href="#vkcommandbufferusageflags">VkCommandBufferUsageFlags</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id41">指令记录</a></li>
+<li><a class="reference internal" href="#id42">结束指令缓存</a><ul>
+<li><a class="reference internal" href="#vkendcommandbuffer">vkEndCommandBuffer</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id43">指令推送</a></li>
 </ul>
 </li>
 </ul>
