@@ -163,7 +163,19 @@
    * 2024/1/14 更新 ``通过GPU向内存中传输数据`` 章节。增加 ``开启指令缓存指令记录`` 和 ``结束指令缓存指令记录`` 。
    * 2024/1/14 增加 ``结束指令缓存`` 章节。
    * 2024/1/14 增加 ``vkEndCommandBuffer`` 章节。
-   * 2024/1/14 更新 ``Vulkan 能为我们做什么`` 章节。修改该文档的 ``纵览目标``
+   * 2024/1/14 更新 ``Vulkan 能为我们做什么`` 章节。修改该文档的 ``纵览目标``。
+   * 2024/1/20 更新代码中中文符号修改成英文符号。
+   * 2024/1/20 更新 ``指令推送`` 章节。
+   * 2024/1/20 增加 ``vkQueueSubmit`` 章节。
+   * 2024/1/20 增加 ``VkSubmitInfo`` 章节。
+   * 2024/1/20 增加 ``等待指令缓存执行完成`` 章节。
+   * 2024/1/20 增加 ``vkDeviceWaitIdle`` 章节。
+   * 2024/1/20 增加 ``vkQueueWaitIdle`` 章节。
+   * 2024/1/20 增加 ``栏栅`` 章节。
+   * 2024/1/20 增加 ``vkCreateFence`` 章节。
+   * 2024/1/20 增加 ``VkFenceCreateInfo`` 章节。
+   * 2024/1/20 增加 ``等待栏栅`` 章节。
+   * 2024/1/20 增加 ``vkWaitForFences`` 章节。
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -3373,7 +3385,7 @@ VkCommandBufferUsageFlags
 
 .. code:: c++
 
-   VkCommandBuffer command_buffer = 之前创建的一级（主要级）指令缓存;
+   VkCommandBuffer command_buffer = 之前创建的一级(主要级)指令缓存;
 
    VkCommandBufferBeginInfo command_buffer_begin_info = {};
    command_buffer_begin_info.sType = VkStructureType::VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -3397,7 +3409,7 @@ VkCommandBufferUsageFlags
 
 .. code:: c++
 
-   VkCommandBuffer command_buffer = 之前创建的一级（主要级）指令缓存;
+   VkCommandBuffer command_buffer = 之前创建的一级(主要级)指令缓存;
    VkCommandBufferBeginInfo command_buffer_begin_info = 之前的指令缓存开启配置;
 
    VkResult result = vkBeginCommandBuffer(command_buffer, &command_buffer_begin_info); 
@@ -3437,7 +3449,7 @@ vkEndCommandBuffer
 
 .. code:: c++
 
-   VkCommandBuffer command_buffer = 之前处于【记录状态】的指令缓存;
+   VkCommandBuffer command_buffer = 之前处于[记录状态]的指令缓存;
    
    VkResult result = vkEndCommandBuffer(command_buffer);
 
@@ -3449,6 +3461,334 @@ vkEndCommandBuffer
 指令推送
 ############################
 
+当指令缓存记录完需要的指令之后，我们就可以将指令推送给 ``GPU`` 执行了。
+
+.. note::
+
+   指令推送是一个高开销的操作，所以最好一次性尽量提交多个指令缓存。
+
+``Vulkan`` 中通过 ``vkQueueSubmit`` 将接口提交至 ``GPU`` 执行。
+
+.. _vkQueueSubmit:
+
+vkQueueSubmit
+***************************
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   VkResult vkQueueSubmit(
+       VkQueue                                     queue,
+       uint32_t                                    submitCount,
+       const VkSubmitInfo*                         pSubmits,
+       VkFence                                     fence);
+
+* :bdg-secondary:`queue` 指定推送至 ``GPU`` 上的哪一个设备队列中执行。
+* :bdg-secondary:`submitCount` 表示此次推送的指令缓存批次数。
+* :bdg-secondary:`pSubmits` 表示此次推送的指令缓存批次。该指针所指向的指令缓存批次数量不能小于 ``submitCount`` 。
+* :bdg-secondary:`fence` 栏栅。如果 ``fence`` 不为 ``VK_NULL_HANDLE`` 的话，则其用于等待该批推送的指令缓存在 ``GPU`` 上执行结束。
+
+.. admonition:: 指令缓存批次
+   :class: note
+
+   指令缓存都是一批批发送至 ``GPU`` 设备的，每一批都可以包含多个指令缓存。
+
+.. admonition:: VkFence
+   :class: note
+
+   ``栏栅`` 将会在之后的章节进行讲解
+
+现在我们看一下 ``VkSubmitInfo`` ，其定义如下：
+
+VkSubmitInfo
+***************************
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef struct VkSubmitInfo {
+       VkStructureType                sType;
+       const void*                    pNext;
+       uint32_t                       waitSemaphoreCount;
+       const VkSemaphore*             pWaitSemaphores;
+       const VkPipelineStageFlags*    pWaitDstStageMask;
+       uint32_t                       commandBufferCount;
+       const VkCommandBuffer*         pCommandBuffers;
+       uint32_t                       signalSemaphoreCount;
+       const VkSemaphore*             pSignalSemaphores;
+   } VkSubmitInfo;
+
+* :bdg-secondary:`sType` 是该结构体的类型枚举值， :bdg-danger:`必须` 是 ``VkStructureType::VK_STRUCTURE_TYPE_SUBMIT_INFO`` 。
+* :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
+* :bdg-secondary:`waitSemaphoreCount` 等待的 ``旗语`` 数量。
+* :bdg-secondary:`pWaitSemaphores` 等待的 ``旗语`` 。该指针所指向的 ``旗语`` 数量不能小于 ``waitSemaphoreCount`` 。
+* :bdg-secondary:`pWaitDstStageMask` 表示 ``pWaitSemaphores`` 中的 ``旗语`` 在哪些 ``管线状态`` 处等待 ``旗语``。该指针所指向的 ``管线状态`` 数量不能小于 ``waitSemaphoreCount`` 。
+* :bdg-secondary:`commandBufferCount` 表示要推送的指令缓存数量。
+* :bdg-secondary:`pCommandBuffers` 表示要推送的指令缓存。该指针所指向的指令缓存数量不能小于 ``commandBufferCount`` 。
+* :bdg-secondary:`signalSemaphoreCount` 表示要激活的 ``旗语`` 数量。
+* :bdg-secondary:`pSignalSemaphores` 表示要激活的 ``旗语``  。该指针所指向的 ``旗语`` 数量不能小于 ``signalSemaphoreCount`` 。
+
+.. admonition:: VkSemaphore
+   :class: note
+
+   表示 ``旗语`` 用于在设备队列之间进行同步的 ``原语`` （对象）。这将会在之后的详细章节展开说明。目前可忽略。
+
+这样，我们就可以将指令推送至 ``GPU`` 进行执行了：
+
+.. code:: c++
+
+   VkDevice device = 逻辑设备句柄;
+   VkQueue queue = 之前从 device 中创建，支持图形功能的设备队列;
+
+   VkCommandBuffer command_buffer = 之前分配并完成指令记录的一级(主要级)指令缓存;
+
+   VkSubmitInfo submit_info = {};
+   submit_info.sType = VkStructureType::VK_STRUCTURE_TYPE_SUBMIT_INFO;
+   submit_info.pNext = nullptr;
+   submit_info.waitSemaphoreCount = 0;
+   submit_info.pWaitSemaphores = nullptr;
+   submit_info.pWaitDstStageMask = nullptr;
+   submit_info.commandBufferCount = 1;
+   submit_info.pCommandBuffers = &command_buffer;
+   submit_info.signalSemaphoreCount = 0;
+   submit_info.pSignalSemaphores = nullptr;
+
+   VkResult result = vkQueueSubmit(queue, 1, &submit_info, VK_NULL_HANDLE);
+   if(result != VkResult::VK_SUCCESS)
+   {
+      throw std::runtime_error("该批次指令缓存推送失败");
+   }
+
+我们知道 ``GPU`` 是一个高并行的设备，当指令缓存通过 ``vkQueueSubmit`` 推送至 ``GPU`` 后其中记录的指令将会并行的执行。换句话说，当 ``vkQueueSubmit`` 返回后，其并 :bdg-danger:`不` 代表推送的指令缓存已经执行完成，而是表示这批指令缓存已经推送到了 ``GPU`` ，但对于这批指令缓存
+何时执行完成，我们是不知道的，这时我们就需要等待推送的指令完成。
+
+等待指令缓存执行完成
+############################
+
+有三种方式用于等待指令缓存执行完成：
+
+1. 等待整个 ``GPU`` 设备执行完所有的任务（ ``GPU`` 处于闲置状态）。如果所有任务都执行完成，说明推送的所有指令缓存也执行完成。通过 ``vkDeviceWaitIdle(...)`` 进行等待。
+2. 等待指令缓存推送的设备队列执行完所有的任务（ 设备队列处于闲置状态）。通过 ``vkQueueWaitIdle(...)`` 进行等待。
+3. 仅仅等待该批次推送的指令缓存执行完成，而不是等待整个 ``GPU`` 处于闲置状态。通过 ``VkFence`` （栏栅）进行等待。
+
+由此可见第 ``2`` 种方式比第 ``1`` 种方式高效，第 ``3`` 种方式比第 ``2`` 种方式高效。
+
+这里我们先来看看 ``vkDeviceWaitIdle`` ，其定义如下：
+
+vkDeviceWaitIdle
+*******************
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   VkResult vkDeviceWaitIdle(
+       VkDevice                                    device);
+
+* :bdg-secondary:`device` 等待的目标设备。
+
+当执行该函数后 ``CPU`` 端的执行将会卡住（阻塞）直到 ``device`` 上的所有任务执行完成成为闲置状态，并返回 ``VK_SUCCESS`` 。
+
+这非常简单直接，直接调用 ``vkDeviceWaitIdle`` 并指定等待的目标设备句柄即可：
+
+.. code:: c++
+
+   VkDevice device = 之前创建的设备;
+
+   VkResult result = vkDeviceWaitIdle(device);
+   if(result == VkResult::VK_SUCCESS)
+   {
+      // 设备上的所有任务执行完成，处于闲置状态
+   }
+
+接下来我们来看看 ``vkQueueWaitIdle`` ，其定义如下：
+
+vkQueueWaitIdle
+*******************
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   VkResult vkQueueWaitIdle(
+       VkQueue                                     queue);
+
+* :bdg-secondary:`queue` 等待的目标设备队列。
+
+当执行该函数后 ``CPU`` 端的执行将会卡住（阻塞）直到 ``device`` 上的所有任务执行完成成为闲置状态，并返回 ``VK_SUCCESS`` 。
+
+与 ``vkDeviceWaitIdle`` 类似，直接调用 ``vkQueueWaitIdle`` 并指定等待的目标设备队列句柄即可：
+
+.. code:: c++
+
+   VkQueue queue = 之前指令缓存推送的目标设备队列;
+
+   VkResult result = vkQueueWaitIdle(queue);
+   if(result == VkResult::VK_SUCCESS)
+   {
+      // 设备队列上的所有任务执行完成，处于闲置状态
+   }
+
+接下来我们来说明一下第 ``3`` 种方式： ``栏栅`` 。
+
+栏栅
+***********
+
+在使用 :ref:`vkQueueSubmit` 推送指令缓存时可以指定一个 ``VkFence`` （栏栅）句柄。该句柄用于表示该批次推送的指令缓存的执行状态。
+
+栏栅只有两个状态：
+
+* 未激活态
+* 激活态
+
+一般栏栅在创建完成之后，初始状态为未激活态。当栏栅处于未激活态时，表示之前推送的指令缓存并未执行完成，当推送的指令缓存全部执行结束之后， ``Vulkan`` 会将栏栅从未激活态转变成激活态。
+
+这样就可以通过查看栏栅是否处于激活态就可以知道推送的指令缓存是否执行结束。
+
+要想指定一个栏栅我们需要先通过 ``vkCreateFence`` 函数创建一个，其定义如下：
+
+vkCreateFence
+--------------------
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   VkResult vkCreateFence(
+       VkDevice                                    device,
+       const VkFenceCreateInfo*                    pCreateInfo,
+       const VkAllocationCallbacks*                pAllocator,
+       VkFence*                                    pFence);
+
+* :bdg-secondary:`device` 对应的 ``VkDevice`` 逻辑设备句柄。
+* :bdg-secondary:`pCreateInfo` 栏栅的配置信息。
+* :bdg-secondary:`pAllocator` 内存分配器。
+* :bdg-secondary:`pFence` 创建的栏栅。
+
+对应的 ``VkFenceCreateInfo`` 定义如下：
+
+VkFenceCreateInfo
+--------------------
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef struct VkFenceCreateInfo {
+       VkStructureType       sType;
+       const void*           pNext;
+       VkFenceCreateFlags    flags;
+   } VkFenceCreateInfo;
+
+* :bdg-secondary:`sType` 是该结构体的类型枚举值， :bdg-danger:`必须` 是 ``VkStructureType::VK_STRUCTURE_TYPE_FENCE_CREATE_INFO`` 。
+* :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
+* :bdg-secondary:`flags` 用于指定该栏栅的初始状态。如果为 ``0`` 表示使用默认 ``未激活`` 为初始状态。
+
+其中 ``VkFenceCreateFlags`` 可用值如下：
+
+VkFenceCreateFlags
+----------------------
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef enum VkFenceCreateFlagBits {
+       VK_FENCE_CREATE_SIGNALED_BIT = 0x00000001,
+   } VkFenceCreateFlagBits;
+
+* :bdg-secondary:`VK_FENCE_CREATE_SIGNALED_BIT` 表示栏栅初始化为 ``激活`` 状态。
+
+如没有特殊需求 ``VkFenceCreateFlagBits::VK_FENCE_CREATE_SIGNALED_BIT`` 一般不使用。
+
+这样我们就能够创建栏栅了：
+
+.. code:: c++
+
+   VkDevice device = 之前创建的设备;
+
+   VkFenceCreateInfo fence_create_info = {};
+   fence_create_info.sType = VkStructureType::VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+   fence_create_info.pNext = nullptr;
+   fence_create_info.flags = 0; // 初始状态为 【未激活】状态
+
+   VkFence fence = VK_NULL_HANDLE;
+
+   VkResult result = vkCreateFence(device, &fence_create_info, nullptr, &fence);
+   if(result != VkResult::VK_SUCCESS)
+   {
+      throw std::runtime_error("栏栅创建失败");
+   }
+
+之后在推送指令缓存时就可以使用此栏栅了：
+
+.. code:: c++
+
+   VkDevice device = 逻辑设备句柄;
+   VkQueue queue = 之前从 device 中创建，支持图形功能的设备队列;
+   VkFence fence = 之前创建栏栅;
+
+   VkCommandBuffer command_buffer = 之前分配并完成指令记录的一级(主要级)指令缓存;
+
+   VkSubmitInfo submit_info = {};
+   submit_info.sType = VkStructureType::VK_STRUCTURE_TYPE_SUBMIT_INFO;
+   submit_info.pNext = nullptr;
+   submit_info.waitSemaphoreCount = 0;
+   submit_info.pWaitSemaphores = nullptr;
+   submit_info.pWaitDstStageMask = nullptr;
+   submit_info.commandBufferCount = 1;
+   submit_info.pCommandBuffers = &command_buffer;
+   submit_info.signalSemaphoreCount = 0;
+   submit_info.pSignalSemaphores = nullptr;
+
+   VkResult result = vkQueueSubmit(queue, 1, &submit_info, fence/*指定栏栅*/);
+   if(result != VkResult::VK_SUCCESS)
+   {
+      throw std::runtime_error("该批次指令缓存推送失败");
+   }
+
+等待栏栅
+----------------------
+
+当使用 :ref:`vkQueueSubmit` 推送指令缓存时指定栏栅后，我们就可以通过等待栏栅从未激活态变为激活态，用于判断推送的指令缓存是否执行完成。我们可以通过 ``vkWaitForFences(...)`` 函数等待栏栅被激活，其定义如下：
+
+vkWaitForFences
+^^^^^^^^^^^^^^^^^^^^
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   VkResult vkWaitForFences(
+       VkDevice                                    device,
+       uint32_t                                    fenceCount,
+       const VkFence*                              pFences,
+       VkBool32                                    waitAll,
+       uint64_t                                    timeout);
+
+* :bdg-secondary:`device` 对应的 ``VkDevice`` 逻辑设备句柄。
+* :bdg-secondary:`fenceCount` 等待的栏栅数量。
+* :bdg-secondary:`pFences` 等待的栏栅。该指针所指向的栏栅数量不能小于 ``fenceCount`` 。
+* :bdg-secondary:`waitAll` 是否等待 ``pFences`` 中的所有栏栅执行结束。如果为 ``VK_TRUE`` 的话则会阻塞该函数直到 ``pFences`` 所有的栏栅被激活，否则 ``pFences`` 中只要有 ``1`` 个栏栅被激活，该函数将接触阻塞。
+* :bdg-secondary:`timeout` 是该函数阻塞的时间。单位为 ``纳秒`` 。如果该函数等待 ``timeout`` 纳秒之后对应的栏栅没有被激活的话，将接触阻塞，并返回 ``VkResult::VK_TIMEOUT`` 。否则返回 ``VkResult::VK_SUCCESS`` 表示栏栅被激活。
+
+如果 ``timeout`` 为 ``0`` ，则该函数不会进行任何等待而直接返回，并直接返回栏栅的当前状态。
+
+这样，我们就可以等待推送的指令缓存执行结束：
+
+.. code:: c++
+
+   VkDevice device = 逻辑设备句柄;
+   VkFence fence = 之前创建栏栅;
+
+   VkResult result = vkQueueSubmit(..., fence);
+   if(result != VkResult::VK_SUCCESS)
+   {
+      throw std::runtime_error("该批次指令缓存推送失败");
+   }
+
+   result = VkResult::VK_ERROR_UNKNOWN;
+
+   do
+   {
+      result = vkWaitForFences(device, 1, &fence, VK_TRUE, 3000000); // 等待 3 毫秒
+   }while(result == VkResult::VK_TIMEOUT) // 如果 fence 没有被激活，继续等待
+
+   ... // fence 被激活，推送的指令缓存执行结束
 
 
 .. 
