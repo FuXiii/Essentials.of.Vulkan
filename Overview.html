@@ -440,7 +440,19 @@
 <li><p class="sd-card-text">2024/1/14 更新 <code class="docutils literal notranslate"><span class="pre">通过GPU向内存中传输数据</span></code> 章节。增加 <code class="docutils literal notranslate"><span class="pre">开启指令缓存指令记录</span></code> 和 <code class="docutils literal notranslate"><span class="pre">结束指令缓存指令记录</span></code> 。</p></li>
 <li><p class="sd-card-text">2024/1/14 增加 <code class="docutils literal notranslate"><span class="pre">结束指令缓存</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/1/14 增加 <code class="docutils literal notranslate"><span class="pre">vkEndCommandBuffer</span></code> 章节。</p></li>
-<li><p class="sd-card-text">2024/1/14 更新 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">能为我们做什么</span></code> 章节。修改该文档的 <code class="docutils literal notranslate"><span class="pre">纵览目标</span></code></p></li>
+<li><p class="sd-card-text">2024/1/14 更新 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">能为我们做什么</span></code> 章节。修改该文档的 <code class="docutils literal notranslate"><span class="pre">纵览目标</span></code>。</p></li>
+<li><p class="sd-card-text">2024/1/20 更新代码中中文符号修改成英文符号。</p></li>
+<li><p class="sd-card-text">2024/1/20 更新 <code class="docutils literal notranslate"><span class="pre">指令推送</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/1/20 增加 <code class="docutils literal notranslate"><span class="pre">vkQueueSubmit</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/1/20 增加 <code class="docutils literal notranslate"><span class="pre">VkSubmitInfo</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/1/20 增加 <code class="docutils literal notranslate"><span class="pre">等待指令缓存执行完成</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/1/20 增加 <code class="docutils literal notranslate"><span class="pre">vkDeviceWaitIdle</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/1/20 增加 <code class="docutils literal notranslate"><span class="pre">vkQueueWaitIdle</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/1/20 增加 <code class="docutils literal notranslate"><span class="pre">栏栅</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/1/20 增加 <code class="docutils literal notranslate"><span class="pre">vkCreateFence</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/1/20 增加 <code class="docutils literal notranslate"><span class="pre">VkFenceCreateInfo</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/1/20 增加 <code class="docutils literal notranslate"><span class="pre">等待栏栅</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/1/20 增加 <code class="docutils literal notranslate"><span class="pre">vkWaitForFences</span></code> 章节。</p></li>
 </ul>
 </div>
 </details><p>由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 比较复杂，为了更好的入门 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> ，还是大致过一遍 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的核心思路，这对以后的学习很有帮助。</p>
@@ -1226,9 +1238,9 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <div class="note admonition">
 <p class="admonition-title">队列族</p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中设备队列是按照 <code class="docutils literal notranslate"><span class="pre">族</span></code> 进行管理的，前面我们知道一个物理设备上的可能会有多个设备队列支持相同的功能域，这些支持相同功能域的设备队列算作同一族。</p>
-<figure class="align-default" id="id44">
+<figure class="align-default" id="id48">
 <img alt="_images/vk_queue_family_struct.svg" src="_images/vk_queue_family_struct.svg" /><figcaption>
-<p><span class="caption-text">如上图中。队列0、1、2三个队列属于队列族A，则这三个队列支持计算、图形和转移功能。队列3属于队列族B，则该队列支持计算和转移功能。</span><a class="headerlink" href="#id44" title="Link to this image">#</a></p>
+<p><span class="caption-text">如上图中。队列0、1、2三个队列属于队列族A，则这三个队列支持计算、图形和转移功能。队列3属于队列族B，则该队列支持计算和转移功能。</span><a class="headerlink" href="#id48" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 </div>
@@ -1733,9 +1745,9 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <section id="id21">
 <h4>VkPhysicalDeviceMemoryProperties 结构图<a class="headerlink" href="#id21" title="Link to this heading">#</a></h4>
 <p>为了更清晰的理解 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties</span></code> ，在此给出一张 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties</span></code> 结构参考图：</p>
-<figure class="align-default" id="id45">
+<figure class="align-default" id="id49">
 <img alt="_images/VkPhysicalDeviceMemoryProperties_struct.svg" src="_images/VkPhysicalDeviceMemoryProperties_struct.svg" /><figcaption>
-<p><span class="caption-text">如图所示为一种可能的结构。第一种内存类型对应着第三个内存堆，第二种内存类型对应着第一个内存堆，第三种内存类型对应着第二个内存堆。</span><a class="headerlink" href="#id45" title="Link to this image">#</a></p>
+<p><span class="caption-text">如图所示为一种可能的结构。第一种内存类型对应着第三个内存堆，第二种内存类型对应着第一个内存堆，第三种内存类型对应着第二个内存堆。</span><a class="headerlink" href="#id49" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <p>接下来就能够通过 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties</span></code> 获取内存信息了，和之前很多函数一样，首先获取 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties</span></code> 函数实现：</p>
@@ -3245,7 +3257,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <p>如果为一级缓存。则 <code class="docutils literal notranslate"><span class="pre">VkCommandBufferBeginInfo::flags</span></code> 中不能同时存在 <code class="docutils literal notranslate"><span class="pre">VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT</span></code> 和 <code class="docutils literal notranslate"><span class="pre">VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT</span></code> 位域。</p>
 </div>
 <p>接下来我们就可以开启指令了，将 <code class="docutils literal notranslate"><span class="pre">初始状态</span></code> 的指令缓存切换至 <code class="docutils literal notranslate"><span class="pre">记录状态</span></code>：</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkCommandBuffer</span><span class="w"> </span><span class="n">command_buffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前创建的一级</span><span class="err">（</span><span class="n">主要级</span><span class="err">）</span><span class="n">指令缓存</span><span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkCommandBuffer</span><span class="w"> </span><span class="n">command_buffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前创建的一级</span><span class="p">(</span><span class="n">主要级</span><span class="p">)</span><span class="n">指令缓存</span><span class="p">;</span>
 
 <span class="n">VkCommandBufferBeginInfo</span><span class="w"> </span><span class="n">command_buffer_begin_info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
 <span class="n">command_buffer_begin_info</span><span class="p">.</span><span class="n">sType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VkStructureType</span><span class="o">::</span><span class="n">VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO</span><span class="p">;</span>
@@ -3267,7 +3279,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <h2>指令记录<a class="headerlink" href="#id41" title="Link to this heading">#</a></h2>
 <p>在 <a class="reference internal" href="#transformdatatogpu"><span class="std std-ref">通过GPU向内存中传输数据</span></a> 中给出了在指令缓存中记录 <code class="docutils literal notranslate"><span class="pre">vkCmdCopyBuffer</span></code> 指令的示例。我们可以在指令缓存处于 <code class="docutils literal notranslate"><span class="pre">记录状态</span></code> 后记录各种指令。</p>
 <p>通过之前的章节我们知道 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 提供了各种各样的不同功能的指令，这些指令都在指令缓存处于 <code class="docutils literal notranslate"><span class="pre">记录状态</span></code> 时记录指令。比如：</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkCommandBuffer</span><span class="w"> </span><span class="n">command_buffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前创建的一级</span><span class="err">（</span><span class="n">主要级</span><span class="err">）</span><span class="n">指令缓存</span><span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkCommandBuffer</span><span class="w"> </span><span class="n">command_buffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前创建的一级</span><span class="p">(</span><span class="n">主要级</span><span class="p">)</span><span class="n">指令缓存</span><span class="p">;</span>
 <span class="n">VkCommandBufferBeginInfo</span><span class="w"> </span><span class="n">command_buffer_begin_info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前的指令缓存开启配置</span><span class="p">;</span>
 
 <span class="n">VkResult</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vkBeginCommandBuffer</span><span class="p">(</span><span class="n">command_buffer</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">command_buffer_begin_info</span><span class="p">);</span>
@@ -3305,7 +3317,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">commandBuffer</span> 要结束记录的指令缓存。且 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">需要</span> 为 <code class="docutils literal notranslate"><span class="pre">记录状态</span></code> 。</p></li>
 </ul>
 <p>结束指令缓存就相对简单：</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkCommandBuffer</span><span class="w"> </span><span class="n">command_buffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前处于</span><span class="err">【</span><span class="n">记录状态</span><span class="err">】</span><span class="n">的指令缓存</span><span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkCommandBuffer</span><span class="w"> </span><span class="n">command_buffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前处于</span><span class="p">[</span><span class="n">记录状态</span><span class="p">]</span><span class="n">的指令缓存</span><span class="p">;</span>
 
 <span class="n">VkResult</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vkEndCommandBuffer</span><span class="p">(</span><span class="n">command_buffer</span><span class="p">);</span>
 
@@ -3319,6 +3331,299 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </section>
 <section id="id43">
 <h2>指令推送<a class="headerlink" href="#id43" title="Link to this heading">#</a></h2>
+<p>当指令缓存记录完需要的指令之后，我们就可以将指令推送给 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 执行了。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>指令推送是一个高开销的操作，所以最好一次性尽量提交多个指令缓存。</p>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中通过 <code class="docutils literal notranslate"><span class="pre">vkQueueSubmit</span></code> 将接口提交至 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 执行。</p>
+<section id="vkqueuesubmit">
+<span id="id44"></span><h3>vkQueueSubmit<a class="headerlink" href="#vkqueuesubmit" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="n">VkResult</span><span class="w"> </span><span class="nf">vkQueueSubmit</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkQueue</span><span class="w">                                     </span><span class="n">queue</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                                    </span><span class="n">submitCount</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkSubmitInfo</span><span class="o">*</span><span class="w">                         </span><span class="n">pSubmits</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkFence</span><span class="w">                                     </span><span class="n">fence</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">queue</span> 指定推送至 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 上的哪一个设备队列中执行。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">submitCount</span> 表示此次推送的指令缓存批次数。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pSubmits</span> 表示此次推送的指令缓存批次。该指针所指向的指令缓存批次数量不能小于 <code class="docutils literal notranslate"><span class="pre">submitCount</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">fence</span> 栏栅。如果 <code class="docutils literal notranslate"><span class="pre">fence</span></code> 不为 <code class="docutils literal notranslate"><span class="pre">VK_NULL_HANDLE</span></code> 的话，则其用于等待该批推送的指令缓存在 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 上执行结束。</p></li>
+</ul>
+<div class="note admonition">
+<p class="admonition-title">指令缓存批次</p>
+<p>指令缓存都是一批批发送至 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 设备的，每一批都可以包含多个指令缓存。</p>
+</div>
+<div class="note admonition">
+<p class="admonition-title">VkFence</p>
+<p><code class="docutils literal notranslate"><span class="pre">栏栅</span></code> 将会在之后的章节进行讲解</p>
+</div>
+<p>现在我们看一下 <code class="docutils literal notranslate"><span class="pre">VkSubmitInfo</span></code> ，其定义如下：</p>
+</section>
+<section id="vksubmitinfo">
+<h3>VkSubmitInfo<a class="headerlink" href="#vksubmitinfo" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkSubmitInfo</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VkStructureType</span><span class="w">                </span><span class="n">sType</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w">                    </span><span class="n">pNext</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                       </span><span class="n">waitSemaphoreCount</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkSemaphore</span><span class="o">*</span><span class="w">             </span><span class="n">pWaitSemaphores</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkPipelineStageFlags</span><span class="o">*</span><span class="w">    </span><span class="n">pWaitDstStageMask</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                       </span><span class="n">commandBufferCount</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkCommandBuffer</span><span class="o">*</span><span class="w">         </span><span class="n">pCommandBuffers</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                       </span><span class="n">signalSemaphoreCount</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkSemaphore</span><span class="o">*</span><span class="w">             </span><span class="n">pSignalSemaphores</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkSubmitInfo</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 是该结构体的类型枚举值， <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 是 <code class="docutils literal notranslate"><span class="pre">VkStructureType::VK_STRUCTURE_TYPE_SUBMIT_INFO</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pNext</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向其他结构体来扩展该结构体。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">waitSemaphoreCount</span> 等待的 <code class="docutils literal notranslate"><span class="pre">旗语</span></code> 数量。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pWaitSemaphores</span> 等待的 <code class="docutils literal notranslate"><span class="pre">旗语</span></code> 。该指针所指向的 <code class="docutils literal notranslate"><span class="pre">旗语</span></code> 数量不能小于 <code class="docutils literal notranslate"><span class="pre">waitSemaphoreCount</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pWaitDstStageMask</span> 表示 <code class="docutils literal notranslate"><span class="pre">pWaitSemaphores</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">旗语</span></code> 在哪些 <code class="docutils literal notranslate"><span class="pre">管线状态</span></code> 处等待 <code class="docutils literal notranslate"><span class="pre">旗语</span></code>。该指针所指向的 <code class="docutils literal notranslate"><span class="pre">管线状态</span></code> 数量不能小于 <code class="docutils literal notranslate"><span class="pre">waitSemaphoreCount</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">commandBufferCount</span> 表示要推送的指令缓存数量。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pCommandBuffers</span> 表示要推送的指令缓存。该指针所指向的指令缓存数量不能小于 <code class="docutils literal notranslate"><span class="pre">commandBufferCount</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">signalSemaphoreCount</span> 表示要激活的 <code class="docutils literal notranslate"><span class="pre">旗语</span></code> 数量。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pSignalSemaphores</span> 表示要激活的 <code class="docutils literal notranslate"><span class="pre">旗语</span></code>  。该指针所指向的 <code class="docutils literal notranslate"><span class="pre">旗语</span></code> 数量不能小于 <code class="docutils literal notranslate"><span class="pre">signalSemaphoreCount</span></code> 。</p></li>
+</ul>
+<div class="note admonition">
+<p class="admonition-title">VkSemaphore</p>
+<p>表示 <code class="docutils literal notranslate"><span class="pre">旗语</span></code> 用于在设备队列之间进行同步的 <code class="docutils literal notranslate"><span class="pre">原语</span></code> （对象）。这将会在之后的详细章节展开说明。目前可忽略。</p>
+</div>
+<p>这样，我们就可以将指令推送至 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 进行执行了：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkDevice</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">逻辑设备句柄</span><span class="p">;</span>
+<span class="n">VkQueue</span><span class="w"> </span><span class="n">queue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前从</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="n">中创建</span><span class="err">，</span><span class="n">支持图形功能的设备队列</span><span class="p">;</span>
+
+<span class="n">VkCommandBuffer</span><span class="w"> </span><span class="n">command_buffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前分配并完成指令记录的一级</span><span class="p">(</span><span class="n">主要级</span><span class="p">)</span><span class="n">指令缓存</span><span class="p">;</span>
+
+<span class="n">VkSubmitInfo</span><span class="w"> </span><span class="n">submit_info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
+<span class="n">submit_info</span><span class="p">.</span><span class="n">sType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VkStructureType</span><span class="o">::</span><span class="n">VK_STRUCTURE_TYPE_SUBMIT_INFO</span><span class="p">;</span>
+<span class="n">submit_info</span><span class="p">.</span><span class="n">pNext</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="n">submit_info</span><span class="p">.</span><span class="n">waitSemaphoreCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="n">submit_info</span><span class="p">.</span><span class="n">pWaitSemaphores</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="n">submit_info</span><span class="p">.</span><span class="n">pWaitDstStageMask</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="n">submit_info</span><span class="p">.</span><span class="n">commandBufferCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="n">submit_info</span><span class="p">.</span><span class="n">pCommandBuffers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">command_buffer</span><span class="p">;</span>
+<span class="n">submit_info</span><span class="p">.</span><span class="n">signalSemaphoreCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="n">submit_info</span><span class="p">.</span><span class="n">pSignalSemaphores</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+
+<span class="n">VkResult</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vkQueueSubmit</span><span class="p">(</span><span class="n">queue</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">submit_info</span><span class="p">,</span><span class="w"> </span><span class="n">VK_NULL_HANDLE</span><span class="p">);</span>
+<span class="k">if</span><span class="p">(</span><span class="n">result</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">VkResult</span><span class="o">::</span><span class="n">VK_SUCCESS</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="s">&quot;该批次指令缓存推送失败&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>我们知道 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 是一个高并行的设备，当指令缓存通过 <code class="docutils literal notranslate"><span class="pre">vkQueueSubmit</span></code> 推送至 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 后其中记录的指令将会并行的执行。换句话说，当 <code class="docutils literal notranslate"><span class="pre">vkQueueSubmit</span></code> 返回后，其并 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">不</span> 代表推送的指令缓存已经执行完成，而是表示这批指令缓存已经推送到了 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> ，但对于这批指令缓存
+何时执行完成，我们是不知道的，这时我们就需要等待推送的指令完成。</p>
+</section>
+</section>
+<section id="id45">
+<h2>等待指令缓存执行完成<a class="headerlink" href="#id45" title="Link to this heading">#</a></h2>
+<p>有三种方式用于等待指令缓存执行完成：</p>
+<ol class="arabic simple">
+<li><p>等待整个 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 设备执行完所有的任务（ <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 处于闲置状态）。如果所有任务都执行完成，说明推送的所有指令缓存也执行完成。通过 <code class="docutils literal notranslate"><span class="pre">vkDeviceWaitIdle(...)</span></code> 进行等待。</p></li>
+<li><p>等待指令缓存推送的设备队列执行完所有的任务（ 设备队列处于闲置状态）。通过 <code class="docutils literal notranslate"><span class="pre">vkQueueWaitIdle(...)</span></code> 进行等待。</p></li>
+<li><p>仅仅等待该批次推送的指令缓存执行完成，而不是等待整个 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 处于闲置状态。通过 <code class="docutils literal notranslate"><span class="pre">VkFence</span></code> （栏栅）进行等待。</p></li>
+</ol>
+<p>由此可见第 <code class="docutils literal notranslate"><span class="pre">2</span></code> 种方式比第 <code class="docutils literal notranslate"><span class="pre">1</span></code> 种方式高效，第 <code class="docutils literal notranslate"><span class="pre">3</span></code> 种方式比第 <code class="docutils literal notranslate"><span class="pre">2</span></code> 种方式高效。</p>
+<p>这里我们先来看看 <code class="docutils literal notranslate"><span class="pre">vkDeviceWaitIdle</span></code> ，其定义如下：</p>
+<section id="vkdevicewaitidle">
+<h3>vkDeviceWaitIdle<a class="headerlink" href="#vkdevicewaitidle" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="n">VkResult</span><span class="w"> </span><span class="nf">vkDeviceWaitIdle</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">device</span> 等待的目标设备。</p></li>
+</ul>
+<p>当执行该函数后 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 端的执行将会卡住（阻塞）直到 <code class="docutils literal notranslate"><span class="pre">device</span></code> 上的所有任务执行完成成为闲置状态，并返回 <code class="docutils literal notranslate"><span class="pre">VK_SUCCESS</span></code> 。</p>
+<p>这非常简单直接，直接调用 <code class="docutils literal notranslate"><span class="pre">vkDeviceWaitIdle</span></code> 并指定等待的目标设备句柄即可：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkDevice</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前创建的设备</span><span class="p">;</span>
+
+<span class="n">VkResult</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vkDeviceWaitIdle</span><span class="p">(</span><span class="n">device</span><span class="p">);</span>
+<span class="k">if</span><span class="p">(</span><span class="n">result</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">VkResult</span><span class="o">::</span><span class="n">VK_SUCCESS</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="c1">// 设备上的所有任务执行完成，处于闲置状态</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>接下来我们来看看 <code class="docutils literal notranslate"><span class="pre">vkQueueWaitIdle</span></code> ，其定义如下：</p>
+</section>
+<section id="vkqueuewaitidle">
+<h3>vkQueueWaitIdle<a class="headerlink" href="#vkqueuewaitidle" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="n">VkResult</span><span class="w"> </span><span class="nf">vkQueueWaitIdle</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkQueue</span><span class="w">                                     </span><span class="n">queue</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">queue</span> 等待的目标设备队列。</p></li>
+</ul>
+<p>当执行该函数后 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 端的执行将会卡住（阻塞）直到 <code class="docutils literal notranslate"><span class="pre">device</span></code> 上的所有任务执行完成成为闲置状态，并返回 <code class="docutils literal notranslate"><span class="pre">VK_SUCCESS</span></code> 。</p>
+<p>与 <code class="docutils literal notranslate"><span class="pre">vkDeviceWaitIdle</span></code> 类似，直接调用 <code class="docutils literal notranslate"><span class="pre">vkQueueWaitIdle</span></code> 并指定等待的目标设备队列句柄即可：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkQueue</span><span class="w"> </span><span class="n">queue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前指令缓存推送的目标设备队列</span><span class="p">;</span>
+
+<span class="n">VkResult</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vkQueueWaitIdle</span><span class="p">(</span><span class="n">queue</span><span class="p">);</span>
+<span class="k">if</span><span class="p">(</span><span class="n">result</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">VkResult</span><span class="o">::</span><span class="n">VK_SUCCESS</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="c1">// 设备队列上的所有任务执行完成，处于闲置状态</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>接下来我们来说明一下第 <code class="docutils literal notranslate"><span class="pre">3</span></code> 种方式： <code class="docutils literal notranslate"><span class="pre">栏栅</span></code> 。</p>
+</section>
+<section id="id46">
+<h3>栏栅<a class="headerlink" href="#id46" title="Link to this heading">#</a></h3>
+<p>在使用 <a class="reference internal" href="#vkqueuesubmit"><span class="std std-ref">vkQueueSubmit</span></a> 推送指令缓存时可以指定一个 <code class="docutils literal notranslate"><span class="pre">VkFence</span></code> （栏栅）句柄。该句柄用于表示该批次推送的指令缓存的执行状态。</p>
+<p>栏栅只有两个状态：</p>
+<ul class="simple">
+<li><p>未激活态</p></li>
+<li><p>激活态</p></li>
+</ul>
+<p>一般栏栅在创建完成之后，初始状态为未激活态。当栏栅处于未激活态时，表示之前推送的指令缓存并未执行完成，当推送的指令缓存全部执行结束之后， <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 会将栏栅从未激活态转变成激活态。</p>
+<p>这样就可以通过查看栏栅是否处于激活态就可以知道推送的指令缓存是否执行结束。</p>
+<p>要想指定一个栏栅我们需要先通过 <code class="docutils literal notranslate"><span class="pre">vkCreateFence</span></code> 函数创建一个，其定义如下：</p>
+<section id="vkcreatefence">
+<h4>vkCreateFence<a class="headerlink" href="#vkcreatefence" title="Link to this heading">#</a></h4>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="n">VkResult</span><span class="w"> </span><span class="nf">vkCreateFence</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkFenceCreateInfo</span><span class="o">*</span><span class="w">                    </span><span class="n">pCreateInfo</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkAllocationCallbacks</span><span class="o">*</span><span class="w">                </span><span class="n">pAllocator</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkFence</span><span class="o">*</span><span class="w">                                    </span><span class="n">pFence</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">device</span> 对应的 <code class="docutils literal notranslate"><span class="pre">VkDevice</span></code> 逻辑设备句柄。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pCreateInfo</span> 栏栅的配置信息。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pAllocator</span> 内存分配器。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pFence</span> 创建的栏栅。</p></li>
+</ul>
+<p>对应的 <code class="docutils literal notranslate"><span class="pre">VkFenceCreateInfo</span></code> 定义如下：</p>
+</section>
+<section id="vkfencecreateinfo">
+<h4>VkFenceCreateInfo<a class="headerlink" href="#vkfencecreateinfo" title="Link to this heading">#</a></h4>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkFenceCreateInfo</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VkStructureType</span><span class="w">       </span><span class="n">sType</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w">           </span><span class="n">pNext</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkFenceCreateFlags</span><span class="w">    </span><span class="n">flags</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkFenceCreateInfo</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 是该结构体的类型枚举值， <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 是 <code class="docutils literal notranslate"><span class="pre">VkStructureType::VK_STRUCTURE_TYPE_FENCE_CREATE_INFO</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pNext</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向其他结构体来扩展该结构体。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">flags</span> 用于指定该栏栅的初始状态。如果为 <code class="docutils literal notranslate"><span class="pre">0</span></code> 表示使用默认 <code class="docutils literal notranslate"><span class="pre">未激活</span></code> 为初始状态。</p></li>
+</ul>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">VkFenceCreateFlags</span></code> 可用值如下：</p>
+</section>
+<section id="vkfencecreateflags">
+<h4>VkFenceCreateFlags<a class="headerlink" href="#vkfencecreateflags" title="Link to this heading">#</a></h4>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkFenceCreateFlagBits</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VK_FENCE_CREATE_SIGNALED_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000001</span><span class="p">,</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkFenceCreateFlagBits</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_FENCE_CREATE_SIGNALED_BIT</span> 表示栏栅初始化为 <code class="docutils literal notranslate"><span class="pre">激活</span></code> 状态。</p></li>
+</ul>
+<p>如没有特殊需求 <code class="docutils literal notranslate"><span class="pre">VkFenceCreateFlagBits::VK_FENCE_CREATE_SIGNALED_BIT</span></code> 一般不使用。</p>
+<p>这样我们就能够创建栏栅了：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkDevice</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前创建的设备</span><span class="p">;</span>
+
+<span class="n">VkFenceCreateInfo</span><span class="w"> </span><span class="n">fence_create_info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
+<span class="n">fence_create_info</span><span class="p">.</span><span class="n">sType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VkStructureType</span><span class="o">::</span><span class="n">VK_STRUCTURE_TYPE_FENCE_CREATE_INFO</span><span class="p">;</span>
+<span class="n">fence_create_info</span><span class="p">.</span><span class="n">pNext</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="n">fence_create_info</span><span class="p">.</span><span class="n">flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="c1">// 初始状态为 【未激活】状态</span>
+
+<span class="n">VkFence</span><span class="w"> </span><span class="n">fence</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_NULL_HANDLE</span><span class="p">;</span>
+
+<span class="n">VkResult</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vkCreateFence</span><span class="p">(</span><span class="n">device</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">fence_create_info</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">fence</span><span class="p">);</span>
+<span class="k">if</span><span class="p">(</span><span class="n">result</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">VkResult</span><span class="o">::</span><span class="n">VK_SUCCESS</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="s">&quot;栏栅创建失败&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>之后在推送指令缓存时就可以使用此栏栅了：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkDevice</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">逻辑设备句柄</span><span class="p">;</span>
+<span class="n">VkQueue</span><span class="w"> </span><span class="n">queue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前从</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="n">中创建</span><span class="err">，</span><span class="n">支持图形功能的设备队列</span><span class="p">;</span>
+<span class="n">VkFence</span><span class="w"> </span><span class="n">fence</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前创建栏栅</span><span class="p">;</span>
+
+<span class="n">VkCommandBuffer</span><span class="w"> </span><span class="n">command_buffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前分配并完成指令记录的一级</span><span class="p">(</span><span class="n">主要级</span><span class="p">)</span><span class="n">指令缓存</span><span class="p">;</span>
+
+<span class="n">VkSubmitInfo</span><span class="w"> </span><span class="n">submit_info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
+<span class="n">submit_info</span><span class="p">.</span><span class="n">sType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VkStructureType</span><span class="o">::</span><span class="n">VK_STRUCTURE_TYPE_SUBMIT_INFO</span><span class="p">;</span>
+<span class="n">submit_info</span><span class="p">.</span><span class="n">pNext</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="n">submit_info</span><span class="p">.</span><span class="n">waitSemaphoreCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="n">submit_info</span><span class="p">.</span><span class="n">pWaitSemaphores</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="n">submit_info</span><span class="p">.</span><span class="n">pWaitDstStageMask</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="n">submit_info</span><span class="p">.</span><span class="n">commandBufferCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="n">submit_info</span><span class="p">.</span><span class="n">pCommandBuffers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">command_buffer</span><span class="p">;</span>
+<span class="n">submit_info</span><span class="p">.</span><span class="n">signalSemaphoreCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="n">submit_info</span><span class="p">.</span><span class="n">pSignalSemaphores</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+
+<span class="n">VkResult</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vkQueueSubmit</span><span class="p">(</span><span class="n">queue</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">submit_info</span><span class="p">,</span><span class="w"> </span><span class="n">fence</span><span class="cm">/*指定栏栅*/</span><span class="p">);</span>
+<span class="k">if</span><span class="p">(</span><span class="n">result</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">VkResult</span><span class="o">::</span><span class="n">VK_SUCCESS</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="s">&quot;该批次指令缓存推送失败&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="id47">
+<h4>等待栏栅<a class="headerlink" href="#id47" title="Link to this heading">#</a></h4>
+<p>当使用 <a class="reference internal" href="#vkqueuesubmit"><span class="std std-ref">vkQueueSubmit</span></a> 推送指令缓存时指定栏栅后，我们就可以通过等待栏栅从未激活态变为激活态，用于判断推送的指令缓存是否执行完成。我们可以通过 <code class="docutils literal notranslate"><span class="pre">vkWaitForFences(...)</span></code> 函数等待栏栅被激活，其定义如下：</p>
+<section id="vkwaitforfences">
+<h5>vkWaitForFences<a class="headerlink" href="#vkwaitforfences" title="Link to this heading">#</a></h5>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="n">VkResult</span><span class="w"> </span><span class="nf">vkWaitForFences</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                                    </span><span class="n">fenceCount</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkFence</span><span class="o">*</span><span class="w">                              </span><span class="n">pFences</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkBool32</span><span class="w">                                    </span><span class="n">waitAll</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint64_t</span><span class="w">                                    </span><span class="n">timeout</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">device</span> 对应的 <code class="docutils literal notranslate"><span class="pre">VkDevice</span></code> 逻辑设备句柄。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">fenceCount</span> 等待的栏栅数量。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pFences</span> 等待的栏栅。该指针所指向的栏栅数量不能小于 <code class="docutils literal notranslate"><span class="pre">fenceCount</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">waitAll</span> 是否等待 <code class="docutils literal notranslate"><span class="pre">pFences</span></code> 中的所有栏栅执行结束。如果为 <code class="docutils literal notranslate"><span class="pre">VK_TRUE</span></code> 的话则会阻塞该函数直到 <code class="docutils literal notranslate"><span class="pre">pFences</span></code> 所有的栏栅被激活，否则 <code class="docutils literal notranslate"><span class="pre">pFences</span></code> 中只要有 <code class="docutils literal notranslate"><span class="pre">1</span></code> 个栏栅被激活，该函数将接触阻塞。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">timeout</span> 是该函数阻塞的时间。单位为 <code class="docutils literal notranslate"><span class="pre">纳秒</span></code> 。如果该函数等待 <code class="docutils literal notranslate"><span class="pre">timeout</span></code> 纳秒之后对应的栏栅没有被激活的话，将接触阻塞，并返回 <code class="docutils literal notranslate"><span class="pre">VkResult::VK_TIMEOUT</span></code> 。否则返回 <code class="docutils literal notranslate"><span class="pre">VkResult::VK_SUCCESS</span></code> 表示栏栅被激活。</p></li>
+</ul>
+<p>如果 <code class="docutils literal notranslate"><span class="pre">timeout</span></code> 为 <code class="docutils literal notranslate"><span class="pre">0</span></code> ，则该函数不会进行任何等待而直接返回，并直接返回栏栅的当前状态。</p>
+<p>这样，我们就可以等待推送的指令缓存执行结束：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkDevice</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">逻辑设备句柄</span><span class="p">;</span>
+<span class="n">VkFence</span><span class="w"> </span><span class="n">fence</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前创建栏栅</span><span class="p">;</span>
+
+<span class="n">VkResult</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vkQueueSubmit</span><span class="p">(...,</span><span class="w"> </span><span class="n">fence</span><span class="p">);</span>
+<span class="k">if</span><span class="p">(</span><span class="n">result</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">VkResult</span><span class="o">::</span><span class="n">VK_SUCCESS</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="s">&quot;该批次指令缓存推送失败&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VkResult</span><span class="o">::</span><span class="n">VK_ERROR_UNKNOWN</span><span class="p">;</span>
+
+<span class="k">do</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vkWaitForFences</span><span class="p">(</span><span class="n">device</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">fence</span><span class="p">,</span><span class="w"> </span><span class="n">VK_TRUE</span><span class="p">,</span><span class="w"> </span><span class="mi">3000000</span><span class="p">);</span><span class="w"> </span><span class="c1">// 等待 3 毫秒</span>
+<span class="p">}</span><span class="k">while</span><span class="p">(</span><span class="n">result</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">VkResult</span><span class="o">::</span><span class="n">VK_TIMEOUT</span><span class="p">)</span><span class="w"> </span><span class="c1">// 如果 fence 没有被激活，继续等待</span>
+
+<span class="p">...</span><span class="w"> </span><span class="c1">// fence 被激活，推送的指令缓存执行结束</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
 </section>
 </section>
 
@@ -3576,7 +3881,26 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <li><a class="reference internal" href="#vkendcommandbuffer">vkEndCommandBuffer</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id43">指令推送</a></li>
+<li><a class="reference internal" href="#id43">指令推送</a><ul>
+<li><a class="reference internal" href="#vkqueuesubmit">vkQueueSubmit</a></li>
+<li><a class="reference internal" href="#vksubmitinfo">VkSubmitInfo</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id45">等待指令缓存执行完成</a><ul>
+<li><a class="reference internal" href="#vkdevicewaitidle">vkDeviceWaitIdle</a></li>
+<li><a class="reference internal" href="#vkqueuewaitidle">vkQueueWaitIdle</a></li>
+<li><a class="reference internal" href="#id46">栏栅</a><ul>
+<li><a class="reference internal" href="#vkcreatefence">vkCreateFence</a></li>
+<li><a class="reference internal" href="#vkfencecreateinfo">VkFenceCreateInfo</a></li>
+<li><a class="reference internal" href="#vkfencecreateflags">VkFenceCreateFlags</a></li>
+<li><a class="reference internal" href="#id47">等待栏栅</a><ul>
+<li><a class="reference internal" href="#vkwaitforfences">vkWaitForFences</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
