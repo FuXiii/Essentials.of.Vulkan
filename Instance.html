@@ -141,7 +141,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -266,7 +266,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
@@ -282,10 +282,128 @@
 <svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
 </summary><div class="sd-summary-content sd-card-body docutils">
 <ul class="simple">
-<li><p class="sd-card-text">2024/1/2 增加该文档</p></li>
+<li><p class="sd-card-text">2024/1/2 增加该文档。</p></li>
+<li><p class="sd-card-text">2024/1/25 更新该文档。</p></li>
+<li><p class="sd-card-text">2024/1/25 增加 <code class="docutils literal notranslate"><span class="pre">创建</span> <span class="pre">VkInstance</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/1/25 增加 <code class="docutils literal notranslate"><span class="pre">vkCreateInstance</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/1/25 增加 <code class="docutils literal notranslate"><span class="pre">VkInstanceCreateInfo</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/1/25 增加 <code class="docutils literal notranslate"><span class="pre">VkApplicationInfo</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/1/25 增加 <code class="docutils literal notranslate"><span class="pre">vkEnumerateInstanceVersion</span></code> 章节。</p></li>
 </ul>
 </div>
-</details></section>
+</details><p>开发 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 第一步就是创建 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> ，也就是 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的 <code class="docutils literal notranslate"><span class="pre">实例</span></code> 。一个实例代表一整 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 环境（或上下文）。不同的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 环境能够获取到不同的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 功能特性。其中最重要的就是配置 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 要使用的 <code class="docutils literal notranslate"><span class="pre">版本</span></code> 。</p>
+<section id="id1">
+<h2>创建 VkInstance<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<p>通过 <code class="docutils literal notranslate"><span class="pre">vkCreateInstance(...)</span></code> 函数创建 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> ：</p>
+<section id="vkcreateinstance">
+<h3>vkCreateInstance<a class="headerlink" href="#vkcreateinstance" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="n">VkResult</span><span class="w"> </span><span class="nf">vkCreateInstance</span><span class="p">(</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkInstanceCreateInfo</span><span class="o">*</span><span class="w">                 </span><span class="n">pCreateInfo</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkAllocationCallbacks</span><span class="o">*</span><span class="w">                </span><span class="n">pAllocator</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkInstance</span><span class="o">*</span><span class="w">                                 </span><span class="n">pInstance</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pCreateInfo</span> 指向 <code class="docutils literal notranslate"><span class="pre">VkInstanceCreateInfo</span></code> 数据结构对象，用于配置 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 的创建信息。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pAllocator</span> 内存分配器。为 <code class="docutils literal notranslate"><span class="pre">nullptr</span></code> 表示使用内部默认分配器，否则为自定义分配器。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pInstance</span> 返回创建的目标 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 结果。</p></li>
+</ul>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">VkInstanceCreateInfo</span></code> 结构体定义如下：</p>
+</section>
+<section id="vkinstancecreateinfo">
+<h3>VkInstanceCreateInfo<a class="headerlink" href="#vkinstancecreateinfo" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkInstanceCreateInfo</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VkStructureType</span><span class="w">             </span><span class="n">sType</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w">                 </span><span class="n">pNext</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkInstanceCreateFlags</span><span class="w">       </span><span class="n">flags</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkApplicationInfo</span><span class="o">*</span><span class="w">    </span><span class="n">pApplicationInfo</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                    </span><span class="n">enabledLayerCount</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="k">const</span><span class="o">*</span><span class="w">          </span><span class="n">ppEnabledLayerNames</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                    </span><span class="n">enabledExtensionCount</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="k">const</span><span class="o">*</span><span class="w">          </span><span class="n">ppEnabledExtensionNames</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkInstanceCreateInfo</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 是该结构体的类型枚举值， <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 是 <code class="docutils literal notranslate"><span class="pre">VkStructureType::VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pNext</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向其他结构体来扩展该结构体。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">flags</span> 是 <code class="docutils literal notranslate"><span class="pre">VkInstanceCreateFlagBits</span></code> 所表示的位域值，用于设置 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 的行为。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pApplicationInfo</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向应用信息结构体，用于应用细节设置。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">enabledLayerCount</span> 激活的 <code class="docutils literal notranslate"><span class="pre">layer</span></code> 数量。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">ppEnabledLayerNames</span> 指向数量为 <code class="docutils literal notranslate"><span class="pre">enabledLayerCount</span></code> 的 <code class="docutils literal notranslate"><span class="pre">layer</span></code> 字符串数组，用于设置要激活的 <code class="docutils literal notranslate"><span class="pre">layer</span></code>。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">enabledExtensionCount</span> 激活 <code class="docutils literal notranslate"><span class="pre">instance</span></code> 扩展的数量。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">enabledExtensionCount</span> 指向数量为 <code class="docutils literal notranslate"><span class="pre">enabledExtensionCount</span></code> 的扩展字符串数组，用于设置要激活的 <code class="docutils literal notranslate"><span class="pre">instance</span></code> 扩展。</p></li>
+</ul>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">VkApplicationInfo</span></code> 结构体定义如下：</p>
+</section>
+<section id="vkapplicationinfo">
+<h3>VkApplicationInfo<a class="headerlink" href="#vkapplicationinfo" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkApplicationInfo</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VkStructureType</span><span class="w">    </span><span class="n">sType</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w">        </span><span class="n">pNext</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w">        </span><span class="n">pApplicationName</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">           </span><span class="n">applicationVersion</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w">        </span><span class="n">pEngineName</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">           </span><span class="n">engineVersion</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">           </span><span class="n">apiVersion</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkApplicationInfo</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 是该结构体的类型枚举值， <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 是 <code class="docutils literal notranslate"><span class="pre">VkStructureType::VK_STRUCTURE_TYPE_APPLICATION_INFO</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pNext</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向其他结构体来扩展该结构体。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pApplicationName</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向一个以空字符为结尾的 <code class="docutils literal notranslate"><span class="pre">UTF-8</span></code> 字符串，用于表示用户自定义应用名称。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">applicationVersion</span> 一个无符号整型，用于用户自定义应用版本。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pEngineName</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向一个以空字符为结尾的 <code class="docutils literal notranslate"><span class="pre">UTF-8</span></code> 字符串，用于表示用户自定义引擎名称。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">engineVersion</span> 一个无符号整型，用于用户自定义引擎版本。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">apiVersion</span> 应用打算使用的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的最高 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">核心</span> 版本，并且忽略 <code class="docutils literal notranslate"><span class="pre">apiVersion</span></code> 的 <code class="docutils literal notranslate"><span class="pre">patch</span></code> 版本。</p></li>
+</ul>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">pApplicationName</span></code> 、 <code class="docutils literal notranslate"><span class="pre">applicationVersion</span></code> 、 <code class="docutils literal notranslate"><span class="pre">pEngineName</span></code> 和 <code class="docutils literal notranslate"><span class="pre">engineVersion</span></code> 这几个值随便设置，甚至可以不设置，赋为 <code class="docutils literal notranslate"><span class="pre">空</span></code> 都可以，这些参数不影响实例的创建。</p>
+<p>而 <code class="docutils literal notranslate"><span class="pre">apiVersion</span></code> 参数是 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">最为重要的核心参数</span> ，当创建实例时，该参数用于指定此实例环境中 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">核心</span> <code class="docutils literal notranslate"><span class="pre">版本</span></code> 。目前 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 有 <code class="docutils literal notranslate"><span class="pre">3</span></code> 个版本：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.0</span></code> 主要提供光栅化图形和并行计算的功能。对应 <code class="docutils literal notranslate"><span class="pre">VK_API_VERSION_1_0</span></code> 。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.1</span></code> 主要为 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.0</span></code> 不完善的地方进行补全。对应 <code class="docutils literal notranslate"><span class="pre">VK_API_VERSION_1_1</span></code> 。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.2</span></code> 主要提供硬件光追的功能。对应 <code class="docutils literal notranslate"><span class="pre">VK_API_VERSION_1_2</span></code> 。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.3</span></code> 主要提供动态光栅化图形的功能。对应 <code class="docutils literal notranslate"><span class="pre">VK_API_VERSION_1_3</span></code> 。</p></li>
+</ul>
+<p>每个 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 新版本的发布不单单提供基本功能，还会提供一系列扩展功能，并且会将之前版本中的一些扩展功能提升囊括至核心版本中。 <code class="docutils literal notranslate"><span class="pre">VkApplicationInfo::apiVersion</span></code> 将会在调用 <code class="docutils literal notranslate"><span class="pre">vkCreateInstance</span></code> 时告诉驱动将使用的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本，驱动会为您做好必要的初始化。</p>
+<p>如果想要使用的功能为高版本中的功能，而创建实例时 <code class="docutils literal notranslate"><span class="pre">VkApplicationInfo::apiVersion</span></code> 指定的是低版本，此时如果获取高版本的功能函数大概率会返回 <code class="docutils literal notranslate"><span class="pre">空</span></code> 。所以 <code class="docutils literal notranslate"><span class="pre">VkApplicationInfo::apiVersion</span></code> 尽可能的设置为自己需要的高版本。比如：</p>
+<blockquote>
+<div><p>如果 <code class="docutils literal notranslate"><span class="pre">VkApplicationInfo::apiVersion</span></code> 设置为 <code class="docutils literal notranslate"><span class="pre">VK_API_VERSION_1_0</span></code> 则表示可以使用该实例在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 中加载 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.0</span></code> 版本发布的函数，而不能加载 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.1</span></code> 及高版本的接口函数。如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="n">vkCmdCopyImageToBuffer</span><span class="p">(...)</span><span class="w"> </span><span class="c1">// 该函数为 Vulkan 1.0 版本中的函数，可以加载（可有效加载）。</span>
+
+<span class="c1">// 由 VK_VERSION_1_3 提供</span>
+<span class="n">vkCmdCopyImageToBuffer2</span><span class="p">(...)</span><span class="w"> </span><span class="c1">// 该函数为 Vulkan 1.3 版本中的函数，不可以加载（加载将返回空）。</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>在 <a class="reference external" href="./Overview.html">纵览</a> 中我们知道由于历史原因， <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.1</span></code> 版本时推出了 <code class="docutils literal notranslate"><span class="pre">vkEnumerateInstanceVersion(...)</span></code> 函数，用于获取驱动支持加载 <code class="docutils literal notranslate"><span class="pre">Instance</span> <span class="pre">域函数</span></code>  的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本。该函数定义如下：</p>
+</section>
+<section id="vkenumerateinstanceversion">
+<h3>vkEnumerateInstanceVersion<a class="headerlink" href="#vkenumerateinstanceversion" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="n">VkResult</span><span class="w"> </span><span class="nf">vkEnumerateInstanceVersion</span><span class="p">(</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="o">*</span><span class="w">                                   </span><span class="n">pApiVersion</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pApiVersion</span> 返回支持的 <code class="docutils literal notranslate"><span class="pre">Instance</span> <span class="pre">域函数</span></code> 对应的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本。</p></li>
+</ul>
+<div class="note admonition">
+<p class="admonition-title">vkEnumerateInstanceVersion</p>
+<ul class="simple">
+<li><p>该函数为全局函数。</p></li>
+<li><p>该函数返回的版本为可获取的 <code class="docutils literal notranslate"><span class="pre">Instance</span> <span class="pre">域函数</span></code> 所对应的版本。</p></li>
+<li><p>与物理设备（ <code class="docutils literal notranslate"><span class="pre">GPU</span></code> ）支持的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本可能会不同。</p></li>
+</ul>
+</div>
+</section>
+</section>
+</section>
 
         </article>
       </div>
@@ -349,8 +467,33 @@
 
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+
+<div class="toc-sticky toc-scroll" style="width: 500px;">
+    <div class="toc-title-container" style="width: 500px;">
+        <span class="toc-title" style="width: 500px;">
+            On this page
+        </span>
+    </div>
+    <div class="toc-tree-container" style="width: 500px;">
+        <div class="toc-tree" style="width: 500px;">
+            <ul>
+<li><a class="reference internal" href="#">最初之物 VkInstance</a><ul>
+<li><a class="reference internal" href="#id1">创建 VkInstance</a><ul>
+<li><a class="reference internal" href="#vkcreateinstance">vkCreateInstance</a></li>
+<li><a class="reference internal" href="#vkinstancecreateinfo">VkInstanceCreateInfo</a></li>
+<li><a class="reference internal" href="#vkapplicationinfo">VkApplicationInfo</a></li>
+<li><a class="reference internal" href="#vkenumerateinstanceversion">vkEnumerateInstanceVersion</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+    </div>
+</div>
 
 
     </aside>
