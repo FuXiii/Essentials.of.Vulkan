@@ -700,7 +700,7 @@ VkApplicationInfo
        uint32_t           apiVersion;
    } VkApplicationInfo;
 
-* :bdg-secondary:`sType` 是该结构体的类型枚举值， :bdg-danger:`必须`是 ``VkStructureType::VK_STRUCTURE_TYPE_APPLICATION_INFO`` 。
+* :bdg-secondary:`sType` 是该结构体的类型枚举值， :bdg-danger:`必须` 是 ``VkStructureType::VK_STRUCTURE_TYPE_APPLICATION_INFO`` 。
 * :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
 * :bdg-secondary:`pApplicationName` 要么是 ``NULL`` 要么指向一个以空字符为结尾的 ``UTF-8`` 字符串，用于表示用户自定义应用名称。
 * :bdg-secondary:`applicationVersion` 一个无符号整型，用于用户自定义应用版本。
