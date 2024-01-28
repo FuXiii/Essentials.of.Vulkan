@@ -12,6 +12,9 @@
    * 2024/1/25 增加 ``VkInstanceCreateInfo`` 章节。
    * 2024/1/25 增加 ``VkApplicationInfo`` 章节。
    * 2024/1/25 增加 ``vkEnumerateInstanceVersion`` 章节。
+   * 2024/1/28 增加 ``Layer`` 章节。
+   * 2024/1/28 增加 ``vkEnumerateInstanceLayerProperties`` 章节。
+   * 2024/1/28 增加 ``VkLayerProperties`` 章节。
 
 开发 ``Vulkan`` 第一步就是创建 ``VkInstance`` ，也就是 ``Vulkan`` 的 ``实例`` 。一个实例代表一整 ``Vulkan`` 环境（或上下文）。不同的 ``Vulkan`` 环境能够获取到不同的 ``Vulkan`` 功能特性。其中最重要的就是配置 ``Vulkan`` 要使用的 ``版本`` 。
 
@@ -130,4 +133,89 @@ vkEnumerateInstanceVersion
    
    * 该函数为全局函数。
    * 该函数返回的版本为可获取的 ``Instance 域函数`` 所对应的版本。
-   * 与物理设备（ ``GPU`` ）支持的 ``Vulkan`` 版本可能会不同。
+   * 与物理设备（ ``GPU`` ）支持的 ``Vulkan`` 版本可能会不同，也就是 ``Device 域函数`` 对应的 ``Vulkan`` 版本（ ``VkPhysicalDeviceProperties::apiVersion`` ）。
+
+Layer
+###########################
+
+在创建 ``VkInstance`` 时需要通过 ``VkInstanceCreateInfo::enabledLayerCount`` 和 ``VkInstanceCreateInfo::ppEnabledLayerNames`` 来配置实例要开启的 ``层`` （ ``Layer`` ）。
+
+``Vulkan`` 中的 ``层`` 一般都是用来作正确性验证检查的。如果在开发后执行阶段发生了使用错误， ``层`` 会输出错误信息，帮助开发者修正错误。
+
+其中最常使用的 ``层`` 就是 ``VK_LAYER_KHRONOS_validation`` ，用于 ``Vulkan API`` 验证和错误检查。
+
+目前 ``Vulkan`` 支持的 ``层`` 如下：
+
+* :bdg-secondary:`VK_LAYER_KHRONOS_validation` ``Vulkan API`` 验证和错误检查。
+* :bdg-secondary:`VK_LAYER_LUNARG_gfxreconstruct` 使用 `GFXReconstruct <https://vulkan.lunarg.com/doc/view/1.3.275.0/windows/getting_started.html#vulkan-api-capture-and-replay-with-gfxreconstruct>`_ 捕获应用的 ``Vulkan`` 指令。
+* :bdg-secondary:`VK_LAYER_LUNARG_api_dump` 输出调用的 ``API`` 和传入的参数。
+* :bdg-secondary:`VK_LAYER_KHRONOS_profiles` 帮助测试硬件的性能，而不需要物理接触每个设备。该 ``层`` 将会覆盖从 ``GPU`` 查询到的数据。
+* :bdg-secondary:`VK_LAYER_LUNARG_monitor` 在应用界面的标题处显示帧率。
+* :bdg-secondary:`VK_LAYER_LUNARG_screenshot` 将显示的画面帧输出到一个图片文件中。
+* :bdg-secondary:`VK_LAYER_KHRONOS_synchronization2` 使用系统实现的 ``VK_KHR_synchronization2`` 扩展，而不是驱动实现的。
+* :bdg-secondary:`VK_LAYER_KHRONOS_shader_object` 使用系统实现的 ``VK_EXT_shader_object`` 扩展，而不是驱动实现的。
+
+.. admonition:: 官方 Layer 文档
+   :class: note
+
+   ``Vulkan`` 支持的所有 ``Layer`` 可以在 `Vulkan Layers <https://vulkan.lunarg.com/doc/view/1.3.275.0/windows/getting_started.html#vulkan-sdk-layers>`_ 中找到详细文档。
+
+可以通过 ``vkEnumerateInstanceLayerProperties(...)`` 获取系统中 ``Vulkan`` 支持的 ``Layer`` ：
+
+vkEnumerateInstanceLayerProperties
+****************************************
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   VkResult vkEnumerateInstanceLayerProperties(
+       uint32_t*                                   pPropertyCount,
+       VkLayerProperties*                          pProperties);
+
+* :bdg-secondary:`pPropertyCount` 用于指定 ``pProperties`` 成员的数组长度。
+* :bdg-secondary:`pPropertyCount` 如果为 ``nullptr`` 则将会返回系统中支持的 ``层`` 数。否则会将查询到的元素写入 ``pProperties`` 。
+
+如果 ``pPropertyCount`` 数量小于系统中支持的 ``层`` 数，该函数将 ``pPropertyCount`` 个 ``层`` 信息写入 ``pProperties`` 中，并返回 ``VkResult::VK_INCOMPLETE`` （表示只写入了一部分，并不是所有信息）。
+
+如果 ``pPropertyCount`` 数量大于等于系统中支持的 ``层`` 数，则会将所有的 ``层`` 数据写入 ``pProperties``  中，并返回 ``VkResult::VK_SUCCESS`` 。
+
+所以获取 ``层`` 信息一般调用两遍 ``vkEnumerateInstanceLayerProperties(...)`` 函数：
+
+.. code:: c++
+
+   uint32_t property_count = 0;
+   vkEnumerateInstanceLayerProperties(&property_count, nullptr);
+
+   std::vector<VkLayerProperties> layer_properties(property_count);
+   vkEnumerateInstanceLayerProperties(&property_count, layer_properties.data());
+
+其中 ``VkLayerProperties`` 定义如下：
+
+VkLayerProperties
+****************************************
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef struct VkLayerProperties {
+       char        layerName[VK_MAX_EXTENSION_NAME_SIZE];
+       uint32_t    specVersion;
+       uint32_t    implementationVersion;
+       char        description[VK_MAX_DESCRIPTION_SIZE];
+   } VkLayerProperties;
+
+* :bdg-secondary:`layerName` ``层`` 名称。
+* :bdg-secondary:`specVersion` ``层`` 实现时的 ``Vulkan`` 版本。
+* :bdg-secondary:`implementationVersion` ``层`` 自身维护的版本。
+* :bdg-secondary:`description` ``层`` 的描述信息。
+
+其中 ``VK_MAX_EXTENSION_NAME_SIZE`` 和 ``VK_MAX_DESCRIPTION_SIZE`` 定义如下：
+
+.. code:: c++
+
+   #define VK_MAX_EXTENSION_NAME_SIZE        256U
+   #define VK_MAX_DESCRIPTION_SIZE           256U
+
+..
+   Extension
+   ###########################
