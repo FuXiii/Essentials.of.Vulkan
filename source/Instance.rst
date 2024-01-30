@@ -15,6 +15,10 @@
    * 2024/1/28 增加 ``Layer`` 章节。
    * 2024/1/28 增加 ``vkEnumerateInstanceLayerProperties`` 章节。
    * 2024/1/28 增加 ``VkLayerProperties`` 章节。
+   * 2024/1/30 增加 ``Extension`` 章节。
+   * 2024/1/30 增加 ``vkEnumerateInstanceExtensionProperties`` 章节。
+   * 2024/1/30 修正 ``vkEnumerateInstanceLayerProperties`` 章节中的打印错误。完善说明。
+   * 2024/1/30 增加 ``VkExtensionProperties`` 章节。
 
 开发 ``Vulkan`` 第一步就是创建 ``VkInstance`` ，也就是 ``Vulkan`` 的 ``实例`` 。一个实例代表一整 ``Vulkan`` 环境（或上下文）。不同的 ``Vulkan`` 环境能够获取到不同的 ``Vulkan`` 功能特性。其中最重要的就是配置 ``Vulkan`` 要使用的 ``版本`` 。
 
@@ -173,7 +177,7 @@ vkEnumerateInstanceLayerProperties
        VkLayerProperties*                          pProperties);
 
 * :bdg-secondary:`pPropertyCount` 用于指定 ``pProperties`` 成员的数组长度。
-* :bdg-secondary:`pPropertyCount` 如果为 ``nullptr`` 则将会返回系统中支持的 ``层`` 数。否则会将查询到的元素写入 ``pProperties`` 。
+* :bdg-secondary:`pProperties` 如果为 ``nullptr`` 则将会将系统中支持的 ``层`` 数写入 ``pPropertyCount`` 中。否则会将查询到的元素写入 ``pProperties`` 。
 
 如果 ``pPropertyCount`` 数量小于系统中支持的 ``层`` 数，该函数将 ``pPropertyCount`` 个 ``层`` 信息写入 ``pProperties`` 中，并返回 ``VkResult::VK_INCOMPLETE`` （表示只写入了一部分，并不是所有信息）。
 
@@ -183,11 +187,11 @@ vkEnumerateInstanceLayerProperties
 
 .. code:: c++
 
-   uint32_t property_count = 0;
-   vkEnumerateInstanceLayerProperties(&property_count, nullptr);
+   uint32_t layer_property_count = 0;
+   vkEnumerateInstanceLayerProperties(&layer_property_count, nullptr);
 
-   std::vector<VkLayerProperties> layer_properties(property_count);
-   vkEnumerateInstanceLayerProperties(&property_count, layer_properties.data());
+   std::vector<VkLayerProperties> layer_properties(layer_property_count);
+   vkEnumerateInstanceLayerProperties(&layer_property_count, layer_properties.data());
 
 其中 ``VkLayerProperties`` 定义如下：
 
@@ -216,6 +220,78 @@ VkLayerProperties
    #define VK_MAX_EXTENSION_NAME_SIZE        256U
    #define VK_MAX_DESCRIPTION_SIZE           256U
 
+Extension
+###########################
+
+在创建 ``VkInstance`` 时需要通过 ``VkInstanceCreateInfo::enabledExtensionCount`` 和 ``VkInstanceCreateInfo::ppEnabledExtensionNames`` 来配置实例要开启的 ``扩展`` （ ``Extension`` ）。
+
+在 ``Vulkan`` 中有两类扩展：
+
+* :bdg-secondary:`Instance 扩展` 与使用哪一个 ``GPU`` 设备无关，与 ``Vulkan`` 环境有关。 ``VkInstanceCreateInfo`` 中的 ``enabledExtensionCount`` 和 ``ppEnabledExtensionNames`` 就是用于配置此类 ``Instance 扩展`` 。
+* :bdg-secondary:`Device 扩展` 与使用哪一个 ``GPU`` 设备有关。不同厂家的 ``GPU`` 设备会支持不同的设备扩展。这将会在之后的章节展开。
+
+``VkInstance`` 支持的扩展可以通过 ``vkEnumerateInstanceExtensionProperties(...)`` 函数获取：
+
+vkEnumerateInstanceExtensionProperties
+*******************************************
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   VkResult vkEnumerateInstanceExtensionProperties(
+       const char*                                 pLayerName,
+       uint32_t*                                   pPropertyCount,
+       VkExtensionProperties*                      pProperties);
+
+* :bdg-secondary:`pLayerName` 要么为 ``空`` 要么为 ``层`` 的名称。
+* :bdg-secondary:`pPropertyCount` 用于指定 ``pProperties`` 成员的数组长度。
+* :bdg-secondary:`pProperties` 如果为 ``nullptr`` 则将会将实例支持的 ``扩展`` 数写入 ``pPropertyCount`` 中。否则会将查询到的元素写入 ``pProperties`` 。
+
+如果 ``pLayerName`` 为有效的 ``层`` 名， 该函数将会返回该层内部使用的 ``扩展`` 。如果开启了该 ``层`` ，则其内部使用的 ``扩展`` 将自动开启。
+
+要想获取全部的扩展，该函数的调用与 ``vkEnumerateInstanceLayerProperties(...)`` 类似，调用两遍，第一遍 ``pProperties`` 为 ``nullptr`` ，第二遍为有效值即可：
+
+.. code:: c++
+
+   uint32_t extension_property_count = 0;
+   vkEnumerateInstanceExtensionProperties(&extension_property_count, nullptr);
+
+   std::vector<VkExtensionProperties> extension_properties(extension_property_count);
+   vkEnumerateInstanceExtensionProperties(&extension_property_count, extension_properties.data());
+
+其中 ``VkExtensionProperties`` 定义如下：
+
+VkExtensionProperties
+*****************************
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef struct VkExtensionProperties {
+       char        extensionName[VK_MAX_EXTENSION_NAME_SIZE];
+       uint32_t    specVersion;
+   } VkExtensionProperties;
+
+* :bdg-secondary:`extensionName` 为扩展名称。
+* :bdg-secondary:`specVersion` 为扩展该扩展的版本。
+
+.. admonition:: 有一些扩展我们需要重点关注一下
+   :class: important
+
+   * :bdg-secondary:`VK_KHR_surface` 代表窗口通用平面扩展。
+   * :bdg-secondary:`VK_{vender}_{platform}_surface` 代表各个平台各自的窗口平面（各自平台适配到通用平面）。其中：
+      * :bdg-secondary:`vender` 表示该扩展的供应商（或维护方），有的没有提供该供应商字段（取决于扩展开发商）。比如 ``KHR`` 表示 ``Khronos`` 组织提供维护的该扩展。
+      * :bdg-secondary:`platform` 表示扩展对应的平台。
+   
+   .. admonition:: 比如
+      :class: note
+
+      * :bdg-secondary:`VK_KHR_win32_surface` 为  ``Windows`` 平台，供应商为 ``Khronos`` 。
+      * :bdg-secondary:`VK_OHOS_surface` 为 ``OpenHarmony`` 平台，供应商为 ``华为`` 。
+      * :bdg-secondary:`VK_KHR_android_surface` 为 ``Android`` 平台，供应商为 ``Khronos`` 。
+      * :bdg-secondary:`VK_KHR_[wayland/xcb/xlib]_surface` 为 ``Linux`` 平台（其中 ``[wayland/xcb/xlib]`` 表示三者其一），供应商为 ``Khronos`` 。
+
+   这些扩展在窗口中显示渲染结果非常重要，对于具体如何使用，将会在之后的章节展开。
+
 ..
-   Extension
-   ###########################
+   创建 VkInstance 代码
