@@ -6,7 +6,7 @@
 <link rel="index" title="索引" href="genindex.html" /><link rel="search" title="搜索" href="search.html" /><link rel="next" title="物理设备" href="PhysicalDevice.html" /><link rel="prev" title="纵览" href="Overview.html" />
         <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/Instance.html" />
 
-    <link rel="shortcut icon" href="_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
+    <link rel="shortcut icon" href="_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
         <title>最初之物 VkInstance - Vulkan入门精要</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b20cc3f5" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
@@ -292,6 +292,10 @@
 <li><p class="sd-card-text">2024/1/28 增加 <code class="docutils literal notranslate"><span class="pre">Layer</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/1/28 增加 <code class="docutils literal notranslate"><span class="pre">vkEnumerateInstanceLayerProperties</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/1/28 增加 <code class="docutils literal notranslate"><span class="pre">VkLayerProperties</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/1/30 增加 <code class="docutils literal notranslate"><span class="pre">Extension</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/1/30 增加 <code class="docutils literal notranslate"><span class="pre">vkEnumerateInstanceExtensionProperties</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/1/30 修正 <code class="docutils literal notranslate"><span class="pre">vkEnumerateInstanceLayerProperties</span></code> 章节中的打印错误。完善说明。</p></li>
+<li><p class="sd-card-text">2024/1/30 增加 <code class="docutils literal notranslate"><span class="pre">VkExtensionProperties</span></code> 章节。</p></li>
 </ul>
 </div>
 </details><p>开发 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 第一步就是创建 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> ，也就是 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的 <code class="docutils literal notranslate"><span class="pre">实例</span></code> 。一个实例代表一整 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 环境（或上下文）。不同的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 环境能够获取到不同的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 功能特性。其中最重要的就是配置 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 要使用的 <code class="docutils literal notranslate"><span class="pre">版本</span></code> 。</p>
@@ -437,16 +441,16 @@
 </div>
 <ul class="simple">
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pPropertyCount</span> 用于指定 <code class="docutils literal notranslate"><span class="pre">pProperties</span></code> 成员的数组长度。</p></li>
-<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pPropertyCount</span> 如果为 <code class="docutils literal notranslate"><span class="pre">nullptr</span></code> 则将会返回系统中支持的 <code class="docutils literal notranslate"><span class="pre">层</span></code> 数。否则会将查询到的元素写入 <code class="docutils literal notranslate"><span class="pre">pProperties</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pProperties</span> 如果为 <code class="docutils literal notranslate"><span class="pre">nullptr</span></code> 则将会将系统中支持的 <code class="docutils literal notranslate"><span class="pre">层</span></code> 数写入 <code class="docutils literal notranslate"><span class="pre">pPropertyCount</span></code> 中。否则会将查询到的元素写入 <code class="docutils literal notranslate"><span class="pre">pProperties</span></code> 。</p></li>
 </ul>
 <p>如果 <code class="docutils literal notranslate"><span class="pre">pPropertyCount</span></code> 数量小于系统中支持的 <code class="docutils literal notranslate"><span class="pre">层</span></code> 数，该函数将 <code class="docutils literal notranslate"><span class="pre">pPropertyCount</span></code> 个 <code class="docutils literal notranslate"><span class="pre">层</span></code> 信息写入 <code class="docutils literal notranslate"><span class="pre">pProperties</span></code> 中，并返回 <code class="docutils literal notranslate"><span class="pre">VkResult::VK_INCOMPLETE</span></code> （表示只写入了一部分，并不是所有信息）。</p>
 <p>如果 <code class="docutils literal notranslate"><span class="pre">pPropertyCount</span></code> 数量大于等于系统中支持的 <code class="docutils literal notranslate"><span class="pre">层</span></code> 数，则会将所有的 <code class="docutils literal notranslate"><span class="pre">层</span></code> 数据写入 <code class="docutils literal notranslate"><span class="pre">pProperties</span></code>  中，并返回 <code class="docutils literal notranslate"><span class="pre">VkResult::VK_SUCCESS</span></code> 。</p>
 <p>所以获取 <code class="docutils literal notranslate"><span class="pre">层</span></code> 信息一般调用两遍 <code class="docutils literal notranslate"><span class="pre">vkEnumerateInstanceLayerProperties(...)</span></code> 函数：</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">property_count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-<span class="n">vkEnumerateInstanceLayerProperties</span><span class="p">(</span><span class="o">&amp;</span><span class="n">property_count</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">layer_property_count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="n">vkEnumerateInstanceLayerProperties</span><span class="p">(</span><span class="o">&amp;</span><span class="n">layer_property_count</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
 
-<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">VkLayerProperties</span><span class="o">&gt;</span><span class="w"> </span><span class="n">layer_properties</span><span class="p">(</span><span class="n">property_count</span><span class="p">);</span>
-<span class="n">vkEnumerateInstanceLayerProperties</span><span class="p">(</span><span class="o">&amp;</span><span class="n">property_count</span><span class="p">,</span><span class="w"> </span><span class="n">layer_properties</span><span class="p">.</span><span class="n">data</span><span class="p">());</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">VkLayerProperties</span><span class="o">&gt;</span><span class="w"> </span><span class="n">layer_properties</span><span class="p">(</span><span class="n">layer_property_count</span><span class="p">);</span>
+<span class="n">vkEnumerateInstanceLayerProperties</span><span class="p">(</span><span class="o">&amp;</span><span class="n">layer_property_count</span><span class="p">,</span><span class="w"> </span><span class="n">layer_properties</span><span class="p">.</span><span class="n">data</span><span class="p">());</span>
 </pre></div>
 </div>
 <p>其中 <code class="docutils literal notranslate"><span class="pre">VkLayerProperties</span></code> 定义如下：</p>
@@ -472,6 +476,79 @@
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#define VK_MAX_EXTENSION_NAME_SIZE        256U</span>
 <span class="cp">#define VK_MAX_DESCRIPTION_SIZE           256U</span>
 </pre></div>
+</div>
+</section>
+</section>
+<section id="extension">
+<h2>Extension<a class="headerlink" href="#extension" title="Link to this heading">#</a></h2>
+<p>在创建 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 时需要通过 <code class="docutils literal notranslate"><span class="pre">VkInstanceCreateInfo::enabledExtensionCount</span></code> 和 <code class="docutils literal notranslate"><span class="pre">VkInstanceCreateInfo::ppEnabledExtensionNames</span></code> 来配置实例要开启的 <code class="docutils literal notranslate"><span class="pre">扩展</span></code> （ <code class="docutils literal notranslate"><span class="pre">Extension</span></code> ）。</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中有两类扩展：</p>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">Instance 扩展</span> 与使用哪一个 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 设备无关，与 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 环境有关。 <code class="docutils literal notranslate"><span class="pre">VkInstanceCreateInfo</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">enabledExtensionCount</span></code> 和 <code class="docutils literal notranslate"><span class="pre">ppEnabledExtensionNames</span></code> 就是用于配置此类 <code class="docutils literal notranslate"><span class="pre">Instance</span> <span class="pre">扩展</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">Device 扩展</span> 与使用哪一个 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 设备有关。不同厂家的 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 设备会支持不同的设备扩展。这将会在之后的章节展开。</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 支持的扩展可以通过 <code class="docutils literal notranslate"><span class="pre">vkEnumerateInstanceExtensionProperties(...)</span></code> 函数获取：</p>
+<section id="vkenumerateinstanceextensionproperties">
+<h3>vkEnumerateInstanceExtensionProperties<a class="headerlink" href="#vkenumerateinstanceextensionproperties" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="n">VkResult</span><span class="w"> </span><span class="nf">vkEnumerateInstanceExtensionProperties</span><span class="p">(</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w">                                 </span><span class="n">pLayerName</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="o">*</span><span class="w">                                   </span><span class="n">pPropertyCount</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkExtensionProperties</span><span class="o">*</span><span class="w">                      </span><span class="n">pProperties</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pLayerName</span> 要么为 <code class="docutils literal notranslate"><span class="pre">空</span></code> 要么为 <code class="docutils literal notranslate"><span class="pre">层</span></code> 的名称。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pPropertyCount</span> 用于指定 <code class="docutils literal notranslate"><span class="pre">pProperties</span></code> 成员的数组长度。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pProperties</span> 如果为 <code class="docutils literal notranslate"><span class="pre">nullptr</span></code> 则将会将实例支持的 <code class="docutils literal notranslate"><span class="pre">扩展</span></code> 数写入 <code class="docutils literal notranslate"><span class="pre">pPropertyCount</span></code> 中。否则会将查询到的元素写入 <code class="docutils literal notranslate"><span class="pre">pProperties</span></code> 。</p></li>
+</ul>
+<p>如果 <code class="docutils literal notranslate"><span class="pre">pLayerName</span></code> 为有效的 <code class="docutils literal notranslate"><span class="pre">层</span></code> 名， 该函数将会返回该层内部使用的 <code class="docutils literal notranslate"><span class="pre">扩展</span></code> 。如果开启了该 <code class="docutils literal notranslate"><span class="pre">层</span></code> ，则其内部使用的 <code class="docutils literal notranslate"><span class="pre">扩展</span></code> 将自动开启。</p>
+<p>要想获取全部的扩展，该函数的调用与 <code class="docutils literal notranslate"><span class="pre">vkEnumerateInstanceLayerProperties(...)</span></code> 类似，调用两遍，第一遍 <code class="docutils literal notranslate"><span class="pre">pProperties</span></code> 为 <code class="docutils literal notranslate"><span class="pre">nullptr</span></code> ，第二遍为有效值即可：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">extension_property_count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="n">vkEnumerateInstanceExtensionProperties</span><span class="p">(</span><span class="o">&amp;</span><span class="n">extension_property_count</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">VkExtensionProperties</span><span class="o">&gt;</span><span class="w"> </span><span class="n">extension_properties</span><span class="p">(</span><span class="n">extension_property_count</span><span class="p">);</span>
+<span class="n">vkEnumerateInstanceExtensionProperties</span><span class="p">(</span><span class="o">&amp;</span><span class="n">extension_property_count</span><span class="p">,</span><span class="w"> </span><span class="n">extension_properties</span><span class="p">.</span><span class="n">data</span><span class="p">());</span>
+</pre></div>
+</div>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">VkExtensionProperties</span></code> 定义如下：</p>
+</section>
+<section id="vkextensionproperties">
+<h3>VkExtensionProperties<a class="headerlink" href="#vkextensionproperties" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkExtensionProperties</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">char</span><span class="w">        </span><span class="n">extensionName</span><span class="p">[</span><span class="n">VK_MAX_EXTENSION_NAME_SIZE</span><span class="p">];</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">    </span><span class="n">specVersion</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkExtensionProperties</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">extensionName</span> 为扩展名称。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">specVersion</span> 为扩展该扩展的版本。</p></li>
+</ul>
+<div class="important admonition">
+<p class="admonition-title">有一些扩展我们需要重点关注一下</p>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_KHR_surface</span> 代表窗口通用平面扩展。</p></li>
+<li><dl class="simple">
+<dt><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_{vender}_{platform}_surface</span> 代表各个平台各自的窗口平面（各自平台适配到通用平面）。其中：</dt><dd><ul>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">vender</span> 表示该扩展的供应商（或维护方），有的没有提供该供应商字段（取决于扩展开发商）。比如 <code class="docutils literal notranslate"><span class="pre">KHR</span></code> 表示 <code class="docutils literal notranslate"><span class="pre">Khronos</span></code> 组织提供维护的该扩展。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">platform</span> 表示扩展对应的平台。</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<div class="note admonition">
+<p class="admonition-title">比如</p>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_KHR_win32_surface</span> 为  <code class="docutils literal notranslate"><span class="pre">Windows</span></code> 平台，供应商为 <code class="docutils literal notranslate"><span class="pre">Khronos</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_OHOS_surface</span> 为 <code class="docutils literal notranslate"><span class="pre">OpenHarmony</span></code> 平台，供应商为 <code class="docutils literal notranslate"><span class="pre">华为</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_KHR_android_surface</span> 为 <code class="docutils literal notranslate"><span class="pre">Android</span></code> 平台，供应商为 <code class="docutils literal notranslate"><span class="pre">Khronos</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_KHR_[wayland/xcb/xlib]_surface</span> 为 <code class="docutils literal notranslate"><span class="pre">Linux</span></code> 平台（其中 <code class="docutils literal notranslate"><span class="pre">[wayland/xcb/xlib]</span></code> 表示三者其一），供应商为 <code class="docutils literal notranslate"><span class="pre">Khronos</span></code> 。</p></li>
+</ul>
+</div>
+<p>这些扩展在窗口中显示渲染结果非常重要，对于具体如何使用，将会在之后的章节展开。</p>
 </div>
 </section>
 </section>
@@ -562,6 +639,11 @@
 <li><a class="reference internal" href="#layer">Layer</a><ul>
 <li><a class="reference internal" href="#vkenumerateinstancelayerproperties">vkEnumerateInstanceLayerProperties</a></li>
 <li><a class="reference internal" href="#vklayerproperties">VkLayerProperties</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#extension">Extension</a><ul>
+<li><a class="reference internal" href="#vkenumerateinstanceextensionproperties">vkEnumerateInstanceExtensionProperties</a></li>
+<li><a class="reference internal" href="#vkextensionproperties">VkExtensionProperties</a></li>
 </ul>
 </li>
 </ul>
