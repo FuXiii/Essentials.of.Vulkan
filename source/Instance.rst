@@ -22,6 +22,8 @@
    * 2024/2/1 增加 ``示例`` 章节。
    * 2024/2/1 更新 ``vkEnumerateInstanceExtensionProperties`` 章节。修正代码错误。
    * 2024/2/1 增加 ``销毁 VkInstance`` 章节。
+   * 2024/2/2 更新 ``示例`` 章节。增加 ``开源鸿蒙`` 平台实例代码。
+   * 2024/2/2 更新 ``vkCreateInstance`` 章节。增加分配器说明。
 
 开发 ``Vulkan`` 第一步就是创建 ``VkInstance`` ，也就是 ``Vulkan`` 的 ``实例`` 。一个实例代表一整 ``Vulkan`` 环境（或上下文）。不同的 ``Vulkan`` 环境能够获取到不同的 ``Vulkan`` 功能特性。其中最重要的就是配置 ``Vulkan`` 要使用的 ``版本`` 。
 
@@ -44,6 +46,8 @@ vkCreateInstance
 * :bdg-secondary:`pCreateInfo` 指向 ``VkInstanceCreateInfo`` 数据结构对象，用于配置 ``VkInstance`` 的创建信息。
 * :bdg-secondary:`pAllocator` 内存分配器。为 ``nullptr`` 表示使用内部默认分配器，否则为自定义分配器。
 * :bdg-secondary:`pInstance` 返回创建的目标 ``VkInstance`` 结果。
+
+.. note:: ``pAllocator`` 将会在之后专门章节讲解，这里使用 ``nullptr`` 默认分配器即可。
 
 其中 ``VkInstanceCreateInfo`` 结构体定义如下：
 
@@ -346,8 +350,10 @@ vkDestroyInstance
 
    std::vector<const char *> enable_extension_names;
    enable_extension_names.push_back("VK_KHR_surface");
-   #if defined(_WIN16) || defined(_WIN32) || defined(_WIN64)
+   #if defined(_WIN16) || defined(_WIN32) || defined(_WIN64) // Windows
    enable_extension_names.push_back("VK_KHR_win32_surface");
+   #elif defined(VK_USE_PLATFORM_OHOS) // 开源鸿蒙
+   enable_extension_names.push_back("VK_OHOS_surface");
    #elif 其他平台...
    #endif
 
