@@ -60,7 +60,7 @@ vkEnumeratePhysicalDevices
 .. note:: 
    
    枚举的 ``VkPhysicalDevice`` 句柄是在调用 ``vkCreateInstance(...)`` 创建 ``VkInstance`` 时驱动内部创建的。换句话说就是：
-   ``VkPhysicalDevice`` 句柄的声明周期与 ``VkInstance`` 相同， ``VkInstance`` 创建 ``VkPhysicalDevice`` 句柄们也会创建， ``VkInstance`` 销毁 ``VkPhysicalDevice`` 句柄们也会销毁。
+   ``VkPhysicalDevice`` 句柄的生命周期与 ``VkInstance`` 相同， ``VkInstance`` 创建 ``VkPhysicalDevice`` 句柄们也会创建， ``VkInstance`` 销毁 ``VkPhysicalDevice`` 句柄们也会销毁。
 
 获取物理设备信息
 ######################
