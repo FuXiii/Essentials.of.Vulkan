@@ -105,7 +105,7 @@ VkApplicationInfo
 
 其中 ``pApplicationName`` 、 ``applicationVersion`` 、 ``pEngineName`` 和 ``engineVersion`` 这几个值随便设置，甚至可以不设置，赋为 ``空`` 都可以，这些参数不影响实例的创建。
 
-而 ``apiVersion`` 参数是 :bdg-danger:`最为重要的核心参数` ，当创建实例时，该参数用于指定此实例环境中 ``Vulkan`` 的 :bdg-danger:`核心` ``版本`` 。目前 ``Vulkan`` 有 ``3`` 个版本：
+而 ``apiVersion`` 参数是 :bdg-danger:`最为重要的核心参数` ，当创建实例时，该参数用于指定此实例环境中 ``Vulkan`` 的 :bdg-danger:`核心` ``版本`` 。目前 ``Vulkan`` 有 ``4`` 个版本：
 
 * ``Vulkan 1.0`` 主要提供光栅化图形和并行计算的功能。对应 ``VK_API_VERSION_1_0`` 。
 * ``Vulkan 1.1`` 主要为 ``Vulkan 1.0`` 不完善的地方进行补全。对应 ``VK_API_VERSION_1_1`` 。
