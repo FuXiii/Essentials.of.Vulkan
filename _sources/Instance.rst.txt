@@ -19,6 +19,11 @@
    * 2024/1/30 增加 ``vkEnumerateInstanceExtensionProperties`` 章节。
    * 2024/1/30 修正 ``vkEnumerateInstanceLayerProperties`` 章节中的打印错误。完善说明。
    * 2024/1/30 增加 ``VkExtensionProperties`` 章节。
+   * 2024/2/1 增加 ``示例`` 章节。
+   * 2024/2/1 更新 ``vkEnumerateInstanceExtensionProperties`` 章节。修正代码错误。
+   * 2024/2/1 增加 ``销毁 VkInstance`` 章节。
+   * 2024/2/2 更新 ``示例`` 章节。增加 ``开源鸿蒙`` 平台实例代码。
+   * 2024/2/2 更新 ``vkCreateInstance`` 章节。增加分配器说明。
 
 开发 ``Vulkan`` 第一步就是创建 ``VkInstance`` ，也就是 ``Vulkan`` 的 ``实例`` 。一个实例代表一整 ``Vulkan`` 环境（或上下文）。不同的 ``Vulkan`` 环境能够获取到不同的 ``Vulkan`` 功能特性。其中最重要的就是配置 ``Vulkan`` 要使用的 ``版本`` 。
 
@@ -41,6 +46,8 @@ vkCreateInstance
 * :bdg-secondary:`pCreateInfo` 指向 ``VkInstanceCreateInfo`` 数据结构对象，用于配置 ``VkInstance`` 的创建信息。
 * :bdg-secondary:`pAllocator` 内存分配器。为 ``nullptr`` 表示使用内部默认分配器，否则为自定义分配器。
 * :bdg-secondary:`pInstance` 返回创建的目标 ``VkInstance`` 结果。
+
+.. note:: ``pAllocator`` 将会在之后专门章节讲解，这里使用 ``nullptr`` 默认分配器即可。
 
 其中 ``VkInstanceCreateInfo`` 结构体定义如下：
 
@@ -98,7 +105,7 @@ VkApplicationInfo
 
 其中 ``pApplicationName`` 、 ``applicationVersion`` 、 ``pEngineName`` 和 ``engineVersion`` 这几个值随便设置，甚至可以不设置，赋为 ``空`` 都可以，这些参数不影响实例的创建。
 
-而 ``apiVersion`` 参数是 :bdg-danger:`最为重要的核心参数` ，当创建实例时，该参数用于指定此实例环境中 ``Vulkan`` 的 :bdg-danger:`核心` ``版本`` 。目前 ``Vulkan`` 有 ``3`` 个版本：
+而 ``apiVersion`` 参数是 :bdg-danger:`最为重要的核心参数` ，当创建实例时，该参数用于指定此实例环境中 ``Vulkan`` 的 :bdg-danger:`核心` ``版本`` 。目前 ``Vulkan`` 有 ``4`` 个版本：
 
 * ``Vulkan 1.0`` 主要提供光栅化图形和并行计算的功能。对应 ``VK_API_VERSION_1_0`` 。
 * ``Vulkan 1.1`` 主要为 ``Vulkan 1.0`` 不完善的地方进行补全。对应 ``VK_API_VERSION_1_1`` 。
@@ -254,10 +261,10 @@ vkEnumerateInstanceExtensionProperties
 .. code:: c++
 
    uint32_t extension_property_count = 0;
-   vkEnumerateInstanceExtensionProperties(&extension_property_count, nullptr);
+   vkEnumerateInstanceExtensionProperties(nullptr, &extension_property_count, nullptr);
 
    std::vector<VkExtensionProperties> extension_properties(extension_property_count);
-   vkEnumerateInstanceExtensionProperties(&extension_property_count, extension_properties.data());
+   vkEnumerateInstanceExtensionProperties(nullptr, &extension_property_count, extension_properties.data());
 
 其中 ``VkExtensionProperties`` 定义如下：
 
@@ -293,5 +300,82 @@ VkExtensionProperties
 
    这些扩展在窗口中显示渲染结果非常重要，对于具体如何使用，将会在之后的章节展开。
 
+销毁 VkInstance
+###########################
+
+当创建完 ``VkInstance`` 之后可通过 ``vkDestroyInstance(...)`` 函数销毁。
+
+vkDestroyInstance
+*****************************
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   void vkDestroyInstance(
+       VkInstance                                  instance,
+       const VkAllocationCallbacks*                pAllocator);
+
+* :bdg-secondary:`instance` 要么为 ``空`` 要么 :bdg-danger:`必须` 为有效的 ``VkInstance`` 。
+* :bdg-secondary:`pAllocator` 分配器。需要与创建 ``VkInstance`` 时指定的分配器匹配。
+
+当 ``VkInstance`` 销毁时，需要确保所有该实例环境下创建的对象（句柄）都已经回收或销毁。
+
+示例
+##########################
+
+.. code:: c++
+
+   uint32_t vulkan_version = VK_MAKE_API_VERSION(0, 1, 0, 0);
+
+   if(vkEnumerateInstanceVersion != nullptr && vkEnumerateInstanceVersion(&vulkan_version) != VkResult::VK_SUCCESS)
+   {
+      vulkan_version = VK_MAKE_API_VERSION(0, 1, 0, 0);
+   }
+
+   VkInstance instance = VK_NULL_HANDLE;
+
+   VkApplicationInfo application_info = {};
+   application_info.sType = VkStructureType::VK_STRUCTURE_TYPE_APPLICATION_INFO;
+   application_info.pNext = nullptr;
+   application_info.pApplicationName = nullptr;
+   application_info.applicationVersion = 0;
+   application_info.pEngineName = nullptr;
+   application_info.engineVersion = 0;
+   application_info.apiVersion = vulkan_version;
+
+   std::vector<const char *> enable_layer_names;
+   #if defined(_DEBUG) || defined(NDEBUG)
+   enable_layer_names.push_back("VK_LAYER_KHRONOS_validation");
+   #endif
+
+   std::vector<const char *> enable_extension_names;
+   enable_extension_names.push_back("VK_KHR_surface");
+   #if defined(_WIN16) || defined(_WIN32) || defined(_WIN64) // Windows
+   enable_extension_names.push_back("VK_KHR_win32_surface");
+   #elif defined(VK_USE_PLATFORM_OHOS) // 开源鸿蒙
+   enable_extension_names.push_back("VK_OHOS_surface");
+   #elif 其他平台...
+   #endif
+
+   VkInstanceCreateInfo instance_create_info = {};
+   instance_create_info.sType = VkStructureType::VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+   instance_create_info.pNext = nullptr;
+   instance_create_info.flags = 0;
+   instance_create_info.pApplicationInfo = &application_info;
+   instance_create_info.enabledLayerCount = enable_layer_names.size();
+   instance_create_info.ppEnabledLayerNames = enable_layer_names.data();
+   instance_create_info.enabledExtensionCount = enable_extension_names.size();
+   instance_create_info.ppEnabledExtensionNames = enable_extension_names.data();
+
+   VkResult result = vkCreateInstance(&instance_create_info, nullptr, &instance);
+   if (result != VK_SUCCESS)
+   {
+      throw std::runtime_error("VkInstance 创建失败");
+   }
+
+   //缤纷绚丽的 Vulkan 程序 ... 
+
+   vkDestroyInstance(instance, nullptr);
+
 ..
-   创建 VkInstance 代码
+   分配器

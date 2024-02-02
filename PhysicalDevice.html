@@ -141,7 +141,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -266,7 +266,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
@@ -282,10 +282,52 @@
 <svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
 </summary><div class="sd-summary-content sd-card-body docutils">
 <ul class="simple">
-<li><p class="sd-card-text">2024/1/2 增加该文档</p></li>
+<li><p class="sd-card-text">2024/1/2 增加该文档。</p></li>
+<li><p class="sd-card-text">2024/2/2 更新该文档。</p></li>
+<li><p class="sd-card-text">2024/2/2 增加 <code class="docutils literal notranslate"><span class="pre">vkEnumeratePhysicalDevices</span></code> 章节。</p></li>
 </ul>
 </div>
-</details></section>
+</details><p>一台主机上可能插着多个支持 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的物理设备，为此 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 提供列举出系统中支持 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的所有物理设备功能，开发者可通过 <code class="docutils literal notranslate"><span class="pre">vkEnumeratePhysicalDevices(...)</span></code> 函数进行物理设备列举。其定义如下：</p>
+<section id="vkenumeratephysicaldevices">
+<h2>vkEnumeratePhysicalDevices<a class="headerlink" href="#vkenumeratephysicaldevices" title="Link to this heading">#</a></h2>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="n">VkResult</span><span class="w"> </span><span class="nf">vkEnumeratePhysicalDevices</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkInstance</span><span class="w">                                  </span><span class="n">instance</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="o">*</span><span class="w">                                   </span><span class="n">pPhysicalDeviceCount</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkPhysicalDevice</span><span class="o">*</span><span class="w">                           </span><span class="n">pPhysicalDevices</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">instance</span> 是之前使用 <code class="docutils literal notranslate"><span class="pre">vkCreateInstance</span></code> 创建的 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 句柄。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pPhysicalDeviceCount</span> 是用于指定或获取的物理设备数量。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pPhysicalDevices</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么是数量不小于 <code class="docutils literal notranslate"><span class="pre">pPhysicalDeviceCount</span></code> 的 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDevice</span></code> 数组。</p></li>
+</ul>
+<p>当 <code class="docutils literal notranslate"><span class="pre">pPhysicalDevices</span></code> 为 <code class="docutils literal notranslate"><span class="pre">nullptr</span></code> 时，该函数会将系统中支持 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的设备数量写入 <code class="docutils literal notranslate"><span class="pre">pPhysicalDeviceCount</span></code> 中。</p>
+<p>如果 <code class="docutils literal notranslate"><span class="pre">pPhysicalDevices</span></code> 为一个有效指针，则其指向一个 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDevice</span></code> 数组，并且该数组长度 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">不能</span> 小于 <code class="docutils literal notranslate"><span class="pre">pPhysicalDeviceCount</span></code> 。</p>
+<p>如果 <code class="docutils literal notranslate"><span class="pre">pPhysicalDeviceCount</span></code> 中指定的数量小于系统中的物理设备数量，则 <code class="docutils literal notranslate"><span class="pre">pPhysicalDevices</span></code> 中写入的物理设备不是所有，则 <code class="docutils literal notranslate"><span class="pre">vkEnumeratePhysicalDevices(...)</span></code> 函数将会写入 <code class="docutils literal notranslate"><span class="pre">pPhysicalDeviceCount</span></code> 个物理设备到 <code class="docutils literal notranslate"><span class="pre">pPhysicalDevices</span></code> 数组中，并返回 <code class="docutils literal notranslate"><span class="pre">VkResult::VK_INCOMPLETE</span></code> 。</p>
+<p>如果所有物理设备成功写入，则会返回 <code class="docutils literal notranslate"><span class="pre">VkResult::VK_SUCCESS</span></code> 。</p>
+<p>因此，枚举所有物理设备需要调用 <code class="docutils literal notranslate"><span class="pre">vkEnumeratePhysicalDevices(...)</span></code> 两次：</p>
+<ol class="arabic simple">
+<li><p>将 <code class="docutils literal notranslate"><span class="pre">pPhysicalDevices</span></code> 设置为 <code class="docutils literal notranslate"><span class="pre">nullptr</span></code> ，并通过 <code class="docutils literal notranslate"><span class="pre">pPhysicalDeviceCount</span></code> 获取支持系统中支持 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的物理设备数量。</p></li>
+<li><p>创建 <code class="docutils literal notranslate"><span class="pre">pPhysicalDevices</span></code> 数量的 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDevice</span></code> 数组，并传入 <code class="docutils literal notranslate"><span class="pre">pPhysicalDevices</span></code> 中以获取系统中支持的 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDevice</span></code> 物理设备。</p></li>
+</ol>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkInstance</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">支持创建的</span><span class="w"> </span><span class="n">VkInstance</span><span class="p">;</span>
+
+<span class="kt">uint32_t</span><span class="w"> </span><span class="n">physical_device_count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="n">vkEnumeratePhysicalDevices</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">physical_device_count</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">VkPhysicalDevice</span><span class="o">&gt;</span><span class="w"> </span><span class="n">physical_devices</span><span class="p">(</span><span class="n">physical_device_count</span><span class="p">);</span>
+<span class="n">vkEnumeratePhysicalDevices</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">physical_device_count</span><span class="p">,</span><span class="w"> </span><span class="n">physical_devices</span><span class="p">.</span><span class="n">data</span><span class="p">());</span>
+</pre></div>
+</div>
+<p>这样就可以枚举出系统中支持 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的所有物理设备。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>枚举的 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDevice</span></code> 句柄是在调用 <code class="docutils literal notranslate"><span class="pre">vkCreateInstance(...)</span></code> 创建 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 时驱动内部创建的。换句话说就是：
+<code class="docutils literal notranslate"><span class="pre">VkPhysicalDevice</span></code> 句柄的声明周期与 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 相同， <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 创建 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDevice</span></code> 句柄们也会创建， <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 销毁 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDevice</span></code> 句柄们也会销毁。</p>
+</div>
+</section>
+</section>
 
         </article>
       </div>
@@ -349,8 +391,27 @@
 
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+
+<div class="toc-sticky toc-scroll" style="width: 500px;">
+    <div class="toc-title-container" style="width: 500px;">
+        <span class="toc-title" style="width: 500px;">
+            On this page
+        </span>
+    </div>
+    <div class="toc-tree-container" style="width: 500px;">
+        <div class="toc-tree" style="width: 500px;">
+            <ul>
+<li><a class="reference internal" href="#">物理设备</a><ul>
+<li><a class="reference internal" href="#vkenumeratephysicaldevices">vkEnumeratePhysicalDevices</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+    </div>
+</div>
 
 
     </aside>

@@ -296,6 +296,11 @@
 <li><p class="sd-card-text">2024/1/30 增加 <code class="docutils literal notranslate"><span class="pre">vkEnumerateInstanceExtensionProperties</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/1/30 修正 <code class="docutils literal notranslate"><span class="pre">vkEnumerateInstanceLayerProperties</span></code> 章节中的打印错误。完善说明。</p></li>
 <li><p class="sd-card-text">2024/1/30 增加 <code class="docutils literal notranslate"><span class="pre">VkExtensionProperties</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/2/1 增加 <code class="docutils literal notranslate"><span class="pre">示例</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/2/1 更新 <code class="docutils literal notranslate"><span class="pre">vkEnumerateInstanceExtensionProperties</span></code> 章节。修正代码错误。</p></li>
+<li><p class="sd-card-text">2024/2/1 增加 <code class="docutils literal notranslate"><span class="pre">销毁</span> <span class="pre">VkInstance</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/2/2 更新 <code class="docutils literal notranslate"><span class="pre">示例</span></code> 章节。增加 <code class="docutils literal notranslate"><span class="pre">开源鸿蒙</span></code> 平台实例代码。</p></li>
+<li><p class="sd-card-text">2024/2/2 更新 <code class="docutils literal notranslate"><span class="pre">vkCreateInstance</span></code> 章节。增加分配器说明。</p></li>
 </ul>
 </div>
 </details><p>开发 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 第一步就是创建 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> ，也就是 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的 <code class="docutils literal notranslate"><span class="pre">实例</span></code> 。一个实例代表一整 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 环境（或上下文）。不同的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 环境能够获取到不同的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 功能特性。其中最重要的就是配置 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 要使用的 <code class="docutils literal notranslate"><span class="pre">版本</span></code> 。</p>
@@ -316,6 +321,10 @@
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pAllocator</span> 内存分配器。为 <code class="docutils literal notranslate"><span class="pre">nullptr</span></code> 表示使用内部默认分配器，否则为自定义分配器。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pInstance</span> 返回创建的目标 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 结果。</p></li>
 </ul>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p><code class="docutils literal notranslate"><span class="pre">pAllocator</span></code> 将会在之后专门章节讲解，这里使用 <code class="docutils literal notranslate"><span class="pre">nullptr</span></code> 默认分配器即可。</p>
+</div>
 <p>其中 <code class="docutils literal notranslate"><span class="pre">VkInstanceCreateInfo</span></code> 结构体定义如下：</p>
 </section>
 <section id="vkinstancecreateinfo">
@@ -369,7 +378,7 @@
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">apiVersion</span> 应用打算使用的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的最高 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">核心</span> 版本，并且忽略 <code class="docutils literal notranslate"><span class="pre">apiVersion</span></code> 的 <code class="docutils literal notranslate"><span class="pre">patch</span></code> 版本。</p></li>
 </ul>
 <p>其中 <code class="docutils literal notranslate"><span class="pre">pApplicationName</span></code> 、 <code class="docutils literal notranslate"><span class="pre">applicationVersion</span></code> 、 <code class="docutils literal notranslate"><span class="pre">pEngineName</span></code> 和 <code class="docutils literal notranslate"><span class="pre">engineVersion</span></code> 这几个值随便设置，甚至可以不设置，赋为 <code class="docutils literal notranslate"><span class="pre">空</span></code> 都可以，这些参数不影响实例的创建。</p>
-<p>而 <code class="docutils literal notranslate"><span class="pre">apiVersion</span></code> 参数是 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">最为重要的核心参数</span> ，当创建实例时，该参数用于指定此实例环境中 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">核心</span> <code class="docutils literal notranslate"><span class="pre">版本</span></code> 。目前 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 有 <code class="docutils literal notranslate"><span class="pre">3</span></code> 个版本：</p>
+<p>而 <code class="docutils literal notranslate"><span class="pre">apiVersion</span></code> 参数是 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">最为重要的核心参数</span> ，当创建实例时，该参数用于指定此实例环境中 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">核心</span> <code class="docutils literal notranslate"><span class="pre">版本</span></code> 。目前 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 有 <code class="docutils literal notranslate"><span class="pre">4</span></code> 个版本：</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.0</span></code> 主要提供光栅化图形和并行计算的功能。对应 <code class="docutils literal notranslate"><span class="pre">VK_API_VERSION_1_0</span></code> 。</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.1</span></code> 主要为 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.0</span></code> 不完善的地方进行补全。对应 <code class="docutils literal notranslate"><span class="pre">VK_API_VERSION_1_1</span></code> 。</p></li>
@@ -505,10 +514,10 @@
 <p>如果 <code class="docutils literal notranslate"><span class="pre">pLayerName</span></code> 为有效的 <code class="docutils literal notranslate"><span class="pre">层</span></code> 名， 该函数将会返回该层内部使用的 <code class="docutils literal notranslate"><span class="pre">扩展</span></code> 。如果开启了该 <code class="docutils literal notranslate"><span class="pre">层</span></code> ，则其内部使用的 <code class="docutils literal notranslate"><span class="pre">扩展</span></code> 将自动开启。</p>
 <p>要想获取全部的扩展，该函数的调用与 <code class="docutils literal notranslate"><span class="pre">vkEnumerateInstanceLayerProperties(...)</span></code> 类似，调用两遍，第一遍 <code class="docutils literal notranslate"><span class="pre">pProperties</span></code> 为 <code class="docutils literal notranslate"><span class="pre">nullptr</span></code> ，第二遍为有效值即可：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">extension_property_count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-<span class="n">vkEnumerateInstanceExtensionProperties</span><span class="p">(</span><span class="o">&amp;</span><span class="n">extension_property_count</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+<span class="n">vkEnumerateInstanceExtensionProperties</span><span class="p">(</span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">extension_property_count</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
 
 <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">VkExtensionProperties</span><span class="o">&gt;</span><span class="w"> </span><span class="n">extension_properties</span><span class="p">(</span><span class="n">extension_property_count</span><span class="p">);</span>
-<span class="n">vkEnumerateInstanceExtensionProperties</span><span class="p">(</span><span class="o">&amp;</span><span class="n">extension_property_count</span><span class="p">,</span><span class="w"> </span><span class="n">extension_properties</span><span class="p">.</span><span class="n">data</span><span class="p">());</span>
+<span class="n">vkEnumerateInstanceExtensionProperties</span><span class="p">(</span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">extension_property_count</span><span class="p">,</span><span class="w"> </span><span class="n">extension_properties</span><span class="p">.</span><span class="n">data</span><span class="p">());</span>
 </pre></div>
 </div>
 <p>其中 <code class="docutils literal notranslate"><span class="pre">VkExtensionProperties</span></code> 定义如下：</p>
@@ -551,6 +560,80 @@
 <p>这些扩展在窗口中显示渲染结果非常重要，对于具体如何使用，将会在之后的章节展开。</p>
 </div>
 </section>
+</section>
+<section id="id3">
+<h2>销毁 VkInstance<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<p>当创建完 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 之后可通过 <code class="docutils literal notranslate"><span class="pre">vkDestroyInstance(...)</span></code> 函数销毁。</p>
+<section id="vkdestroyinstance">
+<h3>vkDestroyInstance<a class="headerlink" href="#vkdestroyinstance" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">vkDestroyInstance</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkInstance</span><span class="w">                                  </span><span class="n">instance</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkAllocationCallbacks</span><span class="o">*</span><span class="w">                </span><span class="n">pAllocator</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">instance</span> 要么为 <code class="docutils literal notranslate"><span class="pre">空</span></code> 要么 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 为有效的 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pAllocator</span> 分配器。需要与创建 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 时指定的分配器匹配。</p></li>
+</ul>
+<p>当 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 销毁时，需要确保所有该实例环境下创建的对象（句柄）都已经回收或销毁。</p>
+</section>
+</section>
+<section id="id4">
+<h2>示例<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">vulkan_version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_MAKE_API_VERSION</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+
+<span class="k">if</span><span class="p">(</span><span class="n">vkEnumerateInstanceVersion</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="k">nullptr</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">vkEnumerateInstanceVersion</span><span class="p">(</span><span class="o">&amp;</span><span class="n">vulkan_version</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">VkResult</span><span class="o">::</span><span class="n">VK_SUCCESS</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="n">vulkan_version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_MAKE_API_VERSION</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">VkInstance</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_NULL_HANDLE</span><span class="p">;</span>
+
+<span class="n">VkApplicationInfo</span><span class="w"> </span><span class="n">application_info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
+<span class="n">application_info</span><span class="p">.</span><span class="n">sType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VkStructureType</span><span class="o">::</span><span class="n">VK_STRUCTURE_TYPE_APPLICATION_INFO</span><span class="p">;</span>
+<span class="n">application_info</span><span class="p">.</span><span class="n">pNext</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="n">application_info</span><span class="p">.</span><span class="n">pApplicationName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="n">application_info</span><span class="p">.</span><span class="n">applicationVersion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="n">application_info</span><span class="p">.</span><span class="n">pEngineName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="n">application_info</span><span class="p">.</span><span class="n">engineVersion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="n">application_info</span><span class="p">.</span><span class="n">apiVersion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vulkan_version</span><span class="p">;</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*&gt;</span><span class="w"> </span><span class="n">enable_layer_names</span><span class="p">;</span>
+<span class="cp">#if defined(_DEBUG) || defined(NDEBUG)</span>
+<span class="n">enable_layer_names</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="s">&quot;VK_LAYER_KHRONOS_validation&quot;</span><span class="p">);</span>
+<span class="cp">#endif</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*&gt;</span><span class="w"> </span><span class="n">enable_extension_names</span><span class="p">;</span>
+<span class="n">enable_extension_names</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="s">&quot;VK_KHR_surface&quot;</span><span class="p">);</span>
+<span class="cp">#if defined(_WIN16) || defined(_WIN32) || defined(_WIN64) </span><span class="c1">// Windows</span>
+<span class="n">enable_extension_names</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="s">&quot;VK_KHR_win32_surface&quot;</span><span class="p">);</span>
+<span class="cp">#elif defined(VK_USE_PLATFORM_OHOS) </span><span class="c1">// 开源鸿蒙</span>
+<span class="n">enable_extension_names</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="s">&quot;VK_OHOS_surface&quot;</span><span class="p">);</span>
+<span class="cp">#elif 其他平台...</span>
+<span class="cp">#endif</span>
+
+<span class="n">VkInstanceCreateInfo</span><span class="w"> </span><span class="n">instance_create_info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
+<span class="n">instance_create_info</span><span class="p">.</span><span class="n">sType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VkStructureType</span><span class="o">::</span><span class="n">VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO</span><span class="p">;</span>
+<span class="n">instance_create_info</span><span class="p">.</span><span class="n">pNext</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="n">instance_create_info</span><span class="p">.</span><span class="n">flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="n">instance_create_info</span><span class="p">.</span><span class="n">pApplicationInfo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">application_info</span><span class="p">;</span>
+<span class="n">instance_create_info</span><span class="p">.</span><span class="n">enabledLayerCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">enable_layer_names</span><span class="p">.</span><span class="n">size</span><span class="p">();</span>
+<span class="n">instance_create_info</span><span class="p">.</span><span class="n">ppEnabledLayerNames</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">enable_layer_names</span><span class="p">.</span><span class="n">data</span><span class="p">();</span>
+<span class="n">instance_create_info</span><span class="p">.</span><span class="n">enabledExtensionCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">enable_extension_names</span><span class="p">.</span><span class="n">size</span><span class="p">();</span>
+<span class="n">instance_create_info</span><span class="p">.</span><span class="n">ppEnabledExtensionNames</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">enable_extension_names</span><span class="p">.</span><span class="n">data</span><span class="p">();</span>
+
+<span class="n">VkResult</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vkCreateInstance</span><span class="p">(</span><span class="o">&amp;</span><span class="n">instance_create_info</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">instance</span><span class="p">);</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">result</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">VK_SUCCESS</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="s">&quot;VkInstance 创建失败&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">//缤纷绚丽的 Vulkan 程序 ...</span>
+
+<span class="n">vkDestroyInstance</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+</pre></div>
+</div>
 </section>
 </section>
 
@@ -646,6 +729,11 @@
 <li><a class="reference internal" href="#vkextensionproperties">VkExtensionProperties</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#id3">销毁 VkInstance</a><ul>
+<li><a class="reference internal" href="#vkdestroyinstance">vkDestroyInstance</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id4">示例</a></li>
 </ul>
 </li>
 </ul>
