@@ -13,6 +13,7 @@
    * 2024/2/2 增加 ``VkPhysicalDeviceType`` 章节。
    * 2024/2/2 增加 ``VkPhysicalDeviceLimits`` 章节。
    * 2024/2/2 增加 ``VkPhysicalDeviceSparseProperties`` 章节。
+   * 2024/2/2 增加 ``示例`` 章节。
 
 一台主机上可能插着多个支持 ``Vulkan`` 的物理设备，为此 ``Vulkan`` 提供列举出系统中支持 ``Vulkan`` 的所有物理设备功能，开发者可通过 ``vkEnumeratePhysicalDevices(...)`` 函数进行物理设备列举。其定义如下：
 
@@ -139,13 +140,6 @@ VkPhysicalDeviceProperties
 
       IsLessEqualDeviceVulkanVersion--是-->ReturnValidAPI
       IsLessEqualDeviceVulkanVersion--否-->ReturnNullAPI
-
-..
-   VkPhysicalDeviceType                deviceType;
-   char                                deviceName[VK_MAX_PHYSICAL_DEVICE_NAME_SIZE];
-   uint8_t                             pipelineCacheUUID[VK_UUID_SIZE];
-   VkPhysicalDeviceLimits              limits;
-   VkPhysicalDeviceSparseProperties    sparseProperties;
 
 其中 ``VkPhysicalDeviceType`` 定义如下：
 
@@ -298,3 +292,38 @@ VkPhysicalDeviceSparseProperties
 
    将会在 ``稀疏`` 资源章节中进行讲解。
 
+示例
+#######
+
+.. code:: c++
+
+   VkInstance instance = 支持创建的 VkInstance;
+
+   uint32_t physical_device_count = 0;
+   vkEnumeratePhysicalDevices(instance, &physical_device_count, nullptr);
+
+   std::vector<VkPhysicalDevice> physical_devices(physical_device_count);
+   vkEnumeratePhysicalDevices(instance, &physical_device_count, physical_devices.data());
+
+   VkPhysicalDevice target_physical_device = VK_NULL_HANDLE;
+
+   for(VkPhysicalDevice& physical_device : physical_devices)
+   {
+      VkPhysicalDeviceProperties physical_device_properties = {};
+      vkGetPhysicalDeviceProperties(physical_device, &physical_device_properties);
+
+      if(physical_device_properties.deviceType == VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
+      {
+         target_physical_device = physical_device;
+         break;
+      }
+      else if(physical_device_properties.deviceType == VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU)
+      {
+         target_physical_device = physical_device;
+      }
+   }
+
+   if(target_physical_device == VK_NULL_HANDLE)
+   {
+      throw std::runtime_error("没有找到合适的物理设备");
+   }
