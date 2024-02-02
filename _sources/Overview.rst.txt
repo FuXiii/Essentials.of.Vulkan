@@ -915,7 +915,7 @@ VkPhysicalDeviceProperties
 * :bdg-secondary:`deviceType` 设备类型。
 * :bdg-secondary:`deviceName` 设备名称。
 * :bdg-secondary:`pipelineCacheUUID` 设备的通用唯一识别码（ ``universally unique identifier`` ）。
-* :bdg-secondary:`limits` 设备的限值信息。
+* :bdg-secondary:`limits` 设备的限制信息。
 * :bdg-secondary:`sparseProperties` 稀疏数据属性。
 
 .. admonition:: 稀疏

@@ -285,6 +285,11 @@
 <li><p class="sd-card-text">2024/1/2 增加该文档。</p></li>
 <li><p class="sd-card-text">2024/2/2 更新该文档。</p></li>
 <li><p class="sd-card-text">2024/2/2 增加 <code class="docutils literal notranslate"><span class="pre">vkEnumeratePhysicalDevices</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/2/2 增加 <code class="docutils literal notranslate"><span class="pre">获取物理设备信息</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/2/2 增加 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceProperties</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/2/2 增加 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceType</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/2/2 增加 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceLimits</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/2/2 增加 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceSparseProperties</span></code> 章节。</p></li>
 </ul>
 </div>
 </details><p>一台主机上可能插着多个支持 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的物理设备，为此 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 提供列举出系统中支持 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的所有物理设备功能，开发者可通过 <code class="docutils literal notranslate"><span class="pre">vkEnumeratePhysicalDevices(...)</span></code> 函数进行物理设备列举。其定义如下：</p>
@@ -326,6 +331,226 @@
 <p>枚举的 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDevice</span></code> 句柄是在调用 <code class="docutils literal notranslate"><span class="pre">vkCreateInstance(...)</span></code> 创建 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 时驱动内部创建的。换句话说就是：
 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDevice</span></code> 句柄的声明周期与 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 相同， <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 创建 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDevice</span></code> 句柄们也会创建， <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 销毁 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDevice</span></code> 句柄们也会销毁。</p>
 </div>
+</section>
+<section id="id2">
+<h2>获取物理设备信息<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<p>在通过 <code class="docutils literal notranslate"><span class="pre">vkEnumeratePhysicalDevices(...)</span></code> 获取系统中支持的物理设备句柄后，我们需要筛选出我们需要的物理设备，比如，相比于使用集成显卡，我们往往倾向于使用性能更强悍的独立显卡。</p>
+<p>我们可以通过 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceProperties(...)</span></code> 函数获取物理设备信息：</p>
+<section id="vkgetphysicaldeviceproperties">
+<h3>vkGetPhysicalDeviceProperties<a class="headerlink" href="#vkgetphysicaldeviceproperties" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">vkGetPhysicalDeviceProperties</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkPhysicalDevice</span><span class="w">                            </span><span class="n">physicalDevice</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkPhysicalDeviceProperties</span><span class="o">*</span><span class="w">                 </span><span class="n">pProperties</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">physicalDevice</span> 对应要获取属性的物理设备的句柄。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pProperties</span> 对应返回的物理设备属性。</p></li>
+</ul>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceProperties</span></code> 定义如下：</p>
+</section>
+<section id="vkphysicaldeviceproperties">
+<h3>VkPhysicalDeviceProperties<a class="headerlink" href="#vkphysicaldeviceproperties" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkPhysicalDeviceProperties</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                            </span><span class="n">apiVersion</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                            </span><span class="n">driverVersion</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                            </span><span class="n">vendorID</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                            </span><span class="n">deviceID</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkPhysicalDeviceType</span><span class="w">                </span><span class="n">deviceType</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">char</span><span class="w">                                </span><span class="n">deviceName</span><span class="p">[</span><span class="n">VK_MAX_PHYSICAL_DEVICE_NAME_SIZE</span><span class="p">];</span>
+<span class="w">    </span><span class="kt">uint8_t</span><span class="w">                             </span><span class="n">pipelineCacheUUID</span><span class="p">[</span><span class="n">VK_UUID_SIZE</span><span class="p">];</span>
+<span class="w">    </span><span class="n">VkPhysicalDeviceLimits</span><span class="w">              </span><span class="n">limits</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkPhysicalDeviceSparseProperties</span><span class="w">    </span><span class="n">sparseProperties</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkPhysicalDeviceProperties</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">apiVersion</span> 该设备驱动支持的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">driverVersion</span> 该设备驱动版本。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">vendorID</span> 设备供应商的 <code class="docutils literal notranslate"><span class="pre">ID</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">deviceID</span> 设备的 <code class="docutils literal notranslate"><span class="pre">ID</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">deviceType</span> 设备类型。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">deviceName</span> 设备名称。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pipelineCacheUUID</span> 设备的通用唯一识别码（ <code class="docutils literal notranslate"><span class="pre">universally</span> <span class="pre">unique</span> <span class="pre">identifier</span></code> ）。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">limits</span> 设备的限制信息。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sparseProperties</span> 稀疏数据属性。</p></li>
+</ul>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">apiVersion</span></code> 是最为 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">重要</span> 的参数，该参数表明该设备支持的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 最高版本。该版本与 <code class="docutils literal notranslate"><span class="pre">VkApplicationInfo::apiVersion</span></code> 中的版本类似，您只能获取到 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceProperties::apiVersion</span></code> 版本及之前版本 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 对应的 <code class="docutils literal notranslate"><span class="pre">Device</span> <span class="pre">域函数</span></code> 。</p>
+<p>所以能够获取到的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 函数逻辑如下：</p>
+<div class="mermaid">
+            flowchart TD
+   VulkanAPI[&quot;Vulkan 某一个函数&quot;]
+   IsLessEqualInstanceVulkanVersion{&quot;小于等于 VkApplicationInfo::apiVersion 版本&quot;}
+   IsInstanceAPI{&quot;为 Instance/PhysicalDevice 域函数&quot;}
+   IsDeviceAPI{&quot;为 Device 域函数&quot;}
+   IsLessEqualDeviceVulkanVersion{&quot;小于等于 VkPhysicalDeviceProperties::apiVersion 版本&quot;}
+
+   ReturnValidAPI[&quot;返回有效API&quot;]
+   ReturnNullAPI[&quot;返回无效API\n（nullptr）&quot;]
+
+   VulkanAPI--&gt;IsLessEqualInstanceVulkanVersion
+   IsLessEqualInstanceVulkanVersion--是--&gt;IsInstanceAPI
+   IsLessEqualInstanceVulkanVersion--否--&gt;ReturnNullAPI
+
+   IsInstanceAPI--是--&gt;ReturnValidAPI
+   IsInstanceAPI--否--&gt;IsDeviceAPI
+
+   IsDeviceAPI--是--&gt;IsLessEqualDeviceVulkanVersion
+   IsDeviceAPI--否--&gt;Undefine[&quot;未定义\n一个函数不可能 既不是 Instance/PhysicalDevice 域函数也不是 Device 域函数&quot;]
+
+   IsLessEqualDeviceVulkanVersion--是--&gt;ReturnValidAPI
+   IsLessEqualDeviceVulkanVersion--否--&gt;ReturnNullAPI
+        </div><p>其中 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceType</span></code> 定义如下：</p>
+</section>
+<section id="vkphysicaldevicetype">
+<h3>VkPhysicalDeviceType<a class="headerlink" href="#vkphysicaldevicetype" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkPhysicalDeviceType</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VK_PHYSICAL_DEVICE_TYPE_OTHER</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_PHYSICAL_DEVICE_TYPE_CPU</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkPhysicalDeviceType</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_PHYSICAL_DEVICE_TYPE_OTHER</span> 该设备类型不与任何其他类型匹配， <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中未定义的设备类型。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU</span> 集成显卡。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU</span> 独立显卡。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU</span> 虚拟环境中的虚拟显卡。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_PHYSICAL_DEVICE_TYPE_CPU</span> 中央处理器（ <code class="docutils literal notranslate"><span class="pre">CPU</span></code> ）。</p></li>
+</ul>
+<p>一般首选使用 <code class="docutils literal notranslate"><span class="pre">VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU</span></code> 独立显卡，之后再考虑使用 <code class="docutils literal notranslate"><span class="pre">VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU</span></code> 集成显卡。</p>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceLimits</span></code> 用于表述该设备的一些限制，比如最大支持的图片像素大小。</p>
+</section>
+<section id="vkphysicaldevicelimits">
+<h3>VkPhysicalDeviceLimits<a class="headerlink" href="#vkphysicaldevicelimits" title="Link to this heading">#</a></h3>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>由于该结构体中有很多还没有涉及到的知识，并且成员过多，所以这里只给出定义。用户只需要知道该结构体中存有物理设备的上限信息即可。</p>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkPhysicalDeviceLimits</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxImageDimension1D</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxImageDimension2D</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxImageDimension3D</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxImageDimensionCube</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxImageArrayLayers</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxTexelBufferElements</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxUniformBufferRange</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxStorageBufferRange</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxPushConstantsSize</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxMemoryAllocationCount</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxSamplerAllocationCount</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkDeviceSize</span><span class="w">          </span><span class="n">bufferImageGranularity</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkDeviceSize</span><span class="w">          </span><span class="n">sparseAddressSpaceSize</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxBoundDescriptorSets</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxPerStageDescriptorSamplers</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxPerStageDescriptorUniformBuffers</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxPerStageDescriptorStorageBuffers</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxPerStageDescriptorSampledImages</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxPerStageDescriptorStorageImages</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxPerStageDescriptorInputAttachments</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxPerStageResources</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxDescriptorSetSamplers</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxDescriptorSetUniformBuffers</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxDescriptorSetUniformBuffersDynamic</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxDescriptorSetStorageBuffers</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxDescriptorSetStorageBuffersDynamic</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxDescriptorSetSampledImages</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxDescriptorSetStorageImages</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxDescriptorSetInputAttachments</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxVertexInputAttributes</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxVertexInputBindings</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxVertexInputAttributeOffset</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxVertexInputBindingStride</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxVertexOutputComponents</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxTessellationGenerationLevel</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxTessellationPatchSize</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxTessellationControlPerVertexInputComponents</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxTessellationControlPerVertexOutputComponents</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxTessellationControlPerPatchOutputComponents</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxTessellationControlTotalOutputComponents</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxTessellationEvaluationInputComponents</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxTessellationEvaluationOutputComponents</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxGeometryShaderInvocations</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxGeometryInputComponents</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxGeometryOutputComponents</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxGeometryOutputVertices</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxGeometryTotalOutputComponents</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxFragmentInputComponents</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxFragmentOutputAttachments</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxFragmentDualSrcAttachments</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxFragmentCombinedOutputResources</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxComputeSharedMemorySize</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxComputeWorkGroupCount</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxComputeWorkGroupInvocations</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxComputeWorkGroupSize</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">subPixelPrecisionBits</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">subTexelPrecisionBits</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">mipmapPrecisionBits</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxDrawIndexedIndexValue</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxDrawIndirectCount</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">float</span><span class="w">                 </span><span class="n">maxSamplerLodBias</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">float</span><span class="w">                 </span><span class="n">maxSamplerAnisotropy</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxViewports</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxViewportDimensions</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<span class="w">    </span><span class="kt">float</span><span class="w">                 </span><span class="n">viewportBoundsRange</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">viewportSubPixelBits</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">size_t</span><span class="w">                </span><span class="n">minMemoryMapAlignment</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkDeviceSize</span><span class="w">          </span><span class="n">minTexelBufferOffsetAlignment</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkDeviceSize</span><span class="w">          </span><span class="n">minUniformBufferOffsetAlignment</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkDeviceSize</span><span class="w">          </span><span class="n">minStorageBufferOffsetAlignment</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int32_t</span><span class="w">               </span><span class="n">minTexelOffset</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxTexelOffset</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int32_t</span><span class="w">               </span><span class="n">minTexelGatherOffset</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxTexelGatherOffset</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">float</span><span class="w">                 </span><span class="n">minInterpolationOffset</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">float</span><span class="w">                 </span><span class="n">maxInterpolationOffset</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">subPixelInterpolationOffsetBits</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxFramebufferWidth</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxFramebufferHeight</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxFramebufferLayers</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkSampleCountFlags</span><span class="w">    </span><span class="n">framebufferColorSampleCounts</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkSampleCountFlags</span><span class="w">    </span><span class="n">framebufferDepthSampleCounts</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkSampleCountFlags</span><span class="w">    </span><span class="n">framebufferStencilSampleCounts</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkSampleCountFlags</span><span class="w">    </span><span class="n">framebufferNoAttachmentsSampleCounts</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxColorAttachments</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkSampleCountFlags</span><span class="w">    </span><span class="n">sampledImageColorSampleCounts</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkSampleCountFlags</span><span class="w">    </span><span class="n">sampledImageIntegerSampleCounts</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkSampleCountFlags</span><span class="w">    </span><span class="n">sampledImageDepthSampleCounts</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkSampleCountFlags</span><span class="w">    </span><span class="n">sampledImageStencilSampleCounts</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkSampleCountFlags</span><span class="w">    </span><span class="n">storageImageSampleCounts</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxSampleMaskWords</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkBool32</span><span class="w">              </span><span class="n">timestampComputeAndGraphics</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">float</span><span class="w">                 </span><span class="n">timestampPeriod</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxClipDistances</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxCullDistances</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">maxCombinedClipAndCullDistances</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">              </span><span class="n">discreteQueuePriorities</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">float</span><span class="w">                 </span><span class="n">pointSizeRange</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<span class="w">    </span><span class="kt">float</span><span class="w">                 </span><span class="n">lineWidthRange</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<span class="w">    </span><span class="kt">float</span><span class="w">                 </span><span class="n">pointSizeGranularity</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">float</span><span class="w">                 </span><span class="n">lineWidthGranularity</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkBool32</span><span class="w">              </span><span class="n">strictLines</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkBool32</span><span class="w">              </span><span class="n">standardSampleLocations</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkDeviceSize</span><span class="w">          </span><span class="n">optimalBufferCopyOffsetAlignment</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkDeviceSize</span><span class="w">          </span><span class="n">optimalBufferCopyRowPitchAlignment</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkDeviceSize</span><span class="w">          </span><span class="n">nonCoherentAtomSize</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkPhysicalDeviceLimits</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<section id="vkphysicaldevicesparseproperties">
+<h3>VkPhysicalDeviceSparseProperties<a class="headerlink" href="#vkphysicaldevicesparseproperties" title="Link to this heading">#</a></h3>
+<div class="note admonition">
+<p class="admonition-title">VkPhysicalDeviceSparseProperties</p>
+<p>将会在 <code class="docutils literal notranslate"><span class="pre">稀疏</span></code> 资源章节中进行讲解。</p>
+</div>
+</section>
 </section>
 </section>
 
@@ -405,6 +630,14 @@
             <ul>
 <li><a class="reference internal" href="#">物理设备</a><ul>
 <li><a class="reference internal" href="#vkenumeratephysicaldevices">vkEnumeratePhysicalDevices</a></li>
+<li><a class="reference internal" href="#id2">获取物理设备信息</a><ul>
+<li><a class="reference internal" href="#vkgetphysicaldeviceproperties">vkGetPhysicalDeviceProperties</a></li>
+<li><a class="reference internal" href="#vkphysicaldeviceproperties">VkPhysicalDeviceProperties</a></li>
+<li><a class="reference internal" href="#vkphysicaldevicetype">VkPhysicalDeviceType</a></li>
+<li><a class="reference internal" href="#vkphysicaldevicelimits">VkPhysicalDeviceLimits</a></li>
+<li><a class="reference internal" href="#vkphysicaldevicesparseproperties">VkPhysicalDeviceSparseProperties</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -426,6 +659,8 @@
     <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
     <script src="_static/translations.js?v=beaddf03"></script>
     <script src="_static/design-tabs.js?v=36754332"></script>
+    <script src="https://unpkg.com/mermaid@10.2.0/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
     <script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
     </body>
 </html>
