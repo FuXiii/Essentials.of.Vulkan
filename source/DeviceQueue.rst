@@ -70,7 +70,14 @@ VkQueueFamilyProperties
        VkExtent3D      minImageTransferGranularity;
    } VkQueueFamilyProperties;
 
-* :bdg-secondary:`queueFlags` 。
-* :bdg-secondary:`queueCount` 。
-* :bdg-secondary:`timestampValidBits` 。
-* :bdg-secondary:`minImageTransferGranularity` 。
+* :bdg-secondary:`queueFlags` 为队列族位域，用于描述该队列族支持的功能。
+* :bdg-secondary:`queueCount` 该队列族中的队列数量。
+* :bdg-secondary:`timestampValidBits` 时间戳中有效的位数，有效的位数范围为 ``36`` 到 ``64`` 位，如果为 ``0`` 说明不支持时间戳。超出有效范围的位保证为 ``0`` 。
+* :bdg-secondary:`minImageTransferGranularity` 在该族队列上进行图片转移操作时支持的最小转移粒度（大小）。
+
+``Vulkan`` 将设备队列按照队列族的方式组织，组织方式有如下特点：
+
+* 一个队列族可以支持一到多个功能。
+* 一个队列族中包含一个或多个队列。
+* 同一个队列族中的所有队列支持相同的功能。
+* 队列族之间可以有相同的功能，但队列族之间的功能两两不能完全相同。
