@@ -453,6 +453,8 @@
 <li><p class="sd-card-text">2024/1/20 增加 <code class="docutils literal notranslate"><span class="pre">VkFenceCreateInfo</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/1/20 增加 <code class="docutils literal notranslate"><span class="pre">等待栏栅</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/1/20 增加 <code class="docutils literal notranslate"><span class="pre">vkWaitForFences</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/2/4 增加 <code class="docutils literal notranslate"><span class="pre">VkInstanceCreateFlags</span></code> 章节。并增加 <code class="docutils literal notranslate"><span class="pre">VkFlags</span> <span class="pre">与</span> <span class="pre">位域</span></code> 说明。</p></li>
+<li><p class="sd-card-text">2024/2/4 更新 <code class="docutils literal notranslate"><span class="pre">VkQueueFlags</span></code> 章节。将其中的 <code class="docutils literal notranslate"><span class="pre">VkFlags</span></code> 说明转移至 <code class="docutils literal notranslate"><span class="pre">VkInstanceCreateFlags</span></code> 章节的 <code class="docutils literal notranslate"><span class="pre">VkFlags</span> <span class="pre">与</span> <span class="pre">位域</span></code> 说明中。</p></li>
 </ul>
 </div>
 </details><p>由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 比较复杂，为了更好的入门 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> ，还是大致过一遍 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的核心思路，这对以后的学习很有帮助。</p>
@@ -914,6 +916,84 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">VkInstanceCreateFlags</span></code> 定义入下：</p>
+</section>
+<section id="vkinstancecreateflags">
+<h4>VkInstanceCreateFlags<a class="headerlink" href="#vkinstancecreateflags" title="Link to this heading">#</a></h4>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="n">VkFlags</span><span class="w"> </span><span class="n">VkInstanceCreateFlags</span><span class="p">;</span>
+</pre></div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">VkFlags</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>从定义可知 <code class="docutils literal notranslate"><span class="pre">VkFlags</span></code> 是一个 <code class="docutils literal notranslate"><span class="pre">32</span></code> 为无符号整数。</p>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">VkInstanceCreateFlags</span></code> 可以设置的有效值定义在了 <code class="docutils literal notranslate"><span class="pre">VkInstanceCreateFlagBits</span></code> 中，如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkInstanceCreateFlagBits</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// 由 VK_KHR_portability_enumeration 扩展提供</span>
+<span class="w">    </span><span class="n">VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000001</span><span class="p">,</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkInstanceCreateFlagBits</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR</span></code> 只有在开启 <code class="docutils literal notranslate"><span class="pre">VK_KHR_portability_enumeration</span></code> 扩展后才能使用，这里可以忽略。这里引出 <code class="docutils literal notranslate"><span class="pre">VkInstanceCreateFlagBits</span></code> 是想说明如下问题：</p>
+<ul class="simple">
+<li><p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中提供了各种各样的 <code class="docutils literal notranslate"><span class="pre">VkFlags</span></code> 的 <code class="docutils literal notranslate"><span class="pre">typedef</span> <span class="pre">Vk{标志位类型名称}Flags</span></code> 别名，用于配置各种额外信息。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Vk{标志位类型名称}Flags</span></code> 中可用的值都对应定义在 <code class="docutils literal notranslate"><span class="pre">Vk{标志位类型名称}FlagBits</span></code> 枚举类型中。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">VkFlags</span></code> 为 <code class="docutils literal notranslate"><span class="pre">32</span></code> 位无符号整型，可以存储 <code class="docutils literal notranslate"><span class="pre">32</span></code> 个比特位。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Vk{标志位类型名称}FlagBits</span></code> 中定义了每个比特位所对应的含义。</p></li>
+</ul>
+<div class="note admonition">
+<p class="admonition-title">VkFlags 与 位域</p>
+<p>像 <code class="docutils literal notranslate"><span class="pre">VkFlags</span></code> 这样的使用比特位存储数据的形式叫做 <code class="docutils literal notranslate"><span class="pre">位域</span></code> 或 <code class="docutils literal notranslate"><span class="pre">标志位</span></code> 。每一位都代表某个特殊含义。而 <code class="docutils literal notranslate"><span class="pre">Vk{标志位类型名称}FlagBits</span></code> 中恰恰定义了每一位，所以其中的每一个枚举值必须为 <span class="math notranslate nohighlight">\(2^n\)</span> 。</p>
+<p>像 <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code> ，其比特位有 <code class="docutils literal notranslate"><span class="pre">32</span></code> 个，如果某一比特位为 <code class="docutils literal notranslate"><span class="pre">1</span></code> 则说明对应的位域被激活，也就是对应位域表示的事物被激活。比如：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">LIKE_CAT_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x1</span><span class="p">;</span><span class="w"> </span><span class="c1">//对应的二进制：01</span>
+<span class="kt">uint32_t</span><span class="w"> </span><span class="n">LIKE_DOG_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x2</span><span class="p">;</span><span class="w"> </span><span class="c1">//对应的二进制：10</span>
+
+<span class="kt">uint32_t</span><span class="w"> </span><span class="n">likes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">某人的喜好</span><span class="p">;</span>
+
+<span class="k">if</span><span class="p">(</span><span class="n">likes</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="c1">//什么也不喜欢</span>
+<span class="k">if</span><span class="p">((</span><span class="n">likes</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">LIKE_CAT_BI</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">LIKE_CAT_BIT</span><span class="p">)</span><span class="w"> </span><span class="c1">//喜欢猫</span>
+<span class="k">if</span><span class="p">((</span><span class="n">likes</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">LIKE_DOG_BIT</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">LIKE_DOG_BIT</span><span class="p">)</span><span class="w"> </span><span class="c1">//喜欢狗</span>
+<span class="k">if</span><span class="p">((</span><span class="n">likes</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">LIKE_CAT_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">LIKE_DOG_BIT</span><span class="p">))</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="p">(</span><span class="n">LIKE_CAT_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">LIKE_DOG_BIT</span><span class="p">))</span><span class="w"> </span><span class="c1">//既喜欢猫，也喜欢狗</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中的标志位也沿用了这套方式，比如 <code class="docutils literal notranslate"><span class="pre">VkColorComponentFlags</span></code> 颜色通道标志字段：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="n">VkFlags</span><span class="w"> </span><span class="n">VkColorComponentFlags</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>可用的位域定义在了 <code class="docutils literal notranslate"><span class="pre">VkColorComponentFlagBits</span></code> 中，如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkColorComponentFlagBits</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VK_COLOR_COMPONENT_R_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000001</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_COLOR_COMPONENT_G_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000002</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_COLOR_COMPONENT_B_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000004</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_COLOR_COMPONENT_A_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000008</span><span class="p">,</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkColorComponentFlagBits</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_COLOR_COMPONENT_R_BIT</span> 红色通道。十六进制为 <code class="docutils literal notranslate"><span class="pre">0x1</span></code> ，对应的二进制为 <code class="docutils literal notranslate"><span class="pre">0001</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_COLOR_COMPONENT_G_BIT</span> 绿色通道。十六进制为 <code class="docutils literal notranslate"><span class="pre">0x2</span></code> ，对应的二进制为 <code class="docutils literal notranslate"><span class="pre">0010</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_COLOR_COMPONENT_B_BIT</span> 蓝色通道。十六进制为 <code class="docutils literal notranslate"><span class="pre">0x4</span></code> ，对应的二进制为 <code class="docutils literal notranslate"><span class="pre">0100</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_COLOR_COMPONENT_A_BIT</span> 透明通道。十六进制为 <code class="docutils literal notranslate"><span class="pre">0x8</span></code> ，对应的二进制为 <code class="docutils literal notranslate"><span class="pre">1000</span></code> 。</p></li>
+</ul>
+<p>在位域中一般直接使用 <code class="docutils literal notranslate"><span class="pre">位</span></code> 操作符，也就是与、或、非、异或。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkColorComponentFlags</span><span class="w"> </span><span class="n">color_component_flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="n">color_component_flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_COLOR_COMPONENT_R_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_COLOR_COMPONENT_G_BIT</span><span class="p">;</span><span class="w"> </span><span class="c1">// 表示开启红色和绿色通道</span>
+<span class="n">color_component_flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_COLOR_COMPONENT_R_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_COLOR_COMPONENT_G_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_COLOR_COMPONENT_B_BIT</span><span class="p">;</span><span class="w"> </span><span class="c1">// 表示开启红色、绿色和蓝色通道</span>
+<span class="n">color_component_flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_COLOR_COMPONENT_R_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_COLOR_COMPONENT_G_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_COLOR_COMPONENT_B_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_COLOR_COMPONENT_A_BIT</span><span class="p">;</span><span class="w"> </span><span class="c1">// 表示开启红色、绿色、蓝色和透明通道</span>
+
+<span class="kt">bool</span><span class="w"> </span><span class="n">is_open_r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">color_component_flags</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">VK_COLOR_COMPONENT_R_BIT</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">VK_COLOR_COMPONENT_R_BIT</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nb">true</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="kt">bool</span><span class="w"> </span><span class="n">is_open_g</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">color_component_flags</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">VK_COLOR_COMPONENT_G_BIT</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">VK_COLOR_COMPONENT_G_BIT</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nb">true</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="kt">bool</span><span class="w"> </span><span class="n">is_open_b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">color_component_flags</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">VK_COLOR_COMPONENT_B_BIT</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">VK_COLOR_COMPONENT_B_BIT</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nb">true</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="kt">bool</span><span class="w"> </span><span class="n">is_open_a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">color_component_flags</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">VK_COLOR_COMPONENT_A_BIT</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">VK_COLOR_COMPONENT_A_BIT</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nb">true</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>这样就可以使用一个 <code class="docutils literal notranslate"><span class="pre">32</span></code> 位整数的每一位，表示不同的含义。最直接的好处就是节省内存。</p>
+</div>
 </section>
 <section id="vkapplicationinfo">
 <h4>VkApplicationInfo<a class="headerlink" href="#vkapplicationinfo" title="Link to this heading">#</a></h4>
@@ -1268,30 +1348,10 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </section>
 <section id="vkqueueflags">
 <h4>VkQueueFlags<a class="headerlink" href="#vkqueueflags" title="Link to this heading">#</a></h4>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">VkFlags</span><span class="p">;</span>
-<span class="k">typedef</span><span class="w"> </span><span class="n">VkFlags</span><span class="w"> </span><span class="n">VkQueueFlags</span><span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="n">VkFlags</span><span class="w"> </span><span class="n">VkQueueFlags</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>可以看到 <code class="docutils literal notranslate"><span class="pre">VkQueueFlags</span></code> 其实就是一个 <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code> 的标志位。</p>
-<div class="note admonition">
-<p class="admonition-title">VkFlags</p>
-<p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中所有的标志位 <code class="docutils literal notranslate"><span class="pre">Vk{标志位名称}Flags</span></code> 都为 <code class="docutils literal notranslate"><span class="pre">VkFlags</span></code> 也就是 <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code> 。每一位对应的含义都在对应的 <code class="docutils literal notranslate"><span class="pre">Vk{标志位名称}FlagBits</span></code> 枚举中定义。</p>
-</div>
-<div class="note admonition">
-<p class="admonition-title">标志位与位域</p>
-<p>所谓标志位，也就是位域。像 <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code> 其比特位有 <code class="docutils literal notranslate"><span class="pre">32</span></code> 个，如果某一比特位为 <code class="docutils literal notranslate"><span class="pre">1</span></code> 则说明对应的位域被激活，也就是对应位域表示的事物被激活。比如：</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">LIKE_CAT_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000001</span><span class="p">;</span><span class="w"> </span><span class="c1">//对应的二进制：0000 0000 0000 0000 0000 0000 0000 0001</span>
-<span class="kt">uint32_t</span><span class="w"> </span><span class="n">LIKE_DOG_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000002</span><span class="p">;</span><span class="w"> </span><span class="c1">//对应的二进制：0000 0000 0000 0000 0000 0000 0000 0010</span>
-
-<span class="kt">uint32_t</span><span class="w"> </span><span class="n">likes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">某人的喜好</span><span class="p">;</span>
-
-<span class="k">if</span><span class="p">(</span><span class="n">likes</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="c1">//什么也不喜欢</span>
-<span class="k">if</span><span class="p">((</span><span class="n">likes</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">LIKE_CAT_BI</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">LIKE_CAT_BIT</span><span class="p">)</span><span class="w"> </span><span class="c1">//喜欢猫</span>
-<span class="k">if</span><span class="p">((</span><span class="n">likes</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">LIKE_DOG_BIT</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">LIKE_DOG_BIT</span><span class="p">)</span><span class="w"> </span><span class="c1">//喜欢狗</span>
-<span class="k">if</span><span class="p">((</span><span class="n">likes</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">LIKE_CAT_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">LIKE_DOG_BIT</span><span class="p">))</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="p">(</span><span class="n">LIKE_CAT_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">LIKE_DOG_BIT</span><span class="p">))</span><span class="w"> </span><span class="c1">//既喜欢猫，也喜欢狗</span>
-</pre></div>
-</div>
-</div>
 <p><code class="docutils literal notranslate"><span class="pre">VkQueueFlags</span></code> 对应位域的 <code class="docutils literal notranslate"><span class="pre">VkQueueFlagBits</span></code> 定义如下:</p>
 </section>
 <section id="vkqueueflagbits">
@@ -3721,6 +3781,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <li><a class="reference internal" href="#vkinstance">创建 VkInstance</a><ul>
 <li><a class="reference internal" href="#vkcreateinstance">vkCreateInstance</a></li>
 <li><a class="reference internal" href="#vkinstancecreateinfo">VkInstanceCreateInfo</a></li>
+<li><a class="reference internal" href="#vkinstancecreateflags">VkInstanceCreateFlags</a></li>
 <li><a class="reference internal" href="#vkapplicationinfo">VkApplicationInfo</a></li>
 </ul>
 </li>

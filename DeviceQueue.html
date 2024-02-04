@@ -141,7 +141,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -266,7 +266,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
@@ -282,10 +282,134 @@
 <svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
 </summary><div class="sd-summary-content sd-card-body docutils">
 <ul class="simple">
-<li><p class="sd-card-text">2024/1/2 增加该文档</p></li>
+<li><p class="sd-card-text">2024/1/2 增加该文档。</p></li>
+<li><p class="sd-card-text">2024/2/3 更新该文档。</p></li>
+<li><p class="sd-card-text">2024/2/3 增加 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceQueueFamilyProperties</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/2/3 增加 <code class="docutils literal notranslate"><span class="pre">VkQueueFamilyProperties</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/2/4 更新 <code class="docutils literal notranslate"><span class="pre">VkQueueFamilyProperties</span></code> 章节。</p></li>
 </ul>
 </div>
-</details></section>
+</details><p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准中，物理设备在其内部为我们开放了一系列的 <code class="docutils literal notranslate"><span class="pre">工作队列</span></code> （设备队列），不同系列的工作队列会接收并执行不同的指令，并且会根据这些 <code class="docutils literal notranslate"><span class="pre">工作队列</span></code> 的特长（功能）进行分组（族）。可分为以下 <code class="docutils literal notranslate"><span class="pre">5</span></code> 种：</p>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">图形</span> 主要用于图形渲染，执行各种渲染绘制指令。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">计算</span> 主要用于执行并行计算（计算着色器），执行各种计算指令。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">转移</span> 主要用于执行资源的布局转移并支持在不同队列中进行转移，执行各种转移指令。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">稀疏绑定</span> 主要用于稀疏内存的管理。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">受保护</span> 主要用于受保护的内存的管理。</p></li>
+</ul>
+<div class="important admonition">
+<p class="admonition-title">重要</p>
+<p>一般 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">率先</span> 需要 <code class="docutils literal notranslate"><span class="pre">图形</span></code> 功能的队列。有如下几点原因：</p>
+<ul class="simple">
+<li><p>需要使用该队列进行图形渲染</p></li>
+<li><p>如果队列支持 <code class="docutils literal notranslate"><span class="pre">图形</span></code> 功能，则该队列默认也支持 <code class="docutils literal notranslate"><span class="pre">计算</span></code> 和 <code class="docutils literal notranslate"><span class="pre">转移</span></code> 功能。</p></li>
+</ul>
+</div>
+<p>我们可以通过 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceQueueFamilyProperties(...)</span></code> 函数获取设备队列（族）信息，其定义如下：</p>
+<section id="vkgetphysicaldevicequeuefamilyproperties">
+<h2>vkGetPhysicalDeviceQueueFamilyProperties<a class="headerlink" href="#vkgetphysicaldevicequeuefamilyproperties" title="Link to this heading">#</a></h2>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">vkGetPhysicalDeviceQueueFamilyProperties</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkPhysicalDevice</span><span class="w">                            </span><span class="n">physicalDevice</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="o">*</span><span class="w">                                   </span><span class="n">pQueueFamilyPropertyCount</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkQueueFamilyProperties</span><span class="o">*</span><span class="w">                    </span><span class="n">pQueueFamilyProperties</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">physicalDevice</span> 物理设备。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pQueueFamilyPropertyCount</span> 表示 <code class="docutils literal notranslate"><span class="pre">pQueueFamilyProperties</span></code> 中的元素个数。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pQueueFamilyProperties</span> 如果为 <code class="docutils literal notranslate"><span class="pre">nunllptr</span></code> ，将会向 <code class="docutils literal notranslate"><span class="pre">pQueueFamilyPropertyCount</span></code> 中写入 <code class="docutils literal notranslate"><span class="pre">physicalDevice</span></code> 中对外开放的设备队列数量。否则将会写入 <code class="docutils literal notranslate"><span class="pre">pQueueFamilyPropertyCount</span></code> 个设备队列族信息数据。</p></li>
+</ul>
+<p>为了获取设备队列信息，我们需要调用两次该函数，这与之前其他获取信息函数类似，不在过多赘述。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkPhysicalDevice</span><span class="w"> </span><span class="n">physical_device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前获取的物理设备</span><span class="p">;</span>
+
+<span class="kt">uint32_t</span><span class="w"> </span><span class="n">queue_family_property_count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="n">vkGetPhysicalDeviceQueueFamilyProperties</span><span class="p">(</span><span class="n">physical_device</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">queue_family_property_count</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">VkQueueFamilyProperties</span><span class="o">&gt;</span><span class="w"> </span><span class="n">queue_family_properties</span><span class="p">(</span><span class="n">queue_family_property_count</span><span class="p">);</span>
+<span class="n">vkGetPhysicalDeviceQueueFamilyProperties</span><span class="p">(</span><span class="n">physical_device</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">queue_family_property_count</span><span class="p">,</span><span class="w"> </span><span class="n">queue_family_properties</span><span class="p">.</span><span class="n">data</span><span class="p">());</span>
+</pre></div>
+</div>
+<p>该函数将物理设备的一系列设备队列（族）信息写入了 <code class="docutils literal notranslate"><span class="pre">VkQueueFamilyProperties</span></code> 类型数组当中，该类型定义如下：</p>
+</section>
+<section id="vkqueuefamilyproperties">
+<h2>VkQueueFamilyProperties<a class="headerlink" href="#vkqueuefamilyproperties" title="Link to this heading">#</a></h2>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkQueueFamilyProperties</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VkQueueFlags</span><span class="w">    </span><span class="n">queueFlags</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">        </span><span class="n">queueCount</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">        </span><span class="n">timestampValidBits</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkExtent3D</span><span class="w">      </span><span class="n">minImageTransferGranularity</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkQueueFamilyProperties</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">queueFlags</span> 为队列族位域，用于描述该队列族支持的功能。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">queueCount</span> 该队列族中的队列数量。最起码有 <code class="docutils literal notranslate"><span class="pre">1</span></code> 个， <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">不会</span> 返回 <code class="docutils literal notranslate"><span class="pre">0</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">timestampValidBits</span> 时间戳中有效的位数，有效的位数范围为 <code class="docutils literal notranslate"><span class="pre">36</span></code> 到 <code class="docutils literal notranslate"><span class="pre">64</span></code> 位，如果为 <code class="docutils literal notranslate"><span class="pre">0</span></code> 说明不支持时间戳。超出有效范围的位保证为 <code class="docutils literal notranslate"><span class="pre">0</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">minImageTransferGranularity</span> 在该族队列上进行图片转移操作时支持的最小转移粒度（大小）。</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 将设备队列按照队列族的方式组织，组织方式有如下特点：</p>
+<ul class="simple">
+<li><p>一个队列族可以支持一到多个功能。</p></li>
+<li><p>一个队列族中包含一个或多个队列。</p></li>
+<li><p>同一个队列族中的所有队列支持相同的功能。</p></li>
+<li><p>队列族之间可以有相同的功能，但队列族之间两两不能有完全相同的功能集。</p></li>
+</ul>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">VkQueueFlags</span></code> 可用的值定义在 <code class="docutils literal notranslate"><span class="pre">VkQueueFlagBits</span></code> 中，其定义如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkQueueFlagBits</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VK_QUEUE_GRAPHICS_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000001</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_QUEUE_COMPUTE_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000002</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_QUEUE_TRANSFER_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000004</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_QUEUE_SPARSE_BINDING_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000008</span><span class="p">,</span>
+<span class="w">  </span><span class="c1">// 由 VK_VERSION_1_1 提供</span>
+<span class="w">    </span><span class="n">VK_QUEUE_PROTECTED_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000010</span><span class="p">,</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkQueueFlagBits</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_QUEUE_GRAPHICS_BIT</span> 支持 <code class="docutils literal notranslate"><span class="pre">图形</span></code> 功能。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_QUEUE_COMPUTE_BIT</span> 支持 <code class="docutils literal notranslate"><span class="pre">计算</span></code> 功能。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_QUEUE_TRANSFER_BIT</span> 支持 <code class="docutils literal notranslate"><span class="pre">转移</span></code> 功能。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_QUEUE_SPARSE_BINDING_BIT</span> 支持 <code class="docutils literal notranslate"><span class="pre">稀疏绑定</span></code> 功能。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_QUEUE_PROTECTED_BIT</span> 支持 <code class="docutils literal notranslate"><span class="pre">受保护</span></code> 功能。</p></li>
+</ul>
+</section>
+<section id="id2">
+<h2>示例<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkPhysicalDevice</span><span class="w"> </span><span class="n">physical_device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前获取到的物理设备句柄</span><span class="p">;</span>
+
+<span class="kt">uint32_t</span><span class="w"> </span><span class="n">queue_family_count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="n">vkGetPhysicalDeviceQueueFamilyProperties</span><span class="p">(</span><span class="n">physical_device</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">queue_family_count</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">VkQueueFamilyProperties</span><span class="o">&gt;</span><span class="w"> </span><span class="n">queue_familys</span><span class="p">(</span><span class="n">queue_family_count</span><span class="p">);</span>
+<span class="n">vkGetPhysicalDeviceQueueFamilyProperties</span><span class="p">(</span><span class="n">physical_device</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">queue_family_count</span><span class="p">,</span><span class="w"> </span><span class="n">queue_familys</span><span class="p">.</span><span class="n">data</span><span class="p">());</span>
+
+<span class="kt">uint32_t</span><span class="w"> </span><span class="n">uint32_max</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">numeric_limits</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;::</span><span class="n">max</span><span class="p">();</span>
+<span class="kt">uint32_t</span><span class="w"> </span><span class="n">support_graphics_queue_family_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UINT32_MAX</span><span class="p">;</span>
+<span class="k">for</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">queue_family_count</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="n">index</span><span class="o">++</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">if</span><span class="p">((</span><span class="n">queue_familys</span><span class="p">[</span><span class="n">index</span><span class="p">].</span><span class="n">queueFlags</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">VkQueueFlagBits</span><span class="o">::</span><span class="n">VK_QUEUE_GRAPHICS_BIT</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">VkQueueFlagBits</span><span class="o">::</span><span class="n">VK_QUEUE_GRAPHICS_BIT</span><span class="p">)</span>
+<span class="w">   </span><span class="p">{</span>
+<span class="w">      </span><span class="c1">// 寻找支持图形的队列族</span>
+<span class="w">      </span><span class="n">support_graphics_queue_family_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">index</span><span class="p">;</span>
+<span class="w">      </span><span class="k">break</span><span class="p">;</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">if</span><span class="p">(</span><span class="n">support_graphics_queue_family_index</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">UINT32_MAX</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="s">&quot;没找到支持图形的队列族&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="important admonition">
+<p class="admonition-title">support_graphics_queue_family_index</p>
+<p>需要获取存储对应设备队列族在 <code class="docutils literal notranslate"><span class="pre">VkQueueFamilyProperties</span></code> 数组中的索引值，这会在之后创建  <a class="reference external" href="./LogicDevice.html">逻辑设备</a> 时指定设备队列时要用到。</p>
+</div>
+</section>
+</section>
 
         </article>
       </div>
@@ -349,8 +473,29 @@
 
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+
+<div class="toc-sticky toc-scroll" style="width: 500px;">
+    <div class="toc-title-container" style="width: 500px;">
+        <span class="toc-title" style="width: 500px;">
+            On this page
+        </span>
+    </div>
+    <div class="toc-tree-container" style="width: 500px;">
+        <div class="toc-tree" style="width: 500px;">
+            <ul>
+<li><a class="reference internal" href="#">设备队列</a><ul>
+<li><a class="reference internal" href="#vkgetphysicaldevicequeuefamilyproperties">vkGetPhysicalDeviceQueueFamilyProperties</a></li>
+<li><a class="reference internal" href="#vkqueuefamilyproperties">VkQueueFamilyProperties</a></li>
+<li><a class="reference internal" href="#id2">示例</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+    </div>
+</div>
 
 
     </aside>
