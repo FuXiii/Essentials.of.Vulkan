@@ -176,6 +176,8 @@
    * 2024/1/20 增加 ``VkFenceCreateInfo`` 章节。
    * 2024/1/20 增加 ``等待栏栅`` 章节。
    * 2024/1/20 增加 ``vkWaitForFences`` 章节。
+   * 2024/2/4 增加 ``VkInstanceCreateFlags`` 章节。并增加 ``VkFlags 与 位域`` 说明。
+   * 2024/2/4 更新 ``VkQueueFlags`` 章节。将其中的 ``VkFlags`` 说明转移至 ``VkInstanceCreateFlags`` 章节的 ``VkFlags 与 位域`` 说明中。
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -682,6 +684,99 @@ VkInstanceCreateInfo
          ...
       }
 
+其中 ``VkInstanceCreateFlags`` 定义入下：
+
+VkInstanceCreateFlags
+------------------------
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef VkFlags VkInstanceCreateFlags;
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef uint32_t VkFlags;
+
+从定义可知 ``VkFlags`` 是一个 ``32`` 为无符号整数。
+
+其中 ``VkInstanceCreateFlags`` 可以设置的有效值定义在了 ``VkInstanceCreateFlagBits`` 中，如下：
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef enum VkInstanceCreateFlagBits {
+     // 由 VK_KHR_portability_enumeration 扩展提供
+       VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR = 0x00000001,
+   } VkInstanceCreateFlagBits;
+
+其中 ``VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR`` 只有在开启 ``VK_KHR_portability_enumeration`` 扩展后才能使用，这里可以忽略。这里引出 ``VkInstanceCreateFlagBits`` 是想说明如下问题：
+
+* 在 ``Vulkan`` 中提供了各种各样的 ``VkFlags`` 的 ``typedef Vk{标志位类型名称}Flags`` 别名，用于配置各种额外信息。
+* ``Vk{标志位类型名称}Flags`` 中可用的值都对应定义在 ``Vk{标志位类型名称}FlagBits`` 枚举类型中。
+* ``VkFlags`` 为 ``32`` 位无符号整型，可以存储 ``32`` 个比特位。
+* ``Vk{标志位类型名称}FlagBits`` 中定义了每个比特位所对应的含义。
+
+.. admonition:: VkFlags 与 位域
+   :class: note
+
+   像 ``VkFlags`` 这样的使用比特位存储数据的形式叫做 ``位域`` 或 ``标志位`` 。每一位都代表某个特殊含义。而 ``Vk{标志位类型名称}FlagBits`` 中恰恰定义了每一位，所以其中的每一个枚举值必须为 :math:`2^n` 。
+   
+   像 ``uint32_t`` ，其比特位有 ``32`` 个，如果某一比特位为 ``1`` 则说明对应的位域被激活，也就是对应位域表示的事物被激活。比如：
+
+   .. code:: c++
+
+      uint32_t LIKE_CAT_BIT = 0x1; //对应的二进制：01
+      uint32_t LIKE_DOG_BIT = 0x2; //对应的二进制：10
+
+      uint32_t likes = 某人的喜好;
+
+      if(likes == 0) //什么也不喜欢
+      if((likes & LIKE_CAT_BI) == LIKE_CAT_BIT) //喜欢猫
+      if((likes & LIKE_DOG_BIT) == LIKE_DOG_BIT) //喜欢狗
+      if((likes & (LIKE_CAT_BIT | LIKE_DOG_BIT)) == (LIKE_CAT_BIT | LIKE_DOG_BIT)) //既喜欢猫，也喜欢狗
+   
+   ``Vulkan`` 中的标志位也沿用了这套方式，比如 ``VkColorComponentFlags`` 颜色通道标志字段：
+
+   .. code:: c++
+
+      // 由 VK_VERSION_1_0 提供
+      typedef VkFlags VkColorComponentFlags;
+
+   可用的位域定义在了 ``VkColorComponentFlagBits`` 中，如下：
+
+   .. code:: c++
+
+      // 由 VK_VERSION_1_0 提供
+      typedef enum VkColorComponentFlagBits {
+          VK_COLOR_COMPONENT_R_BIT = 0x00000001,
+          VK_COLOR_COMPONENT_G_BIT = 0x00000002,
+          VK_COLOR_COMPONENT_B_BIT = 0x00000004,
+          VK_COLOR_COMPONENT_A_BIT = 0x00000008,
+      } VkColorComponentFlagBits;
+
+   * :bdg-secondary:`VK_COLOR_COMPONENT_R_BIT` 红色通道。十六进制为 ``0x1`` ，对应的二进制为 ``0001`` 。
+   * :bdg-secondary:`VK_COLOR_COMPONENT_G_BIT` 绿色通道。十六进制为 ``0x2`` ，对应的二进制为 ``0010`` 。
+   * :bdg-secondary:`VK_COLOR_COMPONENT_B_BIT` 蓝色通道。十六进制为 ``0x4`` ，对应的二进制为 ``0100`` 。
+   * :bdg-secondary:`VK_COLOR_COMPONENT_A_BIT` 透明通道。十六进制为 ``0x8`` ，对应的二进制为 ``1000`` 。
+
+   在位域中一般直接使用 ``位`` 操作符，也就是与、或、非、异或。
+
+   .. code:: c++
+
+      VkColorComponentFlags color_component_flags = 0;
+      color_component_flags = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT; // 表示开启红色和绿色通道
+      color_component_flags = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT; // 表示开启红色、绿色和蓝色通道
+      color_component_flags = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT; // 表示开启红色、绿色、蓝色和透明通道
+
+      bool is_open_r = (color_component_flags & VK_COLOR_COMPONENT_R_BIT) == VK_COLOR_COMPONENT_R_BIT ? true : false;
+      bool is_open_g = (color_component_flags & VK_COLOR_COMPONENT_G_BIT) == VK_COLOR_COMPONENT_G_BIT ? true : false;
+      bool is_open_b = (color_component_flags & VK_COLOR_COMPONENT_B_BIT) == VK_COLOR_COMPONENT_B_BIT ? true : false;
+      bool is_open_a = (color_component_flags & VK_COLOR_COMPONENT_A_BIT) == VK_COLOR_COMPONENT_A_BIT ? true : false;
+
+   这样就可以使用一个 ``32`` 位整数的每一位，表示不同的含义。最直接的好处就是节省内存。
+
 VkApplicationInfo
 ----------------------
 
@@ -1126,32 +1221,9 @@ VkQueueFlags
 
 .. code:: c++
 
-   typedef uint32_t VkFlags;
    typedef VkFlags VkQueueFlags;
 
 可以看到 ``VkQueueFlags`` 其实就是一个 ``uint32_t`` 的标志位。
-
-.. admonition:: VkFlags
-   :class: note
-
-   在 ``Vulkan`` 中所有的标志位 ``Vk{标志位名称}Flags`` 都为 ``VkFlags`` 也就是 ``uint32_t`` 。每一位对应的含义都在对应的 ``Vk{标志位名称}FlagBits`` 枚举中定义。
-
-.. admonition:: 标志位与位域
-   :class: note
-
-   所谓标志位，也就是位域。像 ``uint32_t`` 其比特位有 ``32`` 个，如果某一比特位为 ``1`` 则说明对应的位域被激活，也就是对应位域表示的事物被激活。比如：
-
-   .. code:: c++
-
-      uint32_t LIKE_CAT_BIT = 0x00000001; //对应的二进制：0000 0000 0000 0000 0000 0000 0000 0001
-      uint32_t LIKE_DOG_BIT = 0x00000002; //对应的二进制：0000 0000 0000 0000 0000 0000 0000 0010
-
-      uint32_t likes = 某人的喜好;
-
-      if(likes == 0) //什么也不喜欢
-      if((likes & LIKE_CAT_BI) == LIKE_CAT_BIT) //喜欢猫
-      if((likes & LIKE_DOG_BIT) == LIKE_DOG_BIT) //喜欢狗
-      if((likes & (LIKE_CAT_BIT | LIKE_DOG_BIT)) == (LIKE_CAT_BIT | LIKE_DOG_BIT)) //既喜欢猫，也喜欢狗
 
 ``VkQueueFlags`` 对应位域的 ``VkQueueFlagBits`` 定义如下:
 
