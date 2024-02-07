@@ -10,6 +10,8 @@
    * 2024/2/5 增加 ``创建逻辑设备`` 章节。
    * 2024/2/5 增加 ``vkCreateDevice`` 章节。
    * 2024/2/5 增加 ``VkDeviceCreateInfo`` 章节。
+   * 2024/2/7 增加 ``VkDeviceQueueCreateInfo`` 章节。
+   * 2024/2/7 增加 ``设备扩展`` 章节。
 
 在 `物理设备 <./PhysicalDevice.html>`_ 章节中我们已经知道，可以获取系统中支持 ``Vulkan`` 的多个物理设备 ``VkPhysicalDevice`` 。我们需要确定使用哪一个或哪几个物理设备作为目标设备为我们所用，为此 ``Vulkan`` 将物理设备抽象成逻辑设备 ``VkDevice`` 。
 
@@ -44,7 +46,7 @@ VkDeviceCreateInfo
 
 .. code:: c++
 
-   // Provided by VK_VERSION_1_0
+   // 由 VK_VERSION_1_0 提供
    typedef struct VkDeviceCreateInfo {
        VkStructureType                    sType;
        const void*                        pNext;
@@ -69,4 +71,45 @@ VkDeviceCreateInfo
 * :bdg-secondary:`ppEnabledExtensionNames` 指定要开启的扩展。该数组数量必须大于等于 ``enabledExtensionCount`` 。
 * :bdg-secondary:`pEnabledFeatures` 配置要开启的特性。
 
+其中 ``queueCreateInfoCount`` 和 ``pQueueCreateInfos`` 用于指定在逻辑设备中需要创建的 `设备队列 <./DeviceQueue.html>`_ 。其中 ``VkDeviceQueueCreateInfo`` 定义如下：
 
+VkDeviceQueueCreateInfo
+***************************
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef struct VkDeviceQueueCreateInfo {
+       VkStructureType             sType;
+       const void*                 pNext;
+       VkDeviceQueueCreateFlags    flags;
+       uint32_t                    queueFamilyIndex;
+       uint32_t                    queueCount;
+       const float*                pQueuePriorities;
+   } VkDeviceQueueCreateInfo;
+
+* :bdg-secondary:`sType` 是该结构体的类型枚举值， :bdg-danger:`必须` 是 ``VkStructureType::VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO`` 。
+* :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
+* :bdg-secondary:`flags` 配置额外的信息。可设置的值定义在 ``VkDeviceQueueCreateFlagBits`` 枚举中。
+* :bdg-secondary:`queueFamilyIndex` 指定目标设备队列族的索引。
+* :bdg-secondary:`queueCount` 指定要在 ``queueFamilyIndex`` 中创建设备队列的数量。
+* :bdg-secondary:`pQueuePriorities` 指向元素数量为 ``queueCount`` 的 ``float`` 数组。用于配置创建的每一个设备队列的优先级。
+
+其中 ``queueFamilyIndex`` :bdg-danger:`必须` 是目标物理设备中有效的设备队列族索引，并且 ``queueCount`` :bdg-danger:`必须` 小于等于 ``queueFamilyIndex`` 索引对应的设备队列族中的队列数量。
+
+其中 ``pQueuePriorities`` 配置的优先级的有效等级范围为 ``[0, 1]`` ，优先级越大，优先级越高。其中 ``0.0`` 是最低的优先级， ``1.0`` 是最高的优先级。在某些设备中，优先级越高意味着将会得到更多的执行机会，具体的队列调由设备自身管理， ``Vulkan`` 并不规定调度规则。
+在同一逻辑设备上优先级高的设备队列可能会导致低优先级的设备队列长时间处于 ``饥饿`` 状态，直到高级别的设备队列执行完所有指令。但不同的逻辑设备中的某一设备队列饥饿不会影响另一个逻辑设备上的设备队列。
+
+.. admonition:: 饥饿
+   :class: note
+
+   队列饥饿。指的是在系统调度中，总是优先调度优先级高的队列，如果在运行时，有源源不断的任务进行高优先级队列，则系统调度会一直调度该高优先级队列，而不调度低优先级的队列。这就会导致低优先级的队列长期处于无响应阶段得不到执行。
+
+设备扩展
+#############
+
+在 ``VkDeviceCreateInfo`` 我们需要通过 ``enabledExtensionCount`` 和 ``ppEnabledExtensionNames`` 来指定该逻辑设备要开启的设备扩展。
+
+
+..
+   device feature
