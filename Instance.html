@@ -301,6 +301,9 @@
 <li><p class="sd-card-text">2024/2/1 增加 <code class="docutils literal notranslate"><span class="pre">销毁</span> <span class="pre">VkInstance</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/2/2 更新 <code class="docutils literal notranslate"><span class="pre">示例</span></code> 章节。增加 <code class="docutils literal notranslate"><span class="pre">开源鸿蒙</span></code> 平台实例代码。</p></li>
 <li><p class="sd-card-text">2024/2/2 更新 <code class="docutils literal notranslate"><span class="pre">vkCreateInstance</span></code> 章节。增加分配器说明。</p></li>
+<li><p class="sd-card-text">2024/2/7 更新 <code class="docutils literal notranslate"><span class="pre">vkEnumerateInstanceExtensionProperties</span></code> 章节。完善说明。</p></li>
+<li><p class="sd-card-text">2024/2/7 更新 <code class="docutils literal notranslate"><span class="pre">Extension</span></code> 章节。完善说明。</p></li>
+<li><p class="sd-card-text">2024/2/7 更新 <code class="docutils literal notranslate"><span class="pre">VkExtensionProperties</span></code> 章节。完善说明。</p></li>
 </ul>
 </div>
 </details><p>开发 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 第一步就是创建 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> ，也就是 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的 <code class="docutils literal notranslate"><span class="pre">实例</span></code> 。一个实例代表一整 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 环境（或上下文）。不同的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 环境能够获取到不同的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 功能特性。其中最重要的就是配置 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 要使用的 <code class="docutils literal notranslate"><span class="pre">版本</span></code> 。</p>
@@ -490,13 +493,13 @@
 </section>
 <section id="extension">
 <h2>Extension<a class="headerlink" href="#extension" title="Link to this heading">#</a></h2>
-<p>在创建 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 时需要通过 <code class="docutils literal notranslate"><span class="pre">VkInstanceCreateInfo::enabledExtensionCount</span></code> 和 <code class="docutils literal notranslate"><span class="pre">VkInstanceCreateInfo::ppEnabledExtensionNames</span></code> 来配置实例要开启的 <code class="docutils literal notranslate"><span class="pre">扩展</span></code> （ <code class="docutils literal notranslate"><span class="pre">Extension</span></code> ）。</p>
+<p>在创建 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 时需要通过 <code class="docutils literal notranslate"><span class="pre">VkInstanceCreateInfo::enabledExtensionCount</span></code> 和 <code class="docutils literal notranslate"><span class="pre">VkInstanceCreateInfo::ppEnabledExtensionNames</span></code> 来配置实例要开启的 <code class="docutils literal notranslate"><span class="pre">实例扩展</span></code> （ <code class="docutils literal notranslate"><span class="pre">Instance</span> <span class="pre">Extension</span></code> ）。</p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中有两类扩展：</p>
 <ul class="simple">
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">Instance 扩展</span> 与使用哪一个 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 设备无关，与 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 环境有关。 <code class="docutils literal notranslate"><span class="pre">VkInstanceCreateInfo</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">enabledExtensionCount</span></code> 和 <code class="docutils literal notranslate"><span class="pre">ppEnabledExtensionNames</span></code> 就是用于配置此类 <code class="docutils literal notranslate"><span class="pre">Instance</span> <span class="pre">扩展</span></code> 。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">Device 扩展</span> 与使用哪一个 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 设备有关。不同厂家的 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 设备会支持不同的设备扩展。这将会在之后的章节展开。</p></li>
 </ul>
-<p><code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 支持的扩展可以通过 <code class="docutils literal notranslate"><span class="pre">vkEnumerateInstanceExtensionProperties(...)</span></code> 函数获取：</p>
+<p><code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 支持的实例扩展可以通过 <code class="docutils literal notranslate"><span class="pre">vkEnumerateInstanceExtensionProperties(...)</span></code> 函数获取：</p>
 <section id="vkenumerateinstanceextensionproperties">
 <h3>vkEnumerateInstanceExtensionProperties<a class="headerlink" href="#vkenumerateinstanceextensionproperties" title="Link to this heading">#</a></h3>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
@@ -511,7 +514,8 @@
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pPropertyCount</span> 用于指定 <code class="docutils literal notranslate"><span class="pre">pProperties</span></code> 成员的数组长度。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pProperties</span> 如果为 <code class="docutils literal notranslate"><span class="pre">nullptr</span></code> 则将会将实例支持的 <code class="docutils literal notranslate"><span class="pre">扩展</span></code> 数写入 <code class="docutils literal notranslate"><span class="pre">pPropertyCount</span></code> 中。否则会将查询到的元素写入 <code class="docutils literal notranslate"><span class="pre">pProperties</span></code> 。</p></li>
 </ul>
-<p>如果 <code class="docutils literal notranslate"><span class="pre">pLayerName</span></code> 为有效的 <code class="docutils literal notranslate"><span class="pre">层</span></code> 名， 该函数将会返回该层内部使用的 <code class="docutils literal notranslate"><span class="pre">扩展</span></code> 。如果开启了该 <code class="docutils literal notranslate"><span class="pre">层</span></code> ，则其内部使用的 <code class="docutils literal notranslate"><span class="pre">扩展</span></code> 将自动开启。</p>
+<p>如果 <code class="docutils literal notranslate"><span class="pre">pLayerName</span></code> 为有效的 <code class="docutils literal notranslate"><span class="pre">层</span></code> 名，则该函数将会返回该层内部使用的 <code class="docutils literal notranslate"><span class="pre">实例扩展</span></code> 。如果开启了该 <code class="docutils literal notranslate"><span class="pre">层</span></code> ，则其内部使用的 <code class="docutils literal notranslate"><span class="pre">扩展</span></code> 将自动开启。</p>
+<p>如果 <code class="docutils literal notranslate"><span class="pre">pLayerName</span></code> 为 <code class="docutils literal notranslate"><span class="pre">nullptr</span></code> ，则该函数将会返回 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 实现和默认启用的 <code class="docutils literal notranslate"><span class="pre">层</span></code> 支持的实例扩展信息。</p>
 <p>要想获取全部的扩展，该函数的调用与 <code class="docutils literal notranslate"><span class="pre">vkEnumerateInstanceLayerProperties(...)</span></code> 类似，调用两遍，第一遍 <code class="docutils literal notranslate"><span class="pre">pProperties</span></code> 为 <code class="docutils literal notranslate"><span class="pre">nullptr</span></code> ，第二遍为有效值即可：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">extension_property_count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <span class="n">vkEnumerateInstanceExtensionProperties</span><span class="p">(</span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">extension_property_count</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
@@ -536,7 +540,7 @@
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">specVersion</span> 为扩展该扩展的版本。</p></li>
 </ul>
 <div class="important admonition">
-<p class="admonition-title">有一些扩展我们需要重点关注一下</p>
+<p class="admonition-title">有一些实例扩展我们需要重点关注一下</p>
 <ul class="simple">
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_KHR_surface</span> 代表窗口通用平面扩展。</p></li>
 <li><dl class="simple">
@@ -629,7 +633,7 @@
 <span class="w">   </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="s">&quot;VkInstance 创建失败&quot;</span><span class="p">);</span>
 <span class="p">}</span>
 
-<span class="c1">//缤纷绚丽的 Vulkan 程序 ...</span>
+<span class="c1">// 缤纷绚丽的 Vulkan 程序 ...</span>
 
 <span class="n">vkDestroyInstance</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
 </pre></div>

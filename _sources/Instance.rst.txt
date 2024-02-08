@@ -24,6 +24,9 @@
    * 2024/2/1 增加 ``销毁 VkInstance`` 章节。
    * 2024/2/2 更新 ``示例`` 章节。增加 ``开源鸿蒙`` 平台实例代码。
    * 2024/2/2 更新 ``vkCreateInstance`` 章节。增加分配器说明。
+   * 2024/2/7 更新 ``vkEnumerateInstanceExtensionProperties`` 章节。完善说明。
+   * 2024/2/7 更新 ``Extension`` 章节。完善说明。
+   * 2024/2/7 更新 ``VkExtensionProperties`` 章节。完善说明。
 
 开发 ``Vulkan`` 第一步就是创建 ``VkInstance`` ，也就是 ``Vulkan`` 的 ``实例`` 。一个实例代表一整 ``Vulkan`` 环境（或上下文）。不同的 ``Vulkan`` 环境能够获取到不同的 ``Vulkan`` 功能特性。其中最重要的就是配置 ``Vulkan`` 要使用的 ``版本`` 。
 
@@ -230,14 +233,14 @@ VkLayerProperties
 Extension
 ###########################
 
-在创建 ``VkInstance`` 时需要通过 ``VkInstanceCreateInfo::enabledExtensionCount`` 和 ``VkInstanceCreateInfo::ppEnabledExtensionNames`` 来配置实例要开启的 ``扩展`` （ ``Extension`` ）。
+在创建 ``VkInstance`` 时需要通过 ``VkInstanceCreateInfo::enabledExtensionCount`` 和 ``VkInstanceCreateInfo::ppEnabledExtensionNames`` 来配置实例要开启的 ``实例扩展`` （ ``Instance Extension`` ）。
 
 在 ``Vulkan`` 中有两类扩展：
 
 * :bdg-secondary:`Instance 扩展` 与使用哪一个 ``GPU`` 设备无关，与 ``Vulkan`` 环境有关。 ``VkInstanceCreateInfo`` 中的 ``enabledExtensionCount`` 和 ``ppEnabledExtensionNames`` 就是用于配置此类 ``Instance 扩展`` 。
 * :bdg-secondary:`Device 扩展` 与使用哪一个 ``GPU`` 设备有关。不同厂家的 ``GPU`` 设备会支持不同的设备扩展。这将会在之后的章节展开。
 
-``VkInstance`` 支持的扩展可以通过 ``vkEnumerateInstanceExtensionProperties(...)`` 函数获取：
+``VkInstance`` 支持的实例扩展可以通过 ``vkEnumerateInstanceExtensionProperties(...)`` 函数获取：
 
 vkEnumerateInstanceExtensionProperties
 *******************************************
@@ -254,7 +257,9 @@ vkEnumerateInstanceExtensionProperties
 * :bdg-secondary:`pPropertyCount` 用于指定 ``pProperties`` 成员的数组长度。
 * :bdg-secondary:`pProperties` 如果为 ``nullptr`` 则将会将实例支持的 ``扩展`` 数写入 ``pPropertyCount`` 中。否则会将查询到的元素写入 ``pProperties`` 。
 
-如果 ``pLayerName`` 为有效的 ``层`` 名， 该函数将会返回该层内部使用的 ``扩展`` 。如果开启了该 ``层`` ，则其内部使用的 ``扩展`` 将自动开启。
+如果 ``pLayerName`` 为有效的 ``层`` 名，则该函数将会返回该层内部使用的 ``实例扩展`` 。如果开启了该 ``层`` ，则其内部使用的 ``扩展`` 将自动开启。
+
+如果 ``pLayerName`` 为 ``nullptr`` ，则该函数将会返回 ``Vulkan`` 实现和默认启用的 ``层`` 支持的实例扩展信息。
 
 要想获取全部的扩展，该函数的调用与 ``vkEnumerateInstanceLayerProperties(...)`` 类似，调用两遍，第一遍 ``pProperties`` 为 ``nullptr`` ，第二遍为有效值即可：
 
@@ -282,7 +287,7 @@ VkExtensionProperties
 * :bdg-secondary:`extensionName` 为扩展名称。
 * :bdg-secondary:`specVersion` 为扩展该扩展的版本。
 
-.. admonition:: 有一些扩展我们需要重点关注一下
+.. admonition:: 有一些实例扩展我们需要重点关注一下
    :class: important
 
    * :bdg-secondary:`VK_KHR_surface` 代表窗口通用平面扩展。
@@ -373,7 +378,7 @@ vkDestroyInstance
       throw std::runtime_error("VkInstance 创建失败");
    }
 
-   //缤纷绚丽的 Vulkan 程序 ... 
+   // 缤纷绚丽的 Vulkan 程序 ... 
 
    vkDestroyInstance(instance, nullptr);
 
