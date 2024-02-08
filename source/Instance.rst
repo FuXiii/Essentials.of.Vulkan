@@ -378,7 +378,7 @@ vkDestroyInstance
       throw std::runtime_error("VkInstance 创建失败");
    }
 
-   //缤纷绚丽的 Vulkan 程序 ... 
+   // 缤纷绚丽的 Vulkan 程序 ... 
 
    vkDestroyInstance(instance, nullptr);
 

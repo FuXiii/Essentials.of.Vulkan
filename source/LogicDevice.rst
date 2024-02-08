@@ -20,6 +20,10 @@
    * 2024/2/7 增加 ``示例`` 章节。
    * 2024/2/7 增加 ``vkGetPhysicalDeviceFeatures`` 章节。
    * 2024/2/7 增加 ``VkPhysicalDeviceFeatures`` 章节。
+   * 2024/2/8 更新 ``VkPhysicalDeviceFeatures`` 章节。
+   * 2024/2/8 更新 ``VkDeviceQueueCreateInfo`` 章节。
+   * 2024/2/8 增加 ``获取设备队列`` 章节。
+   * 2024/2/8 增加 ``获取设备队列`` 章节下的 ``示例`` 。
 
 在 `物理设备 <./PhysicalDevice.html>`_ 章节中我们已经知道，可以获取系统中支持 ``Vulkan`` 的多个物理设备 ``VkPhysicalDevice`` 。我们需要确定使用哪一个或哪几个物理设备作为目标设备为我们所用，为此 ``Vulkan`` 将物理设备抽象成逻辑设备 ``VkDevice`` 。
 
@@ -107,6 +111,10 @@ VkDeviceQueueCreateInfo
 
 其中 ``pQueuePriorities`` 配置的优先级的有效等级范围为 ``[0, 1]`` ，优先级越大，优先级越高。其中 ``0.0`` 是最低的优先级， ``1.0`` 是最高的优先级。在某些设备中，优先级越高意味着将会得到更多的执行机会，具体的队列调由设备自身管理， ``Vulkan`` 并不规定调度规则。
 在同一逻辑设备上优先级高的设备队列可能会导致低优先级的设备队列长时间处于 ``饥饿`` 状态，直到高级别的设备队列执行完所有指令。但不同的逻辑设备中的某一设备队列饥饿不会影响另一个逻辑设备上的设备队列。
+
+.. note:: VkDeviceQueueCreateInfo::flags
+
+   ``VkDeviceQueueCreateFlagBits`` 在 ``Vulkan 1.0`` 版本中没用定义任何成员。
 
 .. admonition:: 饥饿
    :class: note
@@ -268,7 +276,43 @@ VkPhysicalDeviceFeatures
        VkBool32    inheritedQueries;
    } VkPhysicalDeviceFeatures;
 
-由于该结构体中
+该 ``VkPhysicalDeviceFeatures`` 中定义了 ``Vulkan 1.0`` 标准设备特性。由于该结构体中成员过多，这里会挑选几个常用的进行讲解。其他的特性在需要使用时会进行说明。
+
+* :bdg-secondary:`geometryShader` 几何着色器。将会在之后的 ``渲染管线`` 章节中进行讲解。
+* :bdg-secondary:`tessellationShader` 细分着色器。将会在之后的 ``渲染管线`` 章节中进行讲解。
+* :bdg-secondary:`wideLines` 线宽。当绘制线时可以动态设置线宽。
+
+.. note:: 您可以直接开启所有支持的设备特性。但这不是一个明智的选择，特性开启后多少都会消耗设备资源，所以尽量只开启需要的特性。
+
+.. admonition:: 扩展和特性
+   :class: note
+
+   有些特性是与设备扩展绑定的。换句话说就是，当开启了某些设备扩展，相应的特性也需要开启。比如：
+
+   * 在开启 ``VK_KHR_ray_tracing_pipeline`` 光追管线扩展之后，需要使用 ``VkPhysicalDeviceRayTracingPipelineFeaturesKHR`` 特性结构体配置开启光追特性。其定义如下：
+
+   .. code:: c++
+
+      // 由 VK_KHR_ray_tracing_pipeline 提供
+      typedef struct VkPhysicalDeviceRayTracingPipelineFeaturesKHR {
+          VkStructureType    sType;
+          void*              pNext;
+          VkBool32           rayTracingPipeline;
+          VkBool32           rayTracingPipelineShaderGroupHandleCaptureReplay;
+          VkBool32           rayTracingPipelineShaderGroupHandleCaptureReplayMixed;
+          VkBool32           rayTracingPipelineTraceRaysIndirect;
+          VkBool32           rayTraversalPrimitiveCulling;
+      } VkPhysicalDeviceRayTracingPipelineFeaturesKHR;
+
+   可以看到 ``VkPhysicalDeviceRayTracingPipelineFeaturesKHR`` 为扩展 ``VK_KHR_ray_tracing_pipeline`` 提供的结构体。也就是说只有在 ``VK_KHR_ray_tracing_pipeline`` 扩展被成功激活后才可以使用该结构体。
+
+   .. important::
+
+      由于目前以 ``Vulkan 1.0`` 核心进行讲解，所以目前不会对于扩展和高版本的 ``Vulkan`` 设备特性进行展开讲解，为了知识的连贯性会在必要的时候提一嘴。但会在未来规划章节中进行详细讲解。
+
+   .. note::
+
+      有关 ``Vulkan`` 的硬件实时光追相关教程可以先浏览 `文献 <./Literature/index.html>`_ 中相关资料。
 
 销毁逻辑设备
 #############
@@ -288,10 +332,131 @@ vkDestroyDevice
 * :bdg-secondary:`device` 要销毁的逻辑设备。
 * :bdg-secondary:`pAllocator` 内存分配器。需要与 ``vkCreateDevice(...)`` 时使用的分配器保持一致。
 
+.. _VkDeviceCreateDemo:
+
 示例
 #############
 
+.. code:: c++
 
+   VkPhysicalDevice physical_device = 之前获取到的物理设备;
+   uint32_t support_graphics_queue_family_index = 之前获取到支持图形功能的队列族索引;
+
+   std::vector<float> queue_priorities;
+   queue_priorities.push_back(0.0f);
+   queue_priorities.push_back(0.0f);
+
+   VkDeviceQueueCreateInfo device_queue_create_info = {};
+   device_queue_create_info.sType = VkStructureType::VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO ;
+   device_queue_create_info.pNext = nullptr;
+   device_queue_create_info.flags = 0;
+   device_queue_create_info.queueFamilyIndex = support_graphics_queue_family_index;
+   device_queue_create_info.queueCount = 2; // 一般创建 1 个图形队列即可。这里创建 2 个支持图形的设备队列（假如 support_graphics_queue_family_index 对应的设备族中有 2 个以上设备队列）。
+   device_queue_create_info.pQueuePriorities = queue_priorities.data();
+
+   uint32_t extension_property_count = 0;
+   vkEnumerateDeviceExtensionProperties(physical_device, &extension_property_count, nullptr);
+
+   std::vector<VkExtensionProperties> extension_properties(extension_property_count);
+   vkEnumerateDeviceExtensionProperties(physical_device, &extension_property_count, extension_properties.data());
+
+   std::vector<char*> enable_device_extensions;
+   for(const VkExtensionProperties& extension_property_item : extension_properties)
+   {
+      if(std::strcmp(extension_property_item.extensionName, "VK_KHR_swapchain") == 0)
+      {
+         enable_device_extensions.push_back("VK_KHR_swapchain");
+         break;
+      }
+   }
+
+   if(enable_device_extensions.empty())
+   {
+      throw std::runtime_error("设备不支持交换链扩展");
+   }
+
+   VkPhysicalDeviceFeatures support_physical_device_features = {};
+   vkGetPhysicalDeviceFeatures(physical_device, &support_physical_device_features);
+
+   VkPhysicalDeviceFeatures enable_physical_device_features = {};
+   if(support_physical_device_features.geometryShader == VK_TRUE && support_physical_device_features.tessellationShader == VK_TRUE && support_physical_device_features.wideLines == VK_TRUE )
+   {
+      enable_physical_device_features.geometryShader = support_physical_device_features.geometryShader;
+      enable_physical_device_features.tessellationShader = support_physical_device_features.tessellationShader;
+      enable_physical_device_features.wideLines = support_physical_device_features.wideLines;
+   }
+   else
+   {
+      throw std::runtime_error("设备不支持几何着色器、细分着色器和线宽特性");
+   }
+
+   VkDeviceCreateInfo device_create_info = {};
+   device_create_info.sType = VkStructureType::VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+   device_create_info.pNext = nullptr;
+   device_create_info.flags = 0;
+   device_create_info.queueCreateInfoCount=1;
+   device_create_info.pQueueCreateInfos = &device_queue_create_info;
+   device_create_info.enabledLayerCount = 0;
+   device_create_info.ppEnabledLayerNames = nullptr;
+   device_create_info.enabledExtensionCount = enable_device_extensions.size();
+   device_create_info.ppEnabledExtensionNames = enable_device_extensions.data();
+   device_create_info.pEnabledFeatures = &enable_physical_device_features;
+
+   VkDevice device = VK_NULL_HANDLE;
+   VkResult result = vkCreateDevice(physical_device, &device_create_info, nullptr, &device);
+   if(result != VkResult::VK_SUCCESS)
+   {
+      throw std::runtime_error("逻辑设备创建失败");
+   }
+
+   // 获取设备队列 ...
+   // 缤纷绚丽的 Vulkan 程序 ... 
+
+   vkDestroyDevice(device, nullptr);
+
+获取设备队列
+#############
+
+在创建完逻辑设备后，就可以通过 ``vkGetDeviceQueue(...)`` 函数获取。其定义如下：
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   void vkGetDeviceQueue(
+       VkDevice                                    device,
+       uint32_t                                    queueFamilyIndex,
+       uint32_t                                    queueIndex,
+       VkQueue*                                    pQueue);
+
+* :bdg-secondary:`device` 目标逻辑设备。
+* :bdg-secondary:`queueFamilyIndex` 目标设备队列的队列族索引。
+* :bdg-secondary:`queueIndex` 对应 ``VkDeviceQueueCreateInfo::queueCount`` 的对应设备队列索引。
+* :bdg-secondary:`pQueue` 对应 ``VkDeviceQueueCreateInfo::queueCount`` 创建的第 ``queueIndex`` 的设备队列。
+
+其中 ``queueFamilyIndex`` 、 ``queueIndex`` 的取值与创建逻辑设备时 ``VkDeviceCreateInfo::pQueueCreateInfos`` 参数相匹配。
+
+示例
+************
+
+该示例紧接着上面的逻辑设备创建示例 :ref:`VkDeviceCreateDemo` 。
+
+.. code:: c++
+
+   VkDevice device = 之前创建的逻辑设备;
+   uint32_t support_graphics_queue_family_index = 之前获取到支持图形功能的队列族索引;
+
+   //由于我们在 support_graphics_queue_family_index 索引的设备族上创建了 2 个设备队列，所以需要获取 2 个设备队列
+   VkQueue graphics_queue_0 = VK_NULL_HANDLE;
+   vkGetDeviceQueue(device, support_graphics_queue_family_index, 0, &graphics_queue_0);
+
+   VkQueue graphics_queue_1 = VK_NULL_HANDLE;
+   vkGetDeviceQueue(device, support_graphics_queue_family_index, 1, &graphics_queue_1);
 
 ..
-   device feature
+   规划
+
+   Vulkan 1.1设备特性
+   Vulkan 1.2设备特性
+   Vulkan 1.3设备特性
+
+   扩展特性
