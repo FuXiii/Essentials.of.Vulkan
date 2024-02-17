@@ -24,6 +24,7 @@
    * 2024/2/8 更新 ``VkDeviceQueueCreateInfo`` 章节。
    * 2024/2/8 增加 ``获取设备队列`` 章节。
    * 2024/2/8 增加 ``获取设备队列`` 章节下的 ``示例`` 。
+   * 2024/2/16 更新 ``vkDestroyDevice`` 章节。
 
 在 `物理设备 <./PhysicalDevice.html>`_ 章节中我们已经知道，可以获取系统中支持 ``Vulkan`` 的多个物理设备 ``VkPhysicalDevice`` 。我们需要确定使用哪一个或哪几个物理设备作为目标设备为我们所用，为此 ``Vulkan`` 将物理设备抽象成逻辑设备 ``VkDevice`` 。
 
@@ -331,6 +332,8 @@ vkDestroyDevice
 
 * :bdg-secondary:`device` 要销毁的逻辑设备。
 * :bdg-secondary:`pAllocator` 内存分配器。需要与 ``vkCreateDevice(...)`` 时使用的分配器保持一致。
+
+当 ``device`` 销毁时，需要确保所有该逻辑设备下创建的对象（句柄）都已经回收或销毁。
 
 .. _VkDeviceCreateDemo:
 
