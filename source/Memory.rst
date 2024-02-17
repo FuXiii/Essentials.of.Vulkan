@@ -164,6 +164,8 @@ PFN_vkReallocationFunction
 
 该回调将返回在 ``pOriginal`` 内存的基础上进行重分配，并将新分配的内存结果返回。
 
+如果 ``pOriginal`` 为 ``空`` ，则该回调的行为需要与 ``PFN_vkAllocationFunction`` 回调一致。
+
 ``PFN_vkReallocationFunction`` 是一个函数指针，需要指向一个返回值为 ``void*`` 形参为 ``(void *pUserData, void *pOriginal, size_t size, size_t alignment, VkSystemAllocationScope allocationScope)`` 的函数。比如：
 
 .. tab-set::
@@ -189,7 +191,7 @@ PFN_vkReallocationFunction
 
          void *VKAPI_PTR Reallocate(void *pUserData, void *pOriginal, size_t size, size_t alignment, VkSystemAllocationScope allocationScope)
          {
-            return realloc(pOriginal, size); // 此处的重分配可能会有问题，Linux 上没有 _aligned_realloc 函数需要自己实心。
+            return realloc(pOriginal, size); // 此处使用 realloc(...) 进行重分配可能会有问题，Linux 上没有 _aligned_realloc(...) 函数需要自己实现。
          }
 
          PFN_vkReallocationFunction pfn_reallocation = &Reallocate;
