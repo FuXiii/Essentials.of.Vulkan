@@ -323,7 +323,7 @@ vkDestroyInstance
 * :bdg-secondary:`instance` 要么为 ``空`` 要么 :bdg-danger:`必须` 为有效的 ``VkInstance`` 。
 * :bdg-secondary:`pAllocator` 分配器。需要与创建 ``VkInstance`` 时指定的分配器匹配。
 
-当 ``VkInstance`` 销毁时，需要确保所有该实例环境下创建的对象（句柄）都已经回收或销毁。
+当 ``instance`` 销毁时，需要确保所有该实例环境下创建的对象（句柄）都已经回收或销毁。
 
 示例
 ##########################
