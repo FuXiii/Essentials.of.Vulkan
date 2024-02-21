@@ -301,6 +301,7 @@
 <li><p class="sd-card-text">2024/2/8 更新 <code class="docutils literal notranslate"><span class="pre">VkDeviceQueueCreateInfo</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/2/8 增加 <code class="docutils literal notranslate"><span class="pre">获取设备队列</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/2/8 增加 <code class="docutils literal notranslate"><span class="pre">获取设备队列</span></code> 章节下的 <code class="docutils literal notranslate"><span class="pre">示例</span></code> 。</p></li>
+<li><p class="sd-card-text">2024/2/16 更新 <code class="docutils literal notranslate"><span class="pre">vkDestroyDevice</span></code> 章节。</p></li>
 </ul>
 </div>
 </details><p>在 <a class="reference external" href="./PhysicalDevice.html">物理设备</a> 章节中我们已经知道，可以获取系统中支持 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的多个物理设备 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDevice</span></code> 。我们需要确定使用哪一个或哪几个物理设备作为目标设备为我们所用，为此 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 将物理设备抽象成逻辑设备 <code class="docutils literal notranslate"><span class="pre">VkDevice</span></code> 。</p>
@@ -592,6 +593,7 @@
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">device</span> 要销毁的逻辑设备。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pAllocator</span> 内存分配器。需要与 <code class="docutils literal notranslate"><span class="pre">vkCreateDevice(...)</span></code> 时使用的分配器保持一致。</p></li>
 </ul>
+<p>当 <code class="docutils literal notranslate"><span class="pre">device</span></code> 销毁时，需要确保所有该逻辑设备下创建的对象（句柄）都已经回收或销毁。</p>
 </section>
 </section>
 <section id="vkdevicecreatedemo">

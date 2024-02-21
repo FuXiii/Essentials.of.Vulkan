@@ -141,7 +141,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -266,7 +266,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
@@ -282,10 +282,411 @@
 <svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
 </summary><div class="sd-summary-content sd-card-body docutils">
 <ul class="simple">
-<li><p class="sd-card-text">2024/1/2 增加该文档</p></li>
+<li><p class="sd-card-text">2024/1/2 增加该文档。</p></li>
+<li><p class="sd-card-text">2024/2/17 更新该文档。</p></li>
+<li><p class="sd-card-text">2024/2/17 增加 <code class="docutils literal notranslate"><span class="pre">句柄对象的内存分配器</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/2/17 增加 <code class="docutils literal notranslate"><span class="pre">PFN_vkAllocationFunction</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/2/17 增加 <code class="docutils literal notranslate"><span class="pre">PFN_vkReallocationFunction</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/2/21 更新 <code class="docutils literal notranslate"><span class="pre">PFN_vkAllocationFunction</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/2/21 更新 <code class="docutils literal notranslate"><span class="pre">PFN_vkReallocationFunction</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/2/21 增加 <code class="docutils literal notranslate"><span class="pre">PFN_vkInternalAllocationNotification</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/2/21 增加 <code class="docutils literal notranslate"><span class="pre">PFN_vkInternalFreeNotification</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/2/21 增加 <code class="docutils literal notranslate"><span class="pre">VkSystemAllocationScope</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/2/21 增加 <code class="docutils literal notranslate"><span class="pre">VkInternalAllocationType</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/2/21 增加 <code class="docutils literal notranslate"><span class="pre">示例</span></code> 章节。</p></li>
 </ul>
 </div>
-</details></section>
+</details><p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中有两种分配内存的途径：</p>
+<ol class="arabic">
+<li><p>在 <code class="docutils literal notranslate"><span class="pre">vkCreate{对象名称}(...)</span></code> 或 <code class="docutils literal notranslate"><span class="pre">vkDestroy{对象名称}(...)</span></code> 函数中指定 <code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">VkAllocationCallbacks*</span> <span class="pre">pAllocator</span></code> 内存分配器。比如：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">vkCreateInstance(...)</span></code> 和 <code class="docutils literal notranslate"><span class="pre">vkDestroyInstance(...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vkCreateDevice(...)</span></code> 和 <code class="docutils literal notranslate"><span class="pre">vkDestroyDevice(...)</span></code></p></li>
+</ul>
+<p>该方式是在创建和销毁句柄对象时指定，用于在 <code class="docutils literal notranslate"><span class="pre">内存条</span></code> 上分配和回收内存。其内部通过 <code class="docutils literal notranslate"><span class="pre">malloc</span></code> 和 <code class="docutils literal notranslate"><span class="pre">free</span></code> 之类的函数进行内存分配和销毁。用于 <code class="docutils literal notranslate"><span class="pre">句柄对象</span></code> 本身的分配和销毁。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<ul class="simple">
+<li><p>一般 <code class="docutils literal notranslate"><span class="pre">pAllocator</span></code> 可以直接指定为 <code class="docutils literal notranslate"><span class="pre">nullptr</span></code> ，用于告诉 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 使用内置的内存分配器。</p></li>
+<li><p>如果 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">不为</span> <code class="docutils literal notranslate"><span class="pre">nullptr</span></code> ，则用于指定自定义内存分配器。</p></li>
+</ul>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>自定义内存分配器常用于内存统计。</p>
+</div>
+</li>
+<li><p>通过 <code class="docutils literal notranslate"><span class="pre">vkAllocateMemory(...)</span></code> 函数分配内存。</p>
+<p>该方式主要用于在 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端和 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端进行内存分配。主要用于存储 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 的计算结果。</p>
+</li>
+</ol>
+<p>现在就安顺进行讲解：</p>
+<section id="id2">
+<h2>句柄对象的内存分配器<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<p>在创建句柄（对象）时需要指定 <code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">VkAllocationCallbacks*</span> <span class="pre">pAllocator</span></code> 的内存分配器。其中 <code class="docutils literal notranslate"><span class="pre">VkAllocationCallbacks</span></code> 定义如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkAllocationCallbacks</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">void</span><span class="o">*</span><span class="w">                                   </span><span class="n">pUserData</span><span class="p">;</span>
+<span class="w">    </span><span class="n">PFN_vkAllocationFunction</span><span class="w">                </span><span class="n">pfnAllocation</span><span class="p">;</span>
+<span class="w">    </span><span class="n">PFN_vkReallocationFunction</span><span class="w">              </span><span class="n">pfnReallocation</span><span class="p">;</span>
+<span class="w">    </span><span class="n">PFN_vkFreeFunction</span><span class="w">                      </span><span class="n">pfnFree</span><span class="p">;</span>
+<span class="w">    </span><span class="n">PFN_vkInternalAllocationNotification</span><span class="w">    </span><span class="n">pfnInternalAllocation</span><span class="p">;</span>
+<span class="w">    </span><span class="n">PFN_vkInternalFreeNotification</span><span class="w">          </span><span class="n">pfnInternalFree</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkAllocationCallbacks</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pUserData</span> 为用户自定义数据指针。当该分配器中的回调被调用时将会传入 <code class="docutils literal notranslate"><span class="pre">pUserData</span></code> 作为回调的第一个参数。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pfnAllocation</span> 内存分配回调。用于分配内存。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pfnReallocation</span> 内存重分配回调。用于重分配内存。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pfnFree</span> 内存释放回调。用于释放内存。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pfnInternalAllocation</span> 内部内存分配通知回调。该回调由驱动在分配内部内存时调用。仅用于将内部内存分配信息反馈给用户。该回调内部 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">不应该</span> 分配新内存。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pfnInternalFree</span> 内部内存释放通知回调。该回调由驱动在释放内部内存时调用。仅用于将内部内存释放信息反馈给用户。该回调内部 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">不应该</span> 释放内存。</p></li>
+</ul>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">PFN_vkAllocationFunction</span></code> 定义如下：</p>
+<section id="pfn-vkallocationfunction">
+<h3>PFN_vkAllocationFunction<a class="headerlink" href="#pfn-vkallocationfunction" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">VKAPI_PTR</span><span class="w"> </span><span class="o">*</span><span class="n">PFN_vkAllocationFunction</span><span class="p">)(</span>
+<span class="w">   </span><span class="kt">void</span><span class="o">*</span><span class="w">                                       </span><span class="n">pUserData</span><span class="p">,</span>
+<span class="w">   </span><span class="kt">size_t</span><span class="w">                                      </span><span class="n">size</span><span class="p">,</span>
+<span class="w">   </span><span class="kt">size_t</span><span class="w">                                      </span><span class="n">alignment</span><span class="p">,</span>
+<span class="w">   </span><span class="n">VkSystemAllocationScope</span><span class="w">                     </span><span class="n">allocationScope</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pUserData</span> 为用户自定义数据指针。对应 <code class="docutils literal notranslate"><span class="pre">VkAllocationCallbacks::pUserData</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">size</span> 要分配的内存大小。单位为 <code class="docutils literal notranslate"><span class="pre">字节</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">alignment</span> 要分配内存的 <code class="docutils literal notranslate"><span class="pre">内存对齐</span></code> 大小。单位为 <code class="docutils literal notranslate"><span class="pre">字节</span></code> 。<span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 为 <code class="docutils literal notranslate"><span class="pre">2</span></code> 的幂次方。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">allocationScope</span> 该内存声明周期所属的分配范围。</p></li>
+</ul>
+<p>该函数回调将返回大小为 <code class="docutils literal notranslate"><span class="pre">size</span></code> 比特，内存对齐为 <code class="docutils literal notranslate"><span class="pre">alignment</span></code> 分配的新内存。</p>
+<p>如果分配失败，该函数 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 返回 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 。如果分配成功，需要返回空间 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">最少</span> 为 <code class="docutils literal notranslate"><span class="pre">size</span></code> 字节，并且指针地址为 <code class="docutils literal notranslate"><span class="pre">alignment</span></code> 的倍数。</p>
+<div class="note admonition">
+<p class="admonition-title">内存对齐</p>
+<div class="admonition important">
+<p class="admonition-title">重要</p>
+<p>此处简单讲解内存对齐，并不完善，只是说明了基本思想，网上有很多详细资料可供参阅。</p>
+</div>
+<p>处理芯片在读取内存时并不是一比特一比特的读，而是 <span class="math notranslate nohighlight">\(n\)</span> 字节 <span class="math notranslate nohighlight">\(n\)</span> 字节的读取（其中 <span class="math notranslate nohighlight">\(n\)</span> 为 <code class="docutils literal notranslate"><span class="pre">2</span></code> 的幂次方）。如下结构体：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">Demo</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="kt">char</span><span class="w">  </span><span class="n">a</span><span class="p">;</span><span class="w"> </span><span class="c1">// 占 1 字节</span>
+<span class="w">   </span><span class="kt">int</span><span class="w">   </span><span class="n">b</span><span class="p">;</span><span class="w"> </span><span class="c1">// 占 4 字节</span>
+<span class="w">   </span><span class="kt">short</span><span class="w"> </span><span class="n">c</span><span class="p">;</span><span class="w"> </span><span class="c1">// 占 2 字节</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>比如当 <span class="math notranslate nohighlight">\(n = 4\)</span> 时，也就是一次读取 <code class="docutils literal notranslate"><span class="pre">4</span></code> 个字节。判定如下：</p>
+<ul class="simple">
+<li><p>由于 <code class="docutils literal notranslate"><span class="pre">a</span></code> 只占 <code class="docutils literal notranslate"><span class="pre">1</span></code> 个字节，而处理器一次性读 <code class="docutils literal notranslate"><span class="pre">4</span></code> 个字节，则 <code class="docutils literal notranslate"><span class="pre">a</span></code> 成员大小将会扩展到 <code class="docutils literal notranslate"><span class="pre">4</span></code> 个字节。其中只有第一个字节为 <code class="docutils literal notranslate"><span class="pre">a</span></code> 成员的有效内存，其他 <code class="docutils literal notranslate"><span class="pre">3</span></code> 个扩展字节用于占位。</p></li>
+<li><p>由于 <code class="docutils literal notranslate"><span class="pre">b</span></code> 的大小为 <code class="docutils literal notranslate"><span class="pre">4</span></code> 个字节，正好为 <code class="docutils literal notranslate"><span class="pre">4</span></code> 的倍数。则不需要扩展字节就可以直接读。</p></li>
+<li><p>由于 <code class="docutils literal notranslate"><span class="pre">c</span></code> 的大小小于 <code class="docutils literal notranslate"><span class="pre">4</span></code> 则其处理方式与 <code class="docutils literal notranslate"><span class="pre">a</span></code> 的一样，扩展到 <code class="docutils literal notranslate"><span class="pre">4</span></code> 字节，其中前两个字节为 <code class="docutils literal notranslate"><span class="pre">c</span></code> 成员的有效内存，其他 <code class="docutils literal notranslate"><span class="pre">2</span></code> 个字节用于占位。</p></li>
+</ul>
+<p>示意图如下：</p>
+<figure class="align-default">
+<img alt="_images/aligment_struct.png" src="_images/aligment_struct.png" />
+</figure>
+<p>这样处理器在 <code class="docutils literal notranslate"><span class="pre">4</span></code> 个字节 <code class="docutils literal notranslate"><span class="pre">4</span></code> 个字节读的时候就能够读取到正确的数据了。</p>
+<p>如上就是按照 <code class="docutils literal notranslate"><span class="pre">4</span></code> 字节进行的内存对齐。</p>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">PFN_vkAllocationFunction</span></code> 是一个函数指针，需要指向一个返回值为 <code class="docutils literal notranslate"><span class="pre">void*</span></code> 形参为 <code class="docutils literal notranslate"><span class="pre">(void</span> <span class="pre">*pUserData,</span> <span class="pre">size_t</span> <span class="pre">size,</span> <span class="pre">size_t</span> <span class="pre">alignment,</span> <span class="pre">VkSystemAllocationScope</span> <span class="pre">allocationScope)</span></code> 的函数。比如：</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-0">
+C++ 17</label><div class="sd-tab-content docutils">
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdlib&gt;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">VKAPI_PTR</span><span class="w"> </span><span class="n">Allocation</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pUserData</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">alignment</span><span class="p">,</span><span class="w"> </span><span class="n">VkSystemAllocationScope</span><span class="w"> </span><span class="n">allocationScope</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="n">aligned_alloc</span><span class="p">(</span><span class="n">alignment</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">PFN_vkAllocationFunction</span><span class="w"> </span><span class="n">pfn_allocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Allocation</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-1">
+Windows</label><div class="sd-tab-content docutils">
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;malloc.h&gt;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">VKAPI_PTR</span><span class="w"> </span><span class="n">Allocation</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pUserData</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">alignment</span><span class="p">,</span><span class="w"> </span><span class="n">VkSystemAllocationScope</span><span class="w"> </span><span class="n">allocationScope</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="n">_aligned_malloc</span><span class="p">(</span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="n">alignment</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">PFN_vkAllocationFunction</span><span class="w"> </span><span class="n">pfn_allocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Allocation</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-2" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-2">
+Linux</label><div class="sd-tab-content docutils">
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;malloc.h&gt;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">VKAPI_PTR</span><span class="w"> </span><span class="n">Allocation</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pUserData</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">alignment</span><span class="p">,</span><span class="w"> </span><span class="n">VkSystemAllocationScope</span><span class="w"> </span><span class="n">allocationScope</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="n">memalign</span><span class="p">(</span><span class="n">alignment</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">PFN_vkAllocationFunction</span><span class="w"> </span><span class="n">pfn_allocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Allocation</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">PFN_vkReallocationFunction</span></code> 定义如下：</p>
+</section>
+<section id="pfn-vkreallocationfunction">
+<h3>PFN_vkReallocationFunction<a class="headerlink" href="#pfn-vkreallocationfunction" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">VKAPI_PTR</span><span class="w"> </span><span class="o">*</span><span class="n">PFN_vkReallocationFunction</span><span class="p">)(</span>
+<span class="w">    </span><span class="kt">void</span><span class="o">*</span><span class="w">                                       </span><span class="n">pUserData</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">void</span><span class="o">*</span><span class="w">                                       </span><span class="n">pOriginal</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">size_t</span><span class="w">                                      </span><span class="n">size</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">size_t</span><span class="w">                                      </span><span class="n">alignment</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkSystemAllocationScope</span><span class="w">                     </span><span class="n">allocationScope</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pUserData</span> 为用户自定义数据指针。对应 <code class="docutils literal notranslate"><span class="pre">VkAllocationCallbacks::pUserData</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pOriginal</span> 在该内存的基础上进行重分配。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">size</span> 要重分配的内存大小。单位为 <code class="docutils literal notranslate"><span class="pre">字节</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">alignment</span> 要分配内存的 <code class="docutils literal notranslate"><span class="pre">内存对齐</span></code> 大小。单位为 <code class="docutils literal notranslate"><span class="pre">字节</span></code> 。<span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 为 <code class="docutils literal notranslate"><span class="pre">2</span></code> 的幂次方。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">allocationScope</span> 该内存声明周期所属的分配范围。</p></li>
+</ul>
+<p>如果分配成功，需要返回空间 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">最少</span> 为 <code class="docutils literal notranslate"><span class="pre">size</span></code> 字节，并且 <code class="docutils literal notranslate"><span class="pre">pOriginal</span></code> 原始内存内的 <span class="math notranslate nohighlight">\([0, min(原始内存大小, 新分配的内存大小)-1]\)</span> 范围的数据需要原封不动的转移至新分配的内存中。</p>
+<p>如果新分配的内存大小大于之前的分配，则多出来的内存数据初始值是未定义的。</p>
+<p>如果满足如上要求进行了重新单独分配，则之前的内存需要进行回收。</p>
+<p>如果 <code class="docutils literal notranslate"><span class="pre">pOriginal</span></code> 为 <code class="docutils literal notranslate"><span class="pre">空</span></code> ，则该回调的行为需要与 <code class="docutils literal notranslate"><span class="pre">PFN_vkAllocationFunction</span></code> 回调一致。</p>
+<p>如果 <code class="docutils literal notranslate"><span class="pre">size</span></code> 为 <code class="docutils literal notranslate"><span class="pre">0</span></code> ，则该回调的行为需要与 <code class="docutils literal notranslate"><span class="pre">PFN_vkFreeFunction</span></code> 回调一致。</p>
+<p>如果 <code class="docutils literal notranslate"><span class="pre">pOriginal</span></code> 非空，该分配 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 确保 <code class="docutils literal notranslate"><span class="pre">alignment</span></code> 与 <code class="docutils literal notranslate"><span class="pre">pOriginal</span></code> 分配的 <code class="docutils literal notranslate"><span class="pre">alignment</span></code> 保持一致。</p>
+<p>如果重分配失败，并且 <code class="docutils literal notranslate"><span class="pre">pOriginal</span></code> 非空，则 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">不能</span> 回收 <code class="docutils literal notranslate"><span class="pre">pOriginal</span></code> 之前的内存。</p>
+<p><code class="docutils literal notranslate"><span class="pre">PFN_vkReallocationFunction</span></code> 是一个函数指针，需要指向一个返回值为 <code class="docutils literal notranslate"><span class="pre">void*</span></code> 形参为 <code class="docutils literal notranslate"><span class="pre">(void</span> <span class="pre">*pUserData,</span> <span class="pre">void</span> <span class="pre">*pOriginal,</span> <span class="pre">size_t</span> <span class="pre">size,</span> <span class="pre">size_t</span> <span class="pre">alignment,</span> <span class="pre">VkSystemAllocationScope</span> <span class="pre">allocationScope)</span></code> 的函数。比如：</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-3">
+Windows</label><div class="sd-tab-content docutils">
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;malloc.h&gt;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">VKAPI_PTR</span><span class="w"> </span><span class="n">Reallocate</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pUserData</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pOriginal</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">alignment</span><span class="p">,</span><span class="w"> </span><span class="n">VkSystemAllocationScope</span><span class="w"> </span><span class="n">allocationScope</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="n">_aligned_realloc</span><span class="p">(</span><span class="n">pOriginal</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="n">alignment</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">PFN_vkReallocationFunction</span><span class="w"> </span><span class="n">pfn_reallocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Reallocate</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-4" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-4">
+Linux</label><div class="sd-tab-content docutils">
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;malloc.h&gt;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">VKAPI_PTR</span><span class="w"> </span><span class="n">Reallocate</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pUserData</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pOriginal</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">alignment</span><span class="p">,</span><span class="w"> </span><span class="n">VkSystemAllocationScope</span><span class="w"> </span><span class="n">allocationScope</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">new_memory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">memalign</span><span class="p">(</span><span class="n">alignment</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">);</span>
+<span class="w">   </span><span class="k">if</span><span class="p">(</span><span class="n">new_memory</span><span class="p">)</span>
+<span class="w">   </span><span class="p">{</span>
+<span class="w">      </span><span class="n">memcpy</span><span class="p">(</span><span class="n">new_memory</span><span class="p">,</span><span class="w"> </span><span class="n">pOriginal</span><span class="p">,</span><span class="w"> </span><span class="n">min</span><span class="p">(</span><span class="n">malloc_usable_size</span><span class="p">(</span><span class="n">pOriginal</span><span class="p">),</span><span class="w"> </span><span class="n">size</span><span class="p">));</span>
+<span class="w">      </span><span class="n">free</span><span class="p">(</span><span class="n">pOriginal</span><span class="p">);</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">new_memory</span><span class="p">;</span>
+<span class="w">   </span><span class="p">}</span>
+
+<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="w">   </span><span class="c1">//return realloc(pOriginal, size); // 此处使用 realloc(...) 进行重分配可能会有问题，Linux 上没有 _aligned_realloc(...) 函数需要自己实现。</span>
+<span class="p">}</span>
+
+<span class="n">PFN_vkReallocationFunction</span><span class="w"> </span><span class="n">pfn_reallocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Reallocate</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">PFN_vkFreeFunction</span></code> 定义如下：</p>
+</section>
+<section id="pfn-vkfreefunction">
+<h3>PFN_vkFreeFunction<a class="headerlink" href="#pfn-vkfreefunction" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="n">VKAPI_PTR</span><span class="w"> </span><span class="o">*</span><span class="n">PFN_vkFreeFunction</span><span class="p">)(</span>
+<span class="w">    </span><span class="kt">void</span><span class="o">*</span><span class="w">                                       </span><span class="n">pUserData</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">void</span><span class="o">*</span><span class="w">                                       </span><span class="n">pMemory</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pUserData</span> 为用户自定义数据指针。对应 <code class="docutils literal notranslate"><span class="pre">VkAllocationCallbacks::pUserData</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pMemory</span> 要回收的内存指针。</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">PFN_vkFreeFunction</span></code> 是一个函数指针，需要指向一个返回值为 <code class="docutils literal notranslate"><span class="pre">void</span></code> 形参为 <code class="docutils literal notranslate"><span class="pre">(void</span> <span class="pre">*pUserData,</span> <span class="pre">void</span> <span class="pre">*pMemory)</span></code> 的函数。比如：</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-5">
+Windows</label><div class="sd-tab-content docutils">
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;malloc.h&gt;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">VKAPI_PTR</span><span class="w"> </span><span class="n">Free</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pUserData</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pMemory</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="n">_aligned_free</span><span class="p">(</span><span class="n">pMemory</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">PFN_vkFreeFunction</span><span class="w"> </span><span class="n">pfn_free</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Free</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-6" name="sd-tab-set-2" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-6">
+Linux</label><div class="sd-tab-content docutils">
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;malloc.h&gt;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">VKAPI_PTR</span><span class="w"> </span><span class="n">Free</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pUserData</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pMemory</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="n">free</span><span class="p">(</span><span class="n">pOriginal</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">PFN_vkFreeFunction</span><span class="w"> </span><span class="n">pfn_free</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Free</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">PFN_vkInternalAllocationNotification</span></code> 定义如下：</p>
+</section>
+<section id="pfn-vkinternalallocationnotification">
+<h3>PFN_vkInternalAllocationNotification<a class="headerlink" href="#pfn-vkinternalallocationnotification" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="n">VKAPI_PTR</span><span class="w"> </span><span class="o">*</span><span class="n">PFN_vkInternalAllocationNotification</span><span class="p">)(</span>
+<span class="w">    </span><span class="kt">void</span><span class="o">*</span><span class="w">                                       </span><span class="n">pUserData</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">size_t</span><span class="w">                                      </span><span class="n">size</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkInternalAllocationType</span><span class="w">                    </span><span class="n">allocationType</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkSystemAllocationScope</span><span class="w">                     </span><span class="n">allocationScope</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pUserData</span> 为用户自定义数据指针。对应 <code class="docutils literal notranslate"><span class="pre">VkAllocationCallbacks::pUserData</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">size</span> 分配的内存大小。单位为 <code class="docutils literal notranslate"><span class="pre">字节</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">allocationType</span> 分配的类型。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">allocationScope</span> 该内存声明周期所属的分配范围。</p></li>
+</ul>
+<p>该函数回调仅仅用于纯信息返回。</p>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">PFN_vkInternalFreeNotification</span></code> 定义如下：</p>
+</section>
+<section id="pfn-vkinternalfreenotification">
+<h3>PFN_vkInternalFreeNotification<a class="headerlink" href="#pfn-vkinternalfreenotification" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="n">VKAPI_PTR</span><span class="w"> </span><span class="o">*</span><span class="n">PFN_vkInternalFreeNotification</span><span class="p">)(</span>
+<span class="w">    </span><span class="kt">void</span><span class="o">*</span><span class="w">                                       </span><span class="n">pUserData</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">size_t</span><span class="w">                                      </span><span class="n">size</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkInternalAllocationType</span><span class="w">                    </span><span class="n">allocationType</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkSystemAllocationScope</span><span class="w">                     </span><span class="n">allocationScope</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pUserData</span> 为用户自定义数据指针。对应 <code class="docutils literal notranslate"><span class="pre">VkAllocationCallbacks::pUserData</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">size</span> 回收的内存大小。单位为 <code class="docutils literal notranslate"><span class="pre">字节</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">allocationType</span> 分配的类型。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">allocationScope</span> 该内存声明周期所属的分配范围。</p></li>
+</ul>
+<p>该函数回调仅仅用于纯信息返回。</p>
+<p>每一次分配都对应的 <code class="docutils literal notranslate"><span class="pre">allocationScope</span></code> 分配范围用于定义此次分配与之相关的对象。有效的枚举值被定义在了 <code class="docutils literal notranslate"><span class="pre">VkSystemAllocationScope</span></code> 中。其定义如下：</p>
+</section>
+<section id="vksystemallocationscope">
+<h3>VkSystemAllocationScope<a class="headerlink" href="#vksystemallocationscope" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkSystemAllocationScope</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VK_SYSTEM_ALLOCATION_SCOPE_COMMAND</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_SYSTEM_ALLOCATION_SCOPE_OBJECT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_SYSTEM_ALLOCATION_SCOPE_CACHE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_SYSTEM_ALLOCATION_SCOPE_DEVICE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_SYSTEM_ALLOCATION_SCOPE_INSTANCE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkSystemAllocationScope</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_SYSTEM_ALLOCATION_SCOPE_COMMAND</span> 表示此次分配作用于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 指令。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_SYSTEM_ALLOCATION_SCOPE_OBJECT</span> 表示此次分配作用于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 对象创建或使用。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_SYSTEM_ALLOCATION_SCOPE_CACHE</span> 表示此次分配作用于 <code class="docutils literal notranslate"><span class="pre">VkPipelineCache</span></code> 或者 <a href="#id3"><span class="problematic" id="id4">``</span></a>VkValidationCacheEXT `` 对象。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_SYSTEM_ALLOCATION_SCOPE_DEVICE</span> 表示此次分配作用于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的设备。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_SYSTEM_ALLOCATION_SCOPE_INSTANCE</span> 表示此次分配作用于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的实例。</p></li>
+</ul>
+<p>其中作为 <code class="docutils literal notranslate"><span class="pre">pfnInternalAllocation</span></code> 和 <code class="docutils literal notranslate"><span class="pre">pfnInternalFree</span></code> 回调函数形参的 <code class="docutils literal notranslate"><span class="pre">allocationType</span></code> 有效的枚举值被定义在了 <code class="docutils literal notranslate"><span class="pre">VkInternalAllocationType</span></code> 中。其定义如下：</p>
+</section>
+<section id="vkinternalallocationtype">
+<h3>VkInternalAllocationType<a class="headerlink" href="#vkinternalallocationtype" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkInternalAllocationType</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VK_INTERNAL_ALLOCATION_TYPE_EXECUTABLE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkInternalAllocationType</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_INTERNAL_ALLOCATION_TYPE_EXECUTABLE</span> 表示此次分配作用于 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端程序。</p></li>
+</ul>
+</section>
+<section id="id5">
+<h3>示例<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
+<p>这里给出 <code class="docutils literal notranslate"><span class="pre">Windows</span></code> 平台代码示例， <code class="docutils literal notranslate"><span class="pre">Linux</span></code> 平台类似。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;malloc.h&gt;</span>
+
+<span class="kt">size_t</span><span class="w"> </span><span class="n">memory_in_use</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="c1">// 统计内存使用大小</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">VKAPI_PTR</span><span class="w"> </span><span class="n">Allocation</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pUserData</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">alignment</span><span class="p">,</span><span class="w"> </span><span class="n">VkSystemAllocationScope</span><span class="w"> </span><span class="n">allocationScope</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="n">memory_in_use</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">size</span><span class="p">;</span>
+<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="n">_aligned_malloc</span><span class="p">(</span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="n">alignment</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">VKAPI_PTR</span><span class="w"> </span><span class="n">Reallocate</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pUserData</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pOriginal</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">alignment</span><span class="p">,</span><span class="w"> </span><span class="n">VkSystemAllocationScope</span><span class="w"> </span><span class="n">allocationScope</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="n">memory_in_use</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="n">_msize</span><span class="p">(</span><span class="n">pOriginal</span><span class="p">);</span>
+<span class="w">   </span><span class="n">memory_in_use</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">size</span><span class="p">;</span>
+<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="n">_aligned_realloc</span><span class="p">(</span><span class="n">pOriginal</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="n">alignment</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">VKAPI_PTR</span><span class="w"> </span><span class="n">Free</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pUserData</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pMemory</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="n">memory_in_use</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="n">_msize</span><span class="p">(</span><span class="n">pMemory</span><span class="p">);</span>
+<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="n">_aligned_free</span><span class="p">(</span><span class="n">pMemory</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="n">VKAPI_PTR</span><span class="w"> </span><span class="n">InternalAllocationNotification</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">pUserData</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="n">VkInternalAllocationType</span><span class="w"> </span><span class="n">allocationType</span><span class="p">,</span><span class="w"> </span><span class="n">VkSystemAllocationScope</span><span class="w"> </span><span class="n">allocationScope</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="n">VKAPI_PTR</span><span class="w"> </span><span class="n">InternalFreeNotification</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">pUserData</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="n">VkInternalAllocationType</span><span class="w"> </span><span class="n">allocationType</span><span class="p">,</span><span class="w"> </span><span class="n">VkSystemAllocationScope</span><span class="w"> </span><span class="n">allocationScope</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="p">}</span>
+
+<span class="n">VkAllocationCallbacks</span><span class="w"> </span><span class="n">GetVkAllocationCallbacks</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">pUserData</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="n">VkAllocationCallbacks</span><span class="w"> </span><span class="n">vk_allocation_callbacks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
+<span class="w">   </span><span class="n">vk_allocation_callbacks</span><span class="p">.</span><span class="n">pUserData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pUserData</span><span class="p">;</span>
+<span class="w">   </span><span class="n">vk_allocation_callbacks</span><span class="p">.</span><span class="n">pfnAllocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Allocation</span><span class="p">;</span>
+<span class="w">   </span><span class="n">vk_allocation_callbacks</span><span class="p">.</span><span class="n">pfnReallocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Reallocate</span><span class="p">;</span>
+<span class="w">   </span><span class="n">vk_allocation_callbacks</span><span class="p">.</span><span class="n">pfnFree</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Free</span><span class="p">;</span>
+<span class="w">   </span><span class="n">vk_allocation_callbacks</span><span class="p">.</span><span class="n">pfnInternalAllocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">InternalAllocationNotification</span><span class="p">;</span>
+<span class="w">   </span><span class="n">vk_allocation_callbacks</span><span class="p">.</span><span class="n">pfnInternalFree</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">InternalFreeNotification</span><span class="p">;</span>
+
+<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="n">vk_allocation_callbacks</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">VkInstanceCreateInfo</span><span class="w"> </span><span class="n">instance_create_info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前填写的创建信息</span><span class="p">;</span>
+
+<span class="n">VkAllocationCallbacks</span><span class="w"> </span><span class="n">allocation_callbacks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GetVkAllocationCallbacks</span><span class="p">(</span><span class="k">nullptr</span><span class="p">);</span>
+
+<span class="n">VkInstance</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_NULL_HANDLE</span><span class="p">;</span>
+
+<span class="n">VkResult</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vkCreateInstance</span><span class="p">(</span><span class="o">&amp;</span><span class="n">instance_create_info</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">allocation_callbacks</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">instance</span><span class="p">);</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">result</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">VK_SUCCESS</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="s">&quot;VkInstance 创建失败&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// 缤纷绚丽的 Vulkan 程序 ...</span>
+
+<span class="n">vkDestroyInstance</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">allocation_callbacks</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
 
         </article>
       </div>
@@ -349,8 +750,37 @@
 
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+
+<div class="toc-sticky toc-scroll" style="width: 500px;">
+    <div class="toc-title-container" style="width: 500px;">
+        <span class="toc-title" style="width: 500px;">
+            On this page
+        </span>
+    </div>
+    <div class="toc-tree-container" style="width: 500px;">
+        <div class="toc-tree" style="width: 500px;">
+            <ul>
+<li><a class="reference internal" href="#">内存</a><ul>
+<li><a class="reference internal" href="#id2">句柄对象的内存分配器</a><ul>
+<li><a class="reference internal" href="#pfn-vkallocationfunction">PFN_vkAllocationFunction</a></li>
+<li><a class="reference internal" href="#pfn-vkreallocationfunction">PFN_vkReallocationFunction</a></li>
+<li><a class="reference internal" href="#pfn-vkfreefunction">PFN_vkFreeFunction</a></li>
+<li><a class="reference internal" href="#pfn-vkinternalallocationnotification">PFN_vkInternalAllocationNotification</a></li>
+<li><a class="reference internal" href="#pfn-vkinternalfreenotification">PFN_vkInternalFreeNotification</a></li>
+<li><a class="reference internal" href="#vksystemallocationscope">VkSystemAllocationScope</a></li>
+<li><a class="reference internal" href="#vkinternalallocationtype">VkInternalAllocationType</a></li>
+<li><a class="reference internal" href="#id5">示例</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+    </div>
+</div>
 
 
     </aside>
@@ -365,6 +795,8 @@
     <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
     <script src="_static/translations.js?v=beaddf03"></script>
     <script src="_static/design-tabs.js?v=36754332"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
     </body>
 </html>
