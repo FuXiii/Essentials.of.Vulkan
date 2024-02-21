@@ -10,6 +10,13 @@
    * 2024/2/17 增加 ``句柄对象的内存分配器`` 章节。
    * 2024/2/17 增加 ``PFN_vkAllocationFunction`` 章节。
    * 2024/2/17 增加 ``PFN_vkReallocationFunction`` 章节。
+   * 2024/2/21 更新 ``PFN_vkAllocationFunction`` 章节。
+   * 2024/2/21 更新 ``PFN_vkReallocationFunction`` 章节。
+   * 2024/2/21 增加 ``PFN_vkInternalAllocationNotification`` 章节。
+   * 2024/2/21 增加 ``PFN_vkInternalFreeNotification`` 章节。
+   * 2024/2/21 增加 ``VkSystemAllocationScope`` 章节。
+   * 2024/2/21 增加 ``VkInternalAllocationType`` 章节。
+   * 2024/2/21 增加 ``示例`` 章节。
 
 ``Vulkan`` 中有两种分配内存的途径：
 
@@ -81,6 +88,8 @@ PFN_vkAllocationFunction
 
 该函数回调将返回大小为 ``size`` 比特，内存对齐为 ``alignment`` 分配的新内存。
 
+如果分配失败，该函数 :bdg-danger:`必须` 返回 ``NULL`` 。如果分配成功，需要返回空间 :bdg-danger:`最少` 为 ``size`` 字节，并且指针地址为 ``alignment`` 的倍数。
+
 .. admonition:: 内存对齐
    :class: note
 
@@ -115,6 +124,19 @@ PFN_vkAllocationFunction
 
 .. tab-set::
 
+    .. tab-item:: C++ 17
+
+      .. code:: c++
+
+         #include <cstdlib>
+
+         void *VKAPI_PTR Allocation(void *pUserData, size_t size, size_t alignment, VkSystemAllocationScope allocationScope)
+         {
+            return aligned_alloc(alignment, size);
+         }
+
+         PFN_vkAllocationFunction pfn_allocation = &Allocation;
+
     .. tab-item:: Windows
 
       .. code:: c++
@@ -132,7 +154,7 @@ PFN_vkAllocationFunction
 
       .. code:: c++
 
-         #include <cstdlib>
+         #include <malloc.h>
 
          void *VKAPI_PTR Allocation(void *pUserData, size_t size, size_t alignment, VkSystemAllocationScope allocationScope)
          {
@@ -162,9 +184,21 @@ PFN_vkReallocationFunction
 * :bdg-secondary:`alignment` 要分配内存的 ``内存对齐`` 大小。单位为 ``字节`` 。:bdg-danger:`必须` 为 ``2`` 的幂次方。
 * :bdg-secondary:`allocationScope` 该内存声明周期所属的分配范围。
 
-该回调将返回在 ``pOriginal`` 内存的基础上进行重分配，并将新分配的内存结果返回。
+.. 该回调将返回在 ``pOriginal`` 内存的基础上进行重分配，并将新分配的内存结果返回。
+
+如果分配成功，需要返回空间 :bdg-danger:`最少` 为 ``size`` 字节，并且 ``pOriginal`` 原始内存内的 :math:`[0, min(原始内存大小, 新分配的内存大小)-1]` 范围的数据需要原封不动的转移至新分配的内存中。
+
+如果新分配的内存大小大于之前的分配，则多出来的内存数据初始值是未定义的。
+
+如果满足如上要求进行了重新单独分配，则之前的内存需要进行回收。
 
 如果 ``pOriginal`` 为 ``空`` ，则该回调的行为需要与 ``PFN_vkAllocationFunction`` 回调一致。
+
+如果 ``size`` 为 ``0`` ，则该回调的行为需要与 ``PFN_vkFreeFunction`` 回调一致。
+
+如果 ``pOriginal`` 非空，该分配 :bdg-danger:`必须` 确保 ``alignment`` 与 ``pOriginal`` 分配的 ``alignment`` 保持一致。
+
+如果重分配失败，并且 ``pOriginal`` 非空，则 :bdg-danger:`不能` 回收 ``pOriginal`` 之前的内存。
 
 ``PFN_vkReallocationFunction`` 是一个函数指针，需要指向一个返回值为 ``void*`` 形参为 ``(void *pUserData, void *pOriginal, size_t size, size_t alignment, VkSystemAllocationScope allocationScope)`` 的函数。比如：
 
@@ -187,11 +221,20 @@ PFN_vkReallocationFunction
 
       .. code:: c++
 
-         #include <cstdlib>
+         #include <malloc.h>
 
          void *VKAPI_PTR Reallocate(void *pUserData, void *pOriginal, size_t size, size_t alignment, VkSystemAllocationScope allocationScope)
          {
-            return realloc(pOriginal, size); // 此处使用 realloc(...) 进行重分配可能会有问题，Linux 上没有 _aligned_realloc(...) 函数需要自己实现。
+            void* new_memory = memalign(alignment, size);
+            if(new_memory)
+            {
+               memcpy(new_memory, pOriginal, min(malloc_usable_size(pOriginal), size));
+               free(pOriginal);
+               return new_memory;
+            }
+
+            return nullptr;
+            //return realloc(pOriginal, size); // 此处使用 realloc(...) 进行重分配可能会有问题，Linux 上没有 _aligned_realloc(...) 函数需要自己实现。
          }
 
          PFN_vkReallocationFunction pfn_reallocation = &Reallocate;
@@ -232,7 +275,7 @@ PFN_vkFreeFunction
 
       .. code:: c++
 
-         #include <cstdlib>
+         #include <malloc.h>
 
          void *VKAPI_PTR Free(void *pUserData, void *pMemory)
          {
@@ -240,3 +283,148 @@ PFN_vkFreeFunction
          }
 
          PFN_vkFreeFunction pfn_free = &Free;
+
+其中 ``PFN_vkInternalAllocationNotification`` 定义如下：
+
+PFN_vkInternalAllocationNotification
+***************************************
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef void (VKAPI_PTR *PFN_vkInternalAllocationNotification)(
+       void*                                       pUserData,
+       size_t                                      size,
+       VkInternalAllocationType                    allocationType,
+       VkSystemAllocationScope                     allocationScope);
+
+* :bdg-secondary:`pUserData` 为用户自定义数据指针。对应 ``VkAllocationCallbacks::pUserData`` 。
+* :bdg-secondary:`size` 分配的内存大小。单位为 ``字节`` 。
+* :bdg-secondary:`allocationType` 分配的类型。
+* :bdg-secondary:`allocationScope` 该内存声明周期所属的分配范围。
+
+该函数回调仅仅用于纯信息返回。
+
+其中 ``PFN_vkInternalFreeNotification`` 定义如下：
+
+PFN_vkInternalFreeNotification
+***************************************
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef void (VKAPI_PTR *PFN_vkInternalFreeNotification)(
+       void*                                       pUserData,
+       size_t                                      size,
+       VkInternalAllocationType                    allocationType,
+       VkSystemAllocationScope                     allocationScope);
+
+* :bdg-secondary:`pUserData` 为用户自定义数据指针。对应 ``VkAllocationCallbacks::pUserData`` 。
+* :bdg-secondary:`size` 回收的内存大小。单位为 ``字节`` 。
+* :bdg-secondary:`allocationType` 分配的类型。
+* :bdg-secondary:`allocationScope` 该内存声明周期所属的分配范围。
+
+该函数回调仅仅用于纯信息返回。
+
+每一次分配都对应的 ``allocationScope`` 分配范围用于定义此次分配与之相关的对象。有效的枚举值被定义在了 ``VkSystemAllocationScope`` 中。其定义如下：
+
+VkSystemAllocationScope
+***************************************
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef enum VkSystemAllocationScope {
+       VK_SYSTEM_ALLOCATION_SCOPE_COMMAND = 0,
+       VK_SYSTEM_ALLOCATION_SCOPE_OBJECT = 1,
+       VK_SYSTEM_ALLOCATION_SCOPE_CACHE = 2,
+       VK_SYSTEM_ALLOCATION_SCOPE_DEVICE = 3,
+       VK_SYSTEM_ALLOCATION_SCOPE_INSTANCE = 4,
+   } VkSystemAllocationScope;
+
+* :bdg-secondary:`VK_SYSTEM_ALLOCATION_SCOPE_COMMAND` 表示此次分配作用于 ``Vulkan`` 指令。
+* :bdg-secondary:`VK_SYSTEM_ALLOCATION_SCOPE_OBJECT` 表示此次分配作用于 ``Vulkan`` 对象创建或使用。
+* :bdg-secondary:`VK_SYSTEM_ALLOCATION_SCOPE_CACHE` 表示此次分配作用于 ``VkPipelineCache`` 或者 ``VkValidationCacheEXT `` 对象。
+* :bdg-secondary:`VK_SYSTEM_ALLOCATION_SCOPE_DEVICE` 表示此次分配作用于 ``Vulkan`` 的设备。
+* :bdg-secondary:`VK_SYSTEM_ALLOCATION_SCOPE_INSTANCE` 表示此次分配作用于 ``Vulkan`` 的实例。
+
+其中作为 ``pfnInternalAllocation`` 和 ``pfnInternalFree`` 回调函数形参的 ``allocationType`` 有效的枚举值被定义在了 ``VkInternalAllocationType`` 中。其定义如下：
+
+VkInternalAllocationType
+***************************************
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef enum VkInternalAllocationType {
+       VK_INTERNAL_ALLOCATION_TYPE_EXECUTABLE = 0,
+   } VkInternalAllocationType;
+
+* :bdg-secondary:`VK_INTERNAL_ALLOCATION_TYPE_EXECUTABLE` 表示此次分配作用于 ``Host`` 端程序。
+
+示例
+*******
+
+这里给出 ``Windows`` 平台代码示例， ``Linux`` 平台类似。
+
+.. code:: c++
+
+   #include <malloc.h>
+
+   size_t memory_in_use = 0; // 统计内存使用大小
+
+   void *VKAPI_PTR Allocation(void *pUserData, size_t size, size_t alignment, VkSystemAllocationScope allocationScope)
+   {
+      memory_in_use += size;
+      return _aligned_malloc(size, alignment);
+   }
+
+   void *VKAPI_PTR Reallocate(void *pUserData, void *pOriginal, size_t size, size_t alignment, VkSystemAllocationScope allocationScope)
+   {
+      memory_in_use -= _msize(pOriginal);
+      memory_in_use += size;
+      return _aligned_realloc(pOriginal, size, alignment);
+   }
+
+   void *VKAPI_PTR Free(void *pUserData, void *pMemory)
+   {
+      memory_in_use -= _msize(pMemory);
+      return _aligned_free(pMemory);
+   }
+
+   void VKAPI_PTR InternalAllocationNotification(void* pUserData, size_t size, VkInternalAllocationType allocationType, VkSystemAllocationScope allocationScope)
+   {
+   }
+
+   void VKAPI_PTR InternalFreeNotification(void* pUserData, size_t size, VkInternalAllocationType allocationType, VkSystemAllocationScope allocationScope)
+   {
+   }
+
+   VkAllocationCallbacks GetVkAllocationCallbacks(void* pUserData)
+   {
+      VkAllocationCallbacks vk_allocation_callbacks = {};
+      vk_allocation_callbacks.pUserData = pUserData;
+      vk_allocation_callbacks.pfnAllocation = &Allocation;
+      vk_allocation_callbacks.pfnReallocation = &Reallocate;
+      vk_allocation_callbacks.pfnFree = &Free;
+      vk_allocation_callbacks.pfnInternalAllocation = &InternalAllocationNotification;
+      vk_allocation_callbacks.pfnInternalFree = &InternalFreeNotification;
+
+      return vk_allocation_callbacks;
+   }
+
+   VkInstanceCreateInfo instance_create_info = 之前填写的创建信息;
+
+   VkAllocationCallbacks allocation_callbacks = GetVkAllocationCallbacks(nullptr);
+
+   VkInstance instance = VK_NULL_HANDLE;
+
+   VkResult result = vkCreateInstance(&instance_create_info, &allocation_callbacks, &instance);
+   if (result != VK_SUCCESS)
+   {
+      throw std::runtime_error("VkInstance 创建失败");
+   }
+
+   // 缤纷绚丽的 Vulkan 程序 ...
+
+   vkDestroyInstance(instance, &allocation_callbacks);
