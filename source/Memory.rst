@@ -17,6 +17,8 @@
    * 2024/2/21 增加 ``VkSystemAllocationScope`` 章节。
    * 2024/2/21 增加 ``VkInternalAllocationType`` 章节。
    * 2024/2/21 增加 ``示例`` 章节。
+   * 2024/2/27 增加 ``设备内存`` 章节。
+   * 2024/2/27 增加 ``vkGetPhysicalDeviceMemoryProperties`` 章节。
 
 ``Vulkan`` 中有两种分配内存的途径：
 
@@ -428,3 +430,41 @@ VkInternalAllocationType
    // 缤纷绚丽的 Vulkan 程序 ...
 
    vkDestroyInstance(instance, &allocation_callbacks);
+
+设备内存
+#########################
+
+``Vulkan`` 标准规定了两种设备内存：
+
+1. :bdg-secondary:`Host 端内存` 一般表示主板内存条上的内存。
+2. :bdg-secondary:`Device 端内存` 一般表示 ``GPU`` 设备内部使用的内存。
+
+这些设备内存根据不同特性又分为两种类型：
+
+1. :bdg-secondary:`Host 端内存，但可被 Device 端访问` 这类内存的前提是在主板的内存条上，并且这部分内存可被 ``GPU`` 访问。
+2. :bdg-secondary:`Device 端独占内存` ``GPU`` 设备自身携带的专有内存。
+
+其示意图如下：
+
+.. figure:: ./_static/device_memory_struct.png
+
+   Vulkan 设备内存示意图
+
+.. important::
+
+   不管内存是内存条上的还是物理设备上的，只要能被 ``Vulkan`` 识别并使用的内存都叫做 ``设备内存`` 。
+
+由于 ``Vulkan`` 支持多种类型的内存，所以需要先通过 ``vkGetPhysicalDeviceMemoryProperties(...)`` 获取支持的内存信息。其定义如下：
+
+vkGetPhysicalDeviceMemoryProperties
+**************************************
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   void vkGetPhysicalDeviceMemoryProperties(
+       VkPhysicalDevice                            physicalDevice,
+       VkPhysicalDeviceMemoryProperties*           pMemoryProperties);
+
+* :bdg-secondary:`physicalDevice` 要获取设备内存所对应的物理设备。
+* :bdg-secondary:`pMemoryProperties` 返回设备内存信息。
