@@ -294,6 +294,12 @@
 <li><p class="sd-card-text">2024/2/21 增加 <code class="docutils literal notranslate"><span class="pre">VkSystemAllocationScope</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/2/21 增加 <code class="docutils literal notranslate"><span class="pre">VkInternalAllocationType</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/2/21 增加 <code class="docutils literal notranslate"><span class="pre">示例</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/2/27 增加 <code class="docutils literal notranslate"><span class="pre">设备内存</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/2/27 增加 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/3/3 更新 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/3/3 增加 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/3/3 增加 <code class="docutils literal notranslate"><span class="pre">VkMemoryHeap</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/3/3 增加 <code class="docutils literal notranslate"><span class="pre">VkMemoryType</span></code> 章节。</p></li>
 </ul>
 </div>
 </details><p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中有两种分配内存的途径：</p>
@@ -686,6 +692,133 @@ Linux</label><div class="sd-tab-content docutils">
 </div>
 </section>
 </section>
+<section id="id6">
+<h2>设备内存<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准规定了两种设备内存：</p>
+<ol class="arabic simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">Host 端内存</span> 一般表示主板内存条上的内存。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">Device 端内存</span> 一般表示 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 设备内部使用的内存。</p></li>
+</ol>
+<p>这些设备内存根据不同特性又分为两种类型：</p>
+<ol class="arabic simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">Host 端内存，但可被 Device 端访问</span> 这类内存的前提是在主板的内存条上，并且这部分内存可被 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 访问。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">Device 端独占内存</span> <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 设备自身携带的专有内存。</p></li>
+</ol>
+<p>其示意图如下：</p>
+<figure class="align-default" id="id7">
+<img alt="_images/device_memory_struct.png" src="_images/device_memory_struct.png" />
+<figcaption>
+<p><span class="caption-text">Vulkan 设备内存示意图</span><a class="headerlink" href="#id7" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<div class="admonition important">
+<p class="admonition-title">重要</p>
+<p>不管内存是内存条上的还是物理设备上的，只要能被 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 识别并使用的内存都叫做 <code class="docutils literal notranslate"><span class="pre">设备内存</span></code> 。</p>
+</div>
+<p>由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 支持多种类型的内存，所以需要先通过 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties(...)</span></code> 获取支持的内存信息。其定义如下：</p>
+<section id="vkgetphysicaldevicememoryproperties">
+<h3>vkGetPhysicalDeviceMemoryProperties<a class="headerlink" href="#vkgetphysicaldevicememoryproperties" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">vkGetPhysicalDeviceMemoryProperties</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkPhysicalDevice</span><span class="w">                            </span><span class="n">physicalDevice</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkPhysicalDeviceMemoryProperties</span><span class="o">*</span><span class="w">           </span><span class="n">pMemoryProperties</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">physicalDevice</span> 要获取设备内存所对应的物理设备。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pMemoryProperties</span> 返回设备内存信息。</p></li>
+</ul>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">pMemoryProperties</span></code> 将会写入 <code class="docutils literal notranslate"><span class="pre">physicalDevice</span></code> 所对应设备的所有可访问内存信息，有关 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties</span></code> 定义如下：</p>
+</section>
+<section id="vkphysicaldevicememoryproperties">
+<h3>VkPhysicalDeviceMemoryProperties<a class="headerlink" href="#vkphysicaldevicememoryproperties" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkPhysicalDeviceMemoryProperties</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">        </span><span class="n">memoryTypeCount</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkMemoryType</span><span class="w">    </span><span class="n">memoryTypes</span><span class="p">[</span><span class="n">VK_MAX_MEMORY_TYPES</span><span class="p">];</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">        </span><span class="n">memoryHeapCount</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkMemoryHeap</span><span class="w">    </span><span class="n">memoryHeaps</span><span class="p">[</span><span class="n">VK_MAX_MEMORY_HEAPS</span><span class="p">];</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkPhysicalDeviceMemoryProperties</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">memoryTypeCount</span> 支持的内存类型数量。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">memoryTypes</span> 有效元素个数为 <code class="docutils literal notranslate"><span class="pre">memoryTypeCount</span></code> 的内存类型信息数组。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">memoryHeapCount</span> 支持的内存堆数量。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">memoryHeaps</span> 有效元素个数为 <code class="docutils literal notranslate"><span class="pre">memoryHeapCount</span></code> 的内存堆信息数组。</p></li>
+</ul>
+<div class="note admonition">
+<p class="admonition-title">VK_MAX_MEMORY_TYPES 和 VK_MAX_MEMORY_HEAPS</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#define VK_MAX_MEMORY_TYPES 32U</span>
+<span class="cp">#define VK_MAX_MEMORY_HEAPS 16U</span>
+</pre></div>
+</div>
+</div>
+<div class="note admonition">
+<p class="admonition-title">内存堆</p>
+<p>所谓 <code class="docutils literal notranslate"><span class="pre">堆</span></code> 其实就是一大块连续的容器，当分配内存时，操作系统会尝试从一大块容器中分配连续并且大小合适的小容器返回给用户，之后用户就可以使用这部分容器读写数据了。</p>
+</div>
+<p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中我们知道内存堆可分为两种：</p>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">Host 端</span></p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">Device 端</span></p></li>
+</ul>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">memoryHeaps</span></code> 中就是用于获取具体内存堆是哪一种。其中 <code class="docutils literal notranslate"><span class="pre">VkMemoryHeap</span></code> 定义如下：</p>
+</section>
+<section id="vkmemoryheap">
+<h3>VkMemoryHeap<a class="headerlink" href="#vkmemoryheap" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkMemoryHeap</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VkDeviceSize</span><span class="w">         </span><span class="n">size</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkMemoryHeapFlags</span><span class="w">    </span><span class="n">flags</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkMemoryHeap</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">size</span> 该堆大小。单位为字节。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">flags</span> 该堆类型标志位。</p></li>
+</ul>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">flags</span></code> 就是用于指示该堆的类型。其有效值定义于 <code class="docutils literal notranslate"><span class="pre">VkMemoryHeapFlagBits</span></code> 中，如下：</p>
+<section id="vkmemoryheapflagbits">
+<h4>VkMemoryHeapFlagBits<a class="headerlink" href="#vkmemoryheapflagbits" title="Link to this heading">#</a></h4>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// Provided by VK_VERSION_1_0</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkMemoryHeapFlagBits</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VK_MEMORY_HEAP_DEVICE_LOCAL_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000001</span><span class="p">,</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkMemoryHeapFlagBits</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_MEMORY_HEAP_DEVICE_LOCAL_BIT</span> 该堆为设备端独占内存。</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>有时 <code class="docutils literal notranslate"><span class="pre">VkMemoryHeap::flags</span></code> 为 <code class="docutils literal notranslate"><span class="pre">0</span></code> ，该值并没有定义于 <code class="docutils literal notranslate"><span class="pre">VkMemoryHeapFlagBits</span></code> 中。此时一般认为该内存堆为 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端内存。</p>
+</div>
+<p>如下，为一种可能的设备内存堆获取到的结果：</p>
+<figure class="align-default" id="id8">
+<img alt="_images/memory_heaps.png" src="_images/memory_heaps.png" />
+<figcaption>
+<p><span class="caption-text">设备内存堆示意图</span><a class="headerlink" href="#id8" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>其中每个堆自身可以包含一到多个类型的内存，堆上的内存类型信息被定义在 <code class="docutils literal notranslate"><span class="pre">memoryTypes</span></code> 中，其 <code class="docutils literal notranslate"><span class="pre">VkMemoryType</span></code> 定义如下：</p>
+</section>
+</section>
+<section id="vkmemorytype">
+<h3>VkMemoryType<a class="headerlink" href="#vkmemorytype" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkMemoryType</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VkMemoryPropertyFlags</span><span class="w">    </span><span class="n">propertyFlags</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                 </span><span class="n">heapIndex</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkMemoryType</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">propertyFlags</span> 内存类型标志位。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">heapIndex</span> 对应的 <code class="docutils literal notranslate"><span class="pre">memoryHeaps</span></code> 堆索引。</p></li>
+</ul>
+</section>
+</section>
 </section>
 
         </article>
@@ -772,6 +905,16 @@ Linux</label><div class="sd-tab-content docutils">
 <li><a class="reference internal" href="#vksystemallocationscope">VkSystemAllocationScope</a></li>
 <li><a class="reference internal" href="#vkinternalallocationtype">VkInternalAllocationType</a></li>
 <li><a class="reference internal" href="#id5">示例</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id6">设备内存</a><ul>
+<li><a class="reference internal" href="#vkgetphysicaldevicememoryproperties">vkGetPhysicalDeviceMemoryProperties</a></li>
+<li><a class="reference internal" href="#vkphysicaldevicememoryproperties">VkPhysicalDeviceMemoryProperties</a></li>
+<li><a class="reference internal" href="#vkmemoryheap">VkMemoryHeap</a><ul>
+<li><a class="reference internal" href="#vkmemoryheapflagbits">VkMemoryHeapFlagBits</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#vkmemorytype">VkMemoryType</a></li>
 </ul>
 </li>
 </ul>

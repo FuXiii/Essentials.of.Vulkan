@@ -17,6 +17,12 @@
    * 2024/2/21 增加 ``VkSystemAllocationScope`` 章节。
    * 2024/2/21 增加 ``VkInternalAllocationType`` 章节。
    * 2024/2/21 增加 ``示例`` 章节。
+   * 2024/2/27 增加 ``设备内存`` 章节。
+   * 2024/2/27 增加 ``vkGetPhysicalDeviceMemoryProperties`` 章节。
+   * 2024/3/3 更新 ``vkGetPhysicalDeviceMemoryProperties`` 章节。
+   * 2024/3/3 增加 ``VkPhysicalDeviceMemoryProperties`` 章节。
+   * 2024/3/3 增加 ``VkMemoryHeap`` 章节。
+   * 2024/3/3 增加 ``VkMemoryType`` 章节。
 
 ``Vulkan`` 中有两种分配内存的途径：
 
@@ -428,3 +434,142 @@ VkInternalAllocationType
    // 缤纷绚丽的 Vulkan 程序 ...
 
    vkDestroyInstance(instance, &allocation_callbacks);
+
+设备内存
+#########################
+
+``Vulkan`` 标准规定了两种设备内存：
+
+1. :bdg-secondary:`Host 端内存` 一般表示主板内存条上的内存。
+2. :bdg-secondary:`Device 端内存` 一般表示 ``GPU`` 设备内部使用的内存。
+
+这些设备内存根据不同特性又分为两种类型：
+
+1. :bdg-secondary:`Host 端内存，但可被 Device 端访问` 这类内存的前提是在主板的内存条上，并且这部分内存可被 ``GPU`` 访问。
+2. :bdg-secondary:`Device 端独占内存` ``GPU`` 设备自身携带的专有内存。
+
+其示意图如下：
+
+.. figure:: ./_static/device_memory_struct.png
+
+   Vulkan 设备内存示意图
+
+.. important::
+
+   不管内存是内存条上的还是物理设备上的，只要能被 ``Vulkan`` 识别并使用的内存都叫做 ``设备内存`` 。
+
+由于 ``Vulkan`` 支持多种类型的内存，所以需要先通过 ``vkGetPhysicalDeviceMemoryProperties(...)`` 获取支持的内存信息。其定义如下：
+
+vkGetPhysicalDeviceMemoryProperties
+**************************************
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   void vkGetPhysicalDeviceMemoryProperties(
+       VkPhysicalDevice                            physicalDevice,
+       VkPhysicalDeviceMemoryProperties*           pMemoryProperties);
+
+* :bdg-secondary:`physicalDevice` 要获取设备内存所对应的物理设备。
+* :bdg-secondary:`pMemoryProperties` 返回设备内存信息。
+
+其中 ``pMemoryProperties`` 将会写入 ``physicalDevice`` 所对应设备的所有可访问内存信息，有关 ``VkPhysicalDeviceMemoryProperties`` 定义如下：
+
+VkPhysicalDeviceMemoryProperties
+**************************************
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef struct VkPhysicalDeviceMemoryProperties {
+       uint32_t        memoryTypeCount;
+       VkMemoryType    memoryTypes[VK_MAX_MEMORY_TYPES];
+       uint32_t        memoryHeapCount;
+       VkMemoryHeap    memoryHeaps[VK_MAX_MEMORY_HEAPS];
+   } VkPhysicalDeviceMemoryProperties;
+
+* :bdg-secondary:`memoryTypeCount` 支持的内存类型数量。
+* :bdg-secondary:`memoryTypes` 有效元素个数为 ``memoryTypeCount`` 的内存类型信息数组。
+* :bdg-secondary:`memoryHeapCount` 支持的内存堆数量。
+* :bdg-secondary:`memoryHeaps` 有效元素个数为 ``memoryHeapCount`` 的内存堆信息数组。
+
+.. admonition:: VK_MAX_MEMORY_TYPES 和 VK_MAX_MEMORY_HEAPS
+   :class: note
+
+   .. code:: c++
+
+      #define VK_MAX_MEMORY_TYPES 32U
+      #define VK_MAX_MEMORY_HEAPS 16U
+
+.. admonition:: 内存堆
+   :class: note
+
+   所谓 ``堆`` 其实就是一大块连续的容器，当分配内存时，操作系统会尝试从一大块容器中分配连续并且大小合适的小容器返回给用户，之后用户就可以使用这部分容器读写数据了。
+
+在 ``Vulkan`` 中我们知道内存堆可分为两种：
+
+* :bdg-secondary:`Host 端`
+* :bdg-secondary:`Device 端`
+
+其中 ``memoryHeaps`` 中就是用于获取具体内存堆是哪一种。其中 ``VkMemoryHeap`` 定义如下：
+
+..
+   并且每一个堆自身拥有一些列属性，用于定义堆上内存对应的内存类型，这些内存类型信息存储在 ``memoryTypes`` 中。示意图如下：
+
+   .. figure:: ./_static/device_memory_struct.png
+
+      Vulkan 设备内存示意图
+
+VkMemoryHeap
+**************************************
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef struct VkMemoryHeap {
+       VkDeviceSize         size;
+       VkMemoryHeapFlags    flags;
+   } VkMemoryHeap;
+
+* :bdg-secondary:`size` 该堆大小。单位为字节。
+* :bdg-secondary:`flags` 该堆类型标志位。
+
+其中 ``flags`` 就是用于指示该堆的类型。其有效值定义于 ``VkMemoryHeapFlagBits`` 中，如下：
+
+VkMemoryHeapFlagBits
+----------------------
+
+.. code:: c++
+
+   // Provided by VK_VERSION_1_0
+   typedef enum VkMemoryHeapFlagBits {
+       VK_MEMORY_HEAP_DEVICE_LOCAL_BIT = 0x00000001,
+   } VkMemoryHeapFlagBits;
+
+* :bdg-secondary:`VK_MEMORY_HEAP_DEVICE_LOCAL_BIT` 该堆为设备端独占内存。
+
+.. note::
+
+   有时 ``VkMemoryHeap::flags`` 为 ``0`` ，该值并没有定义于 ``VkMemoryHeapFlagBits`` 中。此时一般认为该内存堆为 ``Host`` 端内存。
+
+如下，为一种可能的设备内存堆获取到的结果：
+
+.. figure:: ./_static/memory_heaps.png
+
+   设备内存堆示意图
+
+其中每个堆自身可以包含一到多个类型的内存，堆上的内存类型信息被定义在 ``memoryTypes`` 中，其 ``VkMemoryType`` 定义如下：
+
+VkMemoryType
+**************************************
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef struct VkMemoryType {
+       VkMemoryPropertyFlags    propertyFlags;
+       uint32_t                 heapIndex;
+   } VkMemoryType;
+
+* :bdg-secondary:`propertyFlags` 内存类型标志位。
+* :bdg-secondary:`heapIndex` 对应的 ``memoryHeaps`` 堆索引。
