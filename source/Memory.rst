@@ -23,6 +23,7 @@
    * 2024/3/3 增加 ``VkPhysicalDeviceMemoryProperties`` 章节。
    * 2024/3/3 增加 ``VkMemoryHeap`` 章节。
    * 2024/3/3 增加 ``VkMemoryType`` 章节。
+   * 2024/3/3 更新 ``设备内存`` 章节。
 
 ``Vulkan`` 中有两种分配内存的途径：
 
@@ -446,7 +447,7 @@ VkInternalAllocationType
 这些设备内存根据不同特性又分为两种类型：
 
 1. :bdg-secondary:`Host 端内存，但可被 Device 端访问` 这类内存的前提是在主板的内存条上，并且这部分内存可被 ``GPU`` 访问。
-2. :bdg-secondary:`Device 端独占内存` ``GPU`` 设备自身携带的专有内存。
+2. :bdg-secondary:`Device 端独占内存` ``GPU`` 设备自身携带的专有内存。数据在该内存中将会有更高的性能。
 
 其示意图如下：
 
