@@ -113,7 +113,8 @@ VkDeviceQueueCreateInfo
 其中 ``pQueuePriorities`` 配置的优先级的有效等级范围为 ``[0, 1]`` ，优先级越大，优先级越高。其中 ``0.0`` 是最低的优先级， ``1.0`` 是最高的优先级。在某些设备中，优先级越高意味着将会得到更多的执行机会，具体的队列调由设备自身管理， ``Vulkan`` 并不规定调度规则。
 在同一逻辑设备上优先级高的设备队列可能会导致低优先级的设备队列长时间处于 ``饥饿`` 状态，直到高级别的设备队列执行完所有指令。但不同的逻辑设备中的某一设备队列饥饿不会影响另一个逻辑设备上的设备队列。
 
-.. note:: VkDeviceQueueCreateInfo::flags
+.. admonition:: VkDeviceQueueCreateInfo::flags
+   :class: note
 
    ``VkDeviceQueueCreateFlagBits`` 在 ``Vulkan 1.0`` 版本中没用定义任何成员。
 
