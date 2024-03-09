@@ -24,6 +24,8 @@
    * 2024/3/3 增加 ``VkMemoryHeap`` 章节。
    * 2024/3/3 增加 ``VkMemoryType`` 章节。
    * 2024/3/3 更新 ``设备内存`` 章节。
+   * 2024/3/9 更新 ``VkMemoryType`` 章节。
+   * 2024/3/9 增加 ``VkMemoryPropertyFlagBits`` 章节。
 
 ``Vulkan`` 中有两种分配内存的途径：
 
@@ -574,3 +576,37 @@ VkMemoryType
 
 * :bdg-secondary:`propertyFlags` 内存类型标志位。
 * :bdg-secondary:`heapIndex` 对应的 ``memoryHeaps`` 堆索引。
+
+其中 ``propertyFlags`` 有效值被定义在了 ``VkMemoryPropertyFlagBits`` 枚举中，其定义如下：
+
+VkMemoryPropertyFlagBits
+----------------------------
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef enum VkMemoryPropertyFlagBits {
+       VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT = 0x00000001,
+       VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT = 0x00000002,
+       VK_MEMORY_PROPERTY_HOST_COHERENT_BIT = 0x00000004,
+       VK_MEMORY_PROPERTY_HOST_CACHED_BIT = 0x00000008,
+       VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT = 0x00000010,
+   } VkMemoryPropertyFlagBits;
+
+* :bdg-secondary:`VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT` 表示在此内存类型上分配的内存可被物理设备高效访问。只有对应的堆为 ``VK_MEMORY_HEAP_DEVICE_LOCAL_BIT`` 才会有该内存类型。
+* :bdg-secondary:`VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT` 表示在此内存类型上分配的内存可被 ``Host`` 端通过 :code:`vkMapMemory(...)` 函数进行映射，进而进行访问。
+* :bdg-secondary:`VK_MEMORY_PROPERTY_HOST_COHERENT_BIT` 表示在此内存类型上分配的内存将会自动进行同步，不需要手动调用 :code:`vkFlushMappedMemoryRanges(...)` 和 :code:`vkInvalidateMappedMemoryRanges(...)` 来进行内存同步。
+* :bdg-secondary:`VK_MEMORY_PROPERTY_HOST_CACHED_BIT` 表示在此内存类型上分配的内存为 ``缓存`` （高速缓存）内存， ``Host`` 端访问 ``非缓存`` 内存要比访问 ``缓存`` 内存慢。但是 ``非缓存`` 内存总是 ``同步内存`` ( ``VK_MEMORY_PROPERTY_HOST_COHERENT_BIT`` )。
+* :bdg-secondary:`VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT` 表示在此内存类型上分配的内存只有物理设备可访问。内存类型不能同时为 ``VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT`` 和 ``VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT`` 。此外其底层内存将会用于 ``惰性内存`` 。
+
+.. admonition:: 内存同步
+   :class: important
+
+   所谓内存同步，就是将内存公开给 ``目标端`` ，使得目标端能够看见完整的最新内容并访问。这将会在之后的章节说明。
+
+.. admonition:: 惰性内存
+   :class: important
+
+   当使用 ``VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT`` 类型分配内存时，表示底层分配 ``惰性内存`` 。所谓惰性内存是表示在该内存分配时其大小可以为 ``0`` 也可以为申请的内存大小。当该内存被需要时，其内存大小会随着需求单调增加。
+   
+   *该类型内存平时用的不多*。
