@@ -24,6 +24,11 @@
    * 2024/3/3 增加 ``VkMemoryHeap`` 章节。
    * 2024/3/3 增加 ``VkMemoryType`` 章节。
    * 2024/3/3 更新 ``设备内存`` 章节。
+   * 2024/3/9 更新 ``VkMemoryType`` 章节。
+   * 2024/3/9 增加 ``VkMemoryPropertyFlagBits`` 章节。
+   * 2024/3/10 增加 ``VkMemoryPropertyFlagBits`` 章节。
+   * 2024/3/10 增加 ``内存分配`` 章节。
+   * 2024/3/10 增加 ``vkAllocateMemory`` 章节。
 
 ``Vulkan`` 中有两种分配内存的途径：
 
@@ -553,7 +558,7 @@ VkMemoryHeapFlagBits
 
    有时 ``VkMemoryHeap::flags`` 为 ``0`` ，该值并没有定义于 ``VkMemoryHeapFlagBits`` 中。此时一般认为该内存堆为 ``Host`` 端内存。
 
-如下，为一种可能的设备内存堆获取到的结果：
+如下，为一种可能的设备内存堆获取结果：
 
 .. figure:: ./_static/memory_heaps.png
 
@@ -574,3 +579,83 @@ VkMemoryType
 
 * :bdg-secondary:`propertyFlags` 内存类型标志位。
 * :bdg-secondary:`heapIndex` 对应的 ``memoryHeaps`` 堆索引。
+
+其中 ``propertyFlags`` 有效值被定义在了 ``VkMemoryPropertyFlagBits`` 枚举中，其定义如下：
+
+VkMemoryPropertyFlagBits
+----------------------------
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef enum VkMemoryPropertyFlagBits {
+       VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT = 0x00000001,
+       VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT = 0x00000002,
+       VK_MEMORY_PROPERTY_HOST_COHERENT_BIT = 0x00000004,
+       VK_MEMORY_PROPERTY_HOST_CACHED_BIT = 0x00000008,
+       VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT = 0x00000010,
+   } VkMemoryPropertyFlagBits;
+
+* :bdg-secondary:`VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT` 表示在此内存类型上分配的内存可被物理设备高效访问。只有对应的堆为 ``VK_MEMORY_HEAP_DEVICE_LOCAL_BIT`` 才会有该内存类型。
+* :bdg-secondary:`VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT` 表示在此内存类型上分配的内存可被 ``Host`` 端通过 :code:`vkMapMemory(...)` 函数进行映射，进而进行访问。
+* :bdg-secondary:`VK_MEMORY_PROPERTY_HOST_COHERENT_BIT` 表示在此内存类型上分配的内存将会自动进行同步，不需要手动调用 :code:`vkFlushMappedMemoryRanges(...)` 和 :code:`vkInvalidateMappedMemoryRanges(...)` 来进行内存同步。
+* :bdg-secondary:`VK_MEMORY_PROPERTY_HOST_CACHED_BIT` 表示在此内存类型上分配的内存为 ``缓存`` （高速缓存）内存， ``Host`` 端访问 ``非缓存`` 内存要比访问 ``缓存`` 内存慢。但是 ``非缓存`` 内存总是 ``同步内存`` ( ``VK_MEMORY_PROPERTY_HOST_COHERENT_BIT`` )。
+* :bdg-secondary:`VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT` 表示在此内存类型上分配的内存只有物理设备可访问。内存类型不能同时为 ``VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT`` 和 ``VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT`` 。此外其底层内存将会用于 ``惰性内存`` 。
+
+.. note::
+
+   有时 ``VkMemoryType::propertyFlags`` 为 ``0`` ，该值并没有定义于 ``VkMemoryPropertyFlagBits`` 中。此时一般认为该内存堆为 ``Host`` 端内存。
+
+.. admonition:: 内存同步
+   :class: important
+
+   所谓内存同步，就是将内存公开给 ``目标端`` ，使得目标端能够看见完整的最新内容并访问。
+
+   如果在 ``VK_MEMORY_PROPERTY_HOST_COHERENT_BIT`` 类型内存上进行内存分配，则这部分内存将会自动进行内存同步，否则需要手动进行内存同步。
+
+   具体如何进行内存同步将会在之后的章节进行讲解。
+
+.. admonition:: 惰性内存
+   :class: important
+
+   当使用 ``VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT`` 类型分配内存时，表示底层分配 ``惰性内存`` 。所谓惰性内存是表示在该内存分配时其大小可以为 ``0`` 也可以为申请的内存大小。当该内存被需要时，其内存大小会随着需求单调增加。
+   
+   *该类型内存平时用的不多*。
+
+如下，为一种可能的设备内存类型获取结果：
+
+.. figure:: ./_static/memory_heap_and_type.png
+
+   设备内存类型示意图
+
+从如上示例可看出，不同的 ``VkMemoryType::propertyFlags`` 之间可以有重叠的 ``VkMemoryPropertyFlagBits`` ，但是两两 ``VkMemoryType`` 不会有完全相同的 ``propertyFlags`` 。 ``Vulkan`` 中是根据不同的 ``VkMemoryType::propertyFlags`` 对内存进行分类的。
+
+.. note::
+
+   有些设备的 ``VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT`` 类型内存也会带有 ``VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT`` 、 ``VK_MEMORY_PROPERTY_HOST_COHERENT_BIT`` 属性。这表示该设备专用内存可以被 ``Host`` 端直接访问。这种情况多见于移动端，某些 ``PC`` 端也可能出现该情况。
+
+.. important::
+
+   ``VkPhysicalDeviceMemoryProperties::memoryTypes[i]`` 中的 ``i`` 非常重要，内存的分配主要是通过指定该索引进行分配。
+
+内存分配
+**************************************
+
+通过之前 ``vkGetPhysicalDeviceMemoryProperties(...)`` 函数我们可以获取到设备的内存信息，现在我们就可以通过这些信息进行内存分配了。为此 ``Vulkan`` 为我们提供了 ``vkAllocateMemory(...)`` 函数进行内存分配。该函数定义如下：
+
+vkAllocateMemory
+----------------------------
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   VkResult vkAllocateMemory(
+       VkDevice                                    device,
+       const VkMemoryAllocateInfo*                 pAllocateInfo,
+       const VkAllocationCallbacks*                pAllocator,
+       VkDeviceMemory*                             pMemory);
+
+* :bdg-secondary:`device` 分配内存的目标设备。
+* :bdg-secondary:`pAllocateInfo` 内存分配信息。
+* :bdg-secondary:`pAllocator` 句柄内存分配器。
+* :bdg-secondary:`pMemory` 分配的内存句柄。
