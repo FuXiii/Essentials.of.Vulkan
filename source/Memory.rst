@@ -29,6 +29,12 @@
    * 2024/3/10 增加 ``VkMemoryPropertyFlagBits`` 章节。
    * 2024/3/10 增加 ``内存分配`` 章节。
    * 2024/3/10 增加 ``vkAllocateMemory`` 章节。
+   * 2024/3/14 更新 ``vkAllocateMemory`` 章节。
+   * 2024/3/14 增加 ``VkMemoryAllocateInfo`` 章节。
+   * 2024/3/14 增加 ``VkMemoryAllocateInfo`` 章节下增加 ``示例`` 章节。
+   * 2024/3/14 增加 ``内存回收`` 章节。
+   * 2024/3/14 增加 ``vkFreeMemory`` 章节。
+   * 2024/3/14 增加 ``vkFreeMemory`` 章节下增加 ``示例`` 章节。
 
 ``Vulkan`` 中有两种分配内存的途径：
 
@@ -604,7 +610,7 @@ VkMemoryPropertyFlagBits
 
 .. note::
 
-   有时 ``VkMemoryType::propertyFlags`` 为 ``0`` ，该值并没有定义于 ``VkMemoryPropertyFlagBits`` 中。此时一般认为该内存堆为 ``Host`` 端内存。
+   有时 ``VkMemoryType::propertyFlags`` 为 ``0`` ，该值并没有定义于 ``VkMemoryPropertyFlagBits`` 中。此时一般认为该内存堆为 ``Host`` 端内存（纯内存条上的内存）。
 
 .. admonition:: 内存同步
    :class: important
@@ -623,6 +629,8 @@ VkMemoryPropertyFlagBits
    *该类型内存平时用的不多*。
 
 如下，为一种可能的设备内存类型获取结果：
+
+.. _memory_heap_and_type:
 
 .. figure:: ./_static/memory_heap_and_type.png
 
@@ -659,3 +667,105 @@ vkAllocateMemory
 * :bdg-secondary:`pAllocateInfo` 内存分配信息。
 * :bdg-secondary:`pAllocator` 句柄内存分配器。
 * :bdg-secondary:`pMemory` 分配的内存句柄。
+
+其中 ``pAllocateInfo`` 用于指定内存的分配信息， ``pAllocator`` 用于指定创建 ``pMemory`` 内存句柄时的分配器。
+
+其中主要的内存分配信息被定义在了 ``pAllocateInfo`` ，对应的 ``VkMemoryAllocateInfo`` 定义如下：
+
+VkMemoryAllocateInfo
+----------------------------
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef struct VkMemoryAllocateInfo {
+       VkStructureType    sType;
+       const void*        pNext;
+       VkDeviceSize       allocationSize;
+       uint32_t           memoryTypeIndex;
+   } VkMemoryAllocateInfo;
+
+* :bdg-secondary:`sType` 是该结构体的类型枚举值， :bdg-danger:`必须` 是 ``VkStructureType::VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO`` 。
+* :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
+* :bdg-secondary:`allocationSize` 要分配的内存大小。单位为 ``字节`` 。
+* :bdg-secondary:`memoryTypeIndex` 分配内存的目标内存类型索引。
+
+其中 ``memoryTypeIndex`` 尤为重要，用于指定在 ``memoryTypes[memoryTypeIndex]`` 对应的内存类型上进行内存分配，对应分配的堆为 ``memoryHeaps[memoryTypes[memoryTypeIndex].heapIndex]`` 。
+
+由于每个 ``memoryTypes`` 都有着不同的属性，所以一般会根据功能需求在某个内存类型上进行分配。
+
+示例
+----------------------------
+
+比如在设备专用内存中分配内存（根据 :ref:`memory_heap_and_type` 中的情况）：
+
+.. code:: c++
+
+   VkDevice device = 之前创建的逻辑设备;
+
+   struct Color
+   {
+      float r;
+      float g;
+      float b;
+   };
+
+   std::vector<Color> colors;
+   colors.push_back(Color(0, 0, 0));
+   colors.push_back(Color(0, 0, 1));
+   colors.push_back(Color(0, 1, 0));
+   colors.push_back(Color(0, 1, 1));
+   colors.push_back(Color(1, 0, 0));
+   colors.push_back(Color(1, 0, 1));
+   colors.push_back(Color(1, 1, 0));
+   colors.push_back(Color(1, 1, 1));
+
+   VkMemoryAllocateInfo memory_allocate_info = {};
+   memory_allocate_info.sType = VkStructureType::VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+   memory_allocate_info.pNext = nullptr;
+   memory_allocate_info.allocationSize = sizeof(Color) * colors.size();
+   memory_allocate_info.memoryTypeIndex = 4;
+
+   VkDeviceMemory device_memory = VK_NULL_HANDLE;
+
+   VkResult result = vkAllocateMemory(device, &memory_allocate_info, nullptr, &device_memory);
+   if(result != VkResult::VK_SUCCESS)
+   {
+      throw std::runtime_error("VkDeviceMemory 内存创建失败");
+   }
+
+内存回收
+**************************************
+
+当内存成功分配之后，一般会对该内存进行一些列写入和读取操作，当该内存不再被需要时，就可以将该内存通过调用 ``vkFreeMemory(...)`` 进行回收了。其定义如下：
+
+vkFreeMemory
+-----------------
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   void vkFreeMemory(
+       VkDevice                                    device,
+       VkDeviceMemory                              memory,
+       const VkAllocationCallbacks*                pAllocator);
+
+* :bdg-secondary:`device` 要回收 ``memory`` 在分配时所对应的逻辑设备。
+* :bdg-secondary:`memory` 要回收的目标内存。
+* :bdg-secondary:`pAllocator` 要回收 ``memory`` 在分配时所对应的句柄分配器。
+
+内存回收相对简单，只要 ``device`` 和 ``pAllocator`` 与分配时一致即可。
+
+示例
+----------------------------
+
+.. code:: c++
+
+   VkDevice device = 之前创建的逻辑设备;
+   VkDeviceMemory device_memory = 之前分配的设备内存;
+
+   vkFreeMemory(device, device_memory, nullptr);
+
+..
+   HOST_VISIBLE
+   HOST_COHERENT
