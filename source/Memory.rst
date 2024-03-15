@@ -35,6 +35,8 @@
    * 2024/3/14 增加 ``内存回收`` 章节。
    * 2024/3/14 增加 ``vkFreeMemory`` 章节。
    * 2024/3/14 增加 ``vkFreeMemory`` 章节下增加 ``示例`` 章节。
+   * 2024/3/15 增加 ``内存映射`` 章节。
+   * 2024/3/16 增加 ``vkMapMemory`` 章节。
 
 ``Vulkan`` 中有两种分配内存的途径：
 
@@ -766,6 +768,50 @@ vkFreeMemory
 
    vkFreeMemory(device, device_memory, nullptr);
 
+内存映射
+**************************************
+
+如果内存分配时指定的内存类型支持 ``VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT`` 的话，说明该内存 :bdg-warning:`可映射` 。
+
+所谓 :bdg-warning:`可映射` 意思是：可以将该内存所对应的内存地址返回给 ``CPU`` 。
+
+原则上所有的设备内存对于 ``CPU`` 来说并不像 ``new/malloc`` 分配出来的内存那样能够直接进行读写。为了 ``CPU`` 能够读写设备内存，硬件供应商都会提供一部分带有 ``VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT`` 属性的内存用于 ``CPU`` 访问。
+
+而在 ``Vulkan`` 中分配的内存最终只会对应一个 ``VkDeviceMemory`` 句柄，为了能够获得 ``VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT`` 内存类型分配的内存句柄底层的内存地址，可以通过 ``vkMapMemory(...)`` 函数将分配的设备内存底层的 :bdg-warning:`虚拟` （说明见下文） 地址返回给 ``CPU`` （也就是 ``Host`` 端）。
+
+该函数定义如下：
+
+vkMapMemory
+----------------------------
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   VkResult vkMapMemory(
+       VkDevice                                    device,
+       VkDeviceMemory                              memory,
+       VkDeviceSize                                offset,
+       VkDeviceSize                                size,
+       VkMemoryMapFlags                            flags,
+       void**                                      ppData);
+
+* :bdg-secondary:`device` 内存对应的逻辑设备。
+* :bdg-secondary:`memory` 要映射的目标内存。
+* :bdg-secondary:`offset` 内存映射从内存首地址开始的偏移量。从 ``0`` 开始。单位为 ``字节`` 。
+* :bdg-secondary:`size` 要映射的内存大小。单位为 ``字节`` 。如果指定为 ``VK_WHOLE_SIZE`` ，则表明映射范围为从 ``offset`` 开始到 ``memory`` 结尾。
+* :bdg-secondary:`flags` 内存映射的额外标志位参数。
+* :bdg-secondary:`ppData` 内存映射结果。为 ``void*`` 的指针。该指针减去 ``offset`` 的对齐大小最小 :bdg-danger:`必须` 为 ``VkPhysicalDeviceLimits::minMemoryMapAlignment`` 。
+
+其中 ``memory`` :bdg-danger:`必须` 在 ``VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT`` 类型的内存上分配。当该函数成功返回后， ``memory`` 就被认为在 ``Host`` 进行了 ``内存映射`` 。
+
+.. note::
+
+   在已经进行 ``内存映射`` 的内存上再次调用 ``vkMapMemory(...)`` 是开发错误。开发者应避免该错误。
+
+
+
+
 ..
+   vkMapMemory不能重复调用
    HOST_VISIBLE
    HOST_COHERENT
