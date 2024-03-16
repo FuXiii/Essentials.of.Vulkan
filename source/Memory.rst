@@ -37,6 +37,12 @@
    * 2024/3/14 增加 ``vkFreeMemory`` 章节下增加 ``示例`` 章节。
    * 2024/3/15 增加 ``内存映射`` 章节。
    * 2024/3/16 增加 ``vkMapMemory`` 章节。
+   * 2024/3/16 增加 ``vkMapMemory`` 章节下增加 ``示例`` 章节。
+   * 2024/3/16 更新 ``设备内存类型示意图`` 内容，之前图中有错误。
+   * 2024/3/16 更新 ``内存分配`` 章节中的 ``示例`` 章节。
+   * 2024/3/16 增加 ``内存解映射`` 章节。
+   * 2024/3/16 增加 ``内存解映射`` 章节下增加 ``示例`` 章节。
+   * 2024/3/16 增加 ``内存同步`` 章节。
 
 ``Vulkan`` 中有两种分配内存的途径：
 
@@ -710,6 +716,13 @@ VkMemoryAllocateInfo
       float r;
       float g;
       float b;
+
+      Color(float r, float g, float b)
+      {
+         this->r = r;
+         this->g = g;
+         this->b = b;
+      }
    };
 
    std::vector<Color> colors;
@@ -726,7 +739,7 @@ VkMemoryAllocateInfo
    memory_allocate_info.sType = VkStructureType::VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
    memory_allocate_info.pNext = nullptr;
    memory_allocate_info.allocationSize = sizeof(Color) * colors.size();
-   memory_allocate_info.memoryTypeIndex = 4;
+   memory_allocate_info.memoryTypeIndex = 1; // 对应 VkPhysicalDeviceMemoryProperties::memoryTypes[1]
 
    VkDeviceMemory device_memory = VK_NULL_HANDLE;
 
@@ -773,11 +786,11 @@ vkFreeMemory
 
 如果内存分配时指定的内存类型支持 ``VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT`` 的话，说明该内存 :bdg-warning:`可映射` 。
 
-所谓 :bdg-warning:`可映射` 意思是：可以将该内存所对应的内存地址返回给 ``CPU`` 。
+* 所谓 :bdg-warning:`可映射` 意思是：可以将该内存所对应的内存地址返回给 ``CPU`` 。
 
 原则上所有的设备内存对于 ``CPU`` 来说并不像 ``new/malloc`` 分配出来的内存那样能够直接进行读写。为了 ``CPU`` 能够读写设备内存，硬件供应商都会提供一部分带有 ``VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT`` 属性的内存用于 ``CPU`` 访问。
 
-而在 ``Vulkan`` 中分配的内存最终只会对应一个 ``VkDeviceMemory`` 句柄，为了能够获得 ``VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT`` 内存类型分配的内存句柄底层的内存地址，可以通过 ``vkMapMemory(...)`` 函数将分配的设备内存底层的 :bdg-warning:`虚拟` （说明见下文） 地址返回给 ``CPU`` （也就是 ``Host`` 端）。
+而在 ``Vulkan`` 中分配的内存最终只会对应一个 ``VkDeviceMemory`` 句柄，为了能够获得 ``VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT`` 内存类型分配的内存句柄底层的内存地址，可以通过 ``vkMapMemory(...)`` 函数将分配的设备内存底层的 :bdg-warning:`虚拟` （说明见下文）地址返回给 ``CPU`` （也就是 ``Host`` 端）。
 
 该函数定义如下：
 
@@ -802,16 +815,116 @@ vkMapMemory
 * :bdg-secondary:`flags` 内存映射的额外标志位参数。
 * :bdg-secondary:`ppData` 内存映射结果。为 ``void*`` 的指针。该指针减去 ``offset`` 的对齐大小最小 :bdg-danger:`必须` 为 ``VkPhysicalDeviceLimits::minMemoryMapAlignment`` 。
 
-其中 ``memory`` :bdg-danger:`必须` 在 ``VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT`` 类型的内存上分配。当该函数成功返回后， ``memory`` 就被认为在 ``Host`` 进行了 ``内存映射`` 。
+其中 ``memory`` :bdg-danger:`必须` 在 ``VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT`` 类型的内存上分配。当该函数成功返回后， ``memory`` 就被认为在 ``Host 端`` 进行了 ``内存映射`` ，并处于 :bdg-warning:`映射态` 。
+
+.. admonition:: VkMemoryMapFlags
+   :class: note
+
+   在 ``Vulkan 1.0`` 标准中， ``VkMemoryMapFlags`` 没有定义有效值，所以相应的 ``flags`` 参数赋值为 ``0`` 即可。
 
 .. note::
 
    在已经进行 ``内存映射`` 的内存上再次调用 ``vkMapMemory(...)`` 是开发错误。开发者应避免该错误。
 
+.. admonition:: 虚拟地址
+   :class: important
 
+   ``vkMapMemory(...)`` 函数返回的 ``ppData`` 内存映射结果确切来说 :bdg-warning:`不是` 真正意义上的内存地址，而是一个 :bdg-warning:`虚拟` 内存地址，对该地址的操作就 :bdg-warning:`好似` 对底层真正的内存进行操作，其本质上是对虚拟内存的操作。
+
+   由于返回的是虚拟内存地址，不同平台对于虚拟内存大小有不同的限制，所以当 ``vkMapMemory()`` 映射的虚拟地址范围超过平台限制后该函数将会返回 ``VkResult::VK_ERROR_MEMORY_MAP_FAILED`` 表示本次映射失败。为此，可通过将内存进行分小块进行映射或对已经映射的内存进行 :bdg-warning:`解映射` （说明见下文）来释放一部分虚拟内存。
+
+示例
+^^^^^^^^^^^^^^^^^^^^
+
+在有 ``VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT`` 内存类型的内存上分配内存，并进行内存映射（根据 :ref:`memory_heap_and_type` 中的情况）：
+
+.. code:: c++
+
+   VkDevice device = 之前创建的逻辑设备;
+
+   struct Position
+   {
+      float x;
+      float y;
+      float z;
+
+      Position(float x, float y, float z)
+      {
+         this->x = x;
+         this->y = y;
+         this->z = z;
+      }
+   };
+
+   std::vector<Position> positions;
+   positions.push_back(Position(0, 0, 0));
+   positions.push_back(Position(0, 0, 1));
+   positions.push_back(Position(0, 1, 0));
+   positions.push_back(Position(0, 1, 1));
+   positions.push_back(Position(1, 0, 0));
+   positions.push_back(Position(1, 0, 1));
+   positions.push_back(Position(1, 1, 0));
+   positions.push_back(Position(1, 1, 1));
+
+   VkMemoryAllocateInfo memory_allocate_info = {};
+   memory_allocate_info.sType = VkStructureType::VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+   memory_allocate_info.pNext = nullptr;
+   memory_allocate_info.allocationSize = sizeof(Position) * positions.size();
+   memory_allocate_info.memoryTypeIndex = 2; // 对应 VkPhysicalDeviceMemoryProperties::memoryTypes[2]
+
+   VkDeviceMemory device_memory = VK_NULL_HANDLE;
+
+   VkResult result = vkAllocateMemory(device, &memory_allocate_info, nullptr, &device_memory);
+   if(result != VkResult::VK_SUCCESS)
+   {
+      throw std::runtime_error("VkDeviceMemory 内存创建失败");
+   }
+
+   void* device_memory_ptr = nullptr;
+
+   result = vkMapMemory(device, device_memory, 0, VK_WHOLE_SIZE, 0, &device_memory_ptr);
+   if(result != VkResult::VK_SUCCESS)
+   {
+      throw std::runtime_error("VkDeviceMemory 内存映射失败");
+   }
+
+   memcpy(device_memory_ptr, positions.data(), memory_allocate_info.allocationSize); // 将数据写入 device_memory 内存中
+
+内存解映射
+**************************************
+
+当内存映射并使用结束后，可进行解除映射，进而释放系统的虚拟内存。可通过 ``vkUnmapMemory(...)`` 函数将映射过的内存进行 :bdg-warning:`解映射` 。该函数定义如下：
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   void vkUnmapMemory(
+       VkDevice                                    device,
+       VkDeviceMemory                              memory);
+
+* :bdg-secondary:`device` 内存对应的逻辑设备。
+* :bdg-secondary:`memory` 要解映射的目标内存。该内存 :bdg-danger:`必须` 处于 :bdg-warning:`映射态` 。
+
+该函数之后 :bdg-warning:`映射态` 的状态将解除，回归到 :bdg-warning:`原始状态` 。
+
+示例
+--------------------
+
+对前一个示例中分配的设备内存进行解映射：
+
+.. code:: c++
+
+   VkDevice device = 之前创建的逻辑设备;
+   VkDeviceMemory device_memory = 之前分配的设备内存; // 分配于 VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT 并处于 映射态
+
+   vkUnmapMemory(device, device_memory);
+
+内存同步
+**************************************
 
 
 ..
+   VkMemoryMapFlags
    vkMapMemory不能重复调用
    HOST_VISIBLE
    HOST_COHERENT
