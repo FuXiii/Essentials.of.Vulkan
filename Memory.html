@@ -312,6 +312,14 @@
 <li><p class="sd-card-text">2024/3/14 增加 <code class="docutils literal notranslate"><span class="pre">内存回收</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/3/14 增加 <code class="docutils literal notranslate"><span class="pre">vkFreeMemory</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/3/14 增加 <code class="docutils literal notranslate"><span class="pre">vkFreeMemory</span></code> 章节下增加 <code class="docutils literal notranslate"><span class="pre">示例</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/3/15 增加 <code class="docutils literal notranslate"><span class="pre">内存映射</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/3/16 增加 <code class="docutils literal notranslate"><span class="pre">vkMapMemory</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/3/16 增加 <code class="docutils literal notranslate"><span class="pre">vkMapMemory</span></code> 章节下增加 <code class="docutils literal notranslate"><span class="pre">示例</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/3/16 更新 <code class="docutils literal notranslate"><span class="pre">设备内存类型示意图</span></code> 内容，之前图中有错误。</p></li>
+<li><p class="sd-card-text">2024/3/16 更新 <code class="docutils literal notranslate"><span class="pre">内存分配</span></code> 章节中的 <code class="docutils literal notranslate"><span class="pre">示例</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/3/16 增加 <code class="docutils literal notranslate"><span class="pre">内存解映射</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/3/16 增加 <code class="docutils literal notranslate"><span class="pre">内存解映射</span></code> 章节下增加 <code class="docutils literal notranslate"><span class="pre">示例</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/3/16 增加 <code class="docutils literal notranslate"><span class="pre">内存同步</span></code> 章节。</p></li>
 </ul>
 </div>
 </details><p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中有两种分配内存的途径：</p>
@@ -717,10 +725,10 @@ Linux</label><div class="sd-tab-content docutils">
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">Device 端独占内存</span> <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 设备自身携带的专有内存。数据在该内存中将会有更高的性能。</p></li>
 </ol>
 <p>其示意图如下：</p>
-<figure class="align-default" id="id11">
+<figure class="align-default" id="id16">
 <img alt="_images/device_memory_struct.png" src="_images/device_memory_struct.png" />
 <figcaption>
-<p><span class="caption-text">Vulkan 设备内存示意图</span><a class="headerlink" href="#id11" title="Link to this image">#</a></p>
+<p><span class="caption-text">Vulkan 设备内存示意图</span><a class="headerlink" href="#id16" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <div class="admonition important">
@@ -807,10 +815,10 @@ Linux</label><div class="sd-tab-content docutils">
 <p>有时 <code class="docutils literal notranslate"><span class="pre">VkMemoryHeap::flags</span></code> 为 <code class="docutils literal notranslate"><span class="pre">0</span></code> ，该值并没有定义于 <code class="docutils literal notranslate"><span class="pre">VkMemoryHeapFlagBits</span></code> 中。此时一般认为该内存堆为 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端内存。</p>
 </div>
 <p>如下，为一种可能的设备内存堆获取结果：</p>
-<figure class="align-default" id="id12">
+<figure class="align-default" id="id17">
 <img alt="_images/memory_heaps.png" src="_images/memory_heaps.png" />
 <figcaption>
-<p><span class="caption-text">设备内存堆示意图</span><a class="headerlink" href="#id12" title="Link to this image">#</a></p>
+<p><span class="caption-text">设备内存堆示意图</span><a class="headerlink" href="#id17" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <p>其中每个堆自身可以包含一到多个类型的内存，堆上的内存类型信息被定义在 <code class="docutils literal notranslate"><span class="pre">memoryTypes</span></code> 中，其 <code class="docutils literal notranslate"><span class="pre">VkMemoryType</span></code> 定义如下：</p>
@@ -865,10 +873,10 @@ Linux</label><div class="sd-tab-content docutils">
 <p><em>该类型内存平时用的不多</em>。</p>
 </div>
 <p>如下，为一种可能的设备内存类型获取结果：</p>
-<figure class="align-default" id="id13">
+<figure class="align-default" id="id18">
 <span id="memory-heap-and-type"></span><img alt="_images/memory_heap_and_type.png" src="_images/memory_heap_and_type.png" />
 <figcaption>
-<p><span class="caption-text">设备内存类型示意图</span><a class="headerlink" href="#id13" title="Link to this image">#</a></p>
+<p><span class="caption-text">设备内存类型示意图</span><a class="headerlink" href="#id18" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <p>从如上示例可看出，不同的 <code class="docutils literal notranslate"><span class="pre">VkMemoryType::propertyFlags</span></code> 之间可以有重叠的 <code class="docutils literal notranslate"><span class="pre">VkMemoryPropertyFlagBits</span></code> ，但是两两 <code class="docutils literal notranslate"><span class="pre">VkMemoryType</span></code> 不会有完全相同的 <code class="docutils literal notranslate"><span class="pre">propertyFlags</span></code> 。 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中是根据不同的 <code class="docutils literal notranslate"><span class="pre">VkMemoryType::propertyFlags</span></code> 对内存进行分类的。</p>
@@ -934,6 +942,13 @@ Linux</label><div class="sd-tab-content docutils">
 <span class="w">   </span><span class="kt">float</span><span class="w"> </span><span class="n">r</span><span class="p">;</span>
 <span class="w">   </span><span class="kt">float</span><span class="w"> </span><span class="n">g</span><span class="p">;</span>
 <span class="w">   </span><span class="kt">float</span><span class="w"> </span><span class="n">b</span><span class="p">;</span>
+
+<span class="w">   </span><span class="n">Color</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">g</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">b</span><span class="p">)</span>
+<span class="w">   </span><span class="p">{</span>
+<span class="w">      </span><span class="k">this</span><span class="o">-&gt;</span><span class="n">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">r</span><span class="p">;</span>
+<span class="w">      </span><span class="k">this</span><span class="o">-&gt;</span><span class="n">g</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">g</span><span class="p">;</span>
+<span class="w">      </span><span class="k">this</span><span class="o">-&gt;</span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b</span><span class="p">;</span>
+<span class="w">   </span><span class="p">}</span>
 <span class="p">};</span>
 
 <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Color</span><span class="o">&gt;</span><span class="w"> </span><span class="n">colors</span><span class="p">;</span>
@@ -950,7 +965,7 @@ Linux</label><div class="sd-tab-content docutils">
 <span class="n">memory_allocate_info</span><span class="p">.</span><span class="n">sType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VkStructureType</span><span class="o">::</span><span class="n">VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO</span><span class="p">;</span>
 <span class="n">memory_allocate_info</span><span class="p">.</span><span class="n">pNext</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
 <span class="n">memory_allocate_info</span><span class="p">.</span><span class="n">allocationSize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">Color</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">colors</span><span class="p">.</span><span class="n">size</span><span class="p">();</span>
-<span class="n">memory_allocate_info</span><span class="p">.</span><span class="n">memoryTypeIndex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span>
+<span class="n">memory_allocate_info</span><span class="p">.</span><span class="n">memoryTypeIndex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="c1">// 对应 VkPhysicalDeviceMemoryProperties::memoryTypes[1]</span>
 
 <span class="n">VkDeviceMemory</span><span class="w"> </span><span class="n">device_memory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_NULL_HANDLE</span><span class="p">;</span>
 
@@ -991,6 +1006,134 @@ Linux</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </section>
+</section>
+<section id="id11">
+<h3>内存映射<a class="headerlink" href="#id11" title="Link to this heading">#</a></h3>
+<p>如果内存分配时指定的内存类型支持 <code class="docutils literal notranslate"><span class="pre">VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT</span></code> 的话，说明该内存 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">可映射</span> 。</p>
+<ul class="simple">
+<li><p>所谓 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">可映射</span> 意思是：可以将该内存所对应的内存地址返回给 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 。</p></li>
+</ul>
+<p>原则上所有的设备内存对于 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 来说并不像 <code class="docutils literal notranslate"><span class="pre">new/malloc</span></code> 分配出来的内存那样能够直接进行读写。为了 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 能够读写设备内存，硬件供应商都会提供一部分带有 <code class="docutils literal notranslate"><span class="pre">VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT</span></code> 属性的内存用于 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 访问。</p>
+<p>而在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中分配的内存最终只会对应一个 <code class="docutils literal notranslate"><span class="pre">VkDeviceMemory</span></code> 句柄，为了能够获得 <code class="docutils literal notranslate"><span class="pre">VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT</span></code> 内存类型分配的内存句柄底层的内存地址，可以通过 <code class="docutils literal notranslate"><span class="pre">vkMapMemory(...)</span></code> 函数将分配的设备内存底层的 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">虚拟</span> （说明见下文）地址返回给 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> （也就是 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端）。</p>
+<p>该函数定义如下：</p>
+<section id="vkmapmemory">
+<h4>vkMapMemory<a class="headerlink" href="#vkmapmemory" title="Link to this heading">#</a></h4>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="n">VkResult</span><span class="w"> </span><span class="nf">vkMapMemory</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkDeviceMemory</span><span class="w">                              </span><span class="n">memory</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkDeviceSize</span><span class="w">                                </span><span class="n">offset</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkDeviceSize</span><span class="w">                                </span><span class="n">size</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkMemoryMapFlags</span><span class="w">                            </span><span class="n">flags</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">void</span><span class="o">**</span><span class="w">                                      </span><span class="n">ppData</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">device</span> 内存对应的逻辑设备。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">memory</span> 要映射的目标内存。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">offset</span> 内存映射从内存首地址开始的偏移量。从 <code class="docutils literal notranslate"><span class="pre">0</span></code> 开始。单位为 <code class="docutils literal notranslate"><span class="pre">字节</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">size</span> 要映射的内存大小。单位为 <code class="docutils literal notranslate"><span class="pre">字节</span></code> 。如果指定为 <code class="docutils literal notranslate"><span class="pre">VK_WHOLE_SIZE</span></code> ，则表明映射范围为从 <code class="docutils literal notranslate"><span class="pre">offset</span></code> 开始到 <code class="docutils literal notranslate"><span class="pre">memory</span></code> 结尾。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">flags</span> 内存映射的额外标志位参数。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">ppData</span> 内存映射结果。为 <code class="docutils literal notranslate"><span class="pre">void*</span></code> 的指针。该指针减去 <code class="docutils literal notranslate"><span class="pre">offset</span></code> 的对齐大小最小 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 为 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceLimits::minMemoryMapAlignment</span></code> 。</p></li>
+</ul>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">memory</span></code> <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 在 <code class="docutils literal notranslate"><span class="pre">VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT</span></code> 类型的内存上分配。当该函数成功返回后， <code class="docutils literal notranslate"><span class="pre">memory</span></code> 就被认为在 <code class="docutils literal notranslate"><span class="pre">Host</span> <span class="pre">端</span></code> 进行了 <code class="docutils literal notranslate"><span class="pre">内存映射</span></code> ，并处于 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">映射态</span> 。</p>
+<div class="note admonition">
+<p class="admonition-title">VkMemoryMapFlags</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.0</span></code> 标准中， <code class="docutils literal notranslate"><span class="pre">VkMemoryMapFlags</span></code> 没有定义有效值，所以相应的 <code class="docutils literal notranslate"><span class="pre">flags</span></code> 参数赋值为 <code class="docutils literal notranslate"><span class="pre">0</span></code> 即可。</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>在已经进行 <code class="docutils literal notranslate"><span class="pre">内存映射</span></code> 的内存上再次调用 <code class="docutils literal notranslate"><span class="pre">vkMapMemory(...)</span></code> 是开发错误。开发者应避免该错误。</p>
+</div>
+<div class="important admonition">
+<p class="admonition-title">虚拟地址</p>
+<p><code class="docutils literal notranslate"><span class="pre">vkMapMemory(...)</span></code> 函数返回的 <code class="docutils literal notranslate"><span class="pre">ppData</span></code> 内存映射结果确切来说 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">不是</span> 真正意义上的内存地址，而是一个 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">虚拟</span> 内存地址，对该地址的操作就 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">好似</span> 对底层真正的内存进行操作，其本质上是对虚拟内存的操作。</p>
+<p>由于返回的是虚拟内存地址，不同平台对于虚拟内存大小有不同的限制，所以当 <code class="docutils literal notranslate"><span class="pre">vkMapMemory()</span></code> 映射的虚拟地址范围超过平台限制后该函数将会返回 <code class="docutils literal notranslate"><span class="pre">VkResult::VK_ERROR_MEMORY_MAP_FAILED</span></code> 表示本次映射失败。为此，可通过将内存进行分小块进行映射或对已经映射的内存进行 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">解映射</span> （说明见下文）来释放一部分虚拟内存。</p>
+</div>
+<section id="id12">
+<h5>示例<a class="headerlink" href="#id12" title="Link to this heading">#</a></h5>
+<p>在有 <code class="docutils literal notranslate"><span class="pre">VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT</span></code> 内存类型的内存上分配内存，并进行内存映射（根据 <a class="reference internal" href="#memory-heap-and-type"><span class="std std-ref">设备内存类型示意图</span></a> 中的情况）：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkDevice</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前创建的逻辑设备</span><span class="p">;</span>
+
+<span class="k">struct</span><span class="w"> </span><span class="nc">Position</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="kt">float</span><span class="w"> </span><span class="n">x</span><span class="p">;</span>
+<span class="w">   </span><span class="kt">float</span><span class="w"> </span><span class="n">y</span><span class="p">;</span>
+<span class="w">   </span><span class="kt">float</span><span class="w"> </span><span class="n">z</span><span class="p">;</span>
+
+<span class="w">   </span><span class="n">Position</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">z</span><span class="p">)</span>
+<span class="w">   </span><span class="p">{</span>
+<span class="w">      </span><span class="k">this</span><span class="o">-&gt;</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">;</span>
+<span class="w">      </span><span class="k">this</span><span class="o">-&gt;</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">y</span><span class="p">;</span>
+<span class="w">      </span><span class="k">this</span><span class="o">-&gt;</span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">z</span><span class="p">;</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="p">};</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Position</span><span class="o">&gt;</span><span class="w"> </span><span class="n">positions</span><span class="p">;</span>
+<span class="n">positions</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">Position</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">));</span>
+<span class="n">positions</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">Position</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">));</span>
+<span class="n">positions</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">Position</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">));</span>
+<span class="n">positions</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">Position</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">));</span>
+<span class="n">positions</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">Position</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">));</span>
+<span class="n">positions</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">Position</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">));</span>
+<span class="n">positions</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">Position</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">));</span>
+<span class="n">positions</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">Position</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">));</span>
+
+<span class="n">VkMemoryAllocateInfo</span><span class="w"> </span><span class="n">memory_allocate_info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
+<span class="n">memory_allocate_info</span><span class="p">.</span><span class="n">sType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VkStructureType</span><span class="o">::</span><span class="n">VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO</span><span class="p">;</span>
+<span class="n">memory_allocate_info</span><span class="p">.</span><span class="n">pNext</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="n">memory_allocate_info</span><span class="p">.</span><span class="n">allocationSize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">Position</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">positions</span><span class="p">.</span><span class="n">size</span><span class="p">();</span>
+<span class="n">memory_allocate_info</span><span class="p">.</span><span class="n">memoryTypeIndex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w"> </span><span class="c1">// 对应 VkPhysicalDeviceMemoryProperties::memoryTypes[2]</span>
+
+<span class="n">VkDeviceMemory</span><span class="w"> </span><span class="n">device_memory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_NULL_HANDLE</span><span class="p">;</span>
+
+<span class="n">VkResult</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vkAllocateMemory</span><span class="p">(</span><span class="n">device</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">memory_allocate_info</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">device_memory</span><span class="p">);</span>
+<span class="k">if</span><span class="p">(</span><span class="n">result</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">VkResult</span><span class="o">::</span><span class="n">VK_SUCCESS</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="s">&quot;VkDeviceMemory 内存创建失败&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">device_memory_ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+
+<span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vkMapMemory</span><span class="p">(</span><span class="n">device</span><span class="p">,</span><span class="w"> </span><span class="n">device_memory</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">VK_WHOLE_SIZE</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">device_memory_ptr</span><span class="p">);</span>
+<span class="k">if</span><span class="p">(</span><span class="n">result</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">VkResult</span><span class="o">::</span><span class="n">VK_SUCCESS</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="s">&quot;VkDeviceMemory 内存映射失败&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">memcpy</span><span class="p">(</span><span class="n">device_memory_ptr</span><span class="p">,</span><span class="w"> </span><span class="n">positions</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span><span class="w"> </span><span class="n">memory_allocate_info</span><span class="p">.</span><span class="n">allocationSize</span><span class="p">);</span><span class="w"> </span><span class="c1">// 将数据写入 device_memory 内存中</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="id13">
+<h3>内存解映射<a class="headerlink" href="#id13" title="Link to this heading">#</a></h3>
+<p>当内存映射并使用结束后，可进行解除映射，进而释放系统的虚拟内存。可通过 <code class="docutils literal notranslate"><span class="pre">vkUnmapMemory(...)</span></code> 函数将映射过的内存进行 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">解映射</span> 。该函数定义如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">vkUnmapMemory</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkDeviceMemory</span><span class="w">                              </span><span class="n">memory</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">device</span> 内存对应的逻辑设备。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">memory</span> 要解映射的目标内存。该内存 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 处于 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">映射态</span> 。</p></li>
+</ul>
+<p>该函数之后 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">映射态</span> 的状态将解除，回归到 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">原始状态</span> 。</p>
+<section id="id14">
+<h4>示例<a class="headerlink" href="#id14" title="Link to this heading">#</a></h4>
+<p>对前一个示例中分配的设备内存进行解映射：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkDevice</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前创建的逻辑设备</span><span class="p">;</span>
+<span class="n">VkDeviceMemory</span><span class="w"> </span><span class="n">device_memory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前分配的设备内存</span><span class="p">;</span><span class="w"> </span><span class="c1">// 分配于 VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT 并处于 映射态</span>
+
+<span class="n">vkUnmapMemory</span><span class="p">(</span><span class="n">device</span><span class="p">,</span><span class="w"> </span><span class="n">device_memory</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id15">
+<h3>内存同步<a class="headerlink" href="#id15" title="Link to this heading">#</a></h3>
 </section>
 </section>
 </section>
@@ -1103,6 +1246,18 @@ Linux</label><div class="sd-tab-content docutils">
 <li><a class="reference internal" href="#id10">示例</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#id11">内存映射</a><ul>
+<li><a class="reference internal" href="#vkmapmemory">vkMapMemory</a><ul>
+<li><a class="reference internal" href="#id12">示例</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id13">内存解映射</a><ul>
+<li><a class="reference internal" href="#id14">示例</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id15">内存同步</a></li>
 </ul>
 </li>
 </ul>
