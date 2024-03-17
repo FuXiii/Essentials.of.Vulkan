@@ -320,6 +320,9 @@
 <li><p class="sd-card-text">2024/3/16 增加 <code class="docutils literal notranslate"><span class="pre">内存解映射</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/3/16 增加 <code class="docutils literal notranslate"><span class="pre">内存解映射</span></code> 章节下增加 <code class="docutils literal notranslate"><span class="pre">示例</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/3/16 增加 <code class="docutils literal notranslate"><span class="pre">内存同步</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/3/17 更新 <code class="docutils literal notranslate"><span class="pre">PFN_vkAllocationFunction</span></code> 章节，更新示例代码，增加 <code class="docutils literal notranslate"><span class="pre">通用自定义</span></code> 代码模块。</p></li>
+<li><p class="sd-card-text">2024/3/17 更新 <code class="docutils literal notranslate"><span class="pre">PFN_vkReallocationFunction</span></code> 章节，更新示例代码，增加 <code class="docutils literal notranslate"><span class="pre">通用自定义</span></code> 代码模块。</p></li>
+<li><p class="sd-card-text">2024/3/17 更新 <code class="docutils literal notranslate"><span class="pre">PFN_vkFreeFunction</span></code> 章节，更新示例代码，增加 <code class="docutils literal notranslate"><span class="pre">通用自定义</span></code> 代码模块。</p></li>
 </ul>
 </div>
 </details><p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中有两种分配内存的途径：</p>
@@ -425,11 +428,16 @@ C++ 17</label><div class="sd-tab-content docutils">
 
 <span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">VKAPI_PTR</span><span class="w"> </span><span class="n">Allocation</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pUserData</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">alignment</span><span class="p">,</span><span class="w"> </span><span class="n">VkSystemAllocationScope</span><span class="w"> </span><span class="n">allocationScope</span><span class="p">)</span>
 <span class="p">{</span>
-<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="n">aligned_alloc</span><span class="p">(</span><span class="n">alignment</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">);</span>
+<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">aligned_alloc</span><span class="p">(</span><span class="n">alignment</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">);</span>
 <span class="p">}</span>
 
 <span class="n">PFN_vkAllocationFunction</span><span class="w"> </span><span class="n">pfn_allocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Allocation</span><span class="p">;</span>
 </pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">警告</p>
+<p><code class="docutils literal notranslate"><span class="pre">C++</span></code> 标准中没有定义如何获取 <code class="docutils literal notranslate"><span class="pre">std::aligned_alloc(...)</span></code> 分配的内存大小函数。需要自己存储。</p>
+<p>具体如何存储，可参考 <code class="docutils literal notranslate"><span class="pre">通用自定义</span></code> 代码模块，该模块给出了一种解决方案。</p>
 </div>
 </div>
 <input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
@@ -454,6 +462,38 @@ Linux</label><div class="sd-tab-content docutils">
 <span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">VKAPI_PTR</span><span class="w"> </span><span class="n">Allocation</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pUserData</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">alignment</span><span class="p">,</span><span class="w"> </span><span class="n">VkSystemAllocationScope</span><span class="w"> </span><span class="n">allocationScope</span><span class="p">)</span>
 <span class="p">{</span>
 <span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="n">memalign</span><span class="p">(</span><span class="n">alignment</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">PFN_vkAllocationFunction</span><span class="w"> </span><span class="n">pfn_allocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Allocation</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-3" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-3">
+通用自定义</label><div class="sd-tab-content docutils">
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdlib.h&gt;</span>
+
+<span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="nf">AlignedMalloc</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">alignment</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="kt">size_t</span><span class="w"> </span><span class="n">meta_point_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="p">);</span>
+<span class="w">   </span><span class="kt">size_t</span><span class="w"> </span><span class="n">aligned_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">size_t</span><span class="p">);</span>
+<span class="w">   </span><span class="kt">size_t</span><span class="w"> </span><span class="n">meta_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">aligned_size</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">meta_point_size</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">alignment</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">size</span><span class="p">;</span>
+
+<span class="w">   </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">meta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">malloc</span><span class="p">(</span><span class="n">meta_size</span><span class="p">);</span>
+
+<span class="w">   </span><span class="kt">uintptr_t</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uintptr_t</span><span class="p">)</span><span class="n">meta</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">aligned_size</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">meta_point_size</span><span class="p">;</span>
+
+<span class="w">   </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">aligned_meta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="p">)((</span><span class="n">start</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">((</span><span class="n">alignment</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="p">(</span><span class="n">alignment</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">));</span>
+
+<span class="w">   </span><span class="o">*</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">**</span><span class="p">)((</span><span class="kt">uintptr_t</span><span class="p">)</span><span class="n">aligned_meta</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">meta_point_size</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">meta</span><span class="p">;</span>
+<span class="w">   </span><span class="o">*</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="o">*</span><span class="p">)((</span><span class="kt">uintptr_t</span><span class="p">)</span><span class="n">aligned_meta</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="p">(</span><span class="n">meta_point_size</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">aligned_size</span><span class="p">))</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">size</span><span class="p">;</span>
+
+<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="n">aligned_meta</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">VKAPI_PTR</span><span class="w"> </span><span class="n">Allocation</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pUserData</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">alignment</span><span class="p">,</span><span class="w"> </span><span class="n">VkSystemAllocationScope</span><span class="w"> </span><span class="n">allocationScope</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="n">AlignedMalloc</span><span class="p">(</span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="n">alignment</span><span class="p">);</span>
 <span class="p">}</span>
 
 <span class="n">PFN_vkAllocationFunction</span><span class="w"> </span><span class="n">pfn_allocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Allocation</span><span class="p">;</span>
@@ -490,8 +530,35 @@ Linux</label><div class="sd-tab-content docutils">
 <p>如果重分配失败，并且 <code class="docutils literal notranslate"><span class="pre">pOriginal</span></code> 非空，则 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">不能</span> 回收 <code class="docutils literal notranslate"><span class="pre">pOriginal</span></code> 之前的内存。</p>
 <p><code class="docutils literal notranslate"><span class="pre">PFN_vkReallocationFunction</span></code> 是一个函数指针，需要指向一个返回值为 <code class="docutils literal notranslate"><span class="pre">void*</span></code> 形参为 <code class="docutils literal notranslate"><span class="pre">(void</span> <span class="pre">*pUserData,</span> <span class="pre">void</span> <span class="pre">*pOriginal,</span> <span class="pre">size_t</span> <span class="pre">size,</span> <span class="pre">size_t</span> <span class="pre">alignment,</span> <span class="pre">VkSystemAllocationScope</span> <span class="pre">allocationScope)</span></code> 的函数。比如：</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-3">
+<input checked="checked" id="sd-tab-item-4" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-4">
+C++ 17</label><div class="sd-tab-content docutils">
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdlib&gt;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">VKAPI_PTR</span><span class="w"> </span><span class="n">Reallocate</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pUserData</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pOriginal</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">alignment</span><span class="p">,</span><span class="w"> </span><span class="n">VkSystemAllocationScope</span><span class="w"> </span><span class="n">allocationScope</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">new_memory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">aligned_alloc</span><span class="p">(</span><span class="n">alignment</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">);</span>
+<span class="w">   </span><span class="k">if</span><span class="p">(</span><span class="n">new_memory</span><span class="p">)</span>
+<span class="w">   </span><span class="p">{</span>
+<span class="w">      </span><span class="n">memcpy</span><span class="p">(</span><span class="n">new_memory</span><span class="p">,</span><span class="w"> </span><span class="n">pOriginal</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">);</span><span class="c1">// 此处 size 不一定对应 pOriginal 的内存大小，存在一定的问题。需要自己存储管理内存大小。</span>
+<span class="w">      </span><span class="n">free</span><span class="p">(</span><span class="n">pOriginal</span><span class="p">);</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">new_memory</span><span class="p">;</span>
+<span class="w">   </span><span class="p">}</span>
+
+<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">PFN_vkReallocationFunction</span><span class="w"> </span><span class="n">pfn_reallocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Reallocate</span><span class="p">;</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">警告</p>
+<p><code class="code docutils literal notranslate"><span class="pre">memcpy(new_memory,</span> <span class="pre">pOriginal,</span> <span class="pre">size)</span></code> 中由于标准中没有定义如何获取 <code class="docutils literal notranslate"><span class="pre">memalign(...)</span></code> 分配的内存大小函数。需要自己存储。所以 <code class="docutils literal notranslate"><span class="pre">size</span></code> 不一定对应 <code class="docutils literal notranslate"><span class="pre">pOriginal</span></code> 的内存大小，存在一定的问题。</p>
+<p>具体如何存储，可参考 <code class="docutils literal notranslate"><span class="pre">通用自定义</span></code> 代码模块，该模块给出了一种解决方案。</p>
+</div>
+</div>
+<input id="sd-tab-item-5" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-5">
 Windows</label><div class="sd-tab-content docutils">
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;malloc.h&gt;</span>
 
@@ -504,23 +571,51 @@ Windows</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<input id="sd-tab-item-4" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-4">
+<input id="sd-tab-item-6" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-6">
 Linux</label><div class="sd-tab-content docutils">
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;malloc.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;algorithm&gt;</span>
 
 <span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">VKAPI_PTR</span><span class="w"> </span><span class="n">Reallocate</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pUserData</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pOriginal</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">alignment</span><span class="p">,</span><span class="w"> </span><span class="n">VkSystemAllocationScope</span><span class="w"> </span><span class="n">allocationScope</span><span class="p">)</span>
 <span class="p">{</span>
 <span class="w">   </span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">new_memory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">memalign</span><span class="p">(</span><span class="n">alignment</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">);</span>
 <span class="w">   </span><span class="k">if</span><span class="p">(</span><span class="n">new_memory</span><span class="p">)</span>
 <span class="w">   </span><span class="p">{</span>
-<span class="w">      </span><span class="n">memcpy</span><span class="p">(</span><span class="n">new_memory</span><span class="p">,</span><span class="w"> </span><span class="n">pOriginal</span><span class="p">,</span><span class="w"> </span><span class="n">min</span><span class="p">(</span><span class="n">malloc_usable_size</span><span class="p">(</span><span class="n">pOriginal</span><span class="p">),</span><span class="w"> </span><span class="n">size</span><span class="p">));</span>
+<span class="w">      </span><span class="n">memcpy</span><span class="p">(</span><span class="n">new_memory</span><span class="p">,</span><span class="w"> </span><span class="n">pOriginal</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">min</span><span class="p">(</span><span class="n">malloc_usable_size</span><span class="p">(</span><span class="n">pOriginal</span><span class="p">),</span><span class="w"> </span><span class="n">size</span><span class="p">));</span>
 <span class="w">      </span><span class="n">free</span><span class="p">(</span><span class="n">pOriginal</span><span class="p">);</span>
 <span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">new_memory</span><span class="p">;</span>
 <span class="w">   </span><span class="p">}</span>
 
 <span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
-<span class="w">   </span><span class="c1">//return realloc(pOriginal, size); // 此处使用 realloc(...) 进行重分配可能会有问题，Linux 上没有 _aligned_realloc(...) 函数需要自己实现。</span>
+<span class="p">}</span>
+
+<span class="n">PFN_vkReallocationFunction</span><span class="w"> </span><span class="n">pfn_reallocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Reallocate</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-7" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-7">
+通用自定义</label><div class="sd-tab-content docutils">
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdlib.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;algorithm&gt;</span>
+
+<span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="nf">AlignedRealloc</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">memory</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">alignment</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">auto</span><span class="w"> </span><span class="n">get_aligned_memory_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[](</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">memory</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kt">size_t</span>
+<span class="w">   </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="o">*</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="o">*</span><span class="p">)((</span><span class="kt">uintptr_t</span><span class="p">)</span><span class="n">memory</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">size_t</span><span class="p">));</span>
+<span class="w">   </span><span class="p">};</span>
+
+<span class="w">   </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">new_meta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">AlignedMalloc</span><span class="p">(</span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="n">alignment</span><span class="p">);</span>
+<span class="w">   </span><span class="n">memcpy</span><span class="p">(</span><span class="n">new_meta</span><span class="p">,</span><span class="w"> </span><span class="n">memory</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">min</span><span class="p">(</span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="n">get_aligned_memory_size</span><span class="p">(</span><span class="n">memory</span><span class="p">)));</span>
+<span class="w">   </span><span class="n">AlignedFree</span><span class="p">(</span><span class="n">memory</span><span class="p">);</span><span class="w"> </span><span class="c1">// 源码见 PFN_vkFreeFunction 章节中 通用自定义 代码模块</span>
+<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="n">new_meta</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">VKAPI_PTR</span><span class="w"> </span><span class="n">Reallocate</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pUserData</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pOriginal</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">alignment</span><span class="p">,</span><span class="w"> </span><span class="n">VkSystemAllocationScope</span><span class="w"> </span><span class="n">allocationScope</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="n">AlignedRealloc</span><span class="p">(</span><span class="n">pOriginal</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="n">alignment</span><span class="p">);</span>
 <span class="p">}</span>
 
 <span class="n">PFN_vkReallocationFunction</span><span class="w"> </span><span class="n">pfn_reallocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Reallocate</span><span class="p">;</span>
@@ -544,28 +639,66 @@ Linux</label><div class="sd-tab-content docutils">
 </ul>
 <p><code class="docutils literal notranslate"><span class="pre">PFN_vkFreeFunction</span></code> 是一个函数指针，需要指向一个返回值为 <code class="docutils literal notranslate"><span class="pre">void</span></code> 形参为 <code class="docutils literal notranslate"><span class="pre">(void</span> <span class="pre">*pUserData,</span> <span class="pre">void</span> <span class="pre">*pMemory)</span></code> 的函数。比如：</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-5">
-Windows</label><div class="sd-tab-content docutils">
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;malloc.h&gt;</span>
+<input checked="checked" id="sd-tab-item-8" name="sd-tab-set-2" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-8">
+C++ 17</label><div class="sd-tab-content docutils">
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdlib&gt;</span>
 
-<span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">VKAPI_PTR</span><span class="w"> </span><span class="n">Free</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pUserData</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pMemory</span><span class="p">)</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">VKAPI_PTR</span><span class="w"> </span><span class="nf">Free</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pUserData</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pMemory</span><span class="p">)</span>
 <span class="p">{</span>
-<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="n">_aligned_free</span><span class="p">(</span><span class="n">pMemory</span><span class="p">);</span>
+<span class="w">   </span><span class="n">std</span><span class="o">::</span><span class="n">free</span><span class="p">(</span><span class="n">pMemory</span><span class="p">);</span>
 <span class="p">}</span>
 
 <span class="n">PFN_vkFreeFunction</span><span class="w"> </span><span class="n">pfn_free</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Free</span><span class="p">;</span>
 </pre></div>
 </div>
 </div>
-<input id="sd-tab-item-6" name="sd-tab-set-2" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-6">
+<input id="sd-tab-item-9" name="sd-tab-set-2" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-9">
+Windows</label><div class="sd-tab-content docutils">
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;malloc.h&gt;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="n">VKAPI_PTR</span><span class="w"> </span><span class="nf">Free</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pUserData</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pMemory</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="n">_aligned_free</span><span class="p">(</span><span class="n">pMemory</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">PFN_vkFreeFunction</span><span class="w"> </span><span class="n">pfn_free</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Free</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-10" name="sd-tab-set-2" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-10">
 Linux</label><div class="sd-tab-content docutils">
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;malloc.h&gt;</span>
 
-<span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">VKAPI_PTR</span><span class="w"> </span><span class="n">Free</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pUserData</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pMemory</span><span class="p">)</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">VKAPI_PTR</span><span class="w"> </span><span class="nf">Free</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pUserData</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pMemory</span><span class="p">)</span>
 <span class="p">{</span>
-<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="n">free</span><span class="p">(</span><span class="n">pOriginal</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">);</span>
+<span class="w">   </span><span class="n">free</span><span class="p">(</span><span class="n">pMemory</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">PFN_vkFreeFunction</span><span class="w"> </span><span class="n">pfn_free</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Free</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-11" name="sd-tab-set-2" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-11">
+通用自定义</label><div class="sd-tab-content docutils">
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdlib.h&gt;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">AlignedFree</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">memory</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">auto</span><span class="w"> </span><span class="n">get_aligned_meta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[](</span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">memory</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span>
+<span class="w">   </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="p">(((</span><span class="kt">void</span><span class="w"> </span><span class="o">**</span><span class="p">)</span><span class="n">pMemory</span><span class="p">)[</span><span class="mi">-1</span><span class="p">]);</span>
+<span class="w">   </span><span class="p">};</span>
+
+<span class="w">   </span><span class="n">free</span><span class="p">(</span><span class="n">get_aligned_meta</span><span class="p">(</span><span class="n">memory</span><span class="p">));</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="n">VKAPI_PTR</span><span class="w"> </span><span class="nf">Free</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pUserData</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pMemory</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="n">AlignedFree</span><span class="p">(</span><span class="n">pMemory</span><span class="p">);</span>
 <span class="p">}</span>
 
 <span class="n">PFN_vkFreeFunction</span><span class="w"> </span><span class="n">pfn_free</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Free</span><span class="p">;</span>
@@ -648,7 +781,11 @@ Linux</label><div class="sd-tab-content docutils">
 </section>
 <section id="id5">
 <h3>示例<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
-<p>这里给出 <code class="docutils literal notranslate"><span class="pre">Windows</span></code> 平台代码示例， <code class="docutils literal notranslate"><span class="pre">Linux</span></code> 平台类似。</p>
+<p>这里给出 <code class="docutils literal notranslate"><span class="pre">Windows</span></code> 平台和 <code class="docutils literal notranslate"><span class="pre">通用自定义</span></code> 代码完整示例， 其他平台以此类推。</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-12" name="sd-tab-set-3" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-12">
+Windows</label><div class="sd-tab-content docutils">
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;malloc.h&gt;</span>
 
 <span class="kt">size_t</span><span class="w"> </span><span class="n">memory_in_use</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="c1">// 统计内存使用大小</span>
@@ -661,14 +798,14 @@ Linux</label><div class="sd-tab-content docutils">
 
 <span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">VKAPI_PTR</span><span class="w"> </span><span class="n">Reallocate</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pUserData</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pOriginal</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">alignment</span><span class="p">,</span><span class="w"> </span><span class="n">VkSystemAllocationScope</span><span class="w"> </span><span class="n">allocationScope</span><span class="p">)</span>
 <span class="p">{</span>
-<span class="w">   </span><span class="n">memory_in_use</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="n">_msize</span><span class="p">(</span><span class="n">pOriginal</span><span class="p">);</span>
+<span class="w">   </span><span class="n">memory_in_use</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="n">_aligned_msize</span><span class="p">(</span><span class="n">pOriginal</span><span class="p">,</span><span class="w"> </span><span class="n">alignment</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
 <span class="w">   </span><span class="n">memory_in_use</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">size</span><span class="p">;</span>
 <span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="n">_aligned_realloc</span><span class="p">(</span><span class="n">pOriginal</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="n">alignment</span><span class="p">);</span>
 <span class="p">}</span>
 
 <span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">VKAPI_PTR</span><span class="w"> </span><span class="n">Free</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pUserData</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pMemory</span><span class="p">)</span>
 <span class="p">{</span>
-<span class="w">   </span><span class="n">memory_in_use</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="n">_msize</span><span class="p">(</span><span class="n">pMemory</span><span class="p">);</span>
+<span class="w">   </span><span class="n">memory_in_use</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="n">_aligned_msize</span><span class="p">(</span><span class="n">pMemory</span><span class="p">,</span><span class="w"> </span><span class="n">alignment</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
 <span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="n">_aligned_free</span><span class="p">(</span><span class="n">pMemory</span><span class="p">);</span>
 <span class="p">}</span>
 
@@ -709,6 +846,109 @@ Linux</label><div class="sd-tab-content docutils">
 
 <span class="n">vkDestroyInstance</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">allocation_callbacks</span><span class="p">);</span>
 </pre></div>
+</div>
+</div>
+<input id="sd-tab-item-13" name="sd-tab-set-3" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-13">
+通用自定义</label><div class="sd-tab-content docutils">
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="nf">AlignedMalloc</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">alignment</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="kt">size_t</span><span class="w"> </span><span class="n">meta_point_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="p">);</span>
+<span class="w">   </span><span class="kt">size_t</span><span class="w"> </span><span class="n">aligned_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">size_t</span><span class="p">);</span>
+<span class="w">   </span><span class="kt">size_t</span><span class="w"> </span><span class="n">meta_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">aligned_size</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">meta_point_size</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">alignment</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">size</span><span class="p">;</span>
+
+<span class="w">   </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">meta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">malloc</span><span class="p">(</span><span class="n">meta_size</span><span class="p">);</span>
+
+<span class="w">   </span><span class="kt">uintptr_t</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uintptr_t</span><span class="p">)</span><span class="n">meta</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">aligned_size</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">meta_point_size</span><span class="p">;</span>
+
+<span class="w">   </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">aligned_meta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="p">)((</span><span class="n">start</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">((</span><span class="n">alignment</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="p">(</span><span class="n">alignment</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">));</span>
+
+<span class="w">   </span><span class="o">*</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">**</span><span class="p">)((</span><span class="kt">uintptr_t</span><span class="p">)</span><span class="n">aligned_meta</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">meta_point_size</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">meta</span><span class="p">;</span>
+<span class="w">   </span><span class="o">*</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="o">*</span><span class="p">)((</span><span class="kt">uintptr_t</span><span class="p">)</span><span class="n">aligned_meta</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="p">(</span><span class="n">meta_point_size</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">aligned_size</span><span class="p">))</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">size</span><span class="p">;</span>
+
+<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="n">aligned_meta</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">AlignedFree</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">memory</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">auto</span><span class="w"> </span><span class="n">get_aligned_meta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[](</span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">memory</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span>
+<span class="w">   </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="p">(((</span><span class="kt">void</span><span class="w"> </span><span class="o">**</span><span class="p">)</span><span class="n">pMemory</span><span class="p">)[</span><span class="mi">-1</span><span class="p">]);</span>
+<span class="w">   </span><span class="p">};</span>
+
+<span class="w">   </span><span class="n">free</span><span class="p">(</span><span class="n">get_aligned_meta</span><span class="p">(</span><span class="n">memory</span><span class="p">));</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="nf">AlignedRealloc</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">memory</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">alignment</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">auto</span><span class="w"> </span><span class="n">get_aligned_memory_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[](</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">memory</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kt">size_t</span>
+<span class="w">   </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="o">*</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="o">*</span><span class="p">)((</span><span class="kt">uintptr_t</span><span class="p">)</span><span class="n">memory</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">size_t</span><span class="p">));</span>
+<span class="w">   </span><span class="p">};</span>
+
+<span class="w">   </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">new_meta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">AlignedMalloc</span><span class="p">(</span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="n">alignment</span><span class="p">);</span>
+<span class="w">   </span><span class="n">memcpy</span><span class="p">(</span><span class="n">new_meta</span><span class="p">,</span><span class="w"> </span><span class="n">memory</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">min</span><span class="p">(</span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="n">get_aligned_memory_size</span><span class="p">(</span><span class="n">memory</span><span class="p">)));</span>
+<span class="w">   </span><span class="n">AlignedFree</span><span class="p">(</span><span class="n">memory</span><span class="p">);</span>
+<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="n">new_meta</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">size_t</span><span class="w"> </span><span class="nf">GetAlignedMemorySize</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">memory</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="o">*</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="o">*</span><span class="p">)((</span><span class="kt">uintptr_t</span><span class="p">)</span><span class="n">memory</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">size_t</span><span class="p">));</span>
+<span class="p">}</span>
+
+<span class="kt">size_t</span><span class="w"> </span><span class="n">memory_in_use</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="c1">// 统计内存使用大小</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">VKAPI_PTR</span><span class="w"> </span><span class="n">Allocation</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pUserData</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">alignment</span><span class="p">,</span><span class="w"> </span><span class="n">VkSystemAllocationScope</span><span class="w"> </span><span class="n">allocationScope</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="n">memory_in_use</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">size</span><span class="p">;</span>
+<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="n">AlignedMalloc</span><span class="p">(</span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="n">alignment</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">VKAPI_PTR</span><span class="w"> </span><span class="n">Reallocate</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pUserData</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pOriginal</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">alignment</span><span class="p">,</span><span class="w"> </span><span class="n">VkSystemAllocationScope</span><span class="w"> </span><span class="n">allocationScope</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="n">memory_in_use</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="n">GetAlignedMemorySize</span><span class="p">(</span><span class="n">pOriginal</span><span class="p">);</span>
+<span class="w">   </span><span class="n">memory_in_use</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">size</span><span class="p">;</span>
+<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="n">AlignedRealloc</span><span class="p">(</span><span class="n">pOriginal</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="n">alignment</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="n">VKAPI_PTR</span><span class="w"> </span><span class="n">Free</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pUserData</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">pMemory</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="n">memory_in_use</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="n">GetAlignedMemorySize</span><span class="p">(</span><span class="n">pMemory</span><span class="p">);</span>
+<span class="w">   </span><span class="n">AlignedFree</span><span class="p">(</span><span class="n">pMemory</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">VkAllocationCallbacks</span><span class="w"> </span><span class="n">GetVkAllocationCallbacks</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">pUserData</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="n">VkAllocationCallbacks</span><span class="w"> </span><span class="n">vk_allocation_callbacks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
+<span class="w">   </span><span class="n">vk_allocation_callbacks</span><span class="p">.</span><span class="n">pUserData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pUserData</span><span class="p">;</span>
+<span class="w">   </span><span class="n">vk_allocation_callbacks</span><span class="p">.</span><span class="n">pfnAllocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Allocation</span><span class="p">;</span>
+<span class="w">   </span><span class="n">vk_allocation_callbacks</span><span class="p">.</span><span class="n">pfnReallocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Reallocate</span><span class="p">;</span>
+<span class="w">   </span><span class="n">vk_allocation_callbacks</span><span class="p">.</span><span class="n">pfnFree</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Free</span><span class="p">;</span>
+<span class="w">   </span><span class="n">vk_allocation_callbacks</span><span class="p">.</span><span class="n">pfnInternalAllocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">InternalAllocationNotification</span><span class="p">;</span>
+<span class="w">   </span><span class="n">vk_allocation_callbacks</span><span class="p">.</span><span class="n">pfnInternalFree</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">InternalFreeNotification</span><span class="p">;</span>
+
+<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="n">vk_allocation_callbacks</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">VkInstanceCreateInfo</span><span class="w"> </span><span class="n">instance_create_info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前填写的创建信息</span><span class="p">;</span>
+
+<span class="n">VkAllocationCallbacks</span><span class="w"> </span><span class="n">allocation_callbacks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GetVkAllocationCallbacks</span><span class="p">(</span><span class="k">nullptr</span><span class="p">);</span>
+
+<span class="n">VkInstance</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_NULL_HANDLE</span><span class="p">;</span>
+
+<span class="n">VkResult</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vkCreateInstance</span><span class="p">(</span><span class="o">&amp;</span><span class="n">instance_create_info</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">allocation_callbacks</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">instance</span><span class="p">);</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">result</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">VK_SUCCESS</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="s">&quot;VkInstance 创建失败&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// 缤纷绚丽的 Vulkan 程序 ...</span>
+
+<span class="n">vkDestroyInstance</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">allocation_callbacks</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
 </div>
 </section>
 </section>
