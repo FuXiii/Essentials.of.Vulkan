@@ -43,6 +43,9 @@
    * 2024/3/16 增加 ``内存解映射`` 章节。
    * 2024/3/16 增加 ``内存解映射`` 章节下增加 ``示例`` 章节。
    * 2024/3/16 增加 ``内存同步`` 章节。
+   * 2024/3/17 更新 ``PFN_vkAllocationFunction`` 章节，更新示例代码，增加 ``通用自定义`` 代码模块。
+   * 2024/3/17 更新 ``PFN_vkReallocationFunction`` 章节，更新示例代码，增加 ``通用自定义`` 代码模块。
+   * 2024/3/17 更新 ``PFN_vkFreeFunction`` 章节，更新示例代码，增加 ``通用自定义`` 代码模块。
 
 ``Vulkan`` 中有两种分配内存的途径：
 
@@ -158,10 +161,16 @@ PFN_vkAllocationFunction
 
          void *VKAPI_PTR Allocation(void *pUserData, size_t size, size_t alignment, VkSystemAllocationScope allocationScope)
          {
-            return aligned_alloc(alignment, size);
+            return std::aligned_alloc(alignment, size);
          }
 
          PFN_vkAllocationFunction pfn_allocation = &Allocation;
+
+      .. warning::
+         
+         ``C++`` 标准中没有定义如何获取 ``std::aligned_alloc(...)`` 分配的内存大小函数。需要自己存储。
+         
+         具体如何存储，可参考 ``通用自定义`` 代码模块，该模块给出了一种解决方案。
 
     .. tab-item:: Windows
 
@@ -185,6 +194,37 @@ PFN_vkAllocationFunction
          void *VKAPI_PTR Allocation(void *pUserData, size_t size, size_t alignment, VkSystemAllocationScope allocationScope)
          {
             return memalign(alignment, size);
+         }
+
+         PFN_vkAllocationFunction pfn_allocation = &Allocation;
+
+    .. tab-item:: 通用自定义
+
+      .. code:: c++
+
+         #include <stdlib.h>
+
+         void* AlignedMalloc(size_t size, size_t alignment)
+         {
+            size_t meta_point_size = sizeof(void *);
+            size_t aligned_size = sizeof(size_t);
+            size_t meta_size = aligned_size + meta_point_size + alignment - 1 + size;
+
+            void *meta = malloc(meta_size);
+
+            uintptr_t start = (uintptr_t)meta + aligned_size + meta_point_size;
+
+            void *aligned_meta = (void *)((start + ((alignment) - 1)) & ~(alignment - 1));
+
+            *(void **)((uintptr_t)aligned_meta - meta_point_size) = meta;
+            *(size_t *)((uintptr_t)aligned_meta - (meta_point_size + aligned_size)) = size;
+
+            return aligned_meta;
+         }
+
+         void *VKAPI_PTR Allocation(void *pUserData, size_t size, size_t alignment, VkSystemAllocationScope allocationScope)
+         {
+            return AlignedMalloc(size, alignment);
          }
 
          PFN_vkAllocationFunction pfn_allocation = &Allocation;
@@ -230,6 +270,33 @@ PFN_vkReallocationFunction
 
 .. tab-set::
 
+    .. tab-item:: C++ 17
+
+      .. code:: c++
+
+         #include <cstdlib>
+
+         void *VKAPI_PTR Reallocate(void *pUserData, void *pOriginal, size_t size, size_t alignment, VkSystemAllocationScope allocationScope)
+         {
+            void* new_memory = std::aligned_alloc(alignment, size);
+            if(new_memory)
+            {
+               memcpy(new_memory, pOriginal, size);// 此处 size 不一定对应 pOriginal 的内存大小，存在一定的问题。需要自己存储管理内存大小。
+               free(pOriginal);
+               return new_memory;
+            }
+
+            return nullptr;
+         }
+
+         PFN_vkReallocationFunction pfn_reallocation = &Reallocate;
+
+      .. warning::
+         
+         :code:`memcpy(new_memory, pOriginal, size)` 中由于标准中没有定义如何获取 ``memalign(...)`` 分配的内存大小函数。需要自己存储。所以 ``size`` 不一定对应 ``pOriginal`` 的内存大小，存在一定的问题。
+         
+         具体如何存储，可参考 ``通用自定义`` 代码模块，该模块给出了一种解决方案。
+
     .. tab-item:: Windows
 
       .. code:: c++
@@ -248,19 +315,46 @@ PFN_vkReallocationFunction
       .. code:: c++
 
          #include <malloc.h>
+         #include <algorithm>
 
          void *VKAPI_PTR Reallocate(void *pUserData, void *pOriginal, size_t size, size_t alignment, VkSystemAllocationScope allocationScope)
          {
             void* new_memory = memalign(alignment, size);
             if(new_memory)
             {
-               memcpy(new_memory, pOriginal, min(malloc_usable_size(pOriginal), size));
+               memcpy(new_memory, pOriginal, std::min(malloc_usable_size(pOriginal), size));
                free(pOriginal);
                return new_memory;
             }
 
             return nullptr;
-            //return realloc(pOriginal, size); // 此处使用 realloc(...) 进行重分配可能会有问题，Linux 上没有 _aligned_realloc(...) 函数需要自己实现。
+         }
+
+         PFN_vkReallocationFunction pfn_reallocation = &Reallocate;
+
+    .. tab-item:: 通用自定义
+
+      .. code:: c++
+
+         #include <stdlib.h>
+         #include <algorithm>
+
+         void* AlignedRealloc(void* memory, size_t size, size_t alignment)
+         {
+            auto get_aligned_memory_size = [](void *memory) -> size_t
+            {
+               return *(size_t *)((uintptr_t)memory - sizeof(void *) - sizeof(size_t));
+            };
+
+            void *new_meta = AlignedMalloc(size, alignment);
+            memcpy(new_meta, memory, std::min(size, get_aligned_memory_size(memory)));
+            AlignedFree(memory); // 源码见 PFN_vkFreeFunction 章节中 通用自定义 代码模块
+            return new_meta;
+         }
+
+         void *VKAPI_PTR Reallocate(void *pUserData, void *pOriginal, size_t size, size_t alignment, VkSystemAllocationScope allocationScope)
+         {
+            return AlignedRealloc(pOriginal, size, alignment);
          }
 
          PFN_vkReallocationFunction pfn_reallocation = &Reallocate;
@@ -284,15 +378,28 @@ PFN_vkFreeFunction
 
 .. tab-set::
 
+    .. tab-item:: C++ 17
+
+      .. code:: c++
+
+         #include <cstdlib>
+
+         void VKAPI_PTR Free(void *pUserData, void *pMemory)
+         {
+            std::free(pMemory);
+         }
+
+         PFN_vkFreeFunction pfn_free = &Free;
+
     .. tab-item:: Windows
 
       .. code:: c++
 
          #include <malloc.h>
 
-         void *VKAPI_PTR Free(void *pUserData, void *pMemory)
+         void VKAPI_PTR Free(void *pUserData, void *pMemory)
          {
-            return _aligned_free(pMemory);
+            _aligned_free(pMemory);
          }
 
          PFN_vkFreeFunction pfn_free = &Free;
@@ -303,9 +410,32 @@ PFN_vkFreeFunction
 
          #include <malloc.h>
 
-         void *VKAPI_PTR Free(void *pUserData, void *pMemory)
+         void VKAPI_PTR Free(void *pUserData, void *pMemory)
          {
-            return free(pOriginal, size);
+            free(pMemory);
+         }
+
+         PFN_vkFreeFunction pfn_free = &Free;
+
+    .. tab-item:: 通用自定义
+
+      .. code:: c++
+
+         #include <stdlib.h>
+
+         void AlignedFree(void* memory)
+         {
+            auto get_aligned_meta = [](void* memory) -> void*
+            {
+               return (((void **)pMemory)[-1]);
+            };
+
+            free(get_aligned_meta(memory));
+         }
+         
+         void VKAPI_PTR Free(void *pUserData, void *pMemory)
+         {
+            AlignedFree(pMemory);
          }
 
          PFN_vkFreeFunction pfn_free = &Free;
@@ -391,69 +521,173 @@ VkInternalAllocationType
 示例
 *******
 
-这里给出 ``Windows`` 平台代码示例， ``Linux`` 平台类似。
+这里给出 ``Windows`` 平台和 ``通用自定义`` 代码完整示例， 其他平台以此类推。
 
-.. code:: c++
+.. tab-set::
 
-   #include <malloc.h>
+    .. tab-item:: Windows
 
-   size_t memory_in_use = 0; // 统计内存使用大小
+      .. code:: c++
+      
+         #include <malloc.h>
+      
+         size_t memory_in_use = 0; // 统计内存使用大小
 
-   void *VKAPI_PTR Allocation(void *pUserData, size_t size, size_t alignment, VkSystemAllocationScope allocationScope)
-   {
-      memory_in_use += size;
-      return _aligned_malloc(size, alignment);
-   }
+         void *VKAPI_PTR Allocation(void *pUserData, size_t size, size_t alignment, VkSystemAllocationScope allocationScope)
+         {
+            memory_in_use += size;
+            return _aligned_malloc(size, alignment);
+         }
+      
+         void *VKAPI_PTR Reallocate(void *pUserData, void *pOriginal, size_t size, size_t alignment, VkSystemAllocationScope allocationScope)
+         {
+            memory_in_use -= _aligned_msize(pOriginal, alignment, 0);
+            memory_in_use += size;
+            return _aligned_realloc(pOriginal, size, alignment);
+         }
+      
+         void *VKAPI_PTR Free(void *pUserData, void *pMemory)
+         {
+            memory_in_use -= _aligned_msize(pMemory, alignment, 0);
+            return _aligned_free(pMemory);
+         }
+      
+         void VKAPI_PTR InternalAllocationNotification(void* pUserData, size_t size, VkInternalAllocationType allocationType, VkSystemAllocationScope allocationScope)
+         {
+         }
+      
+         void VKAPI_PTR InternalFreeNotification(void* pUserData, size_t size, VkInternalAllocationType allocationType, VkSystemAllocationScope allocationScope)
+         {
+         }
+      
+         VkAllocationCallbacks GetVkAllocationCallbacks(void* pUserData)
+         {
+            VkAllocationCallbacks vk_allocation_callbacks = {};
+            vk_allocation_callbacks.pUserData = pUserData;
+            vk_allocation_callbacks.pfnAllocation = &Allocation;
+            vk_allocation_callbacks.pfnReallocation = &Reallocate;
+            vk_allocation_callbacks.pfnFree = &Free;
+            vk_allocation_callbacks.pfnInternalAllocation = &InternalAllocationNotification;
+            vk_allocation_callbacks.pfnInternalFree = &InternalFreeNotification;
+      
+            return vk_allocation_callbacks;
+         }
+      
+         VkInstanceCreateInfo instance_create_info = 之前填写的创建信息;
+      
+         VkAllocationCallbacks allocation_callbacks = GetVkAllocationCallbacks(nullptr);
+      
+         VkInstance instance = VK_NULL_HANDLE;
+      
+         VkResult result = vkCreateInstance(&instance_create_info, &allocation_callbacks, &instance);
+         if (result != VK_SUCCESS)
+         {
+            throw std::runtime_error("VkInstance 创建失败");
+         }
+      
+         // 缤纷绚丽的 Vulkan 程序 ...
+      
+         vkDestroyInstance(instance, &allocation_callbacks);
 
-   void *VKAPI_PTR Reallocate(void *pUserData, void *pOriginal, size_t size, size_t alignment, VkSystemAllocationScope allocationScope)
-   {
-      memory_in_use -= _msize(pOriginal);
-      memory_in_use += size;
-      return _aligned_realloc(pOriginal, size, alignment);
-   }
+    .. tab-item:: 通用自定义
 
-   void *VKAPI_PTR Free(void *pUserData, void *pMemory)
-   {
-      memory_in_use -= _msize(pMemory);
-      return _aligned_free(pMemory);
-   }
+      .. code:: c++
 
-   void VKAPI_PTR InternalAllocationNotification(void* pUserData, size_t size, VkInternalAllocationType allocationType, VkSystemAllocationScope allocationScope)
-   {
-   }
+         void* AlignedMalloc(size_t size, size_t alignment)
+         {
+            size_t meta_point_size = sizeof(void *);
+            size_t aligned_size = sizeof(size_t);
+            size_t meta_size = aligned_size + meta_point_size + alignment - 1 + size;
 
-   void VKAPI_PTR InternalFreeNotification(void* pUserData, size_t size, VkInternalAllocationType allocationType, VkSystemAllocationScope allocationScope)
-   {
-   }
+            void *meta = malloc(meta_size);
 
-   VkAllocationCallbacks GetVkAllocationCallbacks(void* pUserData)
-   {
-      VkAllocationCallbacks vk_allocation_callbacks = {};
-      vk_allocation_callbacks.pUserData = pUserData;
-      vk_allocation_callbacks.pfnAllocation = &Allocation;
-      vk_allocation_callbacks.pfnReallocation = &Reallocate;
-      vk_allocation_callbacks.pfnFree = &Free;
-      vk_allocation_callbacks.pfnInternalAllocation = &InternalAllocationNotification;
-      vk_allocation_callbacks.pfnInternalFree = &InternalFreeNotification;
+            uintptr_t start = (uintptr_t)meta + aligned_size + meta_point_size;
 
-      return vk_allocation_callbacks;
-   }
+            void *aligned_meta = (void *)((start + ((alignment) - 1)) & ~(alignment - 1));
 
-   VkInstanceCreateInfo instance_create_info = 之前填写的创建信息;
+            *(void **)((uintptr_t)aligned_meta - meta_point_size) = meta;
+            *(size_t *)((uintptr_t)aligned_meta - (meta_point_size + aligned_size)) = size;
 
-   VkAllocationCallbacks allocation_callbacks = GetVkAllocationCallbacks(nullptr);
+            return aligned_meta;
+         }
 
-   VkInstance instance = VK_NULL_HANDLE;
+         void AlignedFree(void* memory)
+         {
+            auto get_aligned_meta = [](void* memory) -> void*
+            {
+               return (((void **)pMemory)[-1]);
+            };
 
-   VkResult result = vkCreateInstance(&instance_create_info, &allocation_callbacks, &instance);
-   if (result != VK_SUCCESS)
-   {
-      throw std::runtime_error("VkInstance 创建失败");
-   }
+            free(get_aligned_meta(memory));
+         }
 
-   // 缤纷绚丽的 Vulkan 程序 ...
+         void* AlignedRealloc(void* memory, size_t size, size_t alignment)
+         {
+            auto get_aligned_memory_size = [](void *memory) -> size_t
+            {
+               return *(size_t *)((uintptr_t)memory - sizeof(void *) - sizeof(size_t));
+            };
 
-   vkDestroyInstance(instance, &allocation_callbacks);
+            void *new_meta = AlignedMalloc(size, alignment);
+            memcpy(new_meta, memory, std::min(size, get_aligned_memory_size(memory)));
+            AlignedFree(memory);
+            return new_meta;
+         }
+
+         size_t GetAlignedMemorySize(void* memory)
+         {
+            return *(size_t *)((uintptr_t)memory - sizeof(void *) - sizeof(size_t));
+         }
+
+         size_t memory_in_use = 0; // 统计内存使用大小
+
+         void *VKAPI_PTR Allocation(void *pUserData, size_t size, size_t alignment, VkSystemAllocationScope allocationScope)
+         {
+            memory_in_use += size;
+            return AlignedMalloc(size, alignment);
+         }
+
+         void *VKAPI_PTR Reallocate(void *pUserData, void *pOriginal, size_t size, size_t alignment, VkSystemAllocationScope allocationScope)
+         {
+            memory_in_use -= GetAlignedMemorySize(pOriginal);
+            memory_in_use += size;
+            return AlignedRealloc(pOriginal, size, alignment);
+         }
+         
+         void VKAPI_PTR Free(void *pUserData, void *pMemory)
+         {
+            memory_in_use -= GetAlignedMemorySize(pMemory);
+            AlignedFree(pMemory);
+         }
+         
+         VkAllocationCallbacks GetVkAllocationCallbacks(void* pUserData)
+         {
+            VkAllocationCallbacks vk_allocation_callbacks = {};
+            vk_allocation_callbacks.pUserData = pUserData;
+            vk_allocation_callbacks.pfnAllocation = &Allocation;
+            vk_allocation_callbacks.pfnReallocation = &Reallocate;
+            vk_allocation_callbacks.pfnFree = &Free;
+            vk_allocation_callbacks.pfnInternalAllocation = &InternalAllocationNotification;
+            vk_allocation_callbacks.pfnInternalFree = &InternalFreeNotification;
+      
+            return vk_allocation_callbacks;
+         }
+      
+         VkInstanceCreateInfo instance_create_info = 之前填写的创建信息;
+      
+         VkAllocationCallbacks allocation_callbacks = GetVkAllocationCallbacks(nullptr);
+      
+         VkInstance instance = VK_NULL_HANDLE;
+      
+         VkResult result = vkCreateInstance(&instance_create_info, &allocation_callbacks, &instance);
+         if (result != VK_SUCCESS)
+         {
+            throw std::runtime_error("VkInstance 创建失败");
+         }
+      
+         // 缤纷绚丽的 Vulkan 程序 ...
+      
+         vkDestroyInstance(instance, &allocation_callbacks);
 
 设备内存
 #########################
@@ -924,6 +1158,7 @@ vkMapMemory
 
 
 ..
+   通用自定义图示
    VkMemoryMapFlags
    vkMapMemory不能重复调用
    HOST_VISIBLE
