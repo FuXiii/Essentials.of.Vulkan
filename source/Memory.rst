@@ -46,6 +46,9 @@
    * 2024/3/17 更新 ``PFN_vkAllocationFunction`` 章节，更新示例代码，增加 ``通用自定义`` 代码模块。
    * 2024/3/17 更新 ``PFN_vkReallocationFunction`` 章节，更新示例代码，增加 ``通用自定义`` 代码模块。
    * 2024/3/17 更新 ``PFN_vkFreeFunction`` 章节，更新示例代码，增加 ``通用自定义`` 代码模块。
+   * 2024/3/19 更新 ``PFN_vkAllocationFunction`` 章节，增加 ``通用自定义`` 代码模块内存分配说明。
+   * 2024/3/19 更新 ``PFN_vkReallocationFunction`` 章节，增加 ``通用自定义`` 代码模块内存分配说明。
+   * 2024/3/19 更新 ``PFN_vkFreeFunction`` 章节，增加 ``通用自定义`` 代码模块内存分配说明。
 
 ``Vulkan`` 中有两种分配内存的途径：
 
@@ -54,7 +57,7 @@
    * ``vkCreateInstance(...)`` 和 ``vkDestroyInstance(...)``
    * ``vkCreateDevice(...)`` 和 ``vkDestroyDevice(...)``
 
-   该方式是在创建和销毁句柄对象时指定，用于在 ``内存条`` 上分配和回收内存。其内部通过 ``malloc`` 和 ``free`` 之类的函数进行内存分配和销毁。用于 ``句柄对象`` 本身的分配和销毁。
+   该方式是在创建和销毁句柄对象时指定，用于在 ``内存条`` 上分配和回收内存。其内部通过 ``malloc(...)`` 和 ``free(...)`` 之类的函数进行内存分配和销毁。用于 ``句柄对象`` 本身的分配和销毁。
 
    .. note::
 
@@ -229,6 +232,30 @@ PFN_vkAllocationFunction
 
          PFN_vkAllocationFunction pfn_allocation = &Allocation;
 
+      .. admonition:: 算法说明
+         :class: important
+
+         该算法分配的对齐内存结构示意图如下：
+   
+         .. figure:: ./_static/aligned_memory_struct.png
+         
+            AlignedMalloc 对齐内存示意图
+   
+         其中示意图最上面一行标注为各部分所占字节长度：
+   
+         * :bdg-secondary:`alignment - 1` 用于内存对齐所需的基本占位符长度。该部分数据没用上，仅仅用于占位符。最大为 ``alignment - 1`` ，会随着 ``(void *)((start + ((alignment) - 1)) & ~(alignment - 1))`` 对齐算法中 ``start`` 的不同而不同。
+         * :bdg-secondary:`alignment_size` 用于存储需要分配的对齐内存长度。也就是 ``size`` 的字面值。
+         * :bdg-secondary:`meta_point_size`用于存储 ``malloc(...)`` 分配的原指针。也就是 ``meta`` 的字面值（指针）。
+         * :bdg-secondary:`size` 对齐内存长度。真正会被使用的对齐内存。
+
+         最下面一行标注为核心指针位置：
+
+         * :bdg-secondary:`meta` ``malloc(...)`` 分配的原指针。字面值（指针）被存储在 ``meta_point_size`` 占有的内存中。
+         * :bdg-secondary:`aligned_meta` 被需要的对齐内存指针。作为结果返回。
+
+         其中 ``aligned_meta`` 满足 ``Vulkan`` 要求的对齐内存地址。并作为目标内存返回给 ``Vulkan`` 。
+
+      
 其中 ``PFN_vkReallocationFunction`` 定义如下：
 
 PFN_vkReallocationFunction
@@ -359,6 +386,17 @@ PFN_vkReallocationFunction
 
          PFN_vkReallocationFunction pfn_reallocation = &Reallocate;
 
+      .. admonition:: 算法说明
+         :class: important
+
+         该算法分配的对齐内存结构示意图如下：
+   
+         .. figure:: ./_static/aligned_memory_struct.png
+         
+            AlignedMalloc 对齐内存示意图
+
+         其中获取 ``memory`` 分配大小，直接获取 ``aligned_size`` 字段中的数据即可。
+
 其中 ``PFN_vkFreeFunction`` 定义如下：
 
 PFN_vkFreeFunction
@@ -439,6 +477,17 @@ PFN_vkFreeFunction
          }
 
          PFN_vkFreeFunction pfn_free = &Free;
+
+      .. admonition:: 算法说明
+         :class: important
+
+         该算法分配的对齐内存结构示意图如下：
+   
+         .. figure:: ./_static/aligned_memory_struct.png
+         
+            AlignedMalloc 对齐内存示意图
+
+         其中获取 ``memory`` 之前通过 ``malloc(...)`` 分配的原指针，直接获取 ``meta_point_size`` 字段中的数据即可。
 
 其中 ``PFN_vkInternalAllocationNotification`` 定义如下：
 
