@@ -323,6 +323,9 @@
 <li><p class="sd-card-text">2024/3/17 更新 <code class="docutils literal notranslate"><span class="pre">PFN_vkAllocationFunction</span></code> 章节，更新示例代码，增加 <code class="docutils literal notranslate"><span class="pre">通用自定义</span></code> 代码模块。</p></li>
 <li><p class="sd-card-text">2024/3/17 更新 <code class="docutils literal notranslate"><span class="pre">PFN_vkReallocationFunction</span></code> 章节，更新示例代码，增加 <code class="docutils literal notranslate"><span class="pre">通用自定义</span></code> 代码模块。</p></li>
 <li><p class="sd-card-text">2024/3/17 更新 <code class="docutils literal notranslate"><span class="pre">PFN_vkFreeFunction</span></code> 章节，更新示例代码，增加 <code class="docutils literal notranslate"><span class="pre">通用自定义</span></code> 代码模块。</p></li>
+<li><p class="sd-card-text">2024/3/19 更新 <code class="docutils literal notranslate"><span class="pre">PFN_vkAllocationFunction</span></code> 章节，增加 <code class="docutils literal notranslate"><span class="pre">通用自定义</span></code> 代码模块内存分配说明。</p></li>
+<li><p class="sd-card-text">2024/3/19 更新 <code class="docutils literal notranslate"><span class="pre">PFN_vkReallocationFunction</span></code> 章节，增加 <code class="docutils literal notranslate"><span class="pre">通用自定义</span></code> 代码模块内存分配说明。</p></li>
+<li><p class="sd-card-text">2024/3/19 更新 <code class="docutils literal notranslate"><span class="pre">PFN_vkFreeFunction</span></code> 章节，增加 <code class="docutils literal notranslate"><span class="pre">通用自定义</span></code> 代码模块内存分配说明。</p></li>
 </ul>
 </div>
 </details><p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中有两种分配内存的途径：</p>
@@ -332,7 +335,7 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">vkCreateInstance(...)</span></code> 和 <code class="docutils literal notranslate"><span class="pre">vkDestroyInstance(...)</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">vkCreateDevice(...)</span></code> 和 <code class="docutils literal notranslate"><span class="pre">vkDestroyDevice(...)</span></code></p></li>
 </ul>
-<p>该方式是在创建和销毁句柄对象时指定，用于在 <code class="docutils literal notranslate"><span class="pre">内存条</span></code> 上分配和回收内存。其内部通过 <code class="docutils literal notranslate"><span class="pre">malloc</span></code> 和 <code class="docutils literal notranslate"><span class="pre">free</span></code> 之类的函数进行内存分配和销毁。用于 <code class="docutils literal notranslate"><span class="pre">句柄对象</span></code> 本身的分配和销毁。</p>
+<p>该方式是在创建和销毁句柄对象时指定，用于在 <code class="docutils literal notranslate"><span class="pre">内存条</span></code> 上分配和回收内存。其内部通过 <code class="docutils literal notranslate"><span class="pre">malloc(...)</span></code> 和 <code class="docutils literal notranslate"><span class="pre">free(...)</span></code> 之类的函数进行内存分配和销毁。用于 <code class="docutils literal notranslate"><span class="pre">句柄对象</span></code> 本身的分配和销毁。</p>
 <div class="admonition note">
 <p class="admonition-title">备注</p>
 <ul class="simple">
@@ -499,6 +502,33 @@ Linux</label><div class="sd-tab-content docutils">
 <span class="n">PFN_vkAllocationFunction</span><span class="w"> </span><span class="n">pfn_allocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Allocation</span><span class="p">;</span>
 </pre></div>
 </div>
+<div class="important admonition">
+<p class="admonition-title">算法说明</p>
+<p>该算法分配的对齐内存结构示意图如下：</p>
+<figure class="align-default" id="id16">
+<img alt="_images/aligned_memory_struct.png" src="_images/aligned_memory_struct.png" />
+<figcaption>
+<p><span class="caption-text">AlignedMalloc 对齐内存示意图</span><a class="headerlink" href="#id16" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>其中示意图最上面一行标注为各部分所占字节长度：</p>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">alignment - 1</span> 用于内存对齐所需的基本占位符长度。该部分数据没用上，仅仅用于占位符。最大为 <code class="docutils literal notranslate"><span class="pre">alignment</span> <span class="pre">-</span> <span class="pre">1</span></code> ，会随着 <code class="docutils literal notranslate"><span class="pre">(void</span> <span class="pre">*)((start</span> <span class="pre">+</span> <span class="pre">((alignment)</span> <span class="pre">-</span> <span class="pre">1))</span> <span class="pre">&amp;</span> <span class="pre">~(alignment</span> <span class="pre">-</span> <span class="pre">1))</span></code> 对齐算法中 <code class="docutils literal notranslate"><span class="pre">start</span></code> 的不同而不同。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">alignment_size</span> 用于存储需要分配的对齐内存长度。也就是 <code class="docutils literal notranslate"><span class="pre">size</span></code> 的字面值。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">meta_point_size</span> 用于存储 <code class="docutils literal notranslate"><span class="pre">malloc(...)</span></code> 分配的原指针。也就是 <code class="docutils literal notranslate"><span class="pre">meta</span></code> 的字面值（指针）。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">size</span> 对齐内存长度。真正会被使用的对齐内存。</p></li>
+</ul>
+<p>最下面一行标注为核心指针位置：</p>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">meta</span> <code class="docutils literal notranslate"><span class="pre">malloc(...)</span></code> 分配的原指针。字面值（指针）被存储在 <code class="docutils literal notranslate"><span class="pre">meta_point_size</span></code> 占有的内存中。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">aligned_meta</span> 被需要的对齐内存指针。作为结果返回。</p></li>
+</ul>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">aligned_meta</span></code> 满足 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 要求的对齐内存地址。并作为目标内存返回给 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>这里 <code class="docutils literal notranslate"><span class="pre">aligned_meta</span></code> 前只存储了 <code class="docutils literal notranslate"><span class="pre">size</span></code> 和 <code class="docutils literal notranslate"><span class="pre">meta</span></code> 基本数据，您可以根据需求自定义扩展这些数据存储，一般会抽象出一个 <code class="docutils literal notranslate"><span class="pre">内存头</span></code> 用于存储该内存分配信息。</p>
+</div>
+</div>
 </div>
 </div>
 <p>其中 <code class="docutils literal notranslate"><span class="pre">PFN_vkReallocationFunction</span></code> 定义如下：</p>
@@ -621,6 +651,17 @@ Linux</label><div class="sd-tab-content docutils">
 <span class="n">PFN_vkReallocationFunction</span><span class="w"> </span><span class="n">pfn_reallocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Reallocate</span><span class="p">;</span>
 </pre></div>
 </div>
+<div class="important admonition">
+<p class="admonition-title">算法说明</p>
+<p>该算法分配的对齐内存结构示意图如下：</p>
+<figure class="align-default" id="id17">
+<img alt="_images/aligned_memory_struct.png" src="_images/aligned_memory_struct.png" />
+<figcaption>
+<p><span class="caption-text">AlignedMalloc 对齐内存示意图</span><a class="headerlink" href="#id17" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>其中获取 <code class="docutils literal notranslate"><span class="pre">memory</span></code> 分配大小，直接获取 <code class="docutils literal notranslate"><span class="pre">aligned_size</span></code> 字段中的数据即可。</p>
+</div>
 </div>
 </div>
 <p>其中 <code class="docutils literal notranslate"><span class="pre">PFN_vkFreeFunction</span></code> 定义如下：</p>
@@ -703,6 +744,17 @@ Linux</label><div class="sd-tab-content docutils">
 
 <span class="n">PFN_vkFreeFunction</span><span class="w"> </span><span class="n">pfn_free</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Free</span><span class="p">;</span>
 </pre></div>
+</div>
+<div class="important admonition">
+<p class="admonition-title">算法说明</p>
+<p>该算法分配的对齐内存结构示意图如下：</p>
+<figure class="align-default" id="id18">
+<img alt="_images/aligned_memory_struct.png" src="_images/aligned_memory_struct.png" />
+<figcaption>
+<p><span class="caption-text">AlignedMalloc 对齐内存示意图</span><a class="headerlink" href="#id18" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>其中获取 <code class="docutils literal notranslate"><span class="pre">memory</span></code> 之前通过 <code class="docutils literal notranslate"><span class="pre">malloc(...)</span></code> 分配的原指针，直接获取 <code class="docutils literal notranslate"><span class="pre">meta_point_size</span></code> 字段中的数据即可。</p>
 </div>
 </div>
 </div>
@@ -965,10 +1017,10 @@ Windows</label><div class="sd-tab-content docutils">
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">Device 端独占内存</span> <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 设备自身携带的专有内存。数据在该内存中将会有更高的性能。</p></li>
 </ol>
 <p>其示意图如下：</p>
-<figure class="align-default" id="id16">
+<figure class="align-default" id="id19">
 <img alt="_images/device_memory_struct.png" src="_images/device_memory_struct.png" />
 <figcaption>
-<p><span class="caption-text">Vulkan 设备内存示意图</span><a class="headerlink" href="#id16" title="Link to this image">#</a></p>
+<p><span class="caption-text">Vulkan 设备内存示意图</span><a class="headerlink" href="#id19" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <div class="admonition important">
@@ -1055,10 +1107,10 @@ Windows</label><div class="sd-tab-content docutils">
 <p>有时 <code class="docutils literal notranslate"><span class="pre">VkMemoryHeap::flags</span></code> 为 <code class="docutils literal notranslate"><span class="pre">0</span></code> ，该值并没有定义于 <code class="docutils literal notranslate"><span class="pre">VkMemoryHeapFlagBits</span></code> 中。此时一般认为该内存堆为 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端内存。</p>
 </div>
 <p>如下，为一种可能的设备内存堆获取结果：</p>
-<figure class="align-default" id="id17">
+<figure class="align-default" id="id20">
 <img alt="_images/memory_heaps.png" src="_images/memory_heaps.png" />
 <figcaption>
-<p><span class="caption-text">设备内存堆示意图</span><a class="headerlink" href="#id17" title="Link to this image">#</a></p>
+<p><span class="caption-text">设备内存堆示意图</span><a class="headerlink" href="#id20" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <p>其中每个堆自身可以包含一到多个类型的内存，堆上的内存类型信息被定义在 <code class="docutils literal notranslate"><span class="pre">memoryTypes</span></code> 中，其 <code class="docutils literal notranslate"><span class="pre">VkMemoryType</span></code> 定义如下：</p>
@@ -1113,10 +1165,10 @@ Windows</label><div class="sd-tab-content docutils">
 <p><em>该类型内存平时用的不多</em>。</p>
 </div>
 <p>如下，为一种可能的设备内存类型获取结果：</p>
-<figure class="align-default" id="id18">
+<figure class="align-default" id="id21">
 <span id="memory-heap-and-type"></span><img alt="_images/memory_heap_and_type.png" src="_images/memory_heap_and_type.png" />
 <figcaption>
-<p><span class="caption-text">设备内存类型示意图</span><a class="headerlink" href="#id18" title="Link to this image">#</a></p>
+<p><span class="caption-text">设备内存类型示意图</span><a class="headerlink" href="#id21" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <p>从如上示例可看出，不同的 <code class="docutils literal notranslate"><span class="pre">VkMemoryType::propertyFlags</span></code> 之间可以有重叠的 <code class="docutils literal notranslate"><span class="pre">VkMemoryPropertyFlagBits</span></code> ，但是两两 <code class="docutils literal notranslate"><span class="pre">VkMemoryType</span></code> 不会有完全相同的 <code class="docutils literal notranslate"><span class="pre">propertyFlags</span></code> 。 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中是根据不同的 <code class="docutils literal notranslate"><span class="pre">VkMemoryType::propertyFlags</span></code> 对内存进行分类的。</p>
