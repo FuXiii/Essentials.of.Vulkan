@@ -245,7 +245,7 @@ PFN_vkAllocationFunction
    
          * :bdg-secondary:`alignment - 1` 用于内存对齐所需的基本占位符长度。该部分数据没用上，仅仅用于占位符。最大为 ``alignment - 1`` ，会随着 ``(void *)((start + ((alignment) - 1)) & ~(alignment - 1))`` 对齐算法中 ``start`` 的不同而不同。
          * :bdg-secondary:`alignment_size` 用于存储需要分配的对齐内存长度。也就是 ``size`` 的字面值。
-         * :bdg-secondary:`meta_point_size`用于存储 ``malloc(...)`` 分配的原指针。也就是 ``meta`` 的字面值（指针）。
+         * :bdg-secondary:`meta_point_size` 用于存储 ``malloc(...)`` 分配的原指针。也就是 ``meta`` 的字面值（指针）。
          * :bdg-secondary:`size` 对齐内存长度。真正会被使用的对齐内存。
 
          最下面一行标注为核心指针位置：
@@ -255,6 +255,9 @@ PFN_vkAllocationFunction
 
          其中 ``aligned_meta`` 满足 ``Vulkan`` 要求的对齐内存地址。并作为目标内存返回给 ``Vulkan`` 。
 
+         .. note::
+
+            这里 ``aligned_meta`` 前只存储了 ``size`` 和 ``meta`` 基本数据，您可以根据需求自定义扩展这些数据存储，一般会抽象出一个 ``内存头`` 用于存储该内存分配信息。
       
 其中 ``PFN_vkReallocationFunction`` 定义如下：
 
