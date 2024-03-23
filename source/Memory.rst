@@ -49,6 +49,8 @@
    * 2024/3/19 更新 ``PFN_vkAllocationFunction`` 章节，增加 ``通用自定义`` 代码模块内存分配说明。
    * 2024/3/19 更新 ``PFN_vkReallocationFunction`` 章节，增加 ``通用自定义`` 代码模块内存分配说明。
    * 2024/3/19 更新 ``PFN_vkFreeFunction`` 章节，增加 ``通用自定义`` 代码模块内存分配说明。
+   * 2024/3/23 更新 ``vkMapMemory`` 章节，增加示意图。
+   * 2024/3/23 更新 ``内存同步`` 章节。
 
 ``Vulkan`` 中有两种分配内存的途径：
 
@@ -1119,6 +1121,15 @@ vkMapMemory
 
    由于返回的是虚拟内存地址，不同平台对于虚拟内存大小有不同的限制，所以当 ``vkMapMemory()`` 映射的虚拟地址范围超过平台限制后该函数将会返回 ``VkResult::VK_ERROR_MEMORY_MAP_FAILED`` 表示本次映射失败。为此，可通过将内存进行分小块进行映射或对已经映射的内存进行 :bdg-warning:`解映射` （说明见下文）来释放一部分虚拟内存。
 
+.. figure:: ./_static/memory_map.png
+
+   内存映射示意图
+
+.. admonition:: ppData
+   :class: important
+
+   对于 ``vkMapMemory(...)`` 返回的 ``ppData`` 指针进行操作时，其本质上是 :bdg-danger:`对映射的虚拟内存进行操作` ，严格意义上不会影响底层映射的 ``VkDeviceMemory`` 内部数据（详情见下文的 :ref:`memory_sync` ）。
+
 示例
 ^^^^^^^^^^^^^^^^^^^^
 
@@ -1205,8 +1216,14 @@ vkMapMemory
 
    vkUnmapMemory(device, device_memory);
 
+.. _memory_sync:
+
 内存同步
 **************************************
+
+所谓内存同步是指：虚拟内存中的数据与映射的 ``VkDeviceMemory`` 设备内存底层数据保持一致。
+
+当分配的设备内存所对应的内存类型
 
 
 ..
