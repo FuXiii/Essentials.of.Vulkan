@@ -326,6 +326,14 @@
 <li><p class="sd-card-text">2024/3/19 更新 <code class="docutils literal notranslate"><span class="pre">PFN_vkAllocationFunction</span></code> 章节，增加 <code class="docutils literal notranslate"><span class="pre">通用自定义</span></code> 代码模块内存分配说明。</p></li>
 <li><p class="sd-card-text">2024/3/19 更新 <code class="docutils literal notranslate"><span class="pre">PFN_vkReallocationFunction</span></code> 章节，增加 <code class="docutils literal notranslate"><span class="pre">通用自定义</span></code> 代码模块内存分配说明。</p></li>
 <li><p class="sd-card-text">2024/3/19 更新 <code class="docutils literal notranslate"><span class="pre">PFN_vkFreeFunction</span></code> 章节，增加 <code class="docutils literal notranslate"><span class="pre">通用自定义</span></code> 代码模块内存分配说明。</p></li>
+<li><p class="sd-card-text">2024/3/23 更新 <code class="docutils literal notranslate"><span class="pre">vkMapMemory</span></code> 章节，增加示意图。</p></li>
+<li><p class="sd-card-text">2024/3/23 更新 <code class="docutils literal notranslate"><span class="pre">内存同步</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/3/24 更新 <code class="docutils literal notranslate"><span class="pre">vkMapMemory</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/3/24 更新 <code class="docutils literal notranslate"><span class="pre">内存同步</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/3/24 增加 <code class="docutils literal notranslate"><span class="pre">虚拟内存同步到设备内存</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/3/24 增加 <code class="docutils literal notranslate"><span class="pre">vkFlushMappedMemoryRanges</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/3/24 增加 <code class="docutils literal notranslate"><span class="pre">设备内存同步到虚拟内存</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/3/24 <code class="docutils literal notranslate"><span class="pre">设备内存同步到虚拟内存</span></code> 章节，增加 <code class="docutils literal notranslate"><span class="pre">示例</span></code> 章节。</p></li>
 </ul>
 </div>
 </details><p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中有两种分配内存的途径：</p>
@@ -505,10 +513,10 @@ Linux</label><div class="sd-tab-content docutils">
 <div class="important admonition">
 <p class="admonition-title">算法说明</p>
 <p>该算法分配的对齐内存结构示意图如下：</p>
-<figure class="align-default" id="id16">
+<figure class="align-default" id="id21">
 <img alt="_images/aligned_memory_struct.png" src="_images/aligned_memory_struct.png" />
 <figcaption>
-<p><span class="caption-text">AlignedMalloc 对齐内存示意图</span><a class="headerlink" href="#id16" title="Link to this image">#</a></p>
+<p><span class="caption-text">AlignedMalloc 对齐内存示意图</span><a class="headerlink" href="#id21" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <p>其中示意图最上面一行标注为各部分所占字节长度：</p>
@@ -654,10 +662,10 @@ Linux</label><div class="sd-tab-content docutils">
 <div class="important admonition">
 <p class="admonition-title">算法说明</p>
 <p>该算法分配的对齐内存结构示意图如下：</p>
-<figure class="align-default" id="id17">
+<figure class="align-default" id="id22">
 <img alt="_images/aligned_memory_struct.png" src="_images/aligned_memory_struct.png" />
 <figcaption>
-<p><span class="caption-text">AlignedMalloc 对齐内存示意图</span><a class="headerlink" href="#id17" title="Link to this image">#</a></p>
+<p><span class="caption-text">AlignedMalloc 对齐内存示意图</span><a class="headerlink" href="#id22" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <p>其中获取 <code class="docutils literal notranslate"><span class="pre">memory</span></code> 分配大小，直接获取 <code class="docutils literal notranslate"><span class="pre">aligned_size</span></code> 字段中的数据即可。</p>
@@ -748,10 +756,10 @@ Linux</label><div class="sd-tab-content docutils">
 <div class="important admonition">
 <p class="admonition-title">算法说明</p>
 <p>该算法分配的对齐内存结构示意图如下：</p>
-<figure class="align-default" id="id18">
+<figure class="align-default" id="id23">
 <img alt="_images/aligned_memory_struct.png" src="_images/aligned_memory_struct.png" />
 <figcaption>
-<p><span class="caption-text">AlignedMalloc 对齐内存示意图</span><a class="headerlink" href="#id18" title="Link to this image">#</a></p>
+<p><span class="caption-text">AlignedMalloc 对齐内存示意图</span><a class="headerlink" href="#id23" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <p>其中获取 <code class="docutils literal notranslate"><span class="pre">memory</span></code> 之前通过 <code class="docutils literal notranslate"><span class="pre">malloc(...)</span></code> 分配的原指针，直接获取 <code class="docutils literal notranslate"><span class="pre">meta_point_size</span></code> 字段中的数据即可。</p>
@@ -1017,10 +1025,10 @@ Windows</label><div class="sd-tab-content docutils">
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">Device 端独占内存</span> <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 设备自身携带的专有内存。数据在该内存中将会有更高的性能。</p></li>
 </ol>
 <p>其示意图如下：</p>
-<figure class="align-default" id="id19">
+<figure class="align-default" id="id24">
 <img alt="_images/device_memory_struct.png" src="_images/device_memory_struct.png" />
 <figcaption>
-<p><span class="caption-text">Vulkan 设备内存示意图</span><a class="headerlink" href="#id19" title="Link to this image">#</a></p>
+<p><span class="caption-text">Vulkan 设备内存示意图</span><a class="headerlink" href="#id24" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <div class="admonition important">
@@ -1107,10 +1115,10 @@ Windows</label><div class="sd-tab-content docutils">
 <p>有时 <code class="docutils literal notranslate"><span class="pre">VkMemoryHeap::flags</span></code> 为 <code class="docutils literal notranslate"><span class="pre">0</span></code> ，该值并没有定义于 <code class="docutils literal notranslate"><span class="pre">VkMemoryHeapFlagBits</span></code> 中。此时一般认为该内存堆为 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端内存。</p>
 </div>
 <p>如下，为一种可能的设备内存堆获取结果：</p>
-<figure class="align-default" id="id20">
+<figure class="align-default" id="id25">
 <img alt="_images/memory_heaps.png" src="_images/memory_heaps.png" />
 <figcaption>
-<p><span class="caption-text">设备内存堆示意图</span><a class="headerlink" href="#id20" title="Link to this image">#</a></p>
+<p><span class="caption-text">设备内存堆示意图</span><a class="headerlink" href="#id25" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <p>其中每个堆自身可以包含一到多个类型的内存，堆上的内存类型信息被定义在 <code class="docutils literal notranslate"><span class="pre">memoryTypes</span></code> 中，其 <code class="docutils literal notranslate"><span class="pre">VkMemoryType</span></code> 定义如下：</p>
@@ -1165,10 +1173,10 @@ Windows</label><div class="sd-tab-content docutils">
 <p><em>该类型内存平时用的不多</em>。</p>
 </div>
 <p>如下，为一种可能的设备内存类型获取结果：</p>
-<figure class="align-default" id="id21">
+<figure class="align-default" id="id26">
 <span id="memory-heap-and-type"></span><img alt="_images/memory_heap_and_type.png" src="_images/memory_heap_and_type.png" />
 <figcaption>
-<p><span class="caption-text">设备内存类型示意图</span><a class="headerlink" href="#id21" title="Link to this image">#</a></p>
+<p><span class="caption-text">设备内存类型示意图</span><a class="headerlink" href="#id26" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <p>从如上示例可看出，不同的 <code class="docutils literal notranslate"><span class="pre">VkMemoryType::propertyFlags</span></code> 之间可以有重叠的 <code class="docutils literal notranslate"><span class="pre">VkMemoryPropertyFlagBits</span></code> ，但是两两 <code class="docutils literal notranslate"><span class="pre">VkMemoryType</span></code> 不会有完全相同的 <code class="docutils literal notranslate"><span class="pre">propertyFlags</span></code> 。 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中是根据不同的 <code class="docutils literal notranslate"><span class="pre">VkMemoryType::propertyFlags</span></code> 对内存进行分类的。</p>
@@ -1342,6 +1350,20 @@ Windows</label><div class="sd-tab-content docutils">
 <p><code class="docutils literal notranslate"><span class="pre">vkMapMemory(...)</span></code> 函数返回的 <code class="docutils literal notranslate"><span class="pre">ppData</span></code> 内存映射结果确切来说 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">不是</span> 真正意义上的内存地址，而是一个 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">虚拟</span> 内存地址，对该地址的操作就 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">好似</span> 对底层真正的内存进行操作，其本质上是对虚拟内存的操作。</p>
 <p>由于返回的是虚拟内存地址，不同平台对于虚拟内存大小有不同的限制，所以当 <code class="docutils literal notranslate"><span class="pre">vkMapMemory()</span></code> 映射的虚拟地址范围超过平台限制后该函数将会返回 <code class="docutils literal notranslate"><span class="pre">VkResult::VK_ERROR_MEMORY_MAP_FAILED</span></code> 表示本次映射失败。为此，可通过将内存进行分小块进行映射或对已经映射的内存进行 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">解映射</span> （说明见下文）来释放一部分虚拟内存。</p>
 </div>
+<figure class="align-default" id="id27">
+<img alt="_images/memory_map.png" src="_images/memory_map.png" />
+<figcaption>
+<p><span class="caption-text">内存映射示意图</span><a class="headerlink" href="#id27" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<div class="important admonition">
+<p class="admonition-title">虚拟内存</p>
+<p>映射出来的 <code class="docutils literal notranslate"><span class="pre">虚拟内存</span></code> 与 <code class="docutils literal notranslate"><span class="pre">VkDeviceMemory</span></code> 底层设备内存是两个独立不同的内存。映射的内存有点类似于将 <code class="docutils literal notranslate"><span class="pre">VkDeviceMemory</span></code> 底层设备内存拷贝到虚拟内存中，并将这部分虚拟内存的首地址返回，作为映射结果。这对理解下文的 <a class="reference internal" href="#memory-sync"><span class="std std-ref">内存同步</span></a> 非常重要。</p>
+</div>
+<div class="important admonition">
+<p class="admonition-title">ppData</p>
+<p>对于 <code class="docutils literal notranslate"><span class="pre">vkMapMemory(...)</span></code> 返回的 <code class="docutils literal notranslate"><span class="pre">ppData</span></code> 指针进行操作时，其本质上是 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">对映射的虚拟内存进行操作</span> ，严格意义上不会影响底层映射的 <code class="docutils literal notranslate"><span class="pre">VkDeviceMemory</span></code> 内部数据（详情见下文的 <a class="reference internal" href="#memory-sync"><span class="std std-ref">内存同步</span></a> ）。</p>
+</div>
 <section id="id12">
 <h5>示例<a class="headerlink" href="#id12" title="Link to this heading">#</a></h5>
 <p>在有 <code class="docutils literal notranslate"><span class="pre">VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT</span></code> 内存类型的内存上分配内存，并进行内存映射（根据 <a class="reference internal" href="#memory-heap-and-type"><span class="std std-ref">设备内存类型示意图</span></a> 中的情况）：</p>
@@ -1424,8 +1446,160 @@ Windows</label><div class="sd-tab-content docutils">
 </div>
 </section>
 </section>
-<section id="id15">
-<h3>内存同步<a class="headerlink" href="#id15" title="Link to this heading">#</a></h3>
+<section id="memory-sync">
+<span id="id15"></span><h3>内存同步<a class="headerlink" href="#memory-sync" title="Link to this heading">#</a></h3>
+<p>所谓内存同步是指：虚拟内存中的数据与对应的 <code class="docutils literal notranslate"><span class="pre">VkDeviceMemory</span></code> 设备内存底层数据保持一致。</p>
+<p>当分配的设备内存所对应的内存类型 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">包含</span> <code class="docutils literal notranslate"><span class="pre">VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT</span></code> 时，内存同步将 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">会自动</span> 进行。其同步规则如下：</p>
+<ul class="simple">
+<li><p>当向映射的虚拟内存中写入时，写入虚拟内存中的数据也会同步到对应的 <code class="docutils literal notranslate"><span class="pre">VkDeviceMemory</span></code> 底层设备内存中。</p></li>
+<li><p>如果 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 向 <code class="docutils literal notranslate"><span class="pre">VkDeviceMemory</span></code> 底层设备内存中写入数据时，这部分修改的设备内存也会同步到映射的虚拟内存中。</p></li>
+</ul>
+<p>如果分配的设备内存所对应的内存类型 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">不包含</span> <code class="docutils literal notranslate"><span class="pre">VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT</span></code> 的话，内存同步将 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">不会自动</span> 进行。需要手动进行内存同步。</p>
+<p>换句话说就是，映射的虚拟内存和对应的 <code class="docutils literal notranslate"><span class="pre">VkDeviceMemory</span></code> 设备内存是两个独立的内存，如果分配的设备内存 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">包含</span> <code class="docutils literal notranslate"><span class="pre">VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT</span></code> 则无论对虚拟内存做修改，还是对设备内存做修改，双方数据将会自动保持一致。否则需要手动进行内存同步。</p>
+<p>如此就有两个同步方：</p>
+<ul class="simple">
+<li><p>映射的虚拟内存</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">VkDeviceMemory</span></code> 设备内存</p></li>
+</ul>
+<section id="id16">
+<h4>虚拟内存同步到设备内存<a class="headerlink" href="#id16" title="Link to this heading">#</a></h4>
+<p>当对映射的虚拟内存中的数据修改时，如果设备内存类型 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">不包含</span> <code class="docutils literal notranslate"><span class="pre">VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT</span></code> 的话，则需要通过调用 <code class="docutils literal notranslate"><span class="pre">vkFlushMappedMemoryRanges(...)</span></code> 函数手动将虚拟内存中的数据同步（拷贝）到设备内存中。也就是将虚拟内存中的内容 <code class="docutils literal notranslate"><span class="pre">冲刷</span></code> 到设备内存中。其定义如下：</p>
+<section id="vkflushmappedmemoryranges">
+<h5>vkFlushMappedMemoryRanges<a class="headerlink" href="#vkflushmappedmemoryranges" title="Link to this heading">#</a></h5>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="n">VkResult</span><span class="w"> </span><span class="nf">vkFlushMappedMemoryRanges</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                                    </span><span class="n">memoryRangeCount</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkMappedMemoryRange</span><span class="o">*</span><span class="w">                  </span><span class="n">pMemoryRanges</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">device</span> 内存对应的逻辑设备。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">memoryRangeCount</span> 指定 <code class="docutils literal notranslate"><span class="pre">pMemoryRanges</span></code> 数组长度。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pMemoryRanges</span> 指向 <code class="docutils literal notranslate"><span class="pre">VkMappedMemoryRange</span></code> 数组。用于配置虚拟内存到设备内存的同步。</p></li>
+</ul>
+</section>
+</section>
+<section id="id17">
+<h4>设备内存同步到虚拟内存<a class="headerlink" href="#id17" title="Link to this heading">#</a></h4>
+<p>当对设备内存数据修改时，如果设备内存类型 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">不包含</span> <code class="docutils literal notranslate"><span class="pre">VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT</span></code> 的话，则需要通过调用 <code class="docutils literal notranslate"><span class="pre">vkInvalidateMappedMemoryRanges(...)</span></code> 函数手动将设备内存中的数据同步（拷贝）到虚拟内存中。也就是 <code class="docutils literal notranslate"><span class="pre">放弃</span></code> 当前虚拟内存中的内容。其定义如下：</p>
+<div class="important admonition">
+<p class="admonition-title">设备内存数据修改</p>
+<p>对于设备内存数据的修改一般都是通过执行 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 的指令将数据写入到设备内存中，详细说明将会在之后的章节进行讲解。</p>
+</div>
+<section id="vkinvalidatemappedmemoryranges">
+<h5>vkInvalidateMappedMemoryRanges<a class="headerlink" href="#vkinvalidatemappedmemoryranges" title="Link to this heading">#</a></h5>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="n">VkResult</span><span class="w"> </span><span class="nf">vkInvalidateMappedMemoryRanges</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                                    </span><span class="n">memoryRangeCount</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkMappedMemoryRange</span><span class="o">*</span><span class="w">                  </span><span class="n">pMemoryRanges</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">device</span> 内存对应的逻辑设备。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">memoryRangeCount</span> 指定 <code class="docutils literal notranslate"><span class="pre">pMemoryRanges</span></code> 数组长度。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pMemoryRanges</span> 指向 <code class="docutils literal notranslate"><span class="pre">VkMappedMemoryRange</span></code> 数组。用于配置设备内存到虚拟内存的同步。</p></li>
+</ul>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">VkMappedMemoryRange</span></code> 定义如下：</p>
+</section>
+</section>
+<section id="vkmappedmemoryrange">
+<h4>VkMappedMemoryRange<a class="headerlink" href="#vkmappedmemoryrange" title="Link to this heading">#</a></h4>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkMappedMemoryRange</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VkStructureType</span><span class="w">    </span><span class="n">sType</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w">        </span><span class="n">pNext</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkDeviceMemory</span><span class="w">     </span><span class="n">memory</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkDeviceSize</span><span class="w">       </span><span class="n">offset</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkDeviceSize</span><span class="w">       </span><span class="n">size</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkMappedMemoryRange</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 是该结构体的类型枚举值， <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 是 <code class="docutils literal notranslate"><span class="pre">VkStructureType::VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pNext</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向其他结构体来扩展该结构体。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">memory</span> 要同步的目标设备内存。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">offset</span> 要同步的目标设备内存的偏移。单位为 <code class="docutils literal notranslate"><span class="pre">字节</span></code> 。有效值为 <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">memory</span> <span class="pre">的大小]</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">size</span> 要同步的目标设备内存的大小。单位为 <code class="docutils literal notranslate"><span class="pre">字节</span></code> 。如果为 <code class="docutils literal notranslate"><span class="pre">VK_WHOLE_SIZE</span></code> 则表示同步范围为 <code class="docutils literal notranslate"><span class="pre">[offset,</span> <span class="pre">memory</span> <span class="pre">结尾]</span></code> 。</p></li>
+</ul>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">VkMappedMemoryRange::memory</span></code> 在手动同步时 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 处在 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">映射态</span> 。也就是 <code class="docutils literal notranslate"><span class="pre">VkMappedMemoryRange::memory</span></code> 必须已经通过 <code class="docutils literal notranslate"><span class="pre">vkMapMemory(...)</span></code> 将设备内存进行映射，并且 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">没有</span> <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">解映射</span> 。当内存同步结束之后，就可以进行 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">解映射</span> 了。</p>
+</section>
+<section id="id18">
+<h4>示例<a class="headerlink" href="#id18" title="Link to this heading">#</a></h4>
+<section id="id19">
+<h5>虚拟内存同步到设备内存<a class="headerlink" href="#id19" title="Link to this heading">#</a></h5>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkDevice</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前创建的逻辑设备</span><span class="p">;</span>
+<span class="n">VkDeviceMemory</span><span class="w"> </span><span class="n">device_memory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前分配的</span><span class="w"> </span><span class="n">VkMemoryPropertyFlagBits</span><span class="o">::</span><span class="n">VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT</span><span class="w"> </span><span class="n">设备内存</span><span class="p">;</span><span class="w"> </span><span class="c1">// 设备内存类型没有 VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT</span>
+
+<span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">device_memory_ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+
+<span class="n">VkResult</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vkMapMemory</span><span class="p">(</span><span class="n">device</span><span class="p">,</span><span class="w"> </span><span class="n">device_memory</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">VK_WHOLE_SIZE</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">device_memory_ptr</span><span class="p">);</span>
+<span class="k">if</span><span class="p">(</span><span class="n">result</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">VkResult</span><span class="o">::</span><span class="n">VK_SUCCESS</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="s">&quot;VkDeviceMemory 内存映射失败&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// 对 device_memory_ptr 进行操作，比如：</span>
+<span class="n">memcpy</span><span class="p">(</span><span class="n">device_memory_ptr</span><span class="p">,</span><span class="w"> </span><span class="n">数据源</span><span class="p">,</span><span class="w"> </span><span class="n">数据大小</span><span class="p">);</span><span class="w"> </span><span class="c1">// 将数据写入虚拟内存中</span>
+
+<span class="n">VkMappedMemoryRange</span><span class="w"> </span><span class="n">mapped_memory_range</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
+<span class="n">mapped_memory_range</span><span class="p">.</span><span class="n">sType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VkStructureType</span><span class="o">::</span><span class="n">VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE</span><span class="p">;</span>
+<span class="n">mapped_memory_range</span><span class="p">.</span><span class="n">pNext</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="n">mapped_memory_range</span><span class="p">.</span><span class="n">memory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">device_memory</span><span class="p">;</span>
+<span class="n">mapped_memory_range</span><span class="p">.</span><span class="n">offset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="n">mapped_memory_range</span><span class="p">.</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_WHOLE_SIZE</span><span class="p">;</span>
+
+<span class="c1">// 内存同步</span>
+<span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vkFlushMappedMemoryRanges</span><span class="p">(</span><span class="n">device</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">mapped_memory_range</span><span class="p">);</span>
+<span class="k">if</span><span class="p">(</span><span class="n">result</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">VkResult</span><span class="o">::</span><span class="n">VK_SUCCESS</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="s">&quot;VkDeviceMemory 同步失败&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// 解映射</span>
+<span class="n">vkUnmapMemory</span><span class="p">(</span><span class="n">device</span><span class="p">,</span><span class="w"> </span><span class="n">device_memory</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="id20">
+<h5>设备内存同步到虚拟内存<a class="headerlink" href="#id20" title="Link to this heading">#</a></h5>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkDevice</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前创建的逻辑设备</span><span class="p">;</span>
+<span class="n">VkDeviceMemory</span><span class="w"> </span><span class="n">device_memory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前分配的</span><span class="w"> </span><span class="n">VkMemoryPropertyFlagBits</span><span class="o">::</span><span class="n">VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT</span><span class="w"> </span><span class="n">设备内存</span><span class="p">;</span><span class="w"> </span><span class="c1">// 设备内存类型没有 VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT</span>
+<span class="w">                                                                                                                </span><span class="c1">//  此时该设备内存底层内存中已有相应的数据</span>
+
+<span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">device_memory_ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+
+<span class="n">VkResult</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vkMapMemory</span><span class="p">(</span><span class="n">device</span><span class="p">,</span><span class="w"> </span><span class="n">device_memory</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">VK_WHOLE_SIZE</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">device_memory_ptr</span><span class="p">);</span>
+<span class="k">if</span><span class="p">(</span><span class="n">result</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">VkResult</span><span class="o">::</span><span class="n">VK_SUCCESS</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="s">&quot;VkDeviceMemory 内存映射失败&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">VkMappedMemoryRange</span><span class="w"> </span><span class="n">mapped_memory_range</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
+<span class="n">mapped_memory_range</span><span class="p">.</span><span class="n">sType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VkStructureType</span><span class="o">::</span><span class="n">VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE</span><span class="p">;</span>
+<span class="n">mapped_memory_range</span><span class="p">.</span><span class="n">pNext</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="n">mapped_memory_range</span><span class="p">.</span><span class="n">memory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">device_memory</span><span class="p">;</span>
+<span class="n">mapped_memory_range</span><span class="p">.</span><span class="n">offset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="n">mapped_memory_range</span><span class="p">.</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_WHOLE_SIZE</span><span class="p">;</span>
+
+<span class="c1">// 内存同步</span>
+<span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vkInvalidateMappedMemoryRanges</span><span class="p">(</span><span class="n">device</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">mapped_memory_range</span><span class="p">);</span>
+<span class="k">if</span><span class="p">(</span><span class="n">result</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">VkResult</span><span class="o">::</span><span class="n">VK_SUCCESS</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="s">&quot;VkDeviceMemory 同步失败&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// 对 device_memory_ptr 进行操作，比如：</span>
+<span class="n">目标类型</span><span class="o">*</span><span class="w"> </span><span class="n">meta_date</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">目标类型</span><span class="o">*</span><span class="p">)</span><span class="n">device_memory_ptr</span><span class="p">;</span><span class="w"> </span><span class="c1">// 转成目标类型，进行操作</span>
+<span class="n">meta_date</span><span class="o">-&gt;</span><span class="w"> </span><span class="p">...;</span>
+
+<span class="c1">// 解映射</span>
+<span class="n">vkUnmapMemory</span><span class="p">(</span><span class="n">device</span><span class="p">,</span><span class="w"> </span><span class="n">device_memory</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+</section>
 </section>
 </section>
 </section>
@@ -1549,7 +1723,23 @@ Windows</label><div class="sd-tab-content docutils">
 <li><a class="reference internal" href="#id14">示例</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id15">内存同步</a></li>
+<li><a class="reference internal" href="#memory-sync">内存同步</a><ul>
+<li><a class="reference internal" href="#id16">虚拟内存同步到设备内存</a><ul>
+<li><a class="reference internal" href="#vkflushmappedmemoryranges">vkFlushMappedMemoryRanges</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id17">设备内存同步到虚拟内存</a><ul>
+<li><a class="reference internal" href="#vkinvalidatemappedmemoryranges">vkInvalidateMappedMemoryRanges</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#vkmappedmemoryrange">VkMappedMemoryRange</a></li>
+<li><a class="reference internal" href="#id18">示例</a><ul>
+<li><a class="reference internal" href="#id19">虚拟内存同步到设备内存</a></li>
+<li><a class="reference internal" href="#id20">设备内存同步到虚拟内存</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

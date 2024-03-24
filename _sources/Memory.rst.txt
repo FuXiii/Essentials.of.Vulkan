@@ -49,6 +49,14 @@
    * 2024/3/19 更新 ``PFN_vkAllocationFunction`` 章节，增加 ``通用自定义`` 代码模块内存分配说明。
    * 2024/3/19 更新 ``PFN_vkReallocationFunction`` 章节，增加 ``通用自定义`` 代码模块内存分配说明。
    * 2024/3/19 更新 ``PFN_vkFreeFunction`` 章节，增加 ``通用自定义`` 代码模块内存分配说明。
+   * 2024/3/23 更新 ``vkMapMemory`` 章节，增加示意图。
+   * 2024/3/23 更新 ``内存同步`` 章节。
+   * 2024/3/24 更新 ``vkMapMemory`` 章节。
+   * 2024/3/24 更新 ``内存同步`` 章节。
+   * 2024/3/24 增加 ``虚拟内存同步到设备内存`` 章节。
+   * 2024/3/24 增加 ``vkFlushMappedMemoryRanges`` 章节。
+   * 2024/3/24 增加 ``设备内存同步到虚拟内存`` 章节。
+   * 2024/3/24 ``设备内存同步到虚拟内存`` 章节，增加 ``示例`` 章节。
 
 ``Vulkan`` 中有两种分配内存的途径：
 
@@ -1119,6 +1127,20 @@ vkMapMemory
 
    由于返回的是虚拟内存地址，不同平台对于虚拟内存大小有不同的限制，所以当 ``vkMapMemory()`` 映射的虚拟地址范围超过平台限制后该函数将会返回 ``VkResult::VK_ERROR_MEMORY_MAP_FAILED`` 表示本次映射失败。为此，可通过将内存进行分小块进行映射或对已经映射的内存进行 :bdg-warning:`解映射` （说明见下文）来释放一部分虚拟内存。
 
+.. figure:: ./_static/memory_map.png
+
+   内存映射示意图
+
+.. admonition:: 虚拟内存
+   :class: important
+
+   映射出来的 ``虚拟内存`` 与 ``VkDeviceMemory`` 底层设备内存是两个独立不同的内存。映射的内存有点类似于将 ``VkDeviceMemory`` 底层设备内存拷贝到虚拟内存中，并将这部分虚拟内存的首地址返回，作为映射结果。这对理解下文的 :ref:`memory_sync` 非常重要。
+
+.. admonition:: ppData
+   :class: important
+
+   对于 ``vkMapMemory(...)`` 返回的 ``ppData`` 指针进行操作时，其本质上是 :bdg-danger:`对映射的虚拟内存进行操作` ，严格意义上不会影响底层映射的 ``VkDeviceMemory`` 内部数据（详情见下文的 :ref:`memory_sync` ）。
+
 示例
 ^^^^^^^^^^^^^^^^^^^^
 
@@ -1205,9 +1227,171 @@ vkMapMemory
 
    vkUnmapMemory(device, device_memory);
 
+.. _memory_sync:
+
 内存同步
 **************************************
 
+所谓内存同步是指：虚拟内存中的数据与对应的 ``VkDeviceMemory`` 设备内存底层数据保持一致。
+
+当分配的设备内存所对应的内存类型 :bdg-warning:`包含` ``VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT`` 时，内存同步将 :bdg-warning:`会自动` 进行。其同步规则如下：
+
+* 当向映射的虚拟内存中写入时，写入虚拟内存中的数据也会同步到对应的 ``VkDeviceMemory`` 底层设备内存中。
+* 如果 ``GPU`` 向 ``VkDeviceMemory`` 底层设备内存中写入数据时，这部分修改的设备内存也会同步到映射的虚拟内存中。
+
+如果分配的设备内存所对应的内存类型 :bdg-warning:`不包含` ``VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT`` 的话，内存同步将 :bdg-warning:`不会自动` 进行。需要手动进行内存同步。
+
+换句话说就是，映射的虚拟内存和对应的 ``VkDeviceMemory`` 设备内存是两个独立的内存，如果分配的设备内存 :bdg-warning:`包含` ``VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT`` 则无论对虚拟内存做修改，还是对设备内存做修改，双方数据将会自动保持一致。否则需要手动进行内存同步。
+
+如此就有两个同步方：
+
+* 映射的虚拟内存
+* ``VkDeviceMemory`` 设备内存
+
+虚拟内存同步到设备内存
+----------------------
+
+当对映射的虚拟内存中的数据修改时，如果设备内存类型 :bdg-warning:`不包含` ``VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT`` 的话，则需要通过调用 ``vkFlushMappedMemoryRanges(...)`` 函数手动将虚拟内存中的数据同步（拷贝）到设备内存中。也就是将虚拟内存中的内容 ``冲刷`` 到设备内存中。其定义如下：
+
+vkFlushMappedMemoryRanges
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   VkResult vkFlushMappedMemoryRanges(
+       VkDevice                                    device,
+       uint32_t                                    memoryRangeCount,
+       const VkMappedMemoryRange*                  pMemoryRanges);
+
+* :bdg-secondary:`device` 内存对应的逻辑设备。
+* :bdg-secondary:`memoryRangeCount` 指定 ``pMemoryRanges`` 数组长度。
+* :bdg-secondary:`pMemoryRanges` 指向 ``VkMappedMemoryRange`` 数组。用于配置虚拟内存到设备内存的同步。
+
+设备内存同步到虚拟内存
+----------------------
+
+当对设备内存数据修改时，如果设备内存类型 :bdg-warning:`不包含` ``VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT`` 的话，则需要通过调用 ``vkInvalidateMappedMemoryRanges(...)`` 函数手动将设备内存中的数据同步（拷贝）到虚拟内存中。也就是 ``放弃`` 当前虚拟内存中的内容。其定义如下：
+
+.. admonition:: 设备内存数据修改
+   :class: important
+
+   对于设备内存数据的修改一般都是通过执行 ``GPU`` 的指令将数据写入到设备内存中，详细说明将会在之后的章节进行讲解。
+
+vkInvalidateMappedMemoryRanges
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   VkResult vkInvalidateMappedMemoryRanges(
+       VkDevice                                    device,
+       uint32_t                                    memoryRangeCount,
+       const VkMappedMemoryRange*                  pMemoryRanges);
+
+* :bdg-secondary:`device` 内存对应的逻辑设备。
+* :bdg-secondary:`memoryRangeCount` 指定 ``pMemoryRanges`` 数组长度。
+* :bdg-secondary:`pMemoryRanges` 指向 ``VkMappedMemoryRange`` 数组。用于配置设备内存到虚拟内存的同步。
+
+其中 ``VkMappedMemoryRange`` 定义如下：
+
+VkMappedMemoryRange
+----------------------
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef struct VkMappedMemoryRange {
+       VkStructureType    sType;
+       const void*        pNext;
+       VkDeviceMemory     memory;
+       VkDeviceSize       offset;
+       VkDeviceSize       size;
+   } VkMappedMemoryRange;
+
+* :bdg-secondary:`sType` 是该结构体的类型枚举值， :bdg-danger:`必须` 是 ``VkStructureType::VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE`` 。
+* :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
+* :bdg-secondary:`memory` 要同步的目标设备内存。
+* :bdg-secondary:`offset` 要同步的目标设备内存的偏移。单位为 ``字节`` 。有效值为 ``[0, memory 的大小]`` 。
+* :bdg-secondary:`size` 要同步的目标设备内存的大小。单位为 ``字节`` 。如果为 ``VK_WHOLE_SIZE`` 则表示同步范围为 ``[offset, memory 结尾]`` 。
+
+其中 ``VkMappedMemoryRange::memory`` 在手动同步时 :bdg-danger:`必须` 处在 :bdg-warning:`映射态` 。也就是 ``VkMappedMemoryRange::memory`` 必须已经通过 ``vkMapMemory(...)`` 将设备内存进行映射，并且 :bdg-danger:`没有` :bdg-warning:`解映射` 。当内存同步结束之后，就可以进行 :bdg-warning:`解映射` 了。
+
+示例
+----------------------
+
+虚拟内存同步到设备内存
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: c++
+
+   VkDevice device = 之前创建的逻辑设备;
+   VkDeviceMemory device_memory = 之前分配的 VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT 设备内存; // 设备内存类型没有 VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+
+   void* device_memory_ptr = nullptr;
+
+   VkResult result = vkMapMemory(device, device_memory, 0, VK_WHOLE_SIZE, 0, &device_memory_ptr);
+   if(result != VkResult::VK_SUCCESS)
+   {
+      throw std::runtime_error("VkDeviceMemory 内存映射失败");
+   }
+
+   // 对 device_memory_ptr 进行操作，比如：
+   memcpy(device_memory_ptr, 数据源, 数据大小); // 将数据写入虚拟内存中
+
+   VkMappedMemoryRange mapped_memory_range = {};
+   mapped_memory_range.sType = VkStructureType::VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
+   mapped_memory_range.pNext = nullptr;
+   mapped_memory_range.memory = device_memory;
+   mapped_memory_range.offset = 0;
+   mapped_memory_range.size = VK_WHOLE_SIZE;
+
+   // 内存同步
+   result = vkFlushMappedMemoryRanges(device, 1, &mapped_memory_range);
+   if(result != VkResult::VK_SUCCESS)
+   {
+      throw std::runtime_error("VkDeviceMemory 同步失败");
+   }
+
+   // 解映射
+   vkUnmapMemory(device, device_memory);
+
+设备内存同步到虚拟内存
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: c++
+
+   VkDevice device = 之前创建的逻辑设备;
+   VkDeviceMemory device_memory = 之前分配的 VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT 设备内存; // 设备内存类型没有 VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+                                                                                                                   //  此时该设备内存底层内存中已有相应的数据
+
+   void* device_memory_ptr = nullptr;
+
+   VkResult result = vkMapMemory(device, device_memory, 0, VK_WHOLE_SIZE, 0, &device_memory_ptr);
+   if(result != VkResult::VK_SUCCESS)
+   {
+      throw std::runtime_error("VkDeviceMemory 内存映射失败");
+   }
+
+   VkMappedMemoryRange mapped_memory_range = {};
+   mapped_memory_range.sType = VkStructureType::VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
+   mapped_memory_range.pNext = nullptr;
+   mapped_memory_range.memory = device_memory;
+   mapped_memory_range.offset = 0;
+   mapped_memory_range.size = VK_WHOLE_SIZE;
+
+   // 内存同步
+   result = vkInvalidateMappedMemoryRanges(device, 1, &mapped_memory_range);
+   if(result != VkResult::VK_SUCCESS)
+   {
+      throw std::runtime_error("VkDeviceMemory 同步失败");
+   }
+
+   // 对 device_memory_ptr 进行操作，比如：
+   目标类型* meta_date = (目标类型*)device_memory_ptr; // 转成目标类型，进行操作
+   meta_date-> ...;
+
+   // 解映射
+   vkUnmapMemory(device, device_memory);
 
 ..
    通用自定义图示
