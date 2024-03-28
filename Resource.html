@@ -141,7 +141,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -266,7 +266,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
@@ -283,9 +283,148 @@
 </summary><div class="sd-summary-content sd-card-body docutils">
 <ul class="simple">
 <li><p class="sd-card-text">2024/1/2 增加该文档</p></li>
+<li><p class="sd-card-text">2024/3/27 更新该文档</p></li>
+<li><p class="sd-card-text">2024/3/27 增加 <code class="docutils literal notranslate"><span class="pre">缓存资源</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/3/27 增加 <code class="docutils literal notranslate"><span class="pre">创建缓存</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/3/28 增加 <code class="docutils literal notranslate"><span class="pre">vkCreateBuffer</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/3/28 增加 <code class="docutils literal notranslate"><span class="pre">VkBufferCreateInfo</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/3/28 增加 <code class="docutils literal notranslate"><span class="pre">VkBufferUsageFlagBits</span></code> 章节。</p></li>
 </ul>
 </div>
-</details></section>
+</details><p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中只有 <code class="docutils literal notranslate"><span class="pre">2</span></code> 种资源 :</p>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">Buffer</span> 缓存资源。一段连续内存的数据集合。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">Image</span> 图片资源。有特定数据格式的数据块集合。</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准中的资源其实并不只有这 <code class="docutils literal notranslate"><span class="pre">2</span></code> 种，比如其中的一种资源为 <code class="docutils literal notranslate"><span class="pre">加速结构</span></code> ，该资源在说明 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">硬件实时光追</span></code> 时会涉及。由于 <code class="docutils literal notranslate"><span class="pre">Buffer</span></code> 和 <code class="docutils literal notranslate"><span class="pre">Image</span></code> 是最为核心的两个资源所以目前仅涉及这两个资源。</p>
+</div>
+<p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中创建的所有资源都是 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">虚</span> 资源，换句话说就是，创建的资源仅仅是一个资源句柄，并没有对应存储资源数据的内存。资源需要绑定到合适的设备内存中才具有 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">完整的一生</span> （图桓宇给出了一个赞许的大拇指 (๑•̀ㅂ•́)و✧ ）。</p>
+<section id="id2">
+<h2>缓存资源<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中使用 <code class="docutils literal notranslate"><span class="pre">VkBuffer</span></code> 句柄代表缓存资源。其定义如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="n">VK_DEFINE_NON_DISPATCHABLE_HANDLE</span><span class="p">(</span><span class="n">VkBuffer</span><span class="p">)</span>
+</pre></div>
+</div>
+<section id="id3">
+<h3>创建缓存<a class="headerlink" href="#id3" title="Link to this heading">#</a></h3>
+<p>缓存资源通过 <code class="docutils literal notranslate"><span class="pre">vkCreateBuffer(...)</span></code> 函数创建，其定义如下：</p>
+<section id="vkcreatebuffer">
+<h4>vkCreateBuffer<a class="headerlink" href="#vkcreatebuffer" title="Link to this heading">#</a></h4>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="n">VkResult</span><span class="w"> </span><span class="nf">vkCreateBuffer</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkBufferCreateInfo</span><span class="o">*</span><span class="w">                   </span><span class="n">pCreateInfo</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkAllocationCallbacks</span><span class="o">*</span><span class="w">                </span><span class="n">pAllocator</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkBuffer</span><span class="o">*</span><span class="w">                                   </span><span class="n">pBuffer</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">device</span> 要创建缓存的目标逻辑设备。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pCreateInfo</span> 缓存的创建信息。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pAllocator</span> 缓存句柄的内存分配器。如果为 <code class="docutils literal notranslate"><span class="pre">nullptr</span></code> 则使用内置的分配器，否则需要自定义句柄内存分配器。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pBuffer</span> 创建的缓存结果。</p></li>
+</ul>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">pCreateInfo</span></code> 为缓存创建配置信息，对应的 <code class="docutils literal notranslate"><span class="pre">VkBufferCreateInfo</span></code> 类型定义如下：</p>
+</section>
+<section id="vkbuffercreateinfo">
+<h4>VkBufferCreateInfo<a class="headerlink" href="#vkbuffercreateinfo" title="Link to this heading">#</a></h4>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkBufferCreateInfo</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VkStructureType</span><span class="w">        </span><span class="n">sType</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w">            </span><span class="n">pNext</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkBufferCreateFlags</span><span class="w">    </span><span class="n">flags</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkDeviceSize</span><span class="w">           </span><span class="n">size</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkBufferUsageFlags</span><span class="w">     </span><span class="n">usage</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkSharingMode</span><span class="w">          </span><span class="n">sharingMode</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">               </span><span class="n">queueFamilyIndexCount</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint32_t</span><span class="o">*</span><span class="w">        </span><span class="n">pQueueFamilyIndices</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkBufferCreateInfo</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sType</span> 是该结构体的类型枚举值， <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 是 <code class="docutils literal notranslate"><span class="pre">VkStructureType::VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pNext</span> 要么是 <code class="docutils literal notranslate"><span class="pre">NULL</span></code> 要么指向其他结构体来扩展该结构体。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">flags</span> 缓存创建的额外标志位参数。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">size</span> 要创建的缓存大小。单位为字节。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">usage</span> 用于指定该缓存的用途。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">sharingMode</span> 当该缓存会被多个设备队列访问时，该参数用于配置该缓存的共享模式。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">queueFamilyIndexCount</span> 指定 <code class="docutils literal notranslate"><span class="pre">pQueueFamilyIndices</span></code> 数组中元素数量。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pQueueFamilyIndices</span> 用于指定将会访问该缓存的设备队列（族）。如果共享模式 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">不是</span> <code class="docutils literal notranslate"><span class="pre">VkSharingMode::VK_SHARING_MODE_CONCURRENT</span></code> （并行访问）将会忽略该数组。</p></li>
+</ul>
+<div class="note admonition">
+<p class="admonition-title">VkBufferCreateFlags</p>
+<p><code class="docutils literal notranslate"><span class="pre">VkBufferCreateFlags</span></code> 的有效值被定义在了 <code class="docutils literal notranslate"><span class="pre">VkBufferCreateFlagBits</span></code> 枚举中。 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.0</span></code> 标准中在 <code class="docutils literal notranslate"><span class="pre">VkBufferCreateFlagBits</span></code> 枚举中定义了 <code class="docutils literal notranslate"><span class="pre">稀疏资源</span></code> 的标志位。由于目前还不会涉及到 <code class="docutils literal notranslate"><span class="pre">稀疏资源</span></code> 所以暂时先忽略。</p>
+</div>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">VkBufferCreateInfo::usage</span></code> 用于配置该缓存的用途。在开发时一个缓存 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">一定</span> 是由于某些特定功能需求而存在的，底层设备可以在不同的需求的前提下使用更加高效的内部算法和结构，以此能够得到更加高效的执行。比如一个缓存中存储的结构如下：</p>
+<div class="highlight-c++ notranslate" id="vertex-buffer-pseudocode-demo"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">Position</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="kt">float</span><span class="w"> </span><span class="n">x</span><span class="p">;</span>
+<span class="w">   </span><span class="kt">float</span><span class="w"> </span><span class="n">y</span><span class="p">;</span>
+<span class="w">   </span><span class="kt">float</span><span class="w"> </span><span class="n">z</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">struct</span><span class="w"> </span><span class="nc">UV</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="kt">float</span><span class="w"> </span><span class="n">u</span><span class="p">;</span>
+<span class="w">   </span><span class="kt">float</span><span class="w"> </span><span class="n">v</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">struct</span><span class="w"> </span><span class="nc">Vertex</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="n">Position</span><span class="w"> </span><span class="n">position</span><span class="p">;</span>
+<span class="w">   </span><span class="n">UV</span><span class="w"> </span><span class="n">uv</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Vertex</span><span class="o">&gt;</span><span class="w"> </span><span class="n">vertices</span><span class="p">;</span>
+<span class="n">vertices</span><span class="p">.</span><span class="n">push_back</span><span class="p">(...);</span>
+<span class="n">vertices</span><span class="p">.</span><span class="n">push_back</span><span class="p">(...);</span>
+
+<span class="n">VkBuffer</span><span class="w"> </span><span class="n">buffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">创建存储</span><span class="w"> </span><span class="n">Vertex</span><span class="w"> </span><span class="n">结构的数组缓存</span><span class="p">(</span><span class="n">vertices</span><span class="p">);</span>
+<span class="n">vk设置该缓存的内部结构</span><span class="p">(</span><span class="n">Vertex</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>由于 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 上的设备队列都是并行执行的（设备上有很多并行单元），当设备知道该缓存中存储的各个元素结构都相同时，可以并行的一块块的读取各个元素，而不需要像 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 那样从头按字节读取。这极大的提高了执行效率。</p>
+<p>由于设备队列的并行性，其对于缓存的读写也是并行的，所以需要协调好各个队列对该缓存的读写，否则就会导致缓存数据混乱。如果某资源是某设备队列独享的，这将会省去不必要的跨设备队列间的同步，提高效率。为此其中的 <code class="docutils literal notranslate"><span class="pre">VkBufferCreateInfo::sharingMode</span></code> 、 <code class="docutils literal notranslate"><span class="pre">VkBufferCreateInfo::queueFamilyIndexCount</span></code> 和 <code class="docutils literal notranslate"><span class="pre">VkBufferCreateInfo::pQueueFamilyIndices</span></code> 就是用于配置各个设备队列对该资源的访问权限，进一步明确设备对该资源的访问方式以提高效率。</p>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">VkBufferCreateInfo::usage</span></code> 的有效值被定义在了 <code class="docutils literal notranslate"><span class="pre">VkBufferUsageFlagBits</span></code> 枚举中，其定义如下：</p>
+<section id="vkbufferusageflagbits">
+<h5>VkBufferUsageFlagBits<a class="headerlink" href="#vkbufferusageflagbits" title="Link to this heading">#</a></h5>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkBufferUsageFlagBits</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VK_BUFFER_USAGE_TRANSFER_SRC_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000001</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_BUFFER_USAGE_TRANSFER_DST_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000002</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000004</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000008</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000010</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_BUFFER_USAGE_STORAGE_BUFFER_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000020</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_BUFFER_USAGE_INDEX_BUFFER_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000040</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_BUFFER_USAGE_VERTEX_BUFFER_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000080</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000100</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkBufferUsageFlagBits</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_BUFFER_USAGE_TRANSFER_SRC_BIT</span> 该缓存用于数据传输的数据源。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_BUFFER_USAGE_TRANSFER_DST_BIT</span> 该缓存用于数据传输的目的数据。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT</span> 该缓存用于存储纹素数据。用于设备读取。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT</span> 该缓存用于存储纹素数据。用于设备读取和存储。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT</span> 该缓存用于存储任意格式数据。用于设备读取。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_BUFFER_USAGE_STORAGE_BUFFER_BIT</span> 该缓存用于存储任意格式数据。用于设备读取和存储。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_BUFFER_USAGE_INDEX_BUFFER_BIT</span> 该缓存用于存储整型索引数据。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_BUFFER_USAGE_VERTEX_BUFFER_BIT</span> 该缓存用于存储具有相同结构的顶点数据。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT</span> 该缓存用于间接数据。用于存储指令参数，设备可一次性读取这些参数。</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p><a class="reference internal" href="#vertex-buffer-pseudocode-demo">如上示例</a> 中就是 <code class="docutils literal notranslate"><span class="pre">VkBufferUsageFlagBits::VK_BUFFER_USAGE_VERTEX_BUFFER_BIT</span></code> 用途的典型用例。</p>
+</div>
+</section>
+</section>
+</section>
+</section>
+</section>
 
         </article>
       </div>
@@ -349,8 +488,37 @@
 
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+
+<div class="toc-sticky toc-scroll" style="width: 500px;">
+    <div class="toc-title-container" style="width: 500px;">
+        <span class="toc-title" style="width: 500px;">
+            On this page
+        </span>
+    </div>
+    <div class="toc-tree-container" style="width: 500px;">
+        <div class="toc-tree" style="width: 500px;">
+            <ul>
+<li><a class="reference internal" href="#">资源</a><ul>
+<li><a class="reference internal" href="#id2">缓存资源</a><ul>
+<li><a class="reference internal" href="#id3">创建缓存</a><ul>
+<li><a class="reference internal" href="#vkcreatebuffer">vkCreateBuffer</a></li>
+<li><a class="reference internal" href="#vkbuffercreateinfo">VkBufferCreateInfo</a><ul>
+<li><a class="reference internal" href="#vkbufferusageflagbits">VkBufferUsageFlagBits</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+    </div>
+</div>
 
 
     </aside>

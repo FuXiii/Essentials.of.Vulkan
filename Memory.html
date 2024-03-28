@@ -334,6 +334,8 @@
 <li><p class="sd-card-text">2024/3/24 增加 <code class="docutils literal notranslate"><span class="pre">vkFlushMappedMemoryRanges</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/3/24 增加 <code class="docutils literal notranslate"><span class="pre">设备内存同步到虚拟内存</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/3/24 <code class="docutils literal notranslate"><span class="pre">设备内存同步到虚拟内存</span></code> 章节，增加 <code class="docutils literal notranslate"><span class="pre">示例</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/3/26 更新 <code class="docutils literal notranslate"><span class="pre">内存映射</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/3/26 增加 <code class="docutils literal notranslate"><span class="pre">vkUnmapMemory</span></code> 章节标题。</p></li>
 </ul>
 </div>
 </details><p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中有两种分配内存的途径：</p>
@@ -1311,7 +1313,7 @@ Windows</label><div class="sd-tab-content docutils">
 <h3>内存映射<a class="headerlink" href="#id11" title="Link to this heading">#</a></h3>
 <p>如果内存分配时指定的内存类型支持 <code class="docutils literal notranslate"><span class="pre">VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT</span></code> 的话，说明该内存 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">可映射</span> 。</p>
 <ul class="simple">
-<li><p>所谓 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">可映射</span> 意思是：可以将该内存所对应的内存地址返回给 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 。</p></li>
+<li><p>所谓 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">可映射</span> 意思是：可以将该设备内存所对应的内存地址返回给 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 。</p></li>
 </ul>
 <p>原则上所有的设备内存对于 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 来说并不像 <code class="docutils literal notranslate"><span class="pre">new/malloc</span></code> 分配出来的内存那样能够直接进行读写。为了 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 能够读写设备内存，硬件供应商都会提供一部分带有 <code class="docutils literal notranslate"><span class="pre">VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT</span></code> 属性的内存用于 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 访问。</p>
 <p>而在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中分配的内存最终只会对应一个 <code class="docutils literal notranslate"><span class="pre">VkDeviceMemory</span></code> 句柄，为了能够获得 <code class="docutils literal notranslate"><span class="pre">VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT</span></code> 内存类型分配的内存句柄底层的内存地址，可以通过 <code class="docutils literal notranslate"><span class="pre">vkMapMemory(...)</span></code> 函数将分配的设备内存底层的 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">虚拟</span> （说明见下文）地址返回给 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> （也就是 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端）。</p>
@@ -1424,6 +1426,8 @@ Windows</label><div class="sd-tab-content docutils">
 <section id="id13">
 <h3>内存解映射<a class="headerlink" href="#id13" title="Link to this heading">#</a></h3>
 <p>当内存映射并使用结束后，可进行解除映射，进而释放系统的虚拟内存。可通过 <code class="docutils literal notranslate"><span class="pre">vkUnmapMemory(...)</span></code> 函数将映射过的内存进行 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">解映射</span> 。该函数定义如下：</p>
+<section id="vkunmapmemory">
+<h4>vkUnmapMemory<a class="headerlink" href="#vkunmapmemory" title="Link to this heading">#</a></h4>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">vkUnmapMemory</span><span class="p">(</span>
 <span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
@@ -1435,6 +1439,7 @@ Windows</label><div class="sd-tab-content docutils">
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">memory</span> 要解映射的目标内存。该内存 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 处于 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">映射态</span> 。</p></li>
 </ul>
 <p>该函数之后 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">映射态</span> 的状态将解除，回归到 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">原始状态</span> 。</p>
+</section>
 <section id="id14">
 <h4>示例<a class="headerlink" href="#id14" title="Link to this heading">#</a></h4>
 <p>对前一个示例中分配的设备内存进行解映射：</p>
@@ -1720,6 +1725,7 @@ Windows</label><div class="sd-tab-content docutils">
 </ul>
 </li>
 <li><a class="reference internal" href="#id13">内存解映射</a><ul>
+<li><a class="reference internal" href="#vkunmapmemory">vkUnmapMemory</a></li>
 <li><a class="reference internal" href="#id14">示例</a></li>
 </ul>
 </li>

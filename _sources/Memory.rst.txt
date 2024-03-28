@@ -57,6 +57,8 @@
    * 2024/3/24 增加 ``vkFlushMappedMemoryRanges`` 章节。
    * 2024/3/24 增加 ``设备内存同步到虚拟内存`` 章节。
    * 2024/3/24 ``设备内存同步到虚拟内存`` 章节，增加 ``示例`` 章节。
+   * 2024/3/26 更新 ``内存映射`` 章节。
+   * 2024/3/26 增加 ``vkUnmapMemory`` 章节标题。
 
 ``Vulkan`` 中有两种分配内存的途径：
 
@@ -1080,7 +1082,7 @@ vkFreeMemory
 
 如果内存分配时指定的内存类型支持 ``VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT`` 的话，说明该内存 :bdg-warning:`可映射` 。
 
-* 所谓 :bdg-warning:`可映射` 意思是：可以将该内存所对应的内存地址返回给 ``CPU`` 。
+* 所谓 :bdg-warning:`可映射` 意思是：可以将该设备内存所对应的内存地址返回给 ``CPU`` 。
 
 原则上所有的设备内存对于 ``CPU`` 来说并不像 ``new/malloc`` 分配出来的内存那样能够直接进行读写。为了 ``CPU`` 能够读写设备内存，硬件供应商都会提供一部分带有 ``VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT`` 属性的内存用于 ``CPU`` 访问。
 
@@ -1202,6 +1204,9 @@ vkMapMemory
 **************************************
 
 当内存映射并使用结束后，可进行解除映射，进而释放系统的虚拟内存。可通过 ``vkUnmapMemory(...)`` 函数将映射过的内存进行 :bdg-warning:`解映射` 。该函数定义如下：
+
+vkUnmapMemory
+--------------------
 
 .. code:: c++
 
@@ -1392,10 +1397,3 @@ VkMappedMemoryRange
 
    // 解映射
    vkUnmapMemory(device, device_memory);
-
-..
-   通用自定义图示
-   VkMemoryMapFlags
-   vkMapMemory不能重复调用
-   HOST_VISIBLE
-   HOST_COHERENT
