@@ -12,6 +12,12 @@
    * 2024/3/28 增加 ``vkCreateBuffer`` 章节。
    * 2024/3/28 增加 ``VkBufferCreateInfo`` 章节。
    * 2024/3/28 增加 ``VkBufferUsageFlagBits`` 章节。
+   * 2024/3/29 更新 ``VkBufferUsageFlagBits`` 章节。
+   * 2024/3/29 ``创建缓存`` 章节下增加 ``示例`` 章节。
+   * 2024/3/29 增加 ``VkSharingMode`` 章节。
+   * 2024/3/29 增加 ``销毁缓存`` 章节。
+   * 2024/3/29 ``销毁缓存`` 章节下增加 ``示例`` 章节。
+   * 2024/3/29 增加 ``图片资源`` 章节。
 
 在 ``Vulkan`` 中只有 ``2`` 种资源 :
 
@@ -89,7 +95,7 @@ VkBufferCreateInfo
 
    ``VkBufferCreateFlags`` 的有效值被定义在了 ``VkBufferCreateFlagBits`` 枚举中。 ``Vulkan 1.0`` 标准中在 ``VkBufferCreateFlagBits`` 枚举中定义了 ``稀疏资源`` 的标志位。由于目前还不会涉及到 ``稀疏资源`` 所以暂时先忽略。
 
-其中 ``VkBufferCreateInfo::usage`` 用于配置该缓存的用途。在开发时一个缓存 :bdg-danger:`一定` 是由于某些特定功能需求而存在的，底层设备可以在不同的需求的前提下使用更加高效的内部算法和结构，以此能够得到更加高效的执行。比如一个缓存中存储的结构如下：
+其中 ``VkBufferCreateInfo::usage`` 用于配置该缓存的用途。在开发时，一个缓存 :bdg-danger:`一定` 是由于某些特定功能需求而存在的，底层设备可以在不同的需求（用途）的前提下使用更加高效的内部算法和结构，以此能够得到更加高效的执行效率。比如一个缓存中存储的结构如下：
 
 .. _vertex_buffer_pseudocode_demo:
 
@@ -123,7 +129,7 @@ VkBufferCreateInfo
 
 由于 ``GPU`` 上的设备队列都是并行执行的（设备上有很多并行单元），当设备知道该缓存中存储的各个元素结构都相同时，可以并行的一块块的读取各个元素，而不需要像 ``CPU`` 那样从头按字节读取。这极大的提高了执行效率。
 
-由于设备队列的并行性，其对于缓存的读写也是并行的，所以需要协调好各个队列对该缓存的读写，否则就会导致缓存数据混乱。如果某资源是某设备队列独享的，这将会省去不必要的跨设备队列间的同步，提高效率。为此其中的 ``VkBufferCreateInfo::sharingMode`` 、 ``VkBufferCreateInfo::queueFamilyIndexCount`` 和 ``VkBufferCreateInfo::pQueueFamilyIndices`` 就是用于配置各个设备队列对该资源的访问权限，进一步明确设备对该资源的访问方式以提高效率。
+由于设备队列的并行性，其对于缓存的读写也是并行的，所以需要协调好各个队列对该缓存的读写，否则就会导致缓存数据混乱。如果某资源是某设备队列独享的，这将会省去不必要的跨设备队列间的同步，提高效率。为此，其中的 ``VkBufferCreateInfo::sharingMode`` 、 ``VkBufferCreateInfo::queueFamilyIndexCount`` 和 ``VkBufferCreateInfo::pQueueFamilyIndices`` 就是用于配置各个设备队列对该资源的访问权限，进一步明确设备对该资源的访问方式以提高效率。
 
 其中 ``VkBufferCreateInfo::usage`` 的有效值被定义在了 ``VkBufferUsageFlagBits`` 枚举中，其定义如下：
 
@@ -159,4 +165,152 @@ VkBufferUsageFlagBits
 
    `如上示例 <vertex_buffer_pseudocode_demo_>`_ 中就是 ``VkBufferUsageFlagBits::VK_BUFFER_USAGE_VERTEX_BUFFER_BIT`` 用途的典型用例。
 
+.. note::
+
+   ``VkBufferUsageFlagBits`` 中各个缓存用途将会在之后的章节逐渐涉及。
+
+.. admonition:: 纹素
+   :class: note
+
+   纹素可以简单理解为带有格式的（像素）数据块。比如，可以对像素数据进行如下规定：
+
+   一个像素颜色可以由 :bdg-danger:`红` :bdg-success:`绿` :bdg-primary:`蓝` 三种颜色值组成：
+
+   .. figure:: ./_static/rgb.png
    
+   .. admonition:: 规则一
+      :class: note
+
+      * :bdg-danger:`红` 为 ``16`` 位浮点数，有效值范围为 ``[0.0, 1.0]`` 。
+      * :bdg-success:`绿` 为 ``16`` 位浮点数，有效值范围为 ``[0.0, 1.0]`` 。
+      * :bdg-primary:`蓝` 为 ``16`` 位浮点数，有效值范围为 ``[0.0, 1.0]`` 。
+
+   .. admonition:: 规则二
+      :class: note
+
+      * :bdg-danger:`红` 为 ``8`` 位无符号整数，有效值范围为 ``[0, 255]`` 。
+      * :bdg-success:`绿` 为 ``8`` 位无符号整数，有效值范围为 ``[0, 255]`` 。
+      * :bdg-primary:`蓝` 为 ``8`` 位无符号整数，有效值范围为 ``[0, 255]`` 。
+
+   由此可以看出，一个像素其内部的数据会根据格式的不同而不同。
+
+其中 ``VkBufferCreateInfo::sharingMode`` 有效值定义在 ``VkSharingMode`` 枚举中，其定义如下：
+
+VkSharingMode
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef enum VkSharingMode {
+       VK_SHARING_MODE_EXCLUSIVE = 0,
+       VK_SHARING_MODE_CONCURRENT = 1,
+   } VkSharingMode;
+
+* :bdg-secondary:`VK_SHARING_MODE_EXCLUSIVE` 表示该资源为设备队列独享资源。该资源一次只能被一种设备队列族中的队列访问。
+* :bdg-secondary:`VK_SHARING_MODE_CONCURRENT` 表示该资源为设备队列共享资源。该资源一次能被多种设备队列族中的队列访问。
+
+.. note:: 详细的说明将会在之后的章节展开。
+
+示例
+-----------------------
+
+创建一个存储顶点数据的缓存
+
+.. code:: c++
+
+   VkDevice device = 之前创建的逻辑设备;
+
+   struct Position
+   {
+      float x;
+      float y;
+      float z;
+   };
+
+   struct Normal
+   {
+      float x;
+      float y;
+      float z;
+   };
+
+   struct Color
+   {
+      float r;
+      float g;
+      float b;
+      float a;
+   };
+
+   struct UV
+   {
+      float u;
+      float v;
+   };
+
+   struct Vertex
+   {
+      Position position;
+      Normal normal;
+      Color color;
+      UV uv;
+   }
+
+   std::vector<Vertex> vertices;
+   vertices.push_back(/*position*/{-1, -1, 0}, /*normal*/{0, 0, 1}, /*color*/{1, 0, 0, 1}, /*uv*/{0, 0});
+   vertices.push_back(/*position*/{ 1, -1, 0}, /*normal*/{0, 0, 1}, /*color*/{0, 1, 0, 1}, /*uv*/{1, 0});
+   vertices.push_back(/*position*/{-1,  1, 0}, /*normal*/{0, 0, 1}, /*color*/{1, 1, 0, 1}, /*uv*/{0, 1});
+   vertices.push_back(/*position*/{ 1, -1, 0}, /*normal*/{0, 0, 1}, /*color*/{0, 1, 0, 1}, /*uv*/{1, 0});
+   vertices.push_back(/*position*/{ 1,  1, 0}, /*normal*/{0, 0, 1}, /*color*/{0, 0, 1, 1}, /*uv*/{1, 1});
+   vertices.push_back(/*position*/{-1,  1, 0}, /*normal*/{0, 0, 1}, /*color*/{1, 1, 0, 1}, /*uv*/{0, 1});
+
+   VkBufferCreateInfo buffer_create_info = {};
+   buffer_create_info.sType = VkStructureType::VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+   buffer_create_info.pNext = nullptr;
+   buffer_create_info.flags = 0;
+   buffer_create_info.size = sizeof(Vertex) * vertices.size();
+   buffer_create_info.usage = VkBufferUsageFlagBits::VK_BUFFER_USAGE_VERTEX_BUFFER_BIT; // 该资源将用于顶点缓存
+   buffer_create_info.sharingMode = VkSharingMode::VK_SHARING_MODE_EXCLUSIVE; // 使用队列独享模式
+   buffer_create_info.queueFamilyIndexCount = 0;
+   buffer_create_info.pQueueFamilyIndices = nullptr; // 当使用队列独享模式时，该字段将会被忽略
+
+   VkBuffer buffer = VK_NULL_HANDLE;
+   
+   VkResult result = vkCreateBuffer(device, &buffer_create_info, nullptr, &buffer);
+   if(result != VkResult::VK_SUCCESS)
+   {
+      throw std::runtime_error("VkBuffer 缓存资源创建失败");
+   }
+
+.. note:: 此时 ``vertices`` 中的数据并没有写入 ``buffer`` 中，其仅仅用于告诉 ``Vulkan`` 我需要多大的（ ``sizeof(Vertex) * vertices.size()`` ）缓存资源，并且 ``buffer`` 此时没有与之相关联的底层设备内存，这将会在之后的章节涉及。
+
+销毁缓存
+****************************
+
+当缓存资源不再需要时就可以通过 ``vkDestroyBuffer(...)`` 函数将其销毁，该函数定义如下：
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   void vkDestroyBuffer(
+       VkDevice                                    device,
+       VkBuffer                                    buffer,
+       const VkAllocationCallbacks*                pAllocator);
+
+* :bdg-secondary:`device` 要销毁的缓存对应所在的逻辑设备。
+* :bdg-secondary:`buffer` 要销毁的缓存。
+* :bdg-secondary:`pAllocator` 该缓存的句柄内存分配器。
+
+示例
+-----------------------
+
+.. code:: c++
+
+   VkDevice device = 之前创建的逻辑设备;
+   VkBuffer buffer = 之前创建的缓存;
+
+   vkDestroyBuffer(device, buffer, nullptr);
+
+图片资源
+###########
