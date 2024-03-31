@@ -18,6 +18,12 @@
    * 2024/3/29 增加 ``销毁缓存`` 章节。
    * 2024/3/29 ``销毁缓存`` 章节下增加 ``示例`` 章节。
    * 2024/3/29 增加 ``图片资源`` 章节。
+   * 2024/3/31 更新 ``图片资源`` 章节。
+   * 2024/3/31 增加 ``创建图片`` 章节。
+   * 2024/3/31 增加 ``vkCreateImage`` 章节。
+   * 2024/3/31 增加 ``VkImageCreateInfo`` 章节。
+   * 2024/3/31 增加 ``VkImageType`` 章节。
+   * 2024/3/31 增加 ``VkExtent3D`` 章节。
 
 在 ``Vulkan`` 中只有 ``2`` 种资源 :
 
@@ -81,7 +87,7 @@ VkBufferCreateInfo
        const uint32_t*        pQueueFamilyIndices;
    } VkBufferCreateInfo;
 
-* :bdg-secondary:`sType` 是该结构体的类型枚举值， :bdg-danger:`必须` 是 ``VkStructureType::VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO`` 。
+* :bdg-secondary:`sType` 该结构体的类型枚举值， :bdg-danger:`必须` 是 ``VkStructureType::VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO`` 。
 * :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
 * :bdg-secondary:`flags` 缓存创建的额外标志位参数。
 * :bdg-secondary:`size` 要创建的缓存大小。单位为字节。
@@ -314,3 +320,179 @@ VkSharingMode
 
 图片资源
 ###########
+
+在 ``Vulkan`` 中一个图片资源代表相同格式数据块的多维集合，比如 ``一维/二维/三维`` 图片等。其通过 ``VkImage`` 句柄代表其图片资源，其定义如下：
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkImage)
+
+创建图片
+****************************
+
+图片资源通过 ``vkCreateImage(...)`` 函数创建，其定义如下：
+
+vkCreateImage
+-----------------------
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   VkResult vkCreateImage(
+       VkDevice                                    device,
+       const VkImageCreateInfo*                    pCreateInfo,
+       const VkAllocationCallbacks*                pAllocator,
+       VkImage*                                    pImage);
+
+* :bdg-secondary:`device` 要创建图片对应所在的逻辑设备。
+* :bdg-secondary:`pCreateInfo` 图片资源的创建配置信息。
+* :bdg-secondary:`pCreateInfo` 句柄内存分配器。
+* :bdg-secondary:`pImage` 创建的目标图片句柄。
+
+其中 ``VkImageCreateInfo`` 定义如下：
+
+VkImageCreateInfo
+-----------------------
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef struct VkImageCreateInfo {
+       VkStructureType          sType;
+       const void*              pNext;
+       VkImageCreateFlags       flags;
+       VkImageType              imageType;
+       VkFormat                 format;
+       VkExtent3D               extent;
+       uint32_t                 mipLevels;
+       uint32_t                 arrayLayers;
+       VkSampleCountFlagBits    samples;
+       VkImageTiling            tiling;
+       VkImageUsageFlags        usage;
+       VkSharingMode            sharingMode;
+       uint32_t                 queueFamilyIndexCount;
+       const uint32_t*          pQueueFamilyIndices;
+       VkImageLayout            initialLayout;
+   } VkImageCreateInfo;
+
+* :bdg-secondary:`sType` 该结构体的类型枚举值， :bdg-danger:`必须` 是 ``VkStructureType::VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO`` 。
+* :bdg-secondary:`pNext` 要么是 ``NULL`` 要么指向其他结构体来扩展该结构体。
+* :bdg-secondary:`flags` 创建该图片资源额外的标志位参数。
+* :bdg-secondary:`imageType` 图片资源的类型。
+* :bdg-secondary:`format` 该图片资源的纹素格式。
+* :bdg-secondary:`extent` 该图片资源（各维度上的）大小。
+* :bdg-secondary:`mipLevels` 多级渐远纹理级别。
+* :bdg-secondary:`arrayLayers` 层级数量。
+* :bdg-secondary:`samples` 采样点数量。
+* :bdg-secondary:`tiling` 瓦片排布。
+* :bdg-secondary:`usage` 该图片资源的用途。
+* :bdg-secondary:`sharingMode` 当该图片会被多个设备队列访问时，该参数用于配置该图片共享模式。
+* :bdg-secondary:`queueFamilyIndexCount` 指定 ``pQueueFamilyIndices`` 数组中元素数量。
+* :bdg-secondary:`pQueueFamilyIndices` 用于指定将会访问该缓存的设备队列（族）。如果共享模式 :bdg-danger:`不是` ``VkSharingMode::VK_SHARING_MODE_CONCURRENT`` （并行访问）将会忽略该数组。
+* :bdg-secondary:`initialLayout` 该图片的初始布局。
+
+其中 ``VkImageType`` 定义如下：
+
+VkImageType
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: c++
+
+   // Provided by VK_VERSION_1_0
+   typedef enum VkImageType {
+       VK_IMAGE_TYPE_1D = 0,
+       VK_IMAGE_TYPE_2D = 1,
+       VK_IMAGE_TYPE_3D = 2,
+   } VkImageType;
+
+* :bdg-secondary:`VK_IMAGE_TYPE_1D` 一维图片。
+* :bdg-secondary:`VK_IMAGE_TYPE_2D` 二维图片。
+* :bdg-secondary:`VK_IMAGE_TYPE_3D` 三维图片。
+
+其中 ``一维`` 纹理其本质上就是有相同数据块类型的一维数组：
+
+.. code:: c++
+
+   // 假如纹素结构如下
+   typedef struct TexelFormat
+   {
+      uint8_t r;
+      uint8_t g;
+      uint8_t b;
+      uint8_t a;
+   }R8G8B8A8;
+
+   // VK_IMAGE_TYPE_1D 图片资源可理解为
+   TexelFormat images[VkImageCreateInfo.extent.width][1][1]; // 一维图片
+   // 等价于
+   TexelFormat images[VkImageCreateInfo.extent.width]; // 一维图片
+
+其中 ``二维`` 纹理其本质上就是有相同数据块类型的二维数组：
+
+.. code:: c++
+
+   // 假如纹素结构如下
+   typedef struct TexelFormat
+   {
+      uint8_t r;
+      uint8_t g;
+      uint8_t b;
+      uint8_t a;
+   }R8G8B8A8;
+
+   // VK_IMAGE_TYPE_2D 图片资源可理解为
+   TexelFormat images[VkImageCreateInfo.extent.width][VkImageCreateInfo.extent.height][1]; // 二维图片
+   // 等价于
+   TexelFormat images[VkImageCreateInfo.extent.width][VkImageCreateInfo.extent.height]; // 二维图片
+
+其中 ``三维`` 纹理其本质上就是有相同数据块类型的二维数组：
+
+.. code:: c++
+
+   // 假如纹素结构如下
+   typedef struct TexelFormat
+   {
+      uint8_t r;
+      uint8_t g;
+      uint8_t b;
+      uint8_t a;
+   }R8G8B8A8;
+
+   // VK_IMAGE_TYPE_3D 图片资源可理解为
+   TexelFormat images[VkImageCreateInfo.extent.width][VkImageCreateInfo.extent.height][VkImageCreateInfo.extent.depth]; // 三维图片
+
+由此可见图片的各维度的大小是由 ``VkImageCreateInfo::extent`` 定义的，其 ``VkExtent3D`` 类型定义如下：
+
+VkExtent3D
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef struct VkExtent3D {
+       uint32_t    width;
+       uint32_t    height;
+       uint32_t    depth;
+   } VkExtent3D;
+
+* :bdg-secondary:`width` 宽。
+* :bdg-secondary:`height` 高。
+* :bdg-secondary:`depth` 深度。
+
+当 ``VkImageCreateInfo::imageType`` 为 ``VkImageType::VK_IMAGE_TYPE_1D`` 时，其大小规则如下：
+
+* 维度大小使用 ``VkExtent3D::width`` 表示
+* ``VkExtent3D::height`` 固定为 ``1`` 
+* ``VkExtent3D::depth`` 固定为 ``1`` 
+
+当 ``VkImageCreateInfo::imageType`` 为 ``VkImageType::VK_IMAGE_TYPE_2D`` 时，其大小规则如下：
+
+* 维度大小使用 ``VkExtent3D::width`` 和 ``VkExtent3D::height`` 表示
+* ``VkExtent3D::depth`` 固定为 ``1`` 
+
+当 ``VkImageCreateInfo::imageType`` 为 ``VkImageType::VK_IMAGE_TYPE_3D`` 时，其大小规则如下：
+
+* 维度大小使用 ``VkExtent3D::width`` 、 ``VkExtent3D::height`` 和 ``VkExtent3D::depth`` 表示
+
+.. note:: 无论是几维图片，在 ``Vulkan`` 看来全部都是 ``三维`` 图片。只不过一维和二维会在固定维度上会坍缩到 ``1`` 。（ ``智子`` 表示：来看看我坍缩了几个维度？╭(●｀∀´●)╯）
