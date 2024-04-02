@@ -24,6 +24,9 @@
    * 2024/3/31 增加 ``VkImageCreateInfo`` 章节。
    * 2024/3/31 增加 ``VkImageType`` 章节。
    * 2024/3/31 增加 ``VkExtent3D`` 章节。
+   * 2024/4/2 增加 ``VkFormat`` 章节。
+   * 2024/4/2 增加 ``格式布局`` 章节。
+   * 2024/4/2 增加 ``数据类型`` 章节。
 
 在 ``Vulkan`` 中只有 ``2`` 种资源 :
 
@@ -496,3 +499,100 @@ VkExtent3D
 * 维度大小使用 ``VkExtent3D::width`` 、 ``VkExtent3D::height`` 和 ``VkExtent3D::depth`` 表示
 
 .. note:: 无论是几维图片，在 ``Vulkan`` 看来全部都是 ``三维`` 图片。只不过一维和二维会在固定维度上会坍缩到 ``1`` 。（ ``智子`` 表示：来看看我坍缩了几个维度？╭(●｀∀´●)╯）
+
+其中 ``VkImageCreateInfo::format`` 对应的 ``VkFormat`` 枚举类型中有非常多的枚举值，我们这里拿几个经典的进行讲解：
+
+VkFormat
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: c++
+
+   // Provided by VK_VERSION_1_0
+   typedef enum VkFormat {
+       VK_FORMAT_UNDEFINED = 0,
+       ...
+       VK_FORMAT_R8_UNORM = 9,
+       VK_FORMAT_R8_SNORM = 10,
+       VK_FORMAT_R8_USCALED = 11,
+       VK_FORMAT_R8_SSCALED = 12,
+       VK_FORMAT_R8_UINT = 13,
+       VK_FORMAT_R8_SINT = 14,
+       VK_FORMAT_R8_SRGB = 15,
+       VK_FORMAT_R8G8_UNORM = 16,
+       ...
+       VK_FORMAT_R8G8B8_UNORM = 23,
+       ...
+       VK_FORMAT_R8G8B8A8_UNORM = 37,
+       ...
+       VK_FORMAT_B8G8R8A8_SRGB = 50,
+       ...
+       VK_FORMAT_R16_SFLOAT = 76,
+       ...
+       VK_FORMAT_B10G11R11_UFLOAT_PACK32 = 122,
+       ...
+       VK_FORMAT_D16_UNORM = 124,
+       ...
+       VK_FORMAT_D32_SFLOAT = 126,
+       VK_FORMAT_S8_UINT = 127,
+       ...
+       VK_FORMAT_D16_UNORM_S8_UINT = 128,
+       VK_FORMAT_D24_UNORM_S8_UINT = 129,
+       VK_FORMAT_D32_SFLOAT_S8_UINT = 130,
+       VK_FORMAT_BC1_RGB_UNORM_BLOCK = 131,
+       ...
+       VK_FORMAT_ETC2_R8G8B8_UNORM_BLOCK = 147,
+       ...
+       VK_FORMAT_EAC_R11_UNORM_BLOCK = 153,
+       ...
+       VK_FORMAT_ASTC_4x4_UNORM_BLOCK = 157,
+       ...
+   } VkFormat;
+
+其实 ``VK_FORMAT_UNDEFINED`` 表示未定义格式，这个没什么好说的，我们现在来说明其他的。可以发现每个枚举值声明基本规则如下：
+
+.. math::
+
+   \{VK\_FORMAT\}+\{\_\{格式布局\}\_+\_\{数据类型\}\_\} \times m
+
+其中 ``VK_FORMAT`` 为枚举声明前缀，我们主要是关心 ``格式布局`` 和 ``数据类型`` 。
+
+其中 ``格式布局`` 如下：
+
+格式布局
+"""""""""""""""""""""
+
+格式布局主要是用于明确该格式下 :bdg-warning:`纹素` 的 :bdg-warning:`内部结构` 。
+
+* :bdg-secondary:`R8` 
+* :bdg-secondary:`R11`
+* :bdg-secondary:`R16` 
+* :bdg-secondary:`R8G8` 
+* :bdg-secondary:`R8G8B8` 
+* :bdg-secondary:`R8G8B8A8` 
+* :bdg-secondary:`B8G8R8A8` 
+* :bdg-secondary:`D16` 
+* :bdg-secondary:`D32` 
+* :bdg-secondary:`D24` 
+* :bdg-secondary:`S8` 
+
+其中 ``数据类型`` 如下：
+
+数据类型
+"""""""""""""""""""""
+
+数据类型主要是用于明确 :bdg-warning:`纹素` :bdg-warning:`内部结构` 的 :bdg-warning:`数据类型` 。
+
+* :bdg-secondary:`UNORM` 无符号归一化数据。类型为 ``float`` 。数据有效范围为 :math:`[0, 1]` 。
+* :bdg-secondary:`SNORM` 有符号归一化数据。类型为 ``float`` 。数据有效范围为 :math:`[-1, 1]` 。
+* :bdg-secondary:`USCALED` 无符号整数。数据将会转成 ``float`` 。数据有效范围为 :math:`[0, {2^n}-1]` 。
+* :bdg-secondary:`SSCALED` 有符号整数。数据将会转成 ``float`` 。数据有效范围为 :math:`[{-2^{n-1}}, {2^{n-1}}-1]` 。
+* :bdg-secondary:`UINT` 有符号整数。数据将会转成 ``无符号整形`` 。数据有效范围为 :math:`[0, {2^n}-1]` 。
+* :bdg-secondary:`SINT` 有符号整数。数据将会转成 ``无符号整形`` 。数据有效范围为 :math:`[{-2^{n-1}}, {2^{n-1}}-1]` 。
+* :bdg-secondary:`UFLOAT` 无符号浮点数。用于数据包和一些压缩格式中。
+* :bdg-secondary:`SFLOAT` 有符号浮点数。
+* :bdg-secondary:`SRGB` :bdg-danger:`R` :bdg-success:`G` :bdg-primary:`B` 为无符号归一化数据（同 ``UNORM`` ）。但其数据使用 `sRGB <https://learn.microsoft.com/zh-cn/windows/win32/wcs/srgb--a-standard-color-space>`_ 的非线性编码标准解析，如果 :bdg-light:`A` 通道存在则同样为无符号归一化数据。
+
+.. admonition:: sRGB
+   :class: note
+
+   ``sRGB`` 标准一般用于屏幕显示。现在市面上几乎所有的设备都能够显示 ``sRGB`` 格式的图像数据。
