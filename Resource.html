@@ -301,6 +301,13 @@
 <li><p class="sd-card-text">2024/3/31 增加 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/3/31 增加 <code class="docutils literal notranslate"><span class="pre">VkImageType</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/3/31 增加 <code class="docutils literal notranslate"><span class="pre">VkExtent3D</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/4/2 增加 <code class="docutils literal notranslate"><span class="pre">VkFormat</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/4/2 增加 <code class="docutils literal notranslate"><span class="pre">格式布局</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/4/2 增加 <code class="docutils literal notranslate"><span class="pre">数据类型</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/4/6 更新 <code class="docutils literal notranslate"><span class="pre">格式布局</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/4/6 增加 <code class="docutils literal notranslate"><span class="pre">VkSampleCountFlagBits</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/4/6 增加 <code class="docutils literal notranslate"><span class="pre">图片资源逻辑模型</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/4/6 增加 <code class="docutils literal notranslate"><span class="pre">VkImageTiling</span></code> 章节。</p></li>
 </ul>
 </div>
 </details><p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中只有 <code class="docutils literal notranslate"><span class="pre">2</span></code> 种资源 :</p>
@@ -313,8 +320,8 @@
 <p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准中的资源其实并不只有这 <code class="docutils literal notranslate"><span class="pre">2</span></code> 种，比如其中的一种资源为 <code class="docutils literal notranslate"><span class="pre">加速结构</span></code> ，该资源在说明 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">硬件实时光追</span></code> 时会涉及。由于 <code class="docutils literal notranslate"><span class="pre">Buffer</span></code> 和 <code class="docutils literal notranslate"><span class="pre">Image</span></code> 是最为核心的两个资源所以目前仅涉及这两个资源。</p>
 </div>
 <p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中创建的所有资源都是 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">虚</span> 资源，换句话说就是，创建的资源仅仅是一个资源句柄，并没有对应存储资源数据的内存。资源需要绑定到合适的设备内存中才具有 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">完整的一生</span> （图桓宇给出了一个赞许的大拇指 (๑•̀ㅂ•́)و✧ ）。</p>
-<section id="id2">
-<h2>缓存资源<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<section id="buffer">
+<span id="id2"></span><h2>缓存资源<a class="headerlink" href="#buffer" title="Link to this heading">#</a></h2>
 <p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中使用 <code class="docutils literal notranslate"><span class="pre">VkBuffer</span></code> 句柄代表缓存资源。其定义如下：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="n">VK_DEFINE_NON_DISPATCHABLE_HANDLE</span><span class="p">(</span><span class="n">VkBuffer</span><span class="p">)</span>
@@ -747,6 +754,206 @@
 <p class="admonition-title">备注</p>
 <p>无论是几维图片，在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 看来全部都是 <code class="docutils literal notranslate"><span class="pre">三维</span></code> 图片。只不过一维和二维会在固定维度上会坍缩到 <code class="docutils literal notranslate"><span class="pre">1</span></code> 。（ <code class="docutils literal notranslate"><span class="pre">智子</span></code> 表示：来看看我坍缩了几个维度？╭(●｀∀´●)╯）</p>
 </div>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo::format</span></code> 对应的 <code class="docutils literal notranslate"><span class="pre">VkFormat</span></code> 枚举类型中有非常多的枚举值，我们这里拿几个经典的进行讲解：</p>
+</section>
+<section id="vkformat">
+<h5>VkFormat<a class="headerlink" href="#vkformat" title="Link to this heading">#</a></h5>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkFormat</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VK_FORMAT_UNDEFINED</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="w">    </span><span class="n">VK_FORMAT_R8_UNORM</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">9</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_FORMAT_R8_SNORM</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_FORMAT_R8_USCALED</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">11</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_FORMAT_R8_SSCALED</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_FORMAT_R8_UINT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">13</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_FORMAT_R8_SINT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">14</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_FORMAT_R8_SRGB</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_FORMAT_R8G8_UNORM</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">16</span><span class="p">,</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="w">    </span><span class="n">VK_FORMAT_R8G8B8_UNORM</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">23</span><span class="p">,</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="w">    </span><span class="n">VK_FORMAT_R8G8B8A8_UNORM</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">37</span><span class="p">,</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="w">    </span><span class="n">VK_FORMAT_B8G8R8A8_SRGB</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">50</span><span class="p">,</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="w">    </span><span class="n">VK_FORMAT_R16_SFLOAT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">76</span><span class="p">,</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="w">    </span><span class="n">VK_FORMAT_B10G11R11_UFLOAT_PACK32</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">122</span><span class="p">,</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="w">    </span><span class="n">VK_FORMAT_D16_UNORM</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">124</span><span class="p">,</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="w">    </span><span class="n">VK_FORMAT_D32_SFLOAT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">126</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_FORMAT_S8_UINT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">127</span><span class="p">,</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="w">    </span><span class="n">VK_FORMAT_D16_UNORM_S8_UINT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">128</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_FORMAT_D24_UNORM_S8_UINT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">129</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_FORMAT_D32_SFLOAT_S8_UINT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">130</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_FORMAT_BC1_RGB_UNORM_BLOCK</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">131</span><span class="p">,</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="w">    </span><span class="n">VK_FORMAT_ETC2_R8G8B8_UNORM_BLOCK</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">147</span><span class="p">,</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="w">    </span><span class="n">VK_FORMAT_EAC_R11_UNORM_BLOCK</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">153</span><span class="p">,</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="w">    </span><span class="n">VK_FORMAT_ASTC_4x4_UNORM_BLOCK</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">157</span><span class="p">,</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkFormat</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>其实 <code class="docutils literal notranslate"><span class="pre">VK_FORMAT_UNDEFINED</span></code> 表示未定义格式，这个没什么好说的，我们现在来说明其他的。可以发现每个枚举值声明基本规则如下：</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\{VK\_FORMAT\}+\{\_\{格式布局\}\_+\_\{数据类型\}\_\} \times m\]</div>
+</div>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">VK_FORMAT</span></code> 为枚举声明前缀，我们主要是关心 <code class="docutils literal notranslate"><span class="pre">格式布局</span></code> 和 <code class="docutils literal notranslate"><span class="pre">数据类型</span></code> 。</p>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">格式布局</span></code> 如下：</p>
+<section id="id9">
+<h6>格式布局<a class="headerlink" href="#id9" title="Link to this heading">#</a></h6>
+<p>格式布局主要是用于明确该格式下 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">纹素</span> 的 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">内部结构</span> 。</p>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">R8</span> 拥有 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">红色通道</span> 数据，占 <code class="docutils literal notranslate"><span class="pre">8</span></code> 个比特。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">R11</span> 拥有 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">红色通道</span> 数据，占 <code class="docutils literal notranslate"><span class="pre">11</span></code> 个比特。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">R16</span> 拥有 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">红色通道</span> 数据，占 <code class="docutils literal notranslate"><span class="pre">16</span></code> 个比特。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">R8G8</span> 拥有 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">红色通道</span> 和 <span class="sd-sphinx-override sd-badge sd-bg-success sd-bg-text-success">绿色通道</span> 数据，每个通道占 <code class="docutils literal notranslate"><span class="pre">8</span></code> 个比特。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">R8G8B8</span> 拥有 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">红色通道</span> 、 <span class="sd-sphinx-override sd-badge sd-bg-success sd-bg-text-success">绿色通道</span> 和 <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">蓝色通道</span> 数据，每个通道占 <code class="docutils literal notranslate"><span class="pre">8</span></code> 个比特。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">R8G8B8A8</span> 拥有 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">红色通道</span> 、 <span class="sd-sphinx-override sd-badge sd-bg-success sd-bg-text-success">绿色通道</span> 、 <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">蓝色通道</span> 数据和 <span class="sd-sphinx-override sd-badge sd-bg-light sd-bg-text-light">透明度通道</span> 数据，每个通道占 <code class="docutils literal notranslate"><span class="pre">8</span></code> 个比特。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">B8G8R8A8</span> 拥有 <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">蓝色通道</span> 、 <span class="sd-sphinx-override sd-badge sd-bg-success sd-bg-text-success">绿色通道</span> 、 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">红色通道</span> 数据和 <span class="sd-sphinx-override sd-badge sd-bg-light sd-bg-text-light">透明度通道</span> 数据，每个通道占 <code class="docutils literal notranslate"><span class="pre">8</span></code> 个比特。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">D16</span> 拥有 <code class="docutils literal notranslate"><span class="pre">深度</span></code> 数据，占 <code class="docutils literal notranslate"><span class="pre">16</span></code> 个比特。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">D24</span> 拥有 <code class="docutils literal notranslate"><span class="pre">深度</span></code> 数据，占 <code class="docutils literal notranslate"><span class="pre">24</span></code> 个比特。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">D32</span> 拥有 <code class="docutils literal notranslate"><span class="pre">深度</span></code> 数据，占 <code class="docutils literal notranslate"><span class="pre">32</span></code> 个比特。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">S8</span> 拥有 <code class="docutils literal notranslate"><span class="pre">模板</span></code> 数据，占 <code class="docutils literal notranslate"><span class="pre">8</span></code> 个比特。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">BC</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">ETC</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">EAC</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">ASTC</span> 表示数据为压缩形式。</p></li>
+</ul>
+<div class="note admonition">
+<p class="admonition-title">压缩</p>
+<p>使用压缩可以在相似的视觉效果下可以占用更小的存储空间。此时我们先略过压缩格式，主要关注非压缩格式。</p>
+</div>
+<div class="note admonition">
+<p class="admonition-title">深度</p>
+<p>深度数据一般都是一个浮点数，其值一般用于表示图形表面到某一平面的距离信息。</p>
+<figure class="align-default" id="id12">
+<a class="reference internal image-reference" href="_images/depth.png"><img alt="_images/depth.png" src="_images/depth.png" style="width: 354.0px; height: 380.5px;" /></a>
+<figcaption>
+<p><span class="caption-text">如上图，深度数据存储着如图红线所示的距离。</span><a class="headerlink" href="#id12" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</div>
+<div class="note admonition">
+<p class="admonition-title">模板</p>
+<p>模板数据一般都是一个整数，与深度类似，其值一般用于表示图形表面是否（覆盖）映射到对应像素。</p>
+</div>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">数据类型</span></code> 如下：</p>
+</section>
+<section id="id10">
+<h6>数据类型<a class="headerlink" href="#id10" title="Link to this heading">#</a></h6>
+<p>数据类型主要是用于明确 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">纹素</span> <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">内部结构</span> 的 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">数据类型</span> 。</p>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">UNORM</span> 无符号归一化数据。类型为 <code class="docutils literal notranslate"><span class="pre">float</span></code> 。数据有效范围为 <span class="math notranslate nohighlight">\([0, 1]\)</span> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">SNORM</span> 有符号归一化数据。类型为 <code class="docutils literal notranslate"><span class="pre">float</span></code> 。数据有效范围为 <span class="math notranslate nohighlight">\([-1, 1]\)</span> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">USCALED</span> 无符号整数。数据将会转成 <code class="docutils literal notranslate"><span class="pre">float</span></code> 。数据有效范围为 <span class="math notranslate nohighlight">\([0, {2^n}-1]\)</span> 。（ <code class="docutils literal notranslate"><span class="pre">n</span></code> 为 <code class="docutils literal notranslate"><span class="pre">格式布局</span></code> 中各数据所占比特位数）。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">SSCALED</span> 有符号整数。数据将会转成 <code class="docutils literal notranslate"><span class="pre">float</span></code> 。数据有效范围为 <span class="math notranslate nohighlight">\([{-2^{n-1}}, {2^{n-1}}-1]\)</span> 。（ <code class="docutils literal notranslate"><span class="pre">n</span></code> 为 <code class="docutils literal notranslate"><span class="pre">格式布局</span></code> 中各数据所占比特位数）。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">UINT</span> 有符号整数。数据将会转成 <code class="docutils literal notranslate"><span class="pre">无符号整形</span></code> 。数据有效范围为 <span class="math notranslate nohighlight">\([0, {2^n}-1]\)</span> 。（ <code class="docutils literal notranslate"><span class="pre">n</span></code> 为 <code class="docutils literal notranslate"><span class="pre">格式布局</span></code> 中各数据所占比特位数）。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">SINT</span> 有符号整数。数据将会转成 <code class="docutils literal notranslate"><span class="pre">无符号整形</span></code> 。数据有效范围为 <span class="math notranslate nohighlight">\([{-2^{n-1}}, {2^{n-1}}-1]\)</span> 。（ <code class="docutils literal notranslate"><span class="pre">n</span></code> 为 <code class="docutils literal notranslate"><span class="pre">格式布局</span></code> 中各数据所占比特位数）。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">UFLOAT</span> 无符号浮点数。用于数据包和一些压缩格式中。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">SFLOAT</span> 有符号浮点数。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">SRGB</span> 标准颜色空间 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">R</span> <span class="sd-sphinx-override sd-badge sd-bg-success sd-bg-text-success">G</span> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">B</span> 通道为无符号归一化数据（同 <code class="docutils literal notranslate"><span class="pre">UNORM</span></code> ）。但其数据使用 <a class="reference external" href="https://learn.microsoft.com/zh-cn/windows/win32/wcs/srgb--a-standard-color-space">sRGB</a> 的非线性编码标准解析，如果 <span class="sd-sphinx-override sd-badge sd-bg-light sd-bg-text-light">A</span> 通道存在则同样为无符号归一化数据。</p></li>
+</ul>
+<div class="note admonition">
+<p class="admonition-title">sRGB</p>
+<p><code class="docutils literal notranslate"><span class="pre">sRGB</span></code> 标准一般用于屏幕显示。现在市面上几乎所有的设备都能够支持显示 <code class="docutils literal notranslate"><span class="pre">sRGB</span></code> 格式的图像数据。</p>
+</div>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo::samples</span></code> 的 <code class="docutils literal notranslate"><span class="pre">VkSampleCountFlagBits</span></code> 枚举类型定义如下：</p>
+</section>
+</section>
+<section id="vksamplecountflagbits">
+<h5>VkSampleCountFlagBits<a class="headerlink" href="#vksamplecountflagbits" title="Link to this heading">#</a></h5>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkSampleCountFlagBits</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VK_SAMPLE_COUNT_1_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000001</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_SAMPLE_COUNT_2_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000002</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_SAMPLE_COUNT_4_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000004</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_SAMPLE_COUNT_8_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000008</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_SAMPLE_COUNT_16_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000010</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_SAMPLE_COUNT_32_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000020</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_SAMPLE_COUNT_64_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000040</span><span class="p">,</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkSampleCountFlagBits</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_SAMPLE_COUNT_1_BIT</span> 有 <code class="docutils literal notranslate"><span class="pre">1</span></code> 个采样点。即，纹素自身（将分出 <code class="docutils literal notranslate"><span class="pre">1</span></code> 个子纹素）。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_SAMPLE_COUNT_2_BIT</span> 有 <code class="docutils literal notranslate"><span class="pre">2</span></code> 个采样点。即，纹素自身将分出 <code class="docutils literal notranslate"><span class="pre">2</span></code> 个子纹素。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_SAMPLE_COUNT_4_BIT</span> 有 <code class="docutils literal notranslate"><span class="pre">4</span></code> 个采样点。即，纹素自身将分出 <code class="docutils literal notranslate"><span class="pre">4</span></code> 个子纹素。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_SAMPLE_COUNT_8_BIT</span> 有 <code class="docutils literal notranslate"><span class="pre">8</span></code> 个采样点。即，纹素自身将分出 <code class="docutils literal notranslate"><span class="pre">8</span></code> 个子纹素。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_SAMPLE_COUNT_16_BIT</span> 有 <code class="docutils literal notranslate"><span class="pre">16</span></code> 个采样点。即，纹素自身将分出 <code class="docutils literal notranslate"><span class="pre">16</span></code> 个子纹素。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_SAMPLE_COUNT_32_BIT</span> 有 <code class="docutils literal notranslate"><span class="pre">32</span></code> 个采样点。即，纹素自身将分出 <code class="docutils literal notranslate"><span class="pre">32</span></code> 个子纹素。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_SAMPLE_COUNT_64_BIT</span> 有 <code class="docutils literal notranslate"><span class="pre">64</span></code> 个采样点。即，纹素自身将分出 <code class="docutils literal notranslate"><span class="pre">64</span></code> 个子纹素。</p></li>
+</ul>
+<p>由于像素都是一块块的，并不能像一条线那样丝滑连续，当将连续的数据存入像像素这样的离散数据时，需要对连续数据进行采样，进而确定离散的像素值。像这样将连续数据转成离散数据必定会导致部分原始信息的丢失。在图像上就会产生锯齿。</p>
+<figure class="align-default" id="id13">
+<img alt="_images/samples.png" src="_images/samples.png" />
+<figcaption>
+<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">1</span></code> 个纹素仅进行 <code class="docutils literal notranslate"><span class="pre">1</span></code> 次采样</span><a class="headerlink" href="#id13" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>如上图中每个格子为一个纹素（像素），其中心的点为采样点。当黄色部分完全覆盖了对应的 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">采样点</span> 后，对应的纹素才会存储相应的数据，而部分覆盖纹素，但没有覆盖 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">采样点</span> 的地方将不会存储（采样）任何值。进而导致锯齿。</p>
+<p>为了减少锯齿，我们可以将一个纹素分割成多个子纹素来增加采样点，这样之前采样不到的纹素也会随着采样点的增多得到覆盖，进而得到采样，以此来达到抗锯齿的目的。</p>
+<p>但越多的采样次数意味着更多的计算量，过多的计算量可能会延长运行时间。</p>
+<div class="note admonition">
+<p class="admonition-title">子纹素</p>
+<p>纹素会将各子纹素的采样结果根据权重进行汇总，并将汇总结果作为该（顶级）纹素的结果。</p>
+</div>
+<figure class="align-default" id="id14">
+<a class="reference internal image-reference" href="_images/multi_samples.png"><img alt="_images/multi_samples.png" src="_images/multi_samples.png" style="width: 659.75px; height: 471.25px;" /></a>
+<figcaption>
+<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">1</span></code> 个纹素进行 <code class="docutils literal notranslate"><span class="pre">16</span></code> 次采样（ <code class="docutils literal notranslate"><span class="pre">VkSampleCountFlagBits::VK_SAMPLE_COUNT_16_BIT</span></code> ）</span><a class="headerlink" href="#id14" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>如下为 <code class="docutils literal notranslate"><span class="pre">VK_SAMPLE_COUNT_1_BIT</span></code> 和 <code class="docutils literal notranslate"><span class="pre">VK_SAMPLE_COUNT_8_BIT</span></code> 的成像对比：</p>
+<figure class="align-default" id="id15">
+<img alt="_images/sample.jpg" src="_images/sample.jpg" />
+<figcaption>
+<p><span class="caption-text">单次采样与 <code class="docutils literal notranslate"><span class="pre">8</span></code> 次采样对比示意图</span><a class="headerlink" href="#id15" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo::tiling</span></code> 的 <code class="docutils literal notranslate"><span class="pre">VkImageTiling</span></code> 类型定义如下：</p>
+</section>
+<section id="id11">
+<h5>图片资源逻辑模型<a class="headerlink" href="#id11" title="Link to this heading">#</a></h5>
+<p>现在我们来讲解一下如何理解 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo</span></code> 中的各参数，并将他们从逻辑上关联起来，并建立一个易于理解的模型。</p>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo</span></code> 中与之有关的核心参数如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkImageCreateInfo</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="p">...</span>
+<span class="w">    </span><span class="n">VkImageType</span><span class="w">              </span><span class="n">imageType</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkFormat</span><span class="w">                 </span><span class="n">format</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkExtent3D</span><span class="w">               </span><span class="n">extent</span><span class="p">;</span>
+<span class="w">   </span><span class="p">...</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">                 </span><span class="n">arrayLayers</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkSampleCountFlagBits</span><span class="w">    </span><span class="n">samples</span><span class="p">;</span>
+<span class="w">   </span><span class="p">...</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkImageCreateInfo</span><span class="p">;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>未完待续</p>
+</div>
+</section>
+<section id="vkimagetiling">
+<h5>VkImageTiling<a class="headerlink" href="#vkimagetiling" title="Link to this heading">#</a></h5>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkImageTiling</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VK_IMAGE_TILING_OPTIMAL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_IMAGE_TILING_LINEAR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkImageTiling</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_IMAGE_TILING_OPTIMAL</span> 优化排布。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_IMAGE_TILING_LINEAR</span> 线性排布。</p></li>
+</ul>
+<p>在 <a class="reference internal" href="#buffer"><span class="std std-ref">缓存资源</span></a> 章节我们已经知道缓存资源在 <code class="docutils literal notranslate"><span class="pre">Host端</span></code> 和 <code class="docutils literal notranslate"><span class="pre">Device端</span></code> 其为了更高的效率，内部的结构是不同的，图片资源也是如此。</p>
+<p>当使用 <code class="docutils literal notranslate"><span class="pre">VkImageTiling::VK_IMAGE_TILING_OPTIMAL</span></code> 时，用于指示该图片资源将会使用 <code class="docutils literal notranslate"><span class="pre">Device端</span></code> 内部偏爱的结构（驱动内部结构）进行创建。</p>
+<p>当使用 <code class="docutils literal notranslate"><span class="pre">VkImageTiling::VK_IMAGE_TILING_LINEAR</span></code> 时，用于指示该图片资源将会使用 <code class="docutils literal notranslate"><span class="pre">Host端</span></code> 偏爱的线性结构进行创建。这一般用于 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 读写图片资源数据时使用。</p>
 </section>
 </section>
 </section>
@@ -828,7 +1035,7 @@
         <div class="toc-tree" style="width: 500px;">
             <ul>
 <li><a class="reference internal" href="#">资源</a><ul>
-<li><a class="reference internal" href="#id2">缓存资源</a><ul>
+<li><a class="reference internal" href="#buffer">缓存资源</a><ul>
 <li><a class="reference internal" href="#id3">创建缓存</a><ul>
 <li><a class="reference internal" href="#vkcreatebuffer">vkCreateBuffer</a></li>
 <li><a class="reference internal" href="#vkbuffercreateinfo">VkBufferCreateInfo</a><ul>
@@ -851,6 +1058,14 @@
 <li><a class="reference internal" href="#vkimagecreateinfo">VkImageCreateInfo</a><ul>
 <li><a class="reference internal" href="#vkimagetype">VkImageType</a></li>
 <li><a class="reference internal" href="#vkextent3d">VkExtent3D</a></li>
+<li><a class="reference internal" href="#vkformat">VkFormat</a><ul>
+<li><a class="reference internal" href="#id9">格式布局</a></li>
+<li><a class="reference internal" href="#id10">数据类型</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#vksamplecountflagbits">VkSampleCountFlagBits</a></li>
+<li><a class="reference internal" href="#id11">图片资源逻辑模型</a></li>
+<li><a class="reference internal" href="#vkimagetiling">VkImageTiling</a></li>
 </ul>
 </li>
 </ul>
@@ -878,6 +1093,8 @@
     <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
     <script src="_static/translations.js?v=beaddf03"></script>
     <script src="_static/design-tabs.js?v=36754332"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
     </body>
 </html>
