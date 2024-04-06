@@ -27,6 +27,10 @@
    * 2024/4/2 增加 ``VkFormat`` 章节。
    * 2024/4/2 增加 ``格式布局`` 章节。
    * 2024/4/2 增加 ``数据类型`` 章节。
+   * 2024/4/6 更新 ``格式布局`` 章节。
+   * 2024/4/6 增加 ``VkSampleCountFlagBits`` 章节。
+   * 2024/4/6 增加 ``图片资源逻辑模型`` 章节。
+   * 2024/4/6 增加 ``VkImageTiling`` 章节。
 
 在 ``Vulkan`` 中只有 ``2`` 种资源 :
 
@@ -38,6 +42,8 @@
    ``Vulkan`` 标准中的资源其实并不只有这 ``2`` 种，比如其中的一种资源为 ``加速结构`` ，该资源在说明 ``Vulkan 硬件实时光追`` 时会涉及。由于 ``Buffer`` 和 ``Image`` 是最为核心的两个资源所以目前仅涉及这两个资源。
 
 在 ``Vulkan`` 中创建的所有资源都是 :bdg-warning:`虚` 资源，换句话说就是，创建的资源仅仅是一个资源句柄，并没有对应存储资源数据的内存。资源需要绑定到合适的设备内存中才具有 :bdg-warning:`完整的一生` （图桓宇给出了一个赞许的大拇指 (๑•̀ㅂ•́)و✧ ）。
+
+.. _Buffer:
 
 缓存资源
 ###########
@@ -507,7 +513,7 @@ VkFormat
 
 .. code:: c++
 
-   // Provided by VK_VERSION_1_0
+   // 由 VK_VERSION_1_0 提供
    typedef enum VkFormat {
        VK_FORMAT_UNDEFINED = 0,
        ...
@@ -563,17 +569,38 @@ VkFormat
 
 格式布局主要是用于明确该格式下 :bdg-warning:`纹素` 的 :bdg-warning:`内部结构` 。
 
-* :bdg-secondary:`R8` 
-* :bdg-secondary:`R11`
-* :bdg-secondary:`R16` 
-* :bdg-secondary:`R8G8` 
-* :bdg-secondary:`R8G8B8` 
-* :bdg-secondary:`R8G8B8A8` 
-* :bdg-secondary:`B8G8R8A8` 
-* :bdg-secondary:`D16` 
-* :bdg-secondary:`D32` 
-* :bdg-secondary:`D24` 
-* :bdg-secondary:`S8` 
+* :bdg-secondary:`R8` 拥有 :bdg-danger:`红色通道` 数据，占 ``8`` 个比特。
+* :bdg-secondary:`R11` 拥有 :bdg-danger:`红色通道` 数据，占 ``11`` 个比特。
+* :bdg-secondary:`R16` 拥有 :bdg-danger:`红色通道` 数据，占 ``16`` 个比特。
+* :bdg-secondary:`R8G8` 拥有 :bdg-danger:`红色通道` 和 :bdg-success:`绿色通道` 数据，每个通道占 ``8`` 个比特。
+* :bdg-secondary:`R8G8B8` 拥有 :bdg-danger:`红色通道` 、 :bdg-success:`绿色通道` 和 :bdg-primary:`蓝色通道` 数据，每个通道占 ``8`` 个比特。
+* :bdg-secondary:`R8G8B8A8` 拥有 :bdg-danger:`红色通道` 、 :bdg-success:`绿色通道` 、 :bdg-primary:`蓝色通道` 数据和 :bdg-light:`透明度通道` 数据，每个通道占 ``8`` 个比特。
+* :bdg-secondary:`B8G8R8A8` 拥有 :bdg-primary:`蓝色通道` 、 :bdg-success:`绿色通道` 、 :bdg-danger:`红色通道` 数据和 :bdg-light:`透明度通道` 数据，每个通道占 ``8`` 个比特。
+* :bdg-secondary:`D16` 拥有 ``深度`` 数据，占 ``16`` 个比特。
+* :bdg-secondary:`D24` 拥有 ``深度`` 数据，占 ``24`` 个比特。
+* :bdg-secondary:`D32` 拥有 ``深度`` 数据，占 ``32`` 个比特。
+* :bdg-secondary:`S8` 拥有 ``模板`` 数据，占 ``8`` 个比特。
+* :bdg-secondary:`BC` :bdg-secondary:`ETC` :bdg-secondary:`EAC` :bdg-secondary:`ASTC` 表示数据为压缩形式。
+
+.. admonition:: 压缩
+   :class: note
+
+   使用压缩可以在相似的视觉效果下可以占用更小的存储空间。此时我们先略过压缩格式，主要关注非压缩格式。
+
+.. admonition:: 深度
+   :class: note
+
+   深度数据一般都是一个浮点数，其值一般用于表示图形表面到某一平面的距离信息。
+
+   .. figure:: ./_static/depth.png
+      :scale: 50%
+
+      如上图，深度数据存储着如图红线所示的距离。
+
+.. admonition:: 模板
+   :class: note
+
+   模板数据一般都是一个整数，与深度类似，其值一般用于表示图形表面是否（覆盖）映射到对应像素。
 
 其中 ``数据类型`` 如下：
 
@@ -584,15 +611,122 @@ VkFormat
 
 * :bdg-secondary:`UNORM` 无符号归一化数据。类型为 ``float`` 。数据有效范围为 :math:`[0, 1]` 。
 * :bdg-secondary:`SNORM` 有符号归一化数据。类型为 ``float`` 。数据有效范围为 :math:`[-1, 1]` 。
-* :bdg-secondary:`USCALED` 无符号整数。数据将会转成 ``float`` 。数据有效范围为 :math:`[0, {2^n}-1]` 。
-* :bdg-secondary:`SSCALED` 有符号整数。数据将会转成 ``float`` 。数据有效范围为 :math:`[{-2^{n-1}}, {2^{n-1}}-1]` 。
-* :bdg-secondary:`UINT` 有符号整数。数据将会转成 ``无符号整形`` 。数据有效范围为 :math:`[0, {2^n}-1]` 。
-* :bdg-secondary:`SINT` 有符号整数。数据将会转成 ``无符号整形`` 。数据有效范围为 :math:`[{-2^{n-1}}, {2^{n-1}}-1]` 。
+* :bdg-secondary:`USCALED` 无符号整数。数据将会转成 ``float`` 。数据有效范围为 :math:`[0, {2^n}-1]` 。（ ``n`` 为 ``格式布局`` 中各数据所占比特位数）。
+* :bdg-secondary:`SSCALED` 有符号整数。数据将会转成 ``float`` 。数据有效范围为 :math:`[{-2^{n-1}}, {2^{n-1}}-1]` 。（ ``n`` 为 ``格式布局`` 中各数据所占比特位数）。
+* :bdg-secondary:`UINT` 有符号整数。数据将会转成 ``无符号整形`` 。数据有效范围为 :math:`[0, {2^n}-1]` 。（ ``n`` 为 ``格式布局`` 中各数据所占比特位数）。
+* :bdg-secondary:`SINT` 有符号整数。数据将会转成 ``无符号整形`` 。数据有效范围为 :math:`[{-2^{n-1}}, {2^{n-1}}-1]` 。（ ``n`` 为 ``格式布局`` 中各数据所占比特位数）。
 * :bdg-secondary:`UFLOAT` 无符号浮点数。用于数据包和一些压缩格式中。
 * :bdg-secondary:`SFLOAT` 有符号浮点数。
-* :bdg-secondary:`SRGB` :bdg-danger:`R` :bdg-success:`G` :bdg-primary:`B` 为无符号归一化数据（同 ``UNORM`` ）。但其数据使用 `sRGB <https://learn.microsoft.com/zh-cn/windows/win32/wcs/srgb--a-standard-color-space>`_ 的非线性编码标准解析，如果 :bdg-light:`A` 通道存在则同样为无符号归一化数据。
+* :bdg-secondary:`SRGB` 标准颜色空间 :bdg-danger:`R` :bdg-success:`G` :bdg-primary:`B` 通道为无符号归一化数据（同 ``UNORM`` ）。但其数据使用 `sRGB <https://learn.microsoft.com/zh-cn/windows/win32/wcs/srgb--a-standard-color-space>`_ 的非线性编码标准解析，如果 :bdg-light:`A` 通道存在则同样为无符号归一化数据。
 
 .. admonition:: sRGB
    :class: note
 
-   ``sRGB`` 标准一般用于屏幕显示。现在市面上几乎所有的设备都能够显示 ``sRGB`` 格式的图像数据。
+   ``sRGB`` 标准一般用于屏幕显示。现在市面上几乎所有的设备都能够支持显示 ``sRGB`` 格式的图像数据。
+
+其中 ``VkImageCreateInfo::samples`` 的 ``VkSampleCountFlagBits`` 枚举类型定义如下：
+
+VkSampleCountFlagBits
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef enum VkSampleCountFlagBits {
+       VK_SAMPLE_COUNT_1_BIT = 0x00000001,
+       VK_SAMPLE_COUNT_2_BIT = 0x00000002,
+       VK_SAMPLE_COUNT_4_BIT = 0x00000004,
+       VK_SAMPLE_COUNT_8_BIT = 0x00000008,
+       VK_SAMPLE_COUNT_16_BIT = 0x00000010,
+       VK_SAMPLE_COUNT_32_BIT = 0x00000020,
+       VK_SAMPLE_COUNT_64_BIT = 0x00000040,
+   } VkSampleCountFlagBits;
+
+* :bdg-secondary:`VK_SAMPLE_COUNT_1_BIT` 有 ``1`` 个采样点。即，纹素自身（将分出 ``1`` 个子纹素）。
+* :bdg-secondary:`VK_SAMPLE_COUNT_2_BIT` 有 ``2`` 个采样点。即，纹素自身将分出 ``2`` 个子纹素。
+* :bdg-secondary:`VK_SAMPLE_COUNT_4_BIT` 有 ``4`` 个采样点。即，纹素自身将分出 ``4`` 个子纹素。
+* :bdg-secondary:`VK_SAMPLE_COUNT_8_BIT` 有 ``8`` 个采样点。即，纹素自身将分出 ``8`` 个子纹素。
+* :bdg-secondary:`VK_SAMPLE_COUNT_16_BIT` 有 ``16`` 个采样点。即，纹素自身将分出 ``16`` 个子纹素。
+* :bdg-secondary:`VK_SAMPLE_COUNT_32_BIT` 有 ``32`` 个采样点。即，纹素自身将分出 ``32`` 个子纹素。
+* :bdg-secondary:`VK_SAMPLE_COUNT_64_BIT` 有 ``64`` 个采样点。即，纹素自身将分出 ``64`` 个子纹素。
+
+由于像素都是一块块的，并不能像一条线那样丝滑连续，当将连续的数据存入像像素这样的离散数据时，需要对连续数据进行采样，进而确定离散的像素值。像这样将连续数据转成离散数据必定会导致部分原始信息的丢失。在图像上就会产生锯齿。
+
+.. figure:: ./_static/samples.png
+
+   ``1`` 个纹素仅进行 ``1`` 次采样
+
+如上图中每个格子为一个纹素（像素），其中心的点为采样点。当黄色部分完全覆盖了对应的 :bdg-danger:`采样点` 后，对应的纹素才会存储相应的数据，而部分覆盖纹素，但没有覆盖 :bdg-warning:`采样点` 的地方将不会存储（采样）任何值。进而导致锯齿。
+
+为了减少锯齿，我们可以将一个纹素分割成多个子纹素来增加采样点，这样之前采样不到的纹素也会随着采样点的增多得到覆盖，进而得到采样，以此来达到抗锯齿的目的。
+
+但越多的采样次数意味着更多的计算量，过多的计算量可能会延长运行时间。
+
+.. admonition:: 子纹素
+   :class: note
+
+   纹素会将各子纹素的采样结果根据权重进行汇总，并将汇总结果作为该（顶级）纹素的结果。
+
+.. figure:: ./_static/multi_samples.png
+   :scale: 65%
+
+   ``1`` 个纹素进行 ``16`` 次采样（ ``VkSampleCountFlagBits::VK_SAMPLE_COUNT_16_BIT`` ）
+
+如下为 ``VK_SAMPLE_COUNT_1_BIT`` 和 ``VK_SAMPLE_COUNT_8_BIT`` 的成像对比：
+
+.. figure:: ./_static/sample.jpg
+
+   单次采样与 ``8`` 次采样对比示意图
+
+其中 ``VkImageCreateInfo::tiling`` 的 ``VkImageTiling`` 类型定义如下：
+
+图片资源逻辑模型
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+现在我们来讲解一下如何理解 ``VkImageCreateInfo`` 中的各参数，并将他们从逻辑上关联起来，并建立一个易于理解的模型。
+
+其中 ``VkImageCreateInfo`` 中与之有关的核心参数如下：
+
+.. code:: c++
+
+   typedef struct VkImageCreateInfo {
+      ...
+       VkImageType              imageType;
+       VkFormat                 format;
+       VkExtent3D               extent;
+      ...
+       uint32_t                 arrayLayers;
+       VkSampleCountFlagBits    samples;
+      ...
+   } VkImageCreateInfo;
+
+.. note:: 未完待续
+
+VkImageTiling
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef enum VkImageTiling {
+       VK_IMAGE_TILING_OPTIMAL = 0,
+       VK_IMAGE_TILING_LINEAR = 1,
+   } VkImageTiling;
+
+* :bdg-secondary:`VK_IMAGE_TILING_OPTIMAL` 优化排布。
+* :bdg-secondary:`VK_IMAGE_TILING_LINEAR` 线性排布。
+
+在 :ref:`Buffer` 章节我们已经知道缓存资源在 ``Host端`` 和 ``Device端`` 其为了更高的效率，内部的结构是不同的，图片资源也是如此。
+
+当使用 ``VkImageTiling::VK_IMAGE_TILING_OPTIMAL`` 时，用于指示该图片资源将会使用 ``Device端`` 内部偏爱的结构（驱动内部结构）进行创建。
+
+当使用 ``VkImageTiling::VK_IMAGE_TILING_LINEAR`` 时，用于指示该图片资源将会使用 ``Host端`` 偏爱的线性结构进行创建。这一般用于 ``CPU`` 读写图片资源数据时使用。
+
+..
+   VK_IMAGE_TILING_LINEAR限制
+   imageType is VK_IMAGE_TYPE_2D
+   format is not a depth/stencil format
+   mipLevels is 1
+   arrayLayers is 1
+   samples is VK_SAMPLE_COUNT_1_BIT
+   usage only includes VK_IMAGE_USAGE_TRANSFER_SRC_BIT and/or VK_IMAGE_USAGE_TRANSFER_DST_BIT
