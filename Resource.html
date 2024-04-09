@@ -308,6 +308,7 @@
 <li><p class="sd-card-text">2024/4/6 增加 <code class="docutils literal notranslate"><span class="pre">VkSampleCountFlagBits</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/4/6 增加 <code class="docutils literal notranslate"><span class="pre">图片资源逻辑模型</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/4/6 增加 <code class="docutils literal notranslate"><span class="pre">VkImageTiling</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/4/9 更新 <code class="docutils literal notranslate"><span class="pre">图片资源逻辑模型</span></code> 章节。</p></li>
 </ul>
 </div>
 </details><p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中只有 <code class="docutils literal notranslate"><span class="pre">2</span></code> 种资源 :</p>
@@ -933,9 +934,45 @@
 <span class="p">}</span><span class="w"> </span><span class="n">VkImageCreateInfo</span><span class="p">;</span>
 </pre></div>
 </div>
-<div class="admonition note">
-<p class="admonition-title">备注</p>
-<p>未完待续</p>
+<p>首先明确一下这几个变量的含义。</p>
+<p>图片大小是由如下 <code class="docutils literal notranslate"><span class="pre">2</span></code> 个参数指定的：</p>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">imageType</span> 用于指定该图片的维度。一维、二维还是三维图片。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">extent</span> 用于指定该图片每一个维度的大小。</p></li>
+</ul>
+<p>而图片的每个纹素是由如下 <code class="docutils literal notranslate"><span class="pre">2</span></code> 个参数指定的：</p>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">format</span> 用于指定该图片每一个纹素的具体格式。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">samples</span> 用于指定该图片每一个纹素会被分割成多少个子纹素。</p></li>
+</ul>
+<p>如上这几个参数已经能够定义一个图片资源了。但 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo</span></code> 中还有一个 <code class="docutils literal notranslate"><span class="pre">arrayLayers</span></code> 参数，说明如下：</p>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">arrayLayers</span> 用于指定如上配置的图片个数。</p></li>
+</ul>
+<p>也就是说通过 <code class="docutils literal notranslate"><span class="pre">imageType</span></code> 、 <code class="docutils literal notranslate"><span class="pre">format</span></code> 、 <code class="docutils literal notranslate"><span class="pre">extent</span></code> 和 <code class="docutils literal notranslate"><span class="pre">samples</span></code> 确定一个图片，使用 <code class="docutils literal notranslate"><span class="pre">arrayLayers</span></code> 来指定这样的图片有几个。对应 <code class="docutils literal notranslate"><span class="pre">C++</span></code> 逻辑代码如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">Image</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="n">VkImageType</span><span class="w">              </span><span class="n">imageType</span><span class="p">;</span>
+<span class="w">   </span><span class="n">VkFormat</span><span class="w">                 </span><span class="n">format</span><span class="p">;</span>
+<span class="w">   </span><span class="n">VkExtent3D</span><span class="w">               </span><span class="n">extent</span><span class="p">;</span>
+<span class="w">   </span><span class="n">VkSampleCountFlagBits</span><span class="w">    </span><span class="n">samples</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">struct</span><span class="w"> </span><span class="nc">ImageCreateInfo</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="n">Image</span><span class="w"> </span><span class="n">images</span><span class="p">[</span><span class="n">arrayLayers</span><span class="p">];</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<figure class="align-default" id="id16">
+<img alt="_images/image_create_info_struct.png" src="_images/image_create_info_struct.png" />
+<figcaption>
+<p><span class="caption-text">图片资源逻辑结构示意图</span><a class="headerlink" href="#id16" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<div class="note admonition">
+<p class="admonition-title">arrayLayers</p>
+<p><code class="docutils literal notranslate"><span class="pre">arrayLayers</span></code> <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">不可以</span> 随意指定数量，有一些限制。将会在之后的章节说明。</p>
 </div>
 </section>
 <section id="vkimagetiling">
