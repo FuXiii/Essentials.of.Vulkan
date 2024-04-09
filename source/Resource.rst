@@ -31,6 +31,7 @@
    * 2024/4/6 增加 ``VkSampleCountFlagBits`` 章节。
    * 2024/4/6 增加 ``图片资源逻辑模型`` 章节。
    * 2024/4/6 增加 ``VkImageTiling`` 章节。
+   * 2024/4/9 更新 ``图片资源逻辑模型`` 章节。
 
 在 ``Vulkan`` 中只有 ``2`` 种资源 :
 
@@ -700,7 +701,47 @@ VkSampleCountFlagBits
       ...
    } VkImageCreateInfo;
 
-.. note:: 未完待续
+首先明确一下这几个变量的含义。
+
+图片大小是由如下 ``2`` 个参数指定的：
+
+* :bdg-secondary:`imageType` 用于指定该图片的维度。一维、二维还是三维图片。
+* :bdg-secondary:`extent` 用于指定该图片每一个维度的大小。
+
+而图片的每个纹素是由如下 ``2`` 个参数指定的：
+
+* :bdg-secondary:`format` 用于指定该图片每一个纹素的具体格式。
+* :bdg-secondary:`samples` 用于指定该图片每一个纹素会被分割成多少个子纹素。
+
+如上这几个参数已经能够定义一个图片资源了。但 ``VkImageCreateInfo`` 中还有一个 ``arrayLayers`` 参数，说明如下：
+
+* :bdg-secondary:`arrayLayers` 用于指定如上配置的图片个数。
+
+也就是说通过 ``imageType`` 、 ``format`` 、 ``extent`` 和 ``samples`` 确定一个图片，使用 ``arrayLayers`` 来指定这样的图片有几个。对应 ``C++`` 逻辑代码如下：
+
+.. code:: c++
+
+   struct Image
+   {
+      VkImageType              imageType;
+      VkFormat                 format;
+      VkExtent3D               extent;
+      VkSampleCountFlagBits    samples;
+   };
+
+   struct ImageCreateInfo
+   {
+      Image images[arrayLayers];
+   };
+
+.. figure:: ./_static/image_create_info_struct.png
+
+   图片资源逻辑结构示意图
+
+.. admonition:: arrayLayers
+   :class: note
+
+   ``arrayLayers`` :bdg-danger:`不可以` 随意指定数量，有一些限制。将会在之后的章节说明。
 
 VkImageTiling
 ^^^^^^^^^^^^^^^^^^^^^^^^
