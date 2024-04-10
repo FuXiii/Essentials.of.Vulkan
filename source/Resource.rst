@@ -32,6 +32,7 @@
    * 2024/4/6 增加 ``图片资源逻辑模型`` 章节。
    * 2024/4/6 增加 ``VkImageTiling`` 章节。
    * 2024/4/9 更新 ``图片资源逻辑模型`` 章节。
+   * 2024/4/10 增加 ``VkImageUsageFlagBits`` 章节。
 
 在 ``Vulkan`` 中只有 ``2`` 种资源 :
 
@@ -771,3 +772,40 @@ VkImageTiling
    arrayLayers is 1
    samples is VK_SAMPLE_COUNT_1_BIT
    usage only includes VK_IMAGE_USAGE_TRANSFER_SRC_BIT and/or VK_IMAGE_USAGE_TRANSFER_DST_BIT
+
+其中 ``VkImageCreateInfo::usage`` 标志位的有效值定义在 ``VkImageUsageFlagBits`` 枚举中，其定义如下：
+
+VkImageUsageFlagBits
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef enum VkImageUsageFlagBits {
+       VK_IMAGE_USAGE_TRANSFER_SRC_BIT = 0x00000001,
+       VK_IMAGE_USAGE_TRANSFER_DST_BIT = 0x00000002,
+       VK_IMAGE_USAGE_SAMPLED_BIT = 0x00000004,
+       VK_IMAGE_USAGE_STORAGE_BIT = 0x00000008,
+       VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT = 0x00000010,
+       VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT = 0x00000020,
+       VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT = 0x00000040,
+       VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT = 0x00000080,
+   } VkImageUsageFlagBits;
+
+* :bdg-secondary:`VK_IMAGE_USAGE_TRANSFER_SRC_BIT` 该图片用于数据传输的数据源。
+* :bdg-secondary:`VK_IMAGE_USAGE_TRANSFER_DST_BIT` 该图片用于数据传输的目的数据。
+* :bdg-secondary:`VK_IMAGE_USAGE_SAMPLED_BIT` 该图片用于（纹素）采样（读取）。
+* :bdg-secondary:`VK_IMAGE_USAGE_STORAGE_BIT` 该图片用于（纹素）数据存储（也可以读）。
+* :bdg-secondary:`VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT` 该图片用于颜色附件。
+* :bdg-secondary:`VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT` 该图片用于深度-模板附件。
+* :bdg-secondary:`VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT` 该图片用于临时附件。该附件支持与 ``VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT`` 属性的（惰性）内存进行交互。
+* :bdg-secondary:`VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT` 该图片用于输入附件。既可以用于采样（读取），也可以用于存储。与 ``VK_IMAGE_USAGE_STORAGE_BIT`` 不同的是可以用于附件。
+
+.. 
+   采样
+   存储
+   附件
+      颜色附件
+      深度-模板
+      输入
+   
