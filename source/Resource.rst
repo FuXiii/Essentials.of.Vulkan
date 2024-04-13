@@ -33,6 +33,7 @@
    * 2024/4/6 增加 ``VkImageTiling`` 章节。
    * 2024/4/9 更新 ``图片资源逻辑模型`` 章节。
    * 2024/4/10 增加 ``VkImageUsageFlagBits`` 章节。
+   * 2024/4/13 增加 ``多级渐远`` 章节。
 
 在 ``Vulkan`` 中只有 ``2`` 种资源 :
 
@@ -744,6 +745,28 @@ VkSampleCountFlagBits
 
    ``arrayLayers`` :bdg-danger:`不可以` 随意指定数量，有一些限制。将会在之后的章节说明。
 
+多级渐远
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+在 ``VkImageCreateInfo`` 中有一个 ``mipLevels`` 参数。该参数用于设置该图片的 ``多级渐远纹理级别`` 。
+
+当使用透视投影（近大远小）相机加看向场景进行渲染时：
+
+* 离相机近的物体会比较大，占用更多的像素。此时由于离相机近，使用分辨率较高的纹理将会获得更佳清晰的渲染结果。
+* 离相机远的物体会比较小，占用更少的像素。此时由于离相机较远，使用分辨率较高的纹理在如此小范围的像素范围内采样将会导致效果锐化。为了减少这种锐化，最简单的方式就是使用一个相对较低分辨率的图片。
+
+.. figure:: ./_static/mip_mapping_off.jpg
+
+   无多级渐远效果示意
+
+.. figure:: ./_static/mip_mapping_anisotropic.jpg
+
+   多级渐远效果示意
+
+.. figure:: ./_static/image_level.png
+
+   二维图片多级渐远
+
 VkImageTiling
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -802,6 +825,7 @@ VkImageUsageFlagBits
 * :bdg-secondary:`VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT` 该图片用于输入附件。既可以用于采样（读取），也可以用于存储。与 ``VK_IMAGE_USAGE_STORAGE_BIT`` 不同的是可以用于附件。
 
 .. 
+   1178*525
    采样
    存储
    附件
