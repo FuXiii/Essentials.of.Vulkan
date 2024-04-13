@@ -58,7 +58,9 @@
    * 2024/3/24 增加 ``设备内存同步到虚拟内存`` 章节。
    * 2024/3/24 ``设备内存同步到虚拟内存`` 章节，增加 ``示例`` 章节。
    * 2024/3/26 更新 ``内存映射`` 章节。
-   * 2024/3/26 增加 ``vkUnmapMemory`` 章节标题。
+   * 2024/3/26 增加 ``vkUnmapMemory`` 章节。
+   * 2024/4/13 增加 ``惰性内存`` 章节。
+   * 2024/4/13 增加 ``vkGetDeviceMemoryCommitment`` 章节。
 
 ``Vulkan`` 中有两种分配内存的途径：
 
@@ -925,14 +927,43 @@ VkMemoryPropertyFlagBits
 
    具体如何进行内存同步将会在之后的章节进行讲解。
 
-.. admonition:: 惰性内存
-   :class: important
+惰性内存
+^^^^^^^^^^^^^^^^^^^^
 
-   当使用 ``VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT`` 类型分配内存时，表示底层分配 ``惰性内存`` 。所谓惰性内存是表示在该内存分配时其大小可以为 ``0`` 也可以为申请的内存大小。当该内存被需要时，其内存大小会随着需求单调增加。
-   
-   *该类型内存平时用的不多*。
+当使用 ``VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT`` 类型分配内存时，表示底层分配为 ``惰性内存`` 。所谓惰性内存表示：在该内存分配时，其底层内存占用大小可以为 ``0`` 也可以为申请的内存大小。当该内存被需要时，其内存大小会随着需求单调增加。
 
-如下，为一种可能的设备内存类型获取结果：
+.. note::
+
+   某些设备 :bdg-danger:`没有` 提供支持 ``VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT`` 类型的内存。所以该类型内存平时用的不多。
+
+且惰性内存有如下限制：
+
+* :bdg-danger:`只有` ``Device`` 端能够访问该内存
+* 分配的 ``VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT`` 惰性内存类型中不能包含 ``VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT`` （ ``VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT`` 与 ``VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT`` 为互斥关系，不能同时存在）。
+* 只能用于 ``VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT`` 的图片进行绑定（这意味着 ``缓存`` 资源不存在使用惰性内存的情况）。（具体可参阅 `资源 <./Resource.html>`_ 文档）。
+
+查询一个惰性内存挡墙占有的内存大小，可通过 ``vkGetDeviceMemoryCommitment(...)`` 函数获取到，其定义如下：
+
+vkGetDeviceMemoryCommitment
+""""""""""""""""""""""""""""""""""""
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   void vkGetDeviceMemoryCommitment(
+       VkDevice                                    device,
+       VkDeviceMemory                              memory,
+       VkDeviceSize*                               pCommittedMemoryInBytes);
+
+* :bdg-secondary:`device` 对应的逻辑设备。
+* :bdg-secondary:`memory` 对应的设备内存。其 :bdg-danger:`必须` 以 ``VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT`` 内存类型进行分配的惰性内存。
+* :bdg-secondary:`pCommittedMemoryInBytes` 指定的 ``memory`` 当前的大小将会写入其中。单位为 ``字节`` 。
+
+.. note::
+
+   驱动会随时更新占用的大小，所以该函数返回的惰性内存大小值将会在不久失效。
+
+如下，为一种可能的 ``设备内存类型`` 获取结果：
 
 .. _memory_heap_and_type:
 
