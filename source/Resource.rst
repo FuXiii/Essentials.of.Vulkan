@@ -38,6 +38,9 @@
    * 2024/4/14 更新 ``VkExtent3D`` 章节。
    * 2024/4/14 更新 ``VkImageCreateInfo`` 章节。
    * 2024/4/14 更新 ``VkImageUsageFlagBits`` 章节。
+   * 2024/4/14 增加 ``格式属性`` 章节。
+   * 2024/4/14 更新 ``VkImageTiling`` 章节。
+   * 2024/4/14 增加 ``vkGetPhysicalDeviceFormatProperties`` 章节。
 
 在 ``Vulkan`` 中只有 ``2`` 种资源 :
 
@@ -809,9 +812,9 @@ VkImageTiling
 
 在 :ref:`Buffer` 章节我们已经知道缓存资源在 ``Host端`` 和 ``Device端`` 其为了更高的效率，内部的结构是不同的，图片资源也是如此。
 
-当使用 ``VkImageTiling::VK_IMAGE_TILING_OPTIMAL`` 时，用于指示该图片资源将会使用 ``Device端`` 内部偏爱的结构（驱动内部结构）进行创建。
+当使用 ``VkImageTiling::VK_IMAGE_TILING_OPTIMAL`` 时，用于指示该图片资源将会使用 ``Device端`` 内部偏爱的结构（驱动内部结构）进行创建。这一般在 ``GPU`` 上高速并行读写计算时使用。
 
-当使用 ``VkImageTiling::VK_IMAGE_TILING_LINEAR`` 时，用于指示该图片资源将会使用 ``Host端`` 偏爱的线性结构进行创建。这一般用于 ``CPU`` 读写图片资源数据时使用。
+当使用 ``VkImageTiling::VK_IMAGE_TILING_LINEAR`` 时，用于指示该图片资源将会使用 ``Host端`` 偏爱的线性结构进行创建。这一般在 ``CPU`` 读写图片资源数据时使用。
 
 ..
    VK_IMAGE_TILING_LINEAR限制
@@ -872,8 +875,42 @@ VkImageUsageFlagBits
 
    ``VkImageUsageFlagBits`` 中有些枚举值对应的图片用途或都支持读，或都支持写，但不同类型的图片用途在读写途径上不尽相同。这将会在之后的章节展开。
 
+现在基本上将 ``VkImageCreateInfo`` 中相关的核心概念过了一遍，但目前还有一个问题需要解决：
+
+.. admonition:: 问题
+   :class: hint
+
+   ``VkImageCreateInfo::format`` 具体应该如何选取正确的格式进行设置？
+
+格式属性
+-----------------------
+
+在 ``VkFormat`` 中有各种各样的格式，每种格式都代表着不同的数据布局和数据类型。相应 ``VkImageCreateInfo::format`` 的选择也会跟着 ``VkImageCreateInfo::usage`` 中指定的图片用途的不同而不同。
+
+为此我们需要知道哪些格式在何种情况下会被使用。这就需要我们知道各种格式的属性。如果我们能够获取某一格式的属性，我们就能知道该格式支持何种使用方式。
+
+在 ``Vulkan`` 中为我们提供了 ``vkGetPhysicalDeviceFormatProperties(...)`` 函数，用于获取某一格式的属性数据。其定义如下：
+
+vkGetPhysicalDeviceFormatProperties
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   void vkGetPhysicalDeviceFormatProperties(
+       VkPhysicalDevice                            physicalDevice,
+       VkFormat                                    format,
+       VkFormatProperties*                         pFormatProperties);
+
+.. note:: 未完待续
+
 .. 
+   获取支持的格式
+      vkGetPhysicalDeviceFormatProperties
+
    图片创建示例
    哪些格式支持颜色
    哪些格式支持深度
+
+   imageview 和 bufferview 在单独的章节展开（在资源与内存之后）
    
