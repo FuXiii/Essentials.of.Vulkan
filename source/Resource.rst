@@ -34,6 +34,10 @@
    * 2024/4/9 更新 ``图片资源逻辑模型`` 章节。
    * 2024/4/10 增加 ``VkImageUsageFlagBits`` 章节。
    * 2024/4/13 增加 ``多级渐远`` 章节。
+   * 2024/4/14 更新 ``多级渐远`` 章节。
+   * 2024/4/14 更新 ``VkExtent3D`` 章节。
+   * 2024/4/14 更新 ``VkImageCreateInfo`` 章节。
+   * 2024/4/14 更新 ``VkImageUsageFlagBits`` 章节。
 
 在 ``Vulkan`` 中只有 ``2`` 种资源 :
 
@@ -394,8 +398,8 @@ VkImageCreateInfo
 * :bdg-secondary:`imageType` 图片资源的类型。
 * :bdg-secondary:`format` 该图片资源的纹素格式。
 * :bdg-secondary:`extent` 该图片资源（各维度上的）大小。
-* :bdg-secondary:`mipLevels` 多级渐远纹理级别。
-* :bdg-secondary:`arrayLayers` 层级数量。
+* :bdg-secondary:`mipLevels` 多级渐远纹理级别。 :bdg-danger:`必须` 大于 ``0`` 。
+* :bdg-secondary:`arrayLayers` 层级数量。 :bdg-danger:`必须` 大于 ``0`` 。
 * :bdg-secondary:`samples` 采样点数量。
 * :bdg-secondary:`tiling` 瓦片排布。
 * :bdg-secondary:`usage` 该图片资源的用途。
@@ -488,9 +492,9 @@ VkExtent3D
        uint32_t    depth;
    } VkExtent3D;
 
-* :bdg-secondary:`width` 宽。
-* :bdg-secondary:`height` 高。
-* :bdg-secondary:`depth` 深度。
+* :bdg-secondary:`width` 宽。 :bdg-danger:`必须` 大于 ``0`` 。
+* :bdg-secondary:`height` 高。 :bdg-danger:`必须` 大于 ``0`` 。
+* :bdg-secondary:`depth` 深度。 :bdg-danger:`必须` 大于 ``0`` 。
 
 当 ``VkImageCreateInfo::imageType`` 为 ``VkImageType::VK_IMAGE_TYPE_1D`` 时，其大小规则如下：
 
@@ -753,19 +757,41 @@ VkSampleCountFlagBits
 当使用透视投影（近大远小）相机加看向场景进行渲染时：
 
 * 离相机近的物体会比较大，占用更多的像素。此时由于离相机近，使用分辨率较高的纹理将会获得更佳清晰的渲染结果。
-* 离相机远的物体会比较小，占用更少的像素。此时由于离相机较远，使用分辨率较高的纹理在如此小范围的像素范围内采样将会导致效果锐化。为了减少这种锐化，最简单的方式就是使用一个相对较低分辨率的图片。
+* 离相机远的物体会比较小，占用更少的像素。此时由于离相机较远，使用分辨率较高的纹理在如此小范围的像素范围内采样将会导致效果锐化。为了减少这种锐化，最简单的方式就是使用一个相对较低分辨率的图片进行采样。
 
-.. figure:: ./_static/mip_mapping_off.jpg
+随着距离采样不同分辨率图片的技术叫做 ``多级渐远`` ，支持这种技术的图片叫做 ``多级渐远纹理（图片）`` 。
 
-   无多级渐远效果示意
+如下为 :bdg-danger:`不使用` 和 :bdg-danger:`使用` 多级渐远纹理的结果示意图：
 
-.. figure:: ./_static/mip_mapping_anisotropic.jpg
+.. list-table::
 
-   多级渐远效果示意
+    * - .. figure:: ./_static/mip_mapping_off.jpg
+
+           无多级渐远效果示意
+
+      - .. figure:: ./_static/mip_mapping_anisotropic.jpg
+
+           多级渐远效果示意
+
+为了生成一系列低分辨率的图片，需要通过 ``VkImageCreateInfo::mipLevels`` 指定要为低分辨率图片分配的级别，每一个级别都对应一张新图片，下一级别图片的分辨率是上一级别图片分辨率的一半。
+
+.. note::
+
+   当 ``VkImageCreateInfo::mipLevels`` 为 ``1`` 时表示图片自身即为 ``一级渐远纹理`` 。
+
+如下为一张二维图片的 ``多级渐远级别`` 为 ``4`` 的多级渐远纹理结构示意图：
+
+* :bdg-secondary:`W` 为一级渐远纹理（图片其本身）宽度。
+* :bdg-secondary:`H` 为一级渐远纹理（图片其本身）高度。
 
 .. figure:: ./_static/image_level.png
 
-   二维图片多级渐远
+   二维图片多级渐远纹理结构示意图
+
+.. admonition:: 多级渐远纹理内部数据
+   :class: note
+
+   如上示意图中各级的渐远纹理中每个像素都是有确切图像值的，这些只是帮助您从逻辑上理解多级渐远，但是在实际通过 ``vkCreateImage(...)`` 创建带有多级渐远纹理中，图片数据全都是初始值（可能为 ``0`` ）。每一级别的多级渐远图片中每个像素具体为何值，需要通过执行 ``GPU指令`` 手动运算赋值。这将会在之后的章节进行讲解。
 
 VkImageTiling
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -824,12 +850,30 @@ VkImageUsageFlagBits
 * :bdg-secondary:`VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT` 该图片用于临时附件。该附件支持与 ``VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT`` 属性的（惰性）内存进行交互。
 * :bdg-secondary:`VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT` 该图片用于输入附件。既可以用于采样（读取），也可以用于存储。与 ``VK_IMAGE_USAGE_STORAGE_BIT`` 不同的是可以用于附件。
 
+.. admonition:: 采样
+   :class: note
+
+   图片采样就是获取图片中某一坐标位置像素的值。
+
+.. admonition:: 附件
+   :class: note
+
+   所有的 ``附件`` 都是用于存储 ``GPU`` 的输出数据。在 ``Vulkan`` 中有 ``4`` 种附件：
+
+   * :bdg-secondary:`VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT` 颜色附件。用于存储 ``GPU`` 在渲染图形后的输出数据。主要以颜色的形式（ ``rgba`` 等）进行存储。
+   * :bdg-secondary:`VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT` 深度-模板附件。用于存储 ``GPU`` 在渲染图形后输出的深度-模板数据。主要以深度-模板的形式（浮点数-整数）进行存储。
+   * :bdg-secondary:`VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT` 临时附件。主要用于与 ``惰性内存`` 进行交互。当图片资源确定只在 ``GPU`` 端进行读写时，可以使用该类型。
+   * :bdg-secondary:`VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT` 输入附件。既可以用于采样（读取），也可以用于存储。与 ``VK_IMAGE_USAGE_STORAGE_BIT`` 不同的是可以用于附件。与其他附件类型不同的是，该附件类型原生支持 ``读`` 操作。
+
+   更多 ``附件`` 说明将会在之后的 ``管线`` 和 ``帧缓冲（存）`` 中进行展开。
+
+.. admonition:: 图片读写
+   :class: note
+
+   ``VkImageUsageFlagBits`` 中有些枚举值对应的图片用途或都支持读，或都支持写，但不同类型的图片用途在读写途径上不尽相同。这将会在之后的章节展开。
+
 .. 
-   1178*525
-   采样
-   存储
-   附件
-      颜色附件
-      深度-模板
-      输入
+   图片创建示例
+   哪些格式支持颜色
+   哪些格式支持深度
    
