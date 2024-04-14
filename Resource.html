@@ -13,6 +13,7 @@
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/tabs.css?v=4c969af8" />
     <link rel="stylesheet" type="text/css" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.css?v=5c84f910" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
     <link rel="stylesheet" type="text/css" href="_static/css/custom_sidebar_drawer.css?v=32ac55f0" />
@@ -216,6 +217,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="InformalEssay/VulkanForAndroid.html">Android 平台适配</a></li>
 <li class="toctree-l1"><a class="reference internal" href="InformalEssay/VSCode.html">Visual Studio Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="InformalEssay/SomeLinks.html">相关链接</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">工程应用</span></p>
 <ul>
@@ -309,6 +311,15 @@
 <li><p class="sd-card-text">2024/4/6 增加 <code class="docutils literal notranslate"><span class="pre">图片资源逻辑模型</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/4/6 增加 <code class="docutils literal notranslate"><span class="pre">VkImageTiling</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/4/9 更新 <code class="docutils literal notranslate"><span class="pre">图片资源逻辑模型</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/4/10 增加 <code class="docutils literal notranslate"><span class="pre">VkImageUsageFlagBits</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/4/13 增加 <code class="docutils literal notranslate"><span class="pre">多级渐远</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/4/14 更新 <code class="docutils literal notranslate"><span class="pre">多级渐远</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/4/14 更新 <code class="docutils literal notranslate"><span class="pre">VkExtent3D</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/4/14 更新 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/4/14 更新 <code class="docutils literal notranslate"><span class="pre">VkImageUsageFlagBits</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/4/14 增加 <code class="docutils literal notranslate"><span class="pre">格式属性</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/4/14 更新 <code class="docutils literal notranslate"><span class="pre">VkImageTiling</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/4/14 增加 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceFormatProperties</span></code> 章节。</p></li>
 </ul>
 </div>
 </details><p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中只有 <code class="docutils literal notranslate"><span class="pre">2</span></code> 种资源 :</p>
@@ -647,8 +658,8 @@
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">imageType</span> 图片资源的类型。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">format</span> 该图片资源的纹素格式。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">extent</span> 该图片资源（各维度上的）大小。</p></li>
-<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">mipLevels</span> 多级渐远纹理级别。</p></li>
-<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">arrayLayers</span> 层级数量。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">mipLevels</span> 多级渐远纹理级别。 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 大于 <code class="docutils literal notranslate"><span class="pre">0</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">arrayLayers</span> 层级数量。 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 大于 <code class="docutils literal notranslate"><span class="pre">0</span></code> 。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">samples</span> 采样点数量。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">tiling</span> 瓦片排布。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">usage</span> 该图片资源的用途。</p></li>
@@ -732,9 +743,9 @@
 </pre></div>
 </div>
 <ul class="simple">
-<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">width</span> 宽。</p></li>
-<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">height</span> 高。</p></li>
-<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">depth</span> 深度。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">width</span> 宽。 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 大于 <code class="docutils literal notranslate"><span class="pre">0</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">height</span> 高。 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 大于 <code class="docutils literal notranslate"><span class="pre">0</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">depth</span> 深度。 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 大于 <code class="docutils literal notranslate"><span class="pre">0</span></code> 。</p></li>
 </ul>
 <p>当 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo::imageType</span></code> 为 <code class="docutils literal notranslate"><span class="pre">VkImageType::VK_IMAGE_TYPE_1D</span></code> 时，其大小规则如下：</p>
 <ul class="simple">
@@ -832,10 +843,10 @@
 <div class="note admonition">
 <p class="admonition-title">深度</p>
 <p>深度数据一般都是一个浮点数，其值一般用于表示图形表面到某一平面的距离信息。</p>
-<figure class="align-default" id="id12">
+<figure class="align-default" id="id14">
 <a class="reference internal image-reference" href="_images/depth.png"><img alt="_images/depth.png" src="_images/depth.png" style="width: 354.0px; height: 380.5px;" /></a>
 <figcaption>
-<p><span class="caption-text">如上图，深度数据存储着如图红线所示的距离。</span><a class="headerlink" href="#id12" title="Link to this image">#</a></p>
+<p><span class="caption-text">如上图，深度数据存储着如图红线所示的距离。</span><a class="headerlink" href="#id14" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 </div>
@@ -890,10 +901,10 @@
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_SAMPLE_COUNT_64_BIT</span> 有 <code class="docutils literal notranslate"><span class="pre">64</span></code> 个采样点。即，纹素自身将分出 <code class="docutils literal notranslate"><span class="pre">64</span></code> 个子纹素。</p></li>
 </ul>
 <p>由于像素都是一块块的，并不能像一条线那样丝滑连续，当将连续的数据存入像像素这样的离散数据时，需要对连续数据进行采样，进而确定离散的像素值。像这样将连续数据转成离散数据必定会导致部分原始信息的丢失。在图像上就会产生锯齿。</p>
-<figure class="align-default" id="id13">
+<figure class="align-default" id="id15">
 <img alt="_images/samples.png" src="_images/samples.png" />
 <figcaption>
-<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">1</span></code> 个纹素仅进行 <code class="docutils literal notranslate"><span class="pre">1</span></code> 次采样</span><a class="headerlink" href="#id13" title="Link to this image">#</a></p>
+<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">1</span></code> 个纹素仅进行 <code class="docutils literal notranslate"><span class="pre">1</span></code> 次采样</span><a class="headerlink" href="#id15" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <p>如上图中每个格子为一个纹素（像素），其中心的点为采样点。当黄色部分完全覆盖了对应的 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">采样点</span> 后，对应的纹素才会存储相应的数据，而部分覆盖纹素，但没有覆盖 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">采样点</span> 的地方将不会存储（采样）任何值。进而导致锯齿。</p>
@@ -903,17 +914,17 @@
 <p class="admonition-title">子纹素</p>
 <p>纹素会将各子纹素的采样结果根据权重进行汇总，并将汇总结果作为该（顶级）纹素的结果。</p>
 </div>
-<figure class="align-default" id="id14">
+<figure class="align-default" id="id16">
 <a class="reference internal image-reference" href="_images/multi_samples.png"><img alt="_images/multi_samples.png" src="_images/multi_samples.png" style="width: 659.75px; height: 471.25px;" /></a>
 <figcaption>
-<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">1</span></code> 个纹素进行 <code class="docutils literal notranslate"><span class="pre">16</span></code> 次采样（ <code class="docutils literal notranslate"><span class="pre">VkSampleCountFlagBits::VK_SAMPLE_COUNT_16_BIT</span></code> ）</span><a class="headerlink" href="#id14" title="Link to this image">#</a></p>
+<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">1</span></code> 个纹素进行 <code class="docutils literal notranslate"><span class="pre">16</span></code> 次采样（ <code class="docutils literal notranslate"><span class="pre">VkSampleCountFlagBits::VK_SAMPLE_COUNT_16_BIT</span></code> ）</span><a class="headerlink" href="#id16" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <p>如下为 <code class="docutils literal notranslate"><span class="pre">VK_SAMPLE_COUNT_1_BIT</span></code> 和 <code class="docutils literal notranslate"><span class="pre">VK_SAMPLE_COUNT_8_BIT</span></code> 的成像对比：</p>
-<figure class="align-default" id="id15">
+<figure class="align-default" id="id17">
 <img alt="_images/sample.jpg" src="_images/sample.jpg" />
 <figcaption>
-<p><span class="caption-text">单次采样与 <code class="docutils literal notranslate"><span class="pre">8</span></code> 次采样对比示意图</span><a class="headerlink" href="#id15" title="Link to this image">#</a></p>
+<p><span class="caption-text">单次采样与 <code class="docutils literal notranslate"><span class="pre">8</span></code> 次采样对比示意图</span><a class="headerlink" href="#id17" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <p>其中 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo::tiling</span></code> 的 <code class="docutils literal notranslate"><span class="pre">VkImageTiling</span></code> 类型定义如下：</p>
@@ -964,15 +975,67 @@
 <span class="p">};</span>
 </pre></div>
 </div>
-<figure class="align-default" id="id16">
+<figure class="align-default" id="id18">
 <img alt="_images/image_create_info_struct.png" src="_images/image_create_info_struct.png" />
 <figcaption>
-<p><span class="caption-text">图片资源逻辑结构示意图</span><a class="headerlink" href="#id16" title="Link to this image">#</a></p>
+<p><span class="caption-text">图片资源逻辑结构示意图</span><a class="headerlink" href="#id18" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <div class="note admonition">
 <p class="admonition-title">arrayLayers</p>
 <p><code class="docutils literal notranslate"><span class="pre">arrayLayers</span></code> <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">不可以</span> 随意指定数量，有一些限制。将会在之后的章节说明。</p>
+</div>
+</section>
+<section id="id12">
+<h5>多级渐远<a class="headerlink" href="#id12" title="Link to this heading">#</a></h5>
+<p>在 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo</span></code> 中有一个 <code class="docutils literal notranslate"><span class="pre">mipLevels</span></code> 参数。该参数用于设置该图片的 <code class="docutils literal notranslate"><span class="pre">多级渐远纹理级别</span></code> 。</p>
+<p>当使用透视投影（近大远小）相机加看向场景进行渲染时：</p>
+<ul class="simple">
+<li><p>离相机近的物体会比较大，占用更多的像素。此时由于离相机近，使用分辨率较高的纹理将会获得更佳清晰的渲染结果。</p></li>
+<li><p>离相机远的物体会比较小，占用更少的像素。此时由于离相机较远，使用分辨率较高的纹理在如此小范围的像素范围内采样将会导致效果锐化。为了减少这种锐化，最简单的方式就是使用一个相对较低分辨率的图片进行采样。</p></li>
+</ul>
+<p>随着距离采样不同分辨率图片的技术叫做 <code class="docutils literal notranslate"><span class="pre">多级渐远</span></code> ，支持这种技术的图片叫做 <code class="docutils literal notranslate"><span class="pre">多级渐远纹理（图片）</span></code> 。</p>
+<p>如下为 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">不使用</span> 和 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">使用</span> 多级渐远纹理的结果示意图：</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><figure class="align-default" id="id19">
+<img alt="_images/mip_mapping_off.jpg" src="_images/mip_mapping_off.jpg" />
+<figcaption>
+<p><span class="caption-text">无多级渐远效果示意</span><a class="headerlink" href="#id19" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</td>
+<td><figure class="align-default" id="id20">
+<img alt="_images/mip_mapping_anisotropic.jpg" src="_images/mip_mapping_anisotropic.jpg" />
+<figcaption>
+<p><span class="caption-text">多级渐远效果示意</span><a class="headerlink" href="#id20" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>为了生成一系列低分辨率的图片，需要通过 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo::mipLevels</span></code> 指定要为低分辨率图片分配的级别，每一个级别都对应一张新图片，下一级别图片的分辨率是上一级别图片分辨率的一半。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>当 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo::mipLevels</span></code> 为 <code class="docutils literal notranslate"><span class="pre">1</span></code> 时表示图片自身即为 <code class="docutils literal notranslate"><span class="pre">一级渐远纹理</span></code> 。</p>
+</div>
+<p>如下为一张二维图片的 <code class="docutils literal notranslate"><span class="pre">多级渐远级别</span></code> 为 <code class="docutils literal notranslate"><span class="pre">4</span></code> 的多级渐远纹理结构示意图：</p>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">W</span> 为一级渐远纹理（图片其本身）宽度。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">H</span> 为一级渐远纹理（图片其本身）高度。</p></li>
+</ul>
+<figure class="align-default" id="id21">
+<img alt="_images/image_level.png" src="_images/image_level.png" />
+<figcaption>
+<p><span class="caption-text">二维图片多级渐远纹理结构示意图</span><a class="headerlink" href="#id21" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<div class="note admonition">
+<p class="admonition-title">多级渐远纹理内部数据</p>
+<p>如上示意图中各级的渐远纹理中每个像素都是有确切图像值的，这些只是帮助您从逻辑上理解多级渐远，但是在实际通过 <code class="docutils literal notranslate"><span class="pre">vkCreateImage(...)</span></code> 创建带有多级渐远纹理中，图片数据全都是初始值（可能为 <code class="docutils literal notranslate"><span class="pre">0</span></code> ）。每一级别的多级渐远图片中每个像素具体为何值，需要通过执行 <code class="docutils literal notranslate"><span class="pre">GPU指令</span></code> 手动运算赋值。这将会在之后的章节进行讲解。</p>
 </div>
 </section>
 <section id="vkimagetiling">
@@ -989,8 +1052,79 @@
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_IMAGE_TILING_LINEAR</span> 线性排布。</p></li>
 </ul>
 <p>在 <a class="reference internal" href="#buffer"><span class="std std-ref">缓存资源</span></a> 章节我们已经知道缓存资源在 <code class="docutils literal notranslate"><span class="pre">Host端</span></code> 和 <code class="docutils literal notranslate"><span class="pre">Device端</span></code> 其为了更高的效率，内部的结构是不同的，图片资源也是如此。</p>
-<p>当使用 <code class="docutils literal notranslate"><span class="pre">VkImageTiling::VK_IMAGE_TILING_OPTIMAL</span></code> 时，用于指示该图片资源将会使用 <code class="docutils literal notranslate"><span class="pre">Device端</span></code> 内部偏爱的结构（驱动内部结构）进行创建。</p>
-<p>当使用 <code class="docutils literal notranslate"><span class="pre">VkImageTiling::VK_IMAGE_TILING_LINEAR</span></code> 时，用于指示该图片资源将会使用 <code class="docutils literal notranslate"><span class="pre">Host端</span></code> 偏爱的线性结构进行创建。这一般用于 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 读写图片资源数据时使用。</p>
+<p>当使用 <code class="docutils literal notranslate"><span class="pre">VkImageTiling::VK_IMAGE_TILING_OPTIMAL</span></code> 时，用于指示该图片资源将会使用 <code class="docutils literal notranslate"><span class="pre">Device端</span></code> 内部偏爱的结构（驱动内部结构）进行创建。这一般在 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 上高速并行读写计算时使用。</p>
+<p>当使用 <code class="docutils literal notranslate"><span class="pre">VkImageTiling::VK_IMAGE_TILING_LINEAR</span></code> 时，用于指示该图片资源将会使用 <code class="docutils literal notranslate"><span class="pre">Host端</span></code> 偏爱的线性结构进行创建。这一般在 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 读写图片资源数据时使用。</p>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo::usage</span></code> 标志位的有效值定义在 <code class="docutils literal notranslate"><span class="pre">VkImageUsageFlagBits</span></code> 枚举中，其定义如下：</p>
+</section>
+<section id="vkimageusageflagbits">
+<h5>VkImageUsageFlagBits<a class="headerlink" href="#vkimageusageflagbits" title="Link to this heading">#</a></h5>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkImageUsageFlagBits</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VK_IMAGE_USAGE_TRANSFER_SRC_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000001</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_IMAGE_USAGE_TRANSFER_DST_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000002</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_IMAGE_USAGE_SAMPLED_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000004</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_IMAGE_USAGE_STORAGE_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000008</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000010</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000020</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000040</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000080</span><span class="p">,</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkImageUsageFlagBits</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_IMAGE_USAGE_TRANSFER_SRC_BIT</span> 该图片用于数据传输的数据源。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_IMAGE_USAGE_TRANSFER_DST_BIT</span> 该图片用于数据传输的目的数据。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_IMAGE_USAGE_SAMPLED_BIT</span> 该图片用于（纹素）采样（读取）。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_IMAGE_USAGE_STORAGE_BIT</span> 该图片用于（纹素）数据存储（也可以读）。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT</span> 该图片用于颜色附件。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT</span> 该图片用于深度-模板附件。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT</span> 该图片用于临时附件。该附件支持与 <code class="docutils literal notranslate"><span class="pre">VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT</span></code> 属性的（惰性）内存进行交互。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT</span> 该图片用于输入附件。既可以用于采样（读取），也可以用于存储。与 <code class="docutils literal notranslate"><span class="pre">VK_IMAGE_USAGE_STORAGE_BIT</span></code> 不同的是可以用于附件。</p></li>
+</ul>
+<div class="note admonition">
+<p class="admonition-title">采样</p>
+<p>图片采样就是获取图片中某一坐标位置像素的值。</p>
+</div>
+<div class="note admonition">
+<p class="admonition-title">附件</p>
+<p>所有的 <code class="docutils literal notranslate"><span class="pre">附件</span></code> 都是用于存储 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 的输出数据。在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中有 <code class="docutils literal notranslate"><span class="pre">4</span></code> 种附件：</p>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT</span> 颜色附件。用于存储 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 在渲染图形后的输出数据。主要以颜色的形式（ <code class="docutils literal notranslate"><span class="pre">rgba</span></code> 等）进行存储。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT</span> 深度-模板附件。用于存储 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 在渲染图形后输出的深度-模板数据。主要以深度-模板的形式（浮点数-整数）进行存储。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT</span> 临时附件。主要用于与 <code class="docutils literal notranslate"><span class="pre">惰性内存</span></code> 进行交互。当图片资源确定只在 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 端进行读写时，可以使用该类型。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT</span> 输入附件。既可以用于采样（读取），也可以用于存储。与 <code class="docutils literal notranslate"><span class="pre">VK_IMAGE_USAGE_STORAGE_BIT</span></code> 不同的是可以用于附件。与其他附件类型不同的是，该附件类型原生支持 <code class="docutils literal notranslate"><span class="pre">读</span></code> 操作。</p></li>
+</ul>
+<p>更多 <code class="docutils literal notranslate"><span class="pre">附件</span></code> 说明将会在之后的 <code class="docutils literal notranslate"><span class="pre">管线</span></code> 和 <code class="docutils literal notranslate"><span class="pre">帧缓冲（存）</span></code> 中进行展开。</p>
+</div>
+<div class="note admonition">
+<p class="admonition-title">图片读写</p>
+<p><code class="docutils literal notranslate"><span class="pre">VkImageUsageFlagBits</span></code> 中有些枚举值对应的图片用途或都支持读，或都支持写，但不同类型的图片用途在读写途径上不尽相同。这将会在之后的章节展开。</p>
+</div>
+<p>现在基本上将 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo</span></code> 中相关的核心概念过了一遍，但目前还有一个问题需要解决：</p>
+<div class="hint admonition">
+<p class="admonition-title">问题</p>
+<p><code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo::format</span></code> 具体应该如何选取正确的格式进行设置？</p>
+</div>
+</section>
+</section>
+<section id="id13">
+<h4>格式属性<a class="headerlink" href="#id13" title="Link to this heading">#</a></h4>
+<p>在 <code class="docutils literal notranslate"><span class="pre">VkFormat</span></code> 中有各种各样的格式，每种格式都代表着不同的数据布局和数据类型。相应 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo::format</span></code> 的选择也会跟着 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo::usage</span></code> 中指定的图片用途的不同而不同。</p>
+<p>为此我们需要知道哪些格式在何种情况下会被使用。这就需要我们知道各种格式的属性。如果我们能够获取某一格式的属性，我们就能知道该格式支持何种使用方式。</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中为我们提供了 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceFormatProperties(...)</span></code> 函数，用于获取某一格式的属性数据。其定义如下：</p>
+<section id="vkgetphysicaldeviceformatproperties">
+<h5>vkGetPhysicalDeviceFormatProperties<a class="headerlink" href="#vkgetphysicaldeviceformatproperties" title="Link to this heading">#</a></h5>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">vkGetPhysicalDeviceFormatProperties</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkPhysicalDevice</span><span class="w">                            </span><span class="n">physicalDevice</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkFormat</span><span class="w">                                    </span><span class="n">format</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkFormatProperties</span><span class="o">*</span><span class="w">                         </span><span class="n">pFormatProperties</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>未完待续</p>
+</div>
 </section>
 </section>
 </section>
@@ -1102,7 +1236,13 @@
 </li>
 <li><a class="reference internal" href="#vksamplecountflagbits">VkSampleCountFlagBits</a></li>
 <li><a class="reference internal" href="#id11">图片资源逻辑模型</a></li>
+<li><a class="reference internal" href="#id12">多级渐远</a></li>
 <li><a class="reference internal" href="#vkimagetiling">VkImageTiling</a></li>
+<li><a class="reference internal" href="#vkimageusageflagbits">VkImageUsageFlagBits</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id13">格式属性</a><ul>
+<li><a class="reference internal" href="#vkgetphysicaldeviceformatproperties">vkGetPhysicalDeviceFormatProperties</a></li>
 </ul>
 </li>
 </ul>
@@ -1130,6 +1270,8 @@
     <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
     <script src="_static/translations.js?v=beaddf03"></script>
     <script src="_static/design-tabs.js?v=36754332"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=ffc8af2d"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
