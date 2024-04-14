@@ -23,6 +23,7 @@
    * 2024/1/2 增加 ``内存`` 文档链接
    * 2024/1/2 增加 ``资源`` 文档链接
    * 2024/1/2 增加 ``资源与内存`` 文档链接
+   * 2024/4/14 增加 ``相关链接`` 文章链接
 
 .. image:: https://img.shields.io/badge/QQ%20Group-128656761-deepgreen?logo=tencentqq
    :target: https://jq.qq.com/?_wv=1027&k=rZGd2LHr
@@ -98,6 +99,7 @@
    ./InformalEssay/index.rst
    ./InformalEssay/VulkanForAndroid.rst
    ./InformalEssay/VSCode.rst
+   ./InformalEssay/SomeLinks.rst
 
 .. toctree::
    :caption: 工程应用
