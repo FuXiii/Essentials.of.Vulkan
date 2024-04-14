@@ -515,3 +515,8 @@ Lorem ipsum [Ref]_ dolor sit amet.
             : "finally" ":" `suite`
 
 It refers to the section itself, see :ref:`my-reference-label`.
+
+.. thumbnail:: ./_static/memory_heap_and_type.png
+   :align: center
+
+    设备内存类型示意图

@@ -16,6 +16,7 @@ author = 'FuXii'
 
 extensions = [
     'sphinxcontrib.mermaid', 
+    'sphinxcontrib.images',
     'myst_parser', 
     'sphinx_copybutton',
     'sphinx_inline_tabs',
