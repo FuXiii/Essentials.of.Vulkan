@@ -41,6 +41,8 @@
    * 2024/4/14 增加 ``格式属性`` 章节。
    * 2024/4/14 更新 ``VkImageTiling`` 章节。
    * 2024/4/14 增加 ``vkGetPhysicalDeviceFormatProperties`` 章节。
+   * 2024/4/15 更新 ``vkGetPhysicalDeviceFormatProperties`` 章节。
+   * 2024/4/15 增加 ``VkFormatFeatureFlagBits`` 章节。
 
 在 ``Vulkan`` 中只有 ``2`` 种资源 :
 
@@ -902,9 +904,90 @@ vkGetPhysicalDeviceFormatProperties
        VkFormat                                    format,
        VkFormatProperties*                         pFormatProperties);
 
-.. note:: 未完待续
+* :bdg-secondary:`physicalDevice` 要查询格式是否在该逻辑设备上支持。
+* :bdg-secondary:`format` 要查询的格式。
+* :bdg-secondary:`pFormatProperties` 格式的支持信息。
+
+该函数用于查询 ``format`` 格式在 ``physicalDevice`` 上的支持情况，支持的信息数据将会写入 ``pFormatProperties`` 所指向的内存中。
+
+其中 ``pFormatProperties`` 的 ``VkFormatProperties`` 类型定义如下：
+
+VkFormatProperties
+"""""""""""""""""""""
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef struct VkFormatProperties {
+       VkFormatFeatureFlags    linearTilingFeatures;
+       VkFormatFeatureFlags    optimalTilingFeatures;
+       VkFormatFeatureFlags    bufferFeatures;
+   } VkFormatProperties;
+
+* :bdg-secondary:`linearTilingFeatures` 中存储着 ``VkFormatFeatureFlagBits`` 枚举中定义的特性标志位。用于表示当图片使用 ``VkImageTiling::VK_IMAGE_TILING_LINEAR`` 线性排布时，该格式支持的特性。
+* :bdg-secondary:`optimalTilingFeatures` 中存储着 ``VkFormatFeatureFlagBits`` 枚举中定义的特性标志位。用于表示当图片使用 ``VkImageTiling::VK_IMAGE_TILING_OPTIMAL`` 优化排布时，该格式支持的特性。
+* :bdg-secondary:`bufferFeatures` 中存储着 ``VkFormatFeatureFlagBits`` 枚举中定义的特性标志位。用于表示当缓存资源中存储对应格式的纹素数据时，该格式支持的特性。
+
+.. admonition:: 缓存资源中存储对应格式的纹素数据
+   :class: note
+
+   缓存中可以存储任何形式的数据，缓存当然也可以用于存储一系列纹素数据。
+
+其中 ``VkFormatFeatureFlags`` 类型的有效标志位定义在 ``VkFormatFeatureFlagBits`` 中，其定义如下：
+
+VkFormatFeatureFlagBits
+""""""""""""""""""""""""""""""""""""""
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef enum VkFormatFeatureFlagBits {
+       VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT = 0x00000001,
+       VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT = 0x00000002,
+       VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT = 0x00000004,
+       VK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT = 0x00000008,
+       VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT = 0x00000010,
+       VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_ATOMIC_BIT = 0x00000020,
+       VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT = 0x00000040,
+       VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT = 0x00000080,
+       VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT = 0x00000100,
+       VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT = 0x00000200,
+       VK_FORMAT_FEATURE_BLIT_SRC_BIT = 0x00000400,
+       VK_FORMAT_FEATURE_BLIT_DST_BIT = 0x00000800,
+       VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT = 0x00001000,
+   } VkFormatFeatureFlagBits;
+
+如下为 ``VkFormatProperties::linearTilingFeatures`` 和 ``VkFormatProperties::optimalTilingFeatures`` 会拥有的标志位：
+
+* :bdg-secondary:`VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT` 该格式图片支持采样（ ``VkImageUsageFlagBits::VK_IMAGE_USAGE_SAMPLED_BIT`` ）。
+* :bdg-secondary:`VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT` 该格式图片支持存储（ ``VkImageUsageFlagBits::VK_IMAGE_USAGE_STORAGE_BIT`` ）。
+* :bdg-secondary:`VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT` 该格式图片支持原子存储。
+* :bdg-secondary:`VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT` 该格式图片支持颜色附件（ ``VkImageUsageFlagBits::VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT`` ）和输入附件（ ``VkImageUsageFlagBits::VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT`` ）。
+* :bdg-secondary:`VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT` 该格式图片支持颜色附件（ ``VkImageUsageFlagBits::VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT`` ）并且支持颜色混合。
+* :bdg-secondary:`VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT` 该格式图片支持深度-模板附件（ ``VkImageUsageFlagBits::VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT`` ）。
+* :bdg-secondary:`VK_FORMAT_FEATURE_BLIT_SRC_BIT` 该格式图片支持作为 ``构建`` （ ``Blit`` ）源头数据。
+* :bdg-secondary:`VK_FORMAT_FEATURE_BLIT_DST_BIT` 该格式图片支持作为 ``构建`` （ ``Blit`` ）目标数据。
+* :bdg-secondary:`VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT` 如果同时支持 ``VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT`` 特性的话，该格式图片支持 ``线性`` 采样。如果同时支持 ``VK_FORMAT_FEATURE_BLIT_SRC_BIT`` 特性的话，该格式图片支持 ``构建`` （ ``Blit`` ）。当支持 ``VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT`` 或 ``VK_FORMAT_FEATURE_BLIT_SRC_BIT`` 时，则该 ``VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT`` 特性也 :bdg-danger:`必须` 支持。
+
+如下为 ``VkFormatProperties::bufferFeatures`` 会拥有的标志位：
+
+* :bdg-secondary:`VK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT` 该格式缓存支持存储相应格式的纹素数据用于采样。
+* :bdg-secondary:`VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT` 该格式缓存支持存储相应格式的纹素数据用于存储。
+* :bdg-secondary:`VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_ATOMIC_BIT` 该格式缓存支持存储相应格式的纹素数据用于原子存储。
+* :bdg-secondary:`VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT` 该格式缓存支持存储相应格式的顶点缓存数据。
+
+..
+   ``线性`` 采样
+   构建
+   颜色混合
+   原子操作
+   顶点缓存
+
+
 
 .. 
+   VkImageCreateInfo::flags
+
    获取支持的格式
       vkGetPhysicalDeviceFormatProperties
 
