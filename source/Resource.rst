@@ -43,6 +43,9 @@
    * 2024/4/14 增加 ``vkGetPhysicalDeviceFormatProperties`` 章节。
    * 2024/4/15 更新 ``vkGetPhysicalDeviceFormatProperties`` 章节。
    * 2024/4/15 增加 ``VkFormatFeatureFlagBits`` 章节。
+   * 2024/4/16 更新 ``VkFormatFeatureFlagBits`` 章节。
+   * 2024/4/16 增加 ``arrayLayers 与 VkImageCreateFlags`` 章节。
+   * 2024/4/16 更新 ``图片资源逻辑模型`` 章节。
 
 在 ``Vulkan`` 中只有 ``2`` 种资源 :
 
@@ -752,7 +755,16 @@ VkSampleCountFlagBits
 .. admonition:: arrayLayers
    :class: note
 
-   ``arrayLayers`` :bdg-danger:`不可以` 随意指定数量，有一些限制。将会在之后的章节说明。
+   ``arrayLayers`` :bdg-danger:`不可以` 随意指定数量，有一些限制。具体见 :ref:`arrayLayersAndVkImageCreateFlags` 章节。
+
+.. _arrayLayersAndVkImageCreateFlags:
+
+arrayLayers 与 VkImageCreateFlags
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. note::
+
+   未完待续
 
 多级渐远
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -975,6 +987,49 @@ VkFormatFeatureFlagBits
 * :bdg-secondary:`VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT` 该格式缓存支持存储相应格式的纹素数据用于存储。
 * :bdg-secondary:`VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_ATOMIC_BIT` 该格式缓存支持存储相应格式的纹素数据用于原子存储。
 * :bdg-secondary:`VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT` 该格式缓存支持存储相应格式的顶点缓存数据。
+
+.. admonition:: 线性采样
+   :class: note
+
+   为图片采样的一种方式，将会在专门的章节进行讲解。
+
+   .. admonition:: VkImageTiling::VK_IMAGE_TILING_LINEAR
+      :class: note 
+      
+      该线性采样与 ``VkImageTiling::VK_IMAGE_TILING_LINEAR`` 不是同一事物，不要搞混。
+
+.. admonition:: 构建 (Blit)
+   :class: note
+
+   用于图片与图片之间数据的拷贝和构建，将会在专门的章节进行讲解。
+
+.. admonition:: 颜色混合
+   :class: note
+
+   用于图片与图片之间颜色的混合，经常用于实现透明效果。将会在专门的章节进行讲解。
+
+.. admonition:: 原子操作
+   :class: note
+
+   原子操作只支持 ``单通道`` 格式数据（比如 ``VK_FORMAT_R8_UNORM`` 之类的）。
+
+   .. admonition:: 未知
+      :class: danger
+
+      图片的原子操作笔者没有研究过，平时开发也没有碰到过，笔者也不知道具体是什么。需等笔者研究完或某位爱心大佬给出知识点说明。这里只给出笔者已知概念：
+
+      * ``C++`` 中的原子操作为：当多个线程同时修改同一数据时，该数据保持其有效性和完整性，而不会导致数据读写混乱。
+      * 图片的原子操作好像是通过着色器进行的。
+
+      .. admonition:: 着色器
+         :class: note
+
+         在 ``GPU`` 上执行的代码。将会在专门的章节进行讲解。
+
+.. admonition:: 顶点缓存
+   :class: note
+
+   一个缓存（数组），内部的每一个 ``项`` 都是指定的相同格式。用于存储顶点数据（位置、法线等）。将会在专门的章节进行讲解。
 
 ..
    ``线性`` 采样
