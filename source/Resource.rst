@@ -46,6 +46,7 @@
    * 2024/4/16 更新 ``VkFormatFeatureFlagBits`` 章节。
    * 2024/4/16 增加 ``arrayLayers 与 VkImageCreateFlags`` 章节。
    * 2024/4/16 更新 ``图片资源逻辑模型`` 章节。
+   * 2024/4/17 更新 ``arrayLayers 与 VkImageCreateFlags`` 章节。
 
 在 ``Vulkan`` 中只有 ``2`` 种资源 :
 
@@ -762,9 +763,29 @@ VkSampleCountFlagBits
 arrayLayers 与 VkImageCreateFlags
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. note::
+在介绍 ``VkImageCreateFlags`` 之前，先来说明一下与 ``VkImageCreateInfo::flags`` 无关的 ``arrayLayers`` 限制：
 
-   未完待续
+* 如果 ``VkImageCreateInfo::imageType`` 为 ``VkImageType::VK_IMAGE_TYPE_2D`` 并且 ``VkImageCreateInfo::tiling`` 为 ``VkImageTiling::VK_IMAGE_TILING_LINEAR`` 的话， ``VkImageCreateInfo::arrayLayers`` :bdg-danger:`必须` 为 ``1`` 。
+* 如果 ``VkImageCreateInfo::imageType`` 为 ``VkImageType::VK_IMAGE_TYPE_3D`` 的话， ``VkImageCreateInfo::arrayLayers`` :bdg-danger:`必须` 为 ``1`` 。
+
+接下来的话让我们看看 ``VkImageCreateInfo::flags`` 的有效值，对应的有效值被声明在 ``VkImageCreateFlagBits`` 枚举类型中，其定义如下：
+
+.. code-block:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef enum VkImageCreateFlagBits {
+       VK_IMAGE_CREATE_SPARSE_BINDING_BIT = 0x00000001,
+       VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT = 0x00000002,
+       VK_IMAGE_CREATE_SPARSE_ALIASED_BIT = 0x00000004,
+       VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT = 0x00000008,
+       VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT = 0x00000010,
+   } VkImageCreateFlagBits;
+
+* :bdg-secondary:`VK_IMAGE_CREATE_SPARSE_BINDING_BIT` 表示该图片将会使用 ``稀疏`` 内存进行绑定。
+* :bdg-secondary:`VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT` 表示该图片将会部分使用 ``稀疏`` 内存进行绑定。如果指定了该标志位，则 ``VK_IMAGE_CREATE_SPARSE_BINDING_BIT`` 也 :bdg-danger:`必须` 使用开启。
+
+..
+   If flags contains VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT, arrayLayers must be greater than or equal to 6
 
 多级渐远
 ^^^^^^^^^^^^^^^^^^^^^^^^
