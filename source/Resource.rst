@@ -47,6 +47,8 @@
    * 2024/4/16 增加 ``arrayLayers 与 VkImageCreateFlags`` 章节。
    * 2024/4/16 更新 ``图片资源逻辑模型`` 章节。
    * 2024/4/17 更新 ``arrayLayers 与 VkImageCreateFlags`` 章节。
+   * 2024/4/18 更新 ``arrayLayers 与 VkImageCreateFlags`` 章节。
+   * 2024/4/18 增加 ``立方体`` 章节。
 
 在 ``Vulkan`` 中只有 ``2`` 种资源 :
 
@@ -783,8 +785,40 @@ arrayLayers 与 VkImageCreateFlags
 
 * :bdg-secondary:`VK_IMAGE_CREATE_SPARSE_BINDING_BIT` 表示该图片将会使用 ``稀疏`` 内存进行绑定。
 * :bdg-secondary:`VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT` 表示该图片将会部分使用 ``稀疏`` 内存进行绑定。如果指定了该标志位，则 ``VK_IMAGE_CREATE_SPARSE_BINDING_BIT`` 也 :bdg-danger:`必须` 使用开启。
+* :bdg-secondary:`VK_IMAGE_CREATE_SPARSE_ALIASED_BIT` 表示该图片将会部分使用 ``稀疏`` 内存进行绑定。并且这一部分内存可能同时被另一个图片使用（或部分使用），如果指定了该标志位，则 ``VK_IMAGE_CREATE_SPARSE_BINDING_BIT`` 也 :bdg-danger:`必须` 使用开启。
+* :bdg-secondary:`VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT` 表示该图片可用于创建 ``图片视图`` 的格式可与该图片的格式不同。对于 ``多平面`` 格式， ``VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT`` 表示 ``图片视图`` 可以用于表示图片中的某平面。
+* :bdg-secondary:`VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT` 表示该图片可用于创建 ``立方体`` 图片。
+
+.. admonition:: 图片视图
+   :class: note
+
+   在通过 ``vkCreateImage(...)`` 创建完图片之后，需要创建相应的 ``图片视图`` （ ``VkImageView`` ）才能被 ``Vulkan`` 使用。具体将会在之后的章节讲解。
+
+.. admonition:: 多平面格式
+   :class: warning
+
+   好像是一种压缩格式，具体没研究过。一般像如下格式是用于多平面格式：
+
+   .. code:: c++
+
+      VkFormat::VK_FORMAT_G8B8G8R8_422_UNORM
+      VkFormat::VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM
+      VkFormat::VK_FORMAT_G10X6_B10X6_R10X6_3PLANE_420_UNORM_3PACK16
+
+   具体咋回事待研究。
+
+其中我们主要关注 ``VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT`` 这个标志位。该标志位经常用于 ``立方体`` 图片：
+
+立方体
+"""""""""""""""""""""
+
+.. note::
+
+   未完待续
 
 ..
+   多平面`` 格式
+   图片视图
    If flags contains VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT, arrayLayers must be greater than or equal to 6
 
 多级渐远
