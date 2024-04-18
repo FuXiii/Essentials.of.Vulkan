@@ -48,6 +48,7 @@
    * 2024/4/16 更新 ``图片资源逻辑模型`` 章节。
    * 2024/4/17 更新 ``arrayLayers 与 VkImageCreateFlags`` 章节。
    * 2024/4/18 更新 ``arrayLayers 与 VkImageCreateFlags`` 章节。
+   * 2024/4/18 增加 ``VkImageCreateFlagBits`` 章节。
    * 2024/4/18 增加 ``立方体`` 章节。
 
 在 ``Vulkan`` 中只有 ``2`` 种资源 :
@@ -771,6 +772,9 @@ arrayLayers 与 VkImageCreateFlags
 * 如果 ``VkImageCreateInfo::imageType`` 为 ``VkImageType::VK_IMAGE_TYPE_3D`` 的话， ``VkImageCreateInfo::arrayLayers`` :bdg-danger:`必须` 为 ``1`` 。
 
 接下来的话让我们看看 ``VkImageCreateInfo::flags`` 的有效值，对应的有效值被声明在 ``VkImageCreateFlagBits`` 枚举类型中，其定义如下：
+
+VkImageCreateFlagBits
+"""""""""""""""""""""""""
 
 .. code-block:: c++
 
