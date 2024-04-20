@@ -50,6 +50,7 @@
    * 2024/4/18 更新 ``arrayLayers 与 VkImageCreateFlags`` 章节。
    * 2024/4/18 增加 ``VkImageCreateFlagBits`` 章节。
    * 2024/4/18 增加 ``立方体`` 章节。
+   * 2024/4/20 更新 ``立方体`` 章节。
 
 在 ``Vulkan`` 中只有 ``2`` 种资源 :
 
@@ -816,13 +817,27 @@ VkImageCreateFlagBits
 立方体
 """""""""""""""""""""
 
-.. note::
+所谓 ``立方体`` 图片（有时也叫 ``立方体纹理`` 英文为 ``Cubemap`` ）其实就是 ``6`` 张 ``二维`` 图片拼成的一个盒子。示意图如下：
 
-   未完待续
+.. figure:: ./_static/3d_image_cubemap.png
+
+   立方体示意图
+
+而立方体中的图片数据经常用于存储场景的环境信息，比如天空信息。所以也常被称为 ``天空盒`` 。示意图如下：
+
+.. figure:: ./_static/sky_cube_0.png
+   :scale: 50%
+   :align: center
+
+   天空盒示意图
+
+当 ``VkImageCreateInf::flags`` 中指定了 ``VkImageCreateFlagBits::VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT`` 标志位的话，则说明要创建一个立方体图片，则有如下限制要求：
+
+* ``VkImageCreateInf::imageType`` :bdg-danger:`必须` 为 ``VkImageType::VK_IMAGE_TYPE_2D`` 。
+* ``VkImageCreateInf::arrayLayers`` :bdg-danger:`必须` :bdg-danger:`大于等于` ``6`` 。
+* ``VkImageCreateInf::extent`` 中的 ``width`` 和 ``height`` :bdg-danger:`必须` :bdg-danger:`相等` 。
 
 ..
-   多平面`` 格式
-   图片视图
    If flags contains VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT, arrayLayers must be greater than or equal to 6
 
 多级渐远
@@ -1090,24 +1105,6 @@ VkFormatFeatureFlagBits
 
    一个缓存（数组），内部的每一个 ``项`` 都是指定的相同格式。用于存储顶点数据（位置、法线等）。将会在专门的章节进行讲解。
 
-..
-   ``线性`` 采样
-   构建
-   颜色混合
-   原子操作
-   顶点缓存
-
-
-
 .. 
-   VkImageCreateInfo::flags
-
-   获取支持的格式
-      vkGetPhysicalDeviceFormatProperties
-
    图片创建示例
-   哪些格式支持颜色
-   哪些格式支持深度
-
-   imageview 和 bufferview 在单独的章节展开（在资源与内存之后）
    
