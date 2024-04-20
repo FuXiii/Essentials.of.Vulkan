@@ -6,7 +6,7 @@
 <link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="搜索" href="../search.html" /><link rel="next" title="WebGPU ImGui" href="WebGPUImGui.html" /><link rel="prev" title="应用" href="index.html" />
         <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/Application/VolumetricCloud.html" />
 
-    <link rel="shortcut icon" href="../_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+    <link rel="shortcut icon" href="../_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
         <title>体积云 - Vulkan入门精要</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b20cc3f5" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
@@ -275,7 +275,7 @@
         </div>
         <article role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="id1">
-<h1>体积云<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
+<h1>体积云<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header sd-bg-muted sd-bg-text-muted">
 <span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-history" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M1.643 3.143L.427 1.927A.25.25 0 000 2.104V5.75c0 .138.112.25.25.25h3.646a.25.25 0 00.177-.427L2.715 4.215a6.5 6.5 0 11-1.18 4.458.75.75 0 10-1.493.154 8.001 8.001 0 101.6-5.684zM7.75 4a.75.75 0 01.75.75v2.992l2.028.812a.75.75 0 01-.557 1.392l-2.5-1A.75.75 0 017 8.25v-3.5A.75.75 0 017.75 4z"></path></svg></span>更新记录<div class="sd-summary-down docutils">
@@ -292,54 +292,54 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">Revision</span> <span class="pre">2013</span> <span class="pre">-</span> <span class="pre">Real-time</span> <span class="pre">Volumetric</span> <span class="pre">Rendering</span> <span class="pre">Course</span> <span class="pre">Notes</span></code> 翻译中，该篇主要是讲云体光照计算的，如果等不及的话可以看<a class="reference external" href="https://www.shadertoy.com/view/ldlXzM">Clouds physically-based II</a>，该示例算法与<code class="docutils literal notranslate"><span class="pre">Revision</span> <span class="pre">2013</span></code>的文章相符</p></li>
 </ul>
 <section id="id2">
-<h2>概述<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<h2>概述<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
 <p>体积云（Volumetric Cloud ），使用体积数据进行绘制云的方法。有别于<code class="docutils literal notranslate"><span class="pre">广告牌</span></code>（Billboard，一种将图片展现在一张面片上的技术）和建立<code class="docutils literal notranslate"><span class="pre">三维模型</span></code>（blender，3dmax建模之类的），由于广告牌只适合离玩家很远的地方渲染云体（离近了明显效果太假），而三维建模方式云体数据量又太大，只适合一朵朵的建，不适合覆盖整个穹顶，进而现在的体积云都是基于<code class="docutils literal notranslate"><span class="pre">噪音数据</span></code>(可理解成随机数)和<a class="reference external" href="https://adrianb.io/2016/10/01/raymarching.html">光线步进</a>（Raymarch，类似于简化版的光线追踪）的方式进行计算渲染。</p>
 <p>其中噪音数据用于描述云体的外形，光线步进用于穿透云体进行光照计算。
 该篇文章也主要按照<code class="docutils literal notranslate"><span class="pre">云体建模</span></code>和<code class="docutils literal notranslate"><span class="pre">光照</span></code>这两部分进行讲解。</p>
 </section>
 <section id="id3">
-<h2>0 背景<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<h2>0 背景<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
 <p>简单讲解一下云体的<code class="docutils literal notranslate"><span class="pre">噪音数据</span></code>和<code class="docutils literal notranslate"><span class="pre">光线步进</span></code></p>
 <section id="id4">
-<h3>0.1 噪音<a class="headerlink" href="#id4" title="Link to this heading">#</a></h3>
+<h3>0.1 噪音<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h3>
 <p>噪音，生活中经常听碰到，工地的施工声，大街上的嘈杂声，老旧电视没信号的雪花屏幕等等，这些都是噪音，再直接一点的说，一个噪音就是一个随机的数。但是这些噪音的混乱程度比较高，在一些自然现象中，比如大地的起伏大多都是比较平缓连续的，密集断崖式的还是少数（相对来说），这时噪音就可以用来代表地形的起伏高度（比如<code class="docutils literal notranslate"><span class="pre">我的世界</span></code>这款游戏的地形生成）。这个时候一种不是那么混乱，而且还带有连续性特性的噪音就是我们所需要的，后来<code class="docutils literal notranslate"><span class="pre">肯·柏林</span></code>（Ken Perlin）发明<code class="docutils literal notranslate"><span class="pre">柏林</span></code>（Perlin）噪音算法，该算法生成的噪音比较自然，非常适合模拟地形、火焰之类的自然现象，后被图形学大量使用。再后来史蒂文·沃利（Steven Worley）发明了沃利（Worley）噪音，该算法生成的噪音比较像动物体内的细胞，所以也叫<code class="docutils literal notranslate"><span class="pre">细胞噪音</span></code></p>
 <section id="perlin-noise">
-<h4>0.1.1 柏林噪音（Perlin Noise）<a class="headerlink" href="#perlin-noise" title="Link to this heading">#</a></h4>
+<h4>0.1.1 柏林噪音（Perlin Noise）<a class="headerlink" href="#perlin-noise" title="Link to this heading">¶</a></h4>
 <p>柏林噪音是属于晶格噪音：有一个方形盒子（晶格），盒子内有一个随机点，盒子的八个角，每个角都存有一个随机向量和该角指向随机点的向量，这两个向量做点乘，得到一个数，之后每个角都做如此操作，会得到八个数，加权，合起来，得到一个数，此数作为噪音值。</p>
 </section>
 <section id="worley-noise">
-<h4>0.1.2 沃利噪音 （Worley Noise）<a class="headerlink" href="#worley-noise" title="Link to this heading">#</a></h4>
+<h4>0.1.2 沃利噪音 （Worley Noise）<a class="headerlink" href="#worley-noise" title="Link to this heading">¶</a></h4>
 <p>一个平面上随机散布着一些点，这些点叫特征点，走遍整个空间的每个位置，找该位置与哪个特征点最近，最近的那个距离长度作为该空间位置的噪音值。</p>
 </section>
 <section id="id5">
-<h4>0.1.3 三维噪音纹理<a class="headerlink" href="#id5" title="Link to this heading">#</a></h4>
+<h4>0.1.3 三维噪音纹理<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h4>
 <p>最简单的噪音纹理是一维的，数学上理解就是一元函数<code class="docutils literal notranslate"><span class="pre">f(x)</span></code>，最简单的噪音就是几个振幅、频率和相位都不一样的<code class="docutils literal notranslate"><span class="pre">m×sin(ax+b)</span></code>和<code class="docutils literal notranslate"><span class="pre">n×cos(jx+k)</span></code>函数的和（注：傅里叶）。</p>
 <p>常见的噪音纹理一般是二维的，用于表达一个二维平面内的随机数，而体积云是个三维物体，需要知道某个空间下云体在空间的分布，这时将二维噪音纹理提升一个维度，构建三维噪音纹理，作为云体的体积数据，用于描述云体外形。</p>
 </section>
 </section>
 <section id="fractal">
-<h3>0.2 分形（fractal）<a class="headerlink" href="#fractal" title="Link to this heading">#</a></h3>
+<h3>0.2 分形（fractal）<a class="headerlink" href="#fractal" title="Link to this heading">¶</a></h3>
 <p>分形就是宏观看，是其人，细看，还是其人，无论是凑近看还是离远看外貌不变。比如，看树干是比较大的树枝，树干上的岔也是树枝，树枝上的小树枝还是树枝。还有雪花也是分形的</p>
 <section id="fractal-brownian-motion-fbm">
-<h4>0.2.1 分形布朗运动（Fractal Brownian Motion，简称FBM）<a class="headerlink" href="#fractal-brownian-motion-fbm" title="Link to this heading">#</a></h4>
+<h4>0.2.1 分形布朗运动（Fractal Brownian Motion，简称FBM）<a class="headerlink" href="#fractal-brownian-motion-fbm" title="Link to this heading">¶</a></h4>
 <p>像树这样的分形，大树干是大树枝，树杈是略小一点的树枝，树梢是更小一点的树枝，无论远近，都是树枝，只不过是大小不同，像树这种,可以用不同大小树枝集合来描述其分形，而对于自然界噪音是使用不同频率的噪音叠加来描述其分形，比如山脉，云体，火焰等。这种不同频率噪音的叠加被称作<code class="docutils literal notranslate"><span class="pre">分形布朗运动</span></code>简称<code class="docutils literal notranslate"><span class="pre">FBM</span></code>。<code class="docutils literal notranslate"><span class="pre">分形布朗</span></code>的基本思路就是不同频率的噪音的叠加，这会导致一个非常有意思的现象，每增加一次频率并与之前低频的相加，其结果是在低频的结果上增加细节，而不会破坏低频噪音的形状，就好比揉面团，一开始是一大块，此时可以看成噪音频率很低，在面团上雕花，这时就可以看成低频的噪音加上一个高频噪音的结果，如果再加入更过高频，细节会越来越多。</p>
 </section>
 </section>
 <section id="raymarch">
-<h3>0.3 光线步进（Raymarch）<a class="headerlink" href="#raymarch" title="Link to this heading">#</a></h3>
+<h3>0.3 光线步进（Raymarch）<a class="headerlink" href="#raymarch" title="Link to this heading">¶</a></h3>
 <p>光线步进，并不等价于光线追踪，简单来说光线步进是光线追踪的简化版，光线步进算法是通过从某一点出发，沿着某一方向，一步步的前进，每走完一步都会在该处计算光照，一般这样计算光照的位置叫做采样点，最后将所有走过的采样点计算结果加在一起，就是此束光的光照结果。</p>
 <p>最常见的光线步进在后处理阶段的片元着色器中进行（<a class="reference external" href="https://www.shadertoy.com/">ShaderToy</a>上的大部分代码都是基于此方法进行的），从相机的位置开始，向每个像素发一条射线，沿着该射线方向步进进行计算。</p>
 <p>注：后处理：其实就是在相机前方放块刚好能够铺满整个视界范围的画布，并在该画布上计算每一个位置的颜色值。（一般该画布上都是已经有颜色了，后处理的意思是在此基础上在再做一些修改）</p>
 </section>
 </section>
 <section id="id6">
-<h2>1 云体建模<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<h2>1 云体建模<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h2>
 <p>该章节主要讲使用噪音生成云的外形</p>
 <section id="id7">
-<h3>1.1 柏林-沃利噪音<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
+<h3>1.1 柏林-沃利噪音<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h3>
 <p>在使用柏林噪音生成云体后，会明显发现这个云的形状过于平滑，而真实世界中的云上都有一朵朵类似花椰菜，西蓝花的形状的小云朵(分形)，为了营造一朵朵的这种形状，引入了沃利噪音。柏林噪音和沃利噪音相结合柏林-沃利噪音由此诞生</p>
 <section id="id8">
-<h4>1.1.1 柏林噪音<a class="headerlink" href="#id8" title="Link to this heading">#</a></h4>
+<h4>1.1.1 柏林噪音<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h4>
 <p>使用哈希散列表获得随机向量，输入<code class="docutils literal notranslate"><span class="pre">p</span></code>为方盒子八个角的坐标，<code class="docutils literal notranslate"><span class="pre">hash33</span></code>函数将会返回一个随机向量(注：生成随机向量方法还有很多，哈希只是其中一种)</p>
 <div class="highlight-CPP notranslate"><div class="highlight"><pre><span></span><span class="cp">#define UI0 1597334673U</span>
 <span class="cp">#define UI1 3812015801U</span>
@@ -400,7 +400,7 @@
 </div>
 </section>
 <section id="fbm">
-<h4>1.1.2 FBM算法<a class="headerlink" href="#fbm" title="Link to this heading">#</a></h4>
+<h4>1.1.2 FBM算法<a class="headerlink" href="#fbm" title="Link to this heading">¶</a></h4>
 <p>在真正进入下一节<code class="docutils literal notranslate"><span class="pre">柏林FBM噪音</span></code>之前，想让我们来看看FBM的一般性描述。最原始的FBM就是不同频率的噪音叠加，根据<a class="reference external" href="https://iquilezles.org/articles/fbm/">iq的文章</a>描述，其中在数学上有个正相关，负相关的特点，当正相关时结果会更大，负相关时结果会更小，控制这种特性的系数叫做<code class="docutils literal notranslate"><span class="pre">赫斯特指数</span></code>(Hurst Exponent)，简写为<code class="docutils literal notranslate"><span class="pre">H</span></code>，该系数在[0,1]范围内，从视觉上看，该系数用于控制噪音的“烈度”或“平滑度”。每当一个更高频叠加时，一般叫这种叠加操称为“增加一个八度”（Octave）。如下图为<code class="docutils literal notranslate"><span class="pre">赫斯特指数</span></code>影响示意图，具体可查看<code class="docutils literal notranslate"><span class="pre">Turbo</span></code>生成的<code class="docutils literal notranslate"><span class="pre">PerlinWorleyNoiseTest</span></code>示例程序。</p>
 <p><img alt="Worley_Point" src="../_images/Hurst_Exponent.gif" /></p>
 <p>声明<code class="docutils literal notranslate"><span class="pre">FBM</span></code>函数，其中<code class="docutils literal notranslate"><span class="pre">x</span></code>为<code class="docutils literal notranslate"><span class="pre">N</span></code>维空间的一个采样点，<code class="docutils literal notranslate"><span class="pre">H</span></code>为赫斯特指数。</p>
@@ -424,7 +424,7 @@
 </div>
 </section>
 <section id="id9">
-<h4>1.1.3 柏林FBM噪音<a class="headerlink" href="#id9" title="Link to this heading">#</a></h4>
+<h4>1.1.3 柏林FBM噪音<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h4>
 <p>好了，现在我们已经知道<code class="docutils literal notranslate"><span class="pre">FBM</span></code>咋算了，现在来看看<code class="docutils literal notranslate"><span class="pre">柏林FBM</span></code>算法吧</p>
 <div class="highlight-CPP notranslate"><div class="highlight"><pre><span></span><span class="c1">//柏林FBM，其中p为采样点坐标，freq为频率，octaves为要增加的八度</span>
 <span class="kt">float</span><span class="w"> </span><span class="nf">perlinfbm</span><span class="p">(</span><span class="n">vec3</span><span class="w"> </span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">freq</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">octaves</span><span class="p">)</span>
@@ -452,7 +452,7 @@
 </div>
 </section>
 <section id="id10">
-<h4>1.1.4 沃利噪音<a class="headerlink" href="#id10" title="Link to this heading">#</a></h4>
+<h4>1.1.4 沃利噪音<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h4>
 <p>之前介绍的沃利噪音是在一个二维平面内进行的，现在将二维提升至三维，大致思路都差不多，一个空间内散落着很多特征点，空间中某一点的噪音值为该点到离其最近的特征点的距离，遍历空间中的所有位置计算该点的噪音，即为三维下的沃利噪音。</p>
 <p>为了简化问题，一般会把空间限制在一个正方体空间中，之后横竖从中间平分切开，像二阶魔方一样，这样每条边有3个点（算上没切开之前的角），每个面有9个点，有3个面，一共27个点。如下如所示。<br />
 <img alt="Worley_Point" src="../_images/Worly_Point.png" /><br />
@@ -497,7 +497,7 @@
 </div>
 </section>
 <section id="id11">
-<h4>1.1.5 沃利FBM噪音<a class="headerlink" href="#id11" title="Link to this heading">#</a></h4>
+<h4>1.1.5 沃利FBM噪音<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h4>
 <p>沃利FBM噪音一样，不同频率叠加，唯一不同的是有个权重，权重和为<code class="docutils literal notranslate"><span class="pre">1</span></code></p>
 <div class="highlight-CPP notranslate"><div class="highlight"><pre><span></span><span class="kt">float</span><span class="w"> </span><span class="nf">worleyFbm</span><span class="p">(</span><span class="n">vec3</span><span class="w"> </span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">freq</span><span class="p">)</span>
 <span class="p">{</span>
@@ -511,9 +511,9 @@
 </section>
 </section>
 <section id="id12">
-<h3>1.2 柏林-沃利噪音实现<a class="headerlink" href="#id12" title="Link to this heading">#</a></h3>
+<h3>1.2 柏林-沃利噪音实现<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h3>
 <section id="remap">
-<h4>1.2.1 重映射函数（Remap）<a class="headerlink" href="#remap" title="Link to this heading">#</a></h4>
+<h4>1.2.1 重映射函数（Remap）<a class="headerlink" href="#remap" title="Link to this heading">¶</a></h4>
 <p>在介绍<code class="docutils literal notranslate"><span class="pre">柏林-沃利噪音</span></code>实现之前，先来看看重映射函数，这个相对比较简单。</p>
 <p>前提条件：首先定义域<code class="docutils literal notranslate"><span class="pre">X</span></code>（定义域有范围限制，不能是无穷）内某点<code class="docutils literal notranslate"><span class="pre">x</span></code>，定义域<code class="docutils literal notranslate"><span class="pre">X</span></code>范围长度为<code class="docutils literal notranslate"><span class="pre">lx</span></code>。有另一个定义域范围<code class="docutils literal notranslate"><span class="pre">Y</span></code>，定义域<code class="docutils literal notranslate"><span class="pre">Y</span></code>范围长度为<code class="docutils literal notranslate"><span class="pre">ly</span></code></p>
 <p>大致思路如下：</p>
@@ -531,7 +531,7 @@
 </div>
 </section>
 <section id="id13">
-<h4>1.2.2 柏林-沃利三维噪音纹理<a class="headerlink" href="#id13" title="Link to this heading">#</a></h4>
+<h4>1.2.2 柏林-沃利三维噪音纹理<a class="headerlink" href="#id13" title="Link to this heading">¶</a></h4>
 <p>我们已经知道柏林噪音、沃利噪音及其相对应的FBM是咋回事了，现在就将柏林噪音与沃利噪音相结合。来生成分辨率为<code class="docutils literal notranslate"><span class="pre">128×128×128</span></code>，像素格式为<code class="docutils literal notranslate"><span class="pre">R8G8B8A8</span></code>（每个分量8位）的三维纹理。其中每个分量存储的数据对于如下：</p>
 <ul class="simple">
 <li><p>R分量：存储柏林-沃利FBM噪音值</p></li>
@@ -565,7 +565,7 @@
 </section>
 </section>
 <section id="id14">
-<h3>1.3 三维沃利噪音纹理<a class="headerlink" href="#id14" title="Link to this heading">#</a></h3>
+<h3>1.3 三维沃利噪音纹理<a class="headerlink" href="#id14" title="Link to this heading">¶</a></h3>
 <p>使用柏林-沃利噪音，已经可以描述云体了，但只能说描述了云体的大致形状。如下图所示：<br />
 <img alt="base_cloud" src="../_images/base_colud.png" /></p>
 <p>而云一般没有这么圆润，一般都会有毛毛絮样的边缘，如下图所示：<br />
@@ -593,20 +593,20 @@
 </section>
 </section>
 <section id="id15">
-<h2>2 光线步进与采样<a class="headerlink" href="#id15" title="Link to this heading">#</a></h2>
+<h2>2 光线步进与采样<a class="headerlink" href="#id15" title="Link to this heading">¶</a></h2>
 <p>现在我们已经通过三维噪音纹理生成了云体的体积数据，接下来将会一步步的由简入繁的通过使用光线步进对三维噪音纹理进行采样来渲染云体。</p>
 <section id="id16">
-<h3>2.1 光线步进<a class="headerlink" href="#id16" title="Link to this heading">#</a></h3>
+<h3>2.1 光线步进<a class="headerlink" href="#id16" title="Link to this heading">¶</a></h3>
 <section id="post-processing">
-<h4>2.1.1 后处理（Post Processing）<a class="headerlink" href="#post-processing" title="Link to this heading">#</a></h4>
+<h4>2.1.1 后处理（Post Processing）<a class="headerlink" href="#post-processing" title="Link to this heading">¶</a></h4>
 <p>为什么要讲后处理，因为光线步进是<code class="docutils literal notranslate"><span class="pre">后处理</span></code>的一种。<br />
 什么是“后”处理，指的是在某一阶段后进行的处理，所谓的某一阶段，最常见的是在一帧的画面渲染完成之后，在这张画面上再做其他的处理，这时一般称为<code class="docutils literal notranslate"><span class="pre">后处理</span></code>，而后处理的实现方式非常简单，在相机的面前（近截平面）上放上一片刚好铺满视界的面片，这是顶点着色器的工作，之后将之前绘制完的图片当成一张采样纹理贴在面片上，这是片元着色器的工作，这样片元着色器就可以遍历每一个纹理坐标进行采样，而这些坐标刚好和屏幕像素一一对应，以此就可以在绘制完图像后再进行一些后处理的加工了。<br />
 常见的后处理比如<code class="docutils literal notranslate"><span class="pre">泛光(Bloom)</span></code>、<code class="docutils literal notranslate"><span class="pre">HDR</span></code>、<code class="docutils literal notranslate"><span class="pre">动态模糊</span></code>和<code class="docutils literal notranslate"><span class="pre">光线步进</span></code>等。</p>
 </section>
 <section id="id17">
-<h4>2.1.2 光线步进原理<a class="headerlink" href="#id17" title="Link to this heading">#</a></h4>
+<h4>2.1.2 光线步进原理<a class="headerlink" href="#id17" title="Link to this heading">¶</a></h4>
 <section id="id18">
-<h5>2.1.2.1 光线<a class="headerlink" href="#id18" title="Link to this heading">#</a></h5>
+<h5>2.1.2.1 光线<a class="headerlink" href="#id18" title="Link to this heading">¶</a></h5>
 <p>光线步进，是从一个起点出发，向某个方向，前进某个距离。如果以相机位置为起点，向每个像素发射一条光线，这样跟着每根光线进入场景与场景进行交互计算，我们最终可以计算出该像素的颜色信息。而后处理会遍历每一个像素，这正好满足我们的需求和直觉。</p>
 <p><img alt="ray from camera" src="../_images/ray_from_camera.png" /></p>
 <p>为了计算出这些射线，我们已知如下参数（CPU传递给GPU的）：</p>
@@ -739,7 +739,7 @@
 <p>具体的示例可参考<code class="docutils literal notranslate"><span class="pre">Turbo</span></code>引擎的<code class="docutils literal notranslate"><span class="pre">RaymarchingTest</span></code>示例</p>
 <p><img alt="base_ray_marching" src="../_images/base_ray_marching.gif" /></p>
 <section id="id19">
-<h6>2.1.2.1.1 其他光线算法<a class="headerlink" href="#id19" title="Link to this heading">#</a></h6>
+<h6>2.1.2.1.1 其他光线算法<a class="headerlink" href="#id19" title="Link to this heading">¶</a></h6>
 <p>有一个非常巧妙的方法来简化计算，就是使用顶点着色器传入片元着色器中，在光栅化阶段GPU设备会进行插值的特性。
 当将在顶点着色器中传入近截平面的四个角的坐标等数据时，只需要顺便在顶点属性中增加每个顶点对应的射线方向（在CPU端计算，只需要算一个角即可，剩下三个就是对称，对称再对称），这样传入GPU的顶点属性就包括了每个顶点（每个角）的射线向量，之后直接将传入的顶点着色器的射线向量传入片元着色器中得到的对应向量数据就是该像素的光线方向向量。</p>
 <p>大致代码如下</p>
@@ -790,7 +790,7 @@
 </section>
 </section>
 <section id="id20">
-<h5>2.1.2.2 步进循环<a class="headerlink" href="#id20" title="Link to this heading">#</a></h5>
+<h5>2.1.2.2 步进循环<a class="headerlink" href="#id20" title="Link to this heading">¶</a></h5>
 <p>现在光线方向<code class="docutils literal notranslate"><span class="pre">rayDir</span></code>有了，光线起点<code class="docutils literal notranslate"><span class="pre">cameraPos</span></code>也有了。接下来就可以进入光线步进循环了。</p>
 <p>步进循环本质上并不复杂，基本思路就是沿着光线方向向前走，每走一次就是一次步进循环。</p>
 <p>大致代码如下：</p>
@@ -823,10 +823,10 @@
 </section>
 <hr class="docutils" />
 <section id="id21">
-<h4>2.1.3 包围盒<a class="headerlink" href="#id21" title="Link to this heading">#</a></h4>
+<h4>2.1.3 包围盒<a class="headerlink" href="#id21" title="Link to this heading">¶</a></h4>
 <p>包围盒就是个四方体，光线将会在包围盒内部进行步进。随之而来的问题就是，如何描述该包围盒呢？光线在包围盒内进行步进，那在盒子内部步进的起点和终点在哪呢？</p>
 <section id="id22">
-<h5>2.1.3.1 描述包围盒<a class="headerlink" href="#id22" title="Link to this heading">#</a></h5>
+<h5>2.1.3.1 描述包围盒<a class="headerlink" href="#id22" title="Link to this heading">¶</a></h5>
 <ul>
 <li><p>包围盒是个四方体，必然会有长、宽、高。</p>
 <ul>
@@ -851,7 +851,7 @@
 </div>
 </section>
 <section id="id23">
-<h5>2.1.3.2 包围盒中步进的起点和终点<a class="headerlink" href="#id23" title="Link to this heading">#</a></h5>
+<h5>2.1.3.2 包围盒中步进的起点和终点<a class="headerlink" href="#id23" title="Link to this heading">¶</a></h5>
 <p>首先能想到的是，起点和终点会在光线与盒子的交点处，求交点，最终回到了，如何求射线与平面的交点问题</p>
 <blockquote>
 <div><p>射线与平面求交</p>
@@ -1368,7 +1368,7 @@
 </section>
 </section>
 <section id="id24">
-<h4>2.1.4 包围盒内光线步进<a class="headerlink" href="#id24" title="Link to this heading">#</a></h4>
+<h4>2.1.4 包围盒内光线步进<a class="headerlink" href="#id24" title="Link to this heading">¶</a></h4>
 <p>现在我们已经知道了光线步进循环要计算的起点和终点，现在我们就可以在其包围盒中进行光线步进计算了。</p>
 <p>大致代码如下：</p>
 <div class="highlight-CPP notranslate"><div class="highlight"><pre><span></span><span class="n">vec3</span><span class="w"> </span><span class="nf">RayMarchingBoundingBox</span><span class="p">(</span><span class="n">vec3</span><span class="w"> </span><span class="n">origin</span><span class="p">,</span><span class="w"> </span><span class="n">vec3</span><span class="w"> </span><span class="n">dir</span><span class="p">,</span><span class="w"> </span><span class="n">BoundingBox</span><span class="w"> </span><span class="n">boundingBox</span><span class="p">)</span>
@@ -1461,7 +1461,7 @@
 <p><img alt="camera pixel pos" src="../_images/ray_marching_bounding_box_sample_space.gif" /></p>
 <p>现在光线步进循环有了，采样点也有了，接下来就是对噪音纹理进行采样了</p>
 <section id="id25">
-<h5>2.1.4.1 包围盒内三维纹理采样<a class="headerlink" href="#id25" title="Link to this heading">#</a></h5>
+<h5>2.1.4.1 包围盒内三维纹理采样<a class="headerlink" href="#id25" title="Link to this heading">¶</a></h5>
 <p>我们目前主要是对之前计算的柏林-沃利噪音进行采样。<br />
 将<code class="docutils literal notranslate"><span class="pre">&lt;待定，用于在采样点处做计算&gt;</span></code>之间的代码改成如下：</p>
 <div class="highlight-CPP notranslate"><div class="highlight"><pre><span></span><span class="c1">//外部传入计算好的柏林-沃利三维噪音</span>
@@ -1549,15 +1549,15 @@
 </section>
 </section>
 <section id="id26">
-<h2>3 光照<a class="headerlink" href="#id26" title="Link to this heading">#</a></h2>
+<h2>3 光照<a class="headerlink" href="#id26" title="Link to this heading">¶</a></h2>
 <p><em>注：该章节主要来源于<a class="reference download internal" download="" href="../_downloads/2297190ab023a1b516144a9c371f0d18/volumePaper.pdf"><span class="xref download myst">Production Volume Rendering SIGGRAPH 2017 Course</span></a></em></p>
 <section id="id27">
-<h3>3.1 介绍<a class="headerlink" href="#id27" title="Link to this heading">#</a></h3>
+<h3>3.1 介绍<a class="headerlink" href="#id27" title="Link to this heading">¶</a></h3>
 <p>上一次<code class="docutils literal notranslate"><span class="pre">SIGGRAPH</span></code>体渲染<code class="docutils literal notranslate"><span class="pre">production</span> <span class="pre">volume</span> <span class="pre">rendering</span></code>课程在2011年举办，之后的一年（Wrenninge 2012）与该课程同名的书籍出版，总结并详细说明了体渲染相关知识。就在轻描淡写间，该领域飞速发展：仅仅六年时间，整个领域发生了翻天覆地的变化，之前提出的技术和方法几乎被完全取代。多亏了技术的进步和设备计算性能的提升，光线追踪取代了扫描线算法作为影视领域的佼佼者。之前曾作为光追的简化版的光线步进，现在在其上运用追踪算法已经稀疏平常，在使用体积缓存和运动模糊技术来预计算光照和多通道技术已成为历史。随之而来的出现了一系列巧妙的符合物理特性的光线传输模型，并达成了一系列的“圣杯”式的技术突破：适用于区域光、多级散射和精确的运动模糊等等效果在短短五年的时间里就应用在无误差的体积渲染中。</p>
 <p>对于体渲染研究任然散发着它独有的挑战性，这往往会让光追开发者和研究者望而生畏（怎儿一个“坑”字了得~），体渲染比任何一个几何体渲染都要复杂昂贵。然而使用混合多种方法来解决此难题并不是非常直观，而使用相对较快方法（追踪之类的）虽然无偏、低开销但是方差较大。较慢的方式也许会有偏或是需要一些高开销的步骤，但是有低方差甚至结果无噪音的优良特性。对于追踪进入场景的一束光线，事实上没有最好的方法解决该问题，与此同时对于大量数据描述巨大的体积体意味着传统的运动模糊并不能适用，而且场景的规模和复杂程度千差万别：比如一个复杂的爆炸运算也许会伴随着一个简单的大气计算，而这对于渲染器来如何更有效率的渲染尤为重要。</p>
 <p>该课程将会接着上一次课程结尾处开始讲起，不仅解释最近的基础理论，而且会展示实现细节。本文作者有两款商业产品经验（<code class="docutils literal notranslate"><span class="pre">RenderMan</span></code>和<code class="docutils literal notranslate"><span class="pre">Arnold</span></code>）和一个先进的专用渲染器（<code class="docutils literal notranslate"><span class="pre">Hyperion</span></code>），本次将会讲解其中的很多细节。本课程将基于光线追踪进行体渲染讲解，包括所有在未来的电影工作中需要的方方面面，体渲染的基本理论也会进行讲解，将会带领大家理解不同条件下的体渲染，总结优点和缺点为将来的合理使用做储备。有关最近发展的运动模糊，缩减方差，追踪和解决场景复杂度也会进行讲解。</p>
 <section id="id28">
-<h4>3.1.1 符号对照表<a class="headerlink" href="#id28" title="Link to this heading">#</a></h4>
+<h4>3.1.1 符号对照表<a class="headerlink" href="#id28" title="Link to this heading">¶</a></h4>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -1617,9 +1617,9 @@
 </section>
 </section>
 <section id="id29">
-<h3>3.2 体渲染理论<a class="headerlink" href="#id29" title="Link to this heading">#</a></h3>
+<h3>3.2 体渲染理论<a class="headerlink" href="#id29" title="Link to this heading">¶</a></h3>
 <section id="id30">
-<h4>3.2.1 体积特性<a class="headerlink" href="#id30" title="Link to this heading">#</a></h4>
+<h4>3.2.1 体积特性<a class="headerlink" href="#id30" title="Link to this heading">¶</a></h4>
 <p>场景中的“体”以常规思维来说，是一群粒子的集合，比如从原子到分子再到任意大小粒子，再到星系之间辐射亮度传输。由于粒子的平均密度相对较低，而这和粒子与粒子之间的平均距离相比，粒子的大小就显得微不足道了。这是能够进行独立统计的先决条件。这通常发生在任何气态介质中，但这并不适用于像沙子和雪这样的致密粒状介质，这种情况下将会打破之前的先决条件。</p>
 <p>如果有光子穿过体积体，将会于体积体中的粒子进行碰撞最终照亮该体积体。这些穿过体积体进行碰撞的光子将会为辐射亮度做出贡献。由于不可能去描述体积体中的每一个粒子，所以使用一种碰撞概率场来描述体积体，这表现为粒子碰撞都是随机的。</p>
 <p>光子在体积体中发生碰撞的可能性使用系数 <span class="math notranslate nohighlight">\(\sigma(x)\)</span> 进行描述，表示在体积体中穿过每单位距离下的碰撞概率密度。碰撞系数的物理单位与长度成反比（这句话不知道是不是这个意思，原文： <code class="docutils literal notranslate"><span class="pre">The</span> <span class="pre">physical</span> <span class="pre">unit</span> <span class="pre">of</span> <span class="pre">a</span> <span class="pre">collision</span> <span class="pre">coefficient</span> <span class="pre">is</span> <span class="pre">inverse</span> <span class="pre">length</span></code>）。另一种方式是使用平均自由程（<code class="docutils literal notranslate"><span class="pre">mean</span> <span class="pre">free</span> <span class="pre">path</span></code>，<em>百度百科：在一定的条件下，一个气体分子在连续两次碰撞之间可能通过的各段自由程的平均值，微粒的平均自由程是指微粒与其他微粒碰撞所通过的平均距离。用符号 <span class="math notranslate nohighlight">\(\lambda\)</span> 表示，单位为米</em>）来评估该系数，用于表示两次碰撞之间的平均距离。通常我们认为该系数是一个与位置有关的函数并随着光谱做适当变化。</p>
@@ -1656,7 +1656,7 @@
 以体积的方式在体积体中发射辐射，如果不这样的话，得到的结果将更像是一个光源发出光后的结果。发射出来的辐射亮度使用 <span class="math notranslate nohighlight">\(L_e(x,w)\)</span> 进行表达，其发射出来的辐射与非体积光源一样会被吸收和散射。如果一个体积体不进行自发光，<span class="math notranslate nohighlight">\(L_e(x,w)\)</span> 简单赋成 <span class="math notranslate nohighlight">\(0\)</span> 即可，在真实世界中，体积体并不能直接向外自发光，并且 <span class="math notranslate nohighlight">\(L_e(x,w)\)</span> 在任意 <span class="math notranslate nohighlight">\(w\)</span> 方向上都是一样的（各向同性）</p>
 </div></blockquote>
 <section id="extinction-single-scattering-albedo">
-<h5>3.2.1.1 参数化消亡（<code class="docutils literal notranslate"><span class="pre">Extinction</span></code>）和单散射反照率（<code class="docutils literal notranslate"><span class="pre">Single</span> <span class="pre">Scattering</span> <span class="pre">Albedo</span></code>）<a class="headerlink" href="#extinction-single-scattering-albedo" title="Link to this heading">#</a></h5>
+<h5>3.2.1.1 参数化消亡（<code class="docutils literal notranslate"><span class="pre">Extinction</span></code>）和单散射反照率（<code class="docutils literal notranslate"><span class="pre">Single</span> <span class="pre">Scattering</span> <span class="pre">Albedo</span></code>）<a class="headerlink" href="#extinction-single-scattering-albedo" title="Link to this heading">¶</a></h5>
 <blockquote>
 <div><p><code class="docutils literal notranslate"><span class="pre">消亡</span></code><br />
 在很多情况下，我们期望吸收系数和散射系数进行不同的参数化。我们可以定义消亡系数为吸收系数与散射系数的和： <span class="math notranslate nohighlight">\(\sigma_t=\sigma_a+\sigma_s\)</span> （有时也被叫做衰减系数（<code class="docutils literal notranslate"><span class="pre">attenuation</span> <span class="pre">coefficient</span></code>），通常可以用密度来代替）。消亡系数定义了由于吸收和散射导致的辐射净损失。换句话说，消亡碰撞是即发生吸收也发生散射的碰撞，并且我们需要确保散射出去的辐射与<code class="docutils literal notranslate"><span class="pre">单散射反照率</span></code>在光照积分公式中正确调制。</p>
@@ -1671,9 +1671,9 @@ $<span class="math notranslate nohighlight">\(\alpha=\frac{\sigma_s}{\sigma_t}\)
 </section>
 </section>
 <section id="id31">
-<h4>3.2.2 体积中的光线传输<a class="headerlink" href="#id31" title="Link to this heading">#</a></h4>
+<h4>3.2.2 体积中的光线传输<a class="headerlink" href="#id31" title="Link to this heading">¶</a></h4>
 <section id="radiative-transfer-equation">
-<h5>3.2.2.1 辐射传输方程（<code class="docutils literal notranslate"><span class="pre">Radiative</span> <span class="pre">Transfer</span> <span class="pre">Equation</span></code>）<a class="headerlink" href="#radiative-transfer-equation" title="Link to this heading">#</a></h5>
+<h5>3.2.2.1 辐射传输方程（<code class="docutils literal notranslate"><span class="pre">Radiative</span> <span class="pre">Transfer</span> <span class="pre">Equation</span></code>）<a class="headerlink" href="#radiative-transfer-equation" title="Link to this heading">¶</a></h5>
 <p>辐射传输方程用于定义辐射在体积中的分布，或者简称<code class="docutils literal notranslate"><span class="pre">RTE</span></code>。用于描述包括任何几何边缘和光源在体积中沿着 <span class="math notranslate nohighlight">\(w\)</span> 方向，位于 <span class="math notranslate nohighlight">\(x\)</span> 点位置处的均衡辐射场（<code class="docutils literal notranslate"><span class="pre">equilibrium</span> <span class="pre">radiance</span> <span class="pre">field</span></code>） <span class="math notranslate nohighlight">\(L(x,w)\)</span></p>
 <p>接下来，我们根据该<code class="docutils literal notranslate"><span class="pre">RTE</span></code>方程的组成结构进行讲解，最终构成整个方程：</p>
 <blockquote>
@@ -1730,7 +1730,7 @@ $<span class="math notranslate nohighlight">\((w\cdot\nabla)L(x,w)=\sigma_s(x)\i
 </div></blockquote>
 </section>
 <section id="volume-rendering-equation">
-<h5>3.2.2.2 体渲染方程（<code class="docutils literal notranslate"><span class="pre">Volume</span> <span class="pre">Rendering</span> <span class="pre">Equation</span></code>）<a class="headerlink" href="#volume-rendering-equation" title="Link to this heading">#</a></h5>
+<h5>3.2.2.2 体渲染方程（<code class="docutils literal notranslate"><span class="pre">Volume</span> <span class="pre">Rendering</span> <span class="pre">Equation</span></code>）<a class="headerlink" href="#volume-rendering-equation" title="Link to this heading">¶</a></h5>
 <p><code class="docutils literal notranslate"><span class="pre">RTE</span></code>方程使用梯度 <span class="math notranslate nohighlight">\((w\cdot\nabla)\)</span> 来表述向前传输的辐射亮度分布，换句话说就是用于描述辐射束向前传播时发生了什么。<code class="docutils literal notranslate"><span class="pre">RTE</span></code>可以直接使用有限元的方式比如辐射度方法，更多见于有限元方法，而不是光追中的设置，体渲染方程可以描述这种现象（这句话不知道说的啥意思，原文<code class="docutils literal notranslate"><span class="pre">The</span> <span class="pre">RTE</span> <span class="pre">can</span> <span class="pre">be</span> <span class="pre">directly</span> <span class="pre">used</span> <span class="pre">in</span> <span class="pre">finite</span> <span class="pre">element</span> <span class="pre">methods</span> <span class="pre">such</span> <span class="pre">as</span> <span class="pre">radiosity</span> <span class="pre">(Cohen</span> <span class="pre">et</span> <span class="pre">al.</span> <span class="pre">1993)</span> <span class="pre">and</span> <span class="pre">more</span> <span class="pre">generally</span> <span class="pre">in</span> <span class="pre">finite</span> <span class="pre">element</span> <span class="pre">methods,</span> <span class="pre">but</span> <span class="pre">not</span> <span class="pre">in</span> <span class="pre">a</span> <span class="pre">path</span> <span class="pre">tracing</span> <span class="pre">setting,</span> <span class="pre">The</span> <span class="pre">volume</span> <span class="pre">rendering</span> <span class="pre">equation</span> <span class="pre">can</span> <span class="pre">provide</span> <span class="pre">this</span> <span class="pre">formulation</span></code>），为了简化符号，将内散射简写成：</p>
 <div class="math-wrapper docutils container">
 <div class="math notranslate nohighlight">
@@ -1758,11 +1758,11 @@ $<span class="math notranslate nohighlight">\((w\cdot\nabla)L(x,w)=\sigma_s(x)\i
 </section>
 </section>
 <section id="id32">
-<h4>3.2.3 追踪方式<a class="headerlink" href="#id32" title="Link to this heading">#</a></h4>
+<h4>3.2.3 追踪方式<a class="headerlink" href="#id32" title="Link to this heading">¶</a></h4>
 <p>当追踪的采样点处发生辐射碰撞后，使用俄罗斯轮盘赌法（<code class="docutils literal notranslate"><span class="pre">Russian</span> <span class="pre">roulette</span></code>）和拒绝采样法（<code class="docutils literal notranslate"><span class="pre">rejection</span> <span class="pre">sampling</span></code>）来评估，而不是同时遍历计算所有的碰撞。去追踪模拟光子（在计算机图形学领域中）是如何在体积体中碰撞反弹的，特别是模拟吸收和散射碰撞。将其数字化计算，我们不允许辐射束分散自身，我们只选择那些我们需要的碰撞类型进行建模。</p>
 <p>在这些假设前提下，对应的问题也就变成了：采样光子在不同碰撞类型之间的自由路径的距离，用于模拟这之间的物理过程。</p>
 <section id="closed-form-tracking">
-<h5>3.2.3.1 最近式追踪（<code class="docutils literal notranslate"><span class="pre">Closed-form</span> <span class="pre">Tracking</span></code>）<a class="headerlink" href="#closed-form-tracking" title="Link to this heading">#</a></h5>
+<h5>3.2.3.1 最近式追踪（<code class="docutils literal notranslate"><span class="pre">Closed-form</span> <span class="pre">Tracking</span></code>）<a class="headerlink" href="#closed-form-tracking" title="Link to this heading">¶</a></h5>
 <p>在较简单的体积体中，例如按照常数，多项式或者是指数变化的消亡，对于自由路径，可以使用你变换采样法（<code class="docutils literal notranslate"><span class="pre">inverse</span> <span class="pre">transform</span> <span class="pre">sampling</span></code>）进行采样，乌拉姆（<code class="docutils literal notranslate"><span class="pre">Ulam</span></code>）是第一个将其应用在蒙特卡洛积分上的。在渲染中，对于均质（<code class="docutils literal notranslate"><span class="pre">homogeneous</span></code>）的体积体非常重要，我们之后将会对其进行讨论。</p>
 <p>为了简化的目的，我们可以通过单位化透射率方程<code class="docutils literal notranslate"><span class="pre">11</span></code>式得到一个概率密度函数。如果相对应的分布函数（<code class="docutils literal notranslate"><span class="pre">cumulative</span> <span class="pre">distribution</span> <span class="pre">function</span></code>，也叫累积分布函数）是可逆（<code class="docutils literal notranslate"><span class="pre">analytically</span> <span class="pre">invertible</span></code>）的，则自由路径 <span class="math notranslate nohighlight">\(t'\)</span> 可以使用一个随机数 <span class="math notranslate nohighlight">\(\xi\)</span> 进行分析采样，对于一个同质的体积体其对应的 <span class="math notranslate nohighlight">\(\sigma_t\)</span> 在空间上是不会变化的，随之透射率为：</p>
 <div class="math-wrapper docutils container">
@@ -1789,7 +1789,7 @@ $<span class="math notranslate nohighlight">\((w\cdot\nabla)L(x,w)=\sigma_s(x)\i
 </section>
 </section>
 <section id="id33">
-<h2>4 问题<a class="headerlink" href="#id33" title="Link to this heading">#</a></h2>
+<h2>4 问题<a class="headerlink" href="#id33" title="Link to this heading">¶</a></h2>
 <p>人非生而知之者，孰能无惑 •ᴗ•</p>
 <ul class="simple">
 <li><p><span class="math notranslate nohighlight">\(\sigma_t(x)\)</span> 消亡系数为 <span class="math notranslate nohighlight">\(\sigma_a+\sigma_s\)</span>，其中的 <span class="math notranslate nohighlight">\(\sigma_s\)</span> 是一般散射的散射还是外散射的意思？消亡意味着能量的减少，在自发光，外散射，内散射，吸收四种情况中只有吸收和外散射会导致出射的能量减少，自发光和内散射都会导致出射的能量增加。（相关问题<code class="docutils literal notranslate"><span class="pre">Physically</span> <span class="pre">Based</span> <span class="pre">Sky,</span> <span class="pre">Atmosphere</span> <span class="pre">and</span> <span class="pre">Cloud</span> <span class="pre">Rendering</span> <span class="pre">in</span> <span class="pre">Frostbite</span></code>等文章中有相关提及，但都不明确）</p></li>
@@ -1798,7 +1798,7 @@ $<span class="math notranslate nohighlight">\((w\cdot\nabla)L(x,w)=\sigma_s(x)\i
 </section>
 <hr class="docutils" />
 <section id="id34">
-<h2>未完待续<a class="headerlink" href="#id34" title="Link to this heading">#</a></h2>
+<h2>未完待续<a class="headerlink" href="#id34" title="Link to this heading">¶</a></h2>
 </section>
 </section>
 
@@ -1970,7 +1970,7 @@ $<span class="math notranslate nohighlight">\((w\cdot\nabla)L(x,w)=\sigma_s(x)\i
     </aside>
   </div>
 </div><script src="../_static/documentation_options.js?v=7d86a446"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>

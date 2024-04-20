@@ -6,7 +6,7 @@
 <link rel="index" title="索引" href="genindex.html" /><link rel="search" title="搜索" href="search.html" /><link rel="next" title="物理设备" href="PhysicalDevice.html" /><link rel="prev" title="纵览" href="Overview.html" />
         <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/Instance.html" />
 
-    <link rel="shortcut icon" href="_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+    <link rel="shortcut icon" href="_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
         <title>最初之物 VkInstance - Vulkan入门精要</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b20cc3f5" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
@@ -275,7 +275,7 @@
         </div>
         <article role="main">
           <section id="vkinstance">
-<h1>最初之物 VkInstance<a class="headerlink" href="#vkinstance" title="Link to this heading">#</a></h1>
+<h1>最初之物 VkInstance<a class="headerlink" href="#vkinstance" title="Link to this heading">¶</a></h1>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header sd-bg-muted sd-bg-text-muted">
 <span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-history" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M1.643 3.143L.427 1.927A.25.25 0 000 2.104V5.75c0 .138.112.25.25.25h3.646a.25.25 0 00.177-.427L2.715 4.215a6.5 6.5 0 11-1.18 4.458.75.75 0 10-1.493.154 8.001 8.001 0 101.6-5.684zM7.75 4a.75.75 0 01.75.75v2.992l2.028.812a.75.75 0 01-.557 1.392l-2.5-1A.75.75 0 017 8.25v-3.5A.75.75 0 017.75 4z"></path></svg></span>更新记录<div class="sd-summary-down docutils">
@@ -310,10 +310,10 @@
 </div>
 </details><p>开发 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 第一步就是创建 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> ，也就是 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的 <code class="docutils literal notranslate"><span class="pre">实例</span></code> 。一个实例代表一整 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 环境（或上下文）。不同的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 环境能够获取到不同的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 功能特性。其中最重要的就是配置 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 要使用的 <code class="docutils literal notranslate"><span class="pre">版本</span></code> 。</p>
 <section id="id1">
-<h2>创建 VkInstance<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<h2>创建 VkInstance<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
 <p>通过 <code class="docutils literal notranslate"><span class="pre">vkCreateInstance(...)</span></code> 函数创建 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> ：</p>
 <section id="vkcreateinstance">
-<h3>vkCreateInstance<a class="headerlink" href="#vkcreateinstance" title="Link to this heading">#</a></h3>
+<h3>vkCreateInstance<a class="headerlink" href="#vkcreateinstance" title="Link to this heading">¶</a></h3>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="n">VkResult</span><span class="w"> </span><span class="nf">vkCreateInstance</span><span class="p">(</span>
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">VkInstanceCreateInfo</span><span class="o">*</span><span class="w">                 </span><span class="n">pCreateInfo</span><span class="p">,</span>
@@ -333,7 +333,7 @@
 <p>其中 <code class="docutils literal notranslate"><span class="pre">VkInstanceCreateInfo</span></code> 结构体定义如下：</p>
 </section>
 <section id="vkinstancecreateinfo">
-<h3>VkInstanceCreateInfo<a class="headerlink" href="#vkinstancecreateinfo" title="Link to this heading">#</a></h3>
+<h3>VkInstanceCreateInfo<a class="headerlink" href="#vkinstancecreateinfo" title="Link to this heading">¶</a></h3>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkInstanceCreateInfo</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">VkStructureType</span><span class="w">             </span><span class="n">sType</span><span class="p">;</span>
@@ -360,7 +360,7 @@
 <p>其中 <code class="docutils literal notranslate"><span class="pre">VkApplicationInfo</span></code> 结构体定义如下：</p>
 </section>
 <section id="vkapplicationinfo">
-<h3>VkApplicationInfo<a class="headerlink" href="#vkapplicationinfo" title="Link to this heading">#</a></h3>
+<h3>VkApplicationInfo<a class="headerlink" href="#vkapplicationinfo" title="Link to this heading">¶</a></h3>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkApplicationInfo</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">VkStructureType</span><span class="w">    </span><span class="n">sType</span><span class="p">;</span>
@@ -405,7 +405,7 @@
 <p>在 <a class="reference external" href="./Overview.html">纵览</a> 中我们知道由于历史原因， <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.1</span></code> 版本时推出了 <code class="docutils literal notranslate"><span class="pre">vkEnumerateInstanceVersion(...)</span></code> 函数，用于获取驱动支持加载 <code class="docutils literal notranslate"><span class="pre">Instance</span> <span class="pre">域函数</span></code>  的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本。该函数定义如下：</p>
 </section>
 <section id="vkenumerateinstanceversion">
-<h3>vkEnumerateInstanceVersion<a class="headerlink" href="#vkenumerateinstanceversion" title="Link to this heading">#</a></h3>
+<h3>vkEnumerateInstanceVersion<a class="headerlink" href="#vkenumerateinstanceversion" title="Link to this heading">¶</a></h3>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="n">VkResult</span><span class="w"> </span><span class="nf">vkEnumerateInstanceVersion</span><span class="p">(</span>
 <span class="w">    </span><span class="kt">uint32_t</span><span class="o">*</span><span class="w">                                   </span><span class="n">pApiVersion</span><span class="p">);</span>
@@ -425,7 +425,7 @@
 </section>
 </section>
 <section id="layer">
-<h2>Layer<a class="headerlink" href="#layer" title="Link to this heading">#</a></h2>
+<h2>Layer<a class="headerlink" href="#layer" title="Link to this heading">¶</a></h2>
 <p>在创建 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 时需要通过 <code class="docutils literal notranslate"><span class="pre">VkInstanceCreateInfo::enabledLayerCount</span></code> 和 <code class="docutils literal notranslate"><span class="pre">VkInstanceCreateInfo::ppEnabledLayerNames</span></code> 来配置实例要开启的 <code class="docutils literal notranslate"><span class="pre">层</span></code> （ <code class="docutils literal notranslate"><span class="pre">Layer</span></code> ）。</p>
 <p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">层</span></code> 一般都是用来作正确性验证检查的。如果在开发后执行阶段发生了使用错误， <code class="docutils literal notranslate"><span class="pre">层</span></code> 会输出错误信息，帮助开发者修正错误。</p>
 <p>其中最常使用的 <code class="docutils literal notranslate"><span class="pre">层</span></code> 就是 <code class="docutils literal notranslate"><span class="pre">VK_LAYER_KHRONOS_validation</span></code> ，用于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">API</span></code> 验证和错误检查。</p>
@@ -446,7 +446,7 @@
 </div>
 <p>可以通过 <code class="docutils literal notranslate"><span class="pre">vkEnumerateInstanceLayerProperties(...)</span></code> 获取系统中 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 支持的 <code class="docutils literal notranslate"><span class="pre">Layer</span></code> ：</p>
 <section id="vkenumerateinstancelayerproperties">
-<h3>vkEnumerateInstanceLayerProperties<a class="headerlink" href="#vkenumerateinstancelayerproperties" title="Link to this heading">#</a></h3>
+<h3>vkEnumerateInstanceLayerProperties<a class="headerlink" href="#vkenumerateinstancelayerproperties" title="Link to this heading">¶</a></h3>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="n">VkResult</span><span class="w"> </span><span class="nf">vkEnumerateInstanceLayerProperties</span><span class="p">(</span>
 <span class="w">    </span><span class="kt">uint32_t</span><span class="o">*</span><span class="w">                                   </span><span class="n">pPropertyCount</span><span class="p">,</span>
@@ -470,7 +470,7 @@
 <p>其中 <code class="docutils literal notranslate"><span class="pre">VkLayerProperties</span></code> 定义如下：</p>
 </section>
 <section id="vklayerproperties">
-<h3>VkLayerProperties<a class="headerlink" href="#vklayerproperties" title="Link to this heading">#</a></h3>
+<h3>VkLayerProperties<a class="headerlink" href="#vklayerproperties" title="Link to this heading">¶</a></h3>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkLayerProperties</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="kt">char</span><span class="w">        </span><span class="n">layerName</span><span class="p">[</span><span class="n">VK_MAX_EXTENSION_NAME_SIZE</span><span class="p">];</span>
@@ -494,7 +494,7 @@
 </section>
 </section>
 <section id="extension">
-<h2>Extension<a class="headerlink" href="#extension" title="Link to this heading">#</a></h2>
+<h2>Extension<a class="headerlink" href="#extension" title="Link to this heading">¶</a></h2>
 <p>在创建 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 时需要通过 <code class="docutils literal notranslate"><span class="pre">VkInstanceCreateInfo::enabledExtensionCount</span></code> 和 <code class="docutils literal notranslate"><span class="pre">VkInstanceCreateInfo::ppEnabledExtensionNames</span></code> 来配置实例要开启的 <code class="docutils literal notranslate"><span class="pre">实例扩展</span></code> （ <code class="docutils literal notranslate"><span class="pre">Instance</span> <span class="pre">Extension</span></code> ）。</p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中有两类扩展：</p>
 <ul class="simple">
@@ -503,7 +503,7 @@
 </ul>
 <p><code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 支持的实例扩展可以通过 <code class="docutils literal notranslate"><span class="pre">vkEnumerateInstanceExtensionProperties(...)</span></code> 函数获取：</p>
 <section id="vkenumerateinstanceextensionproperties">
-<h3>vkEnumerateInstanceExtensionProperties<a class="headerlink" href="#vkenumerateinstanceextensionproperties" title="Link to this heading">#</a></h3>
+<h3>vkEnumerateInstanceExtensionProperties<a class="headerlink" href="#vkenumerateinstanceextensionproperties" title="Link to this heading">¶</a></h3>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="n">VkResult</span><span class="w"> </span><span class="nf">vkEnumerateInstanceExtensionProperties</span><span class="p">(</span>
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w">                                 </span><span class="n">pLayerName</span><span class="p">,</span>
@@ -529,7 +529,7 @@
 <p>其中 <code class="docutils literal notranslate"><span class="pre">VkExtensionProperties</span></code> 定义如下：</p>
 </section>
 <section id="vkextensionproperties">
-<h3>VkExtensionProperties<a class="headerlink" href="#vkextensionproperties" title="Link to this heading">#</a></h3>
+<h3>VkExtensionProperties<a class="headerlink" href="#vkextensionproperties" title="Link to this heading">¶</a></h3>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkExtensionProperties</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="kt">char</span><span class="w">        </span><span class="n">extensionName</span><span class="p">[</span><span class="n">VK_MAX_EXTENSION_NAME_SIZE</span><span class="p">];</span>
@@ -568,10 +568,10 @@
 </section>
 </section>
 <section id="id3">
-<h2>销毁 VkInstance<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<h2>销毁 VkInstance<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
 <p>当创建完 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 之后可通过 <code class="docutils literal notranslate"><span class="pre">vkDestroyInstance(...)</span></code> 函数销毁。</p>
 <section id="vkdestroyinstance">
-<h3>vkDestroyInstance<a class="headerlink" href="#vkdestroyinstance" title="Link to this heading">#</a></h3>
+<h3>vkDestroyInstance<a class="headerlink" href="#vkdestroyinstance" title="Link to this heading">¶</a></h3>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">vkDestroyInstance</span><span class="p">(</span>
 <span class="w">    </span><span class="n">VkInstance</span><span class="w">                                  </span><span class="n">instance</span><span class="p">,</span>
@@ -586,7 +586,7 @@
 </section>
 </section>
 <section id="id4">
-<h2>示例<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<h2>示例<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h2>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">vulkan_version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_MAKE_API_VERSION</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
 
 <span class="k">if</span><span class="p">(</span><span class="n">vkEnumerateInstanceVersion</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="k">nullptr</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">vkEnumerateInstanceVersion</span><span class="p">(</span><span class="o">&amp;</span><span class="n">vulkan_version</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">VkResult</span><span class="o">::</span><span class="n">VK_SUCCESS</span><span class="p">)</span>
@@ -752,7 +752,7 @@
     </aside>
   </div>
 </div><script src="_static/documentation_options.js?v=7d86a446"></script>
-    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>

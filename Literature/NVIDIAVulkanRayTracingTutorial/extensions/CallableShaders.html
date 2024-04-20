@@ -6,7 +6,7 @@
 <link rel="index" title="索引" href="../../../genindex.html" /><link rel="search" title="搜索" href="../../../search.html" /><link rel="next" title="光线查询" href="RayQuery.html" /><link rel="prev" title="相交着色器" href="IntersectionShader.html" />
         <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/Literature/NVIDIAVulkanRayTracingTutorial/extensions/CallableShaders.html" />
 
-    <link rel="shortcut icon" href="../../../_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+    <link rel="shortcut icon" href="../../../_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
         <title>可调用着色器 - Vulkan入门精要</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b20cc3f5" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
@@ -275,7 +275,7 @@
         </div>
         <article role="main">
           <section id="id1">
-<h1>可调用着色器<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
+<h1>可调用着色器<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header sd-bg-muted sd-bg-text-muted">
 <span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-history" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M1.643 3.143L.427 1.927A.25.25 0 000 2.104V5.75c0 .138.112.25.25.25h3.646a.25.25 0 00.177-.427L2.715 4.215a6.5 6.5 0 11-1.18 4.458.75.75 0 10-1.493.154 8.001 8.001 0 101.6-5.684zM7.75 4a.75.75 0 01.75.75v2.992l2.028.812a.75.75 0 01-.557 1.392l-2.5-1A.75.75 0 017 8.25v-3.5A.75.75 0 017.75 4z"></path></svg></span>更新记录<div class="sd-summary-down docutils">
@@ -300,11 +300,11 @@
 <figure class="align-default" id="id12">
 <img alt="../../../_images/callable.png" src="../../../_images/callable.png" />
 <figcaption>
-<p><span class="caption-text">可调用着色器结果示意图</span><a class="headerlink" href="#id12" title="Link to this image">#</a></p>
+<p><span class="caption-text">可调用着色器结果示意图</span><a class="headerlink" href="#id12" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 <section id="id4">
-<h2>教程<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<h2>教程<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h2>
 <p>该教程为 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> <a class="reference external" href="../NVIDIAVulkanRayTracingTutorial.html">光线追踪教程</a> 的扩展。</p>
 <p>实时光追支持在光线生成着色器、最近命中着色器、未命中着色器或者其他可调用着色器中使用 <code class="docutils literal notranslate"><span class="pre">可调用着色器</span></code> 。可调用着色器的调用有点类似间接函数的调用，不需要将这些着色器链接进可执行程序中。</p>
 <div class="note admonition">
@@ -313,7 +313,7 @@
 </div>
 </section>
 <section id="id5">
-<h2>数据存储<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<h2>数据存储<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h2>
 <p>可调用着色器只能够访问父阶段（可调用着色器的调用者）传进来的数据。且一次只能传递一个结构提数据并像负载那样声明。</p>
 <p>在父阶段，使用 <code class="docutils literal notranslate"><span class="pre">callableDataEXT</span></code> 存储限定符声明传递的数据。比如：</p>
 <div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="k">layout</span><span class="p">(</span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mo">0</span><span class="p">)</span><span class="w"> </span><span class="n">callableDataEXT</span><span class="w"> </span><span class="n">rayLight</span><span class="w"> </span><span class="n">cLight</span><span class="p">;</span>
@@ -335,7 +335,7 @@
 </div>
 </section>
 <section id="id6">
-<h2>执行<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<h2>执行<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h2>
 <p>为了执行可调用着色器，需要在父阶段着色器中调用 <code class="docutils literal notranslate"><span class="pre">executeCallableEXT</span></code> 函数。</p>
 <p>该函数的第一个参数就是着色器绑定表中的索引，第二个参数对应着 <code class="docutils literal notranslate"><span class="pre">location</span></code> 声明的索引。</p>
 <p>如下函数调用将执行可调用着色器。</p>
@@ -344,9 +344,9 @@
 </div>
 </section>
 <section id="id7">
-<h2>可调用着色器加入着色器绑定表中<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<h2>可调用着色器加入着色器绑定表中<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h2>
 <section id="id8">
-<h3>创建可调用着色器<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
+<h3>创建可调用着色器<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h3>
 <p>在 <code class="docutils literal notranslate"><span class="pre">HelloVulkan::createRtPipeline()</span></code> 中，紧接着最近命中着色器的后面，我们将会增加 <code class="docutils literal notranslate"><span class="pre">3</span></code> 个可调用着色器，分别对应不同的光源类型。</p>
 <p>首先创建相应的着色器：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">enum</span><span class="w"> </span><span class="nc">StageIndices</span>
@@ -390,7 +390,7 @@
 </div>
 </section>
 <section id="id9">
-<h3>可调用着色器<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
+<h3>可调用着色器<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h3>
 <p>三个可调用着色器源码如下：</p>
 <div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="c1">// light_point.rcall</span>
 
@@ -485,7 +485,7 @@
 <p>可以看到每个可调用着色器分别计算各自的光源类型数据。</p>
 </section>
 <section id="id10">
-<h3>着色器绑定表<a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
+<h3>着色器绑定表<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h3>
 <p>在本示例中，我们将会使用 <code class="docutils literal notranslate"><span class="pre">nvvk::SBTWrapper</span></code> 。其内部将会使用创建光追管线中的信息自动适配着色器绑定表缓存的内部结构。</p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">hello_vulkan.h</span></code> 头文件中，将该包装器添加进来并增加一个新成员。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;nvvk/sbtwrapper_vk.hpp&quot;</span>
@@ -505,7 +505,7 @@
 <figure class="align-default" id="id13">
 <img alt="../../../_images/sbt.png" src="../../../_images/sbt.png" />
 <figcaption>
-<p><span class="caption-text">着色器绑定表内部结构意图</span><a class="headerlink" href="#id13" title="Link to this image">#</a></p>
+<p><span class="caption-text">着色器绑定表内部结构意图</span><a class="headerlink" href="#id13" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 <p>着色器绑定表包装器将会返回我们需要的信息。相比于手动计算每个绑定表的偏移，我们可以通过包装器直接获得每个类型组对应的 <code class="docutils literal notranslate"><span class="pre">VkStridedDeviceAddressRegionKHR</span></code> 。</p>
@@ -516,7 +516,7 @@
 </section>
 </section>
 <section id="id11">
-<h2>调用可调用着色器<a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
+<h2>调用可调用着色器<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h2>
 <p>在最近命中着色器中，相比于使用 <code class="docutils literal notranslate"><span class="pre">if-else</span></code> 判定，我们现在可以使用可调用着色器分别计算相应的光源类型数据。</p>
 <div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="n">cLight</span><span class="p">.</span><span class="n">inHitPosition</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">worldPos</span><span class="p">;</span>
 <span class="c1">//#define DONT_USE_CALLABLE</span>
@@ -657,7 +657,7 @@
     </aside>
   </div>
 </div><script src="../../../_static/documentation_options.js?v=7d86a446"></script>
-    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>

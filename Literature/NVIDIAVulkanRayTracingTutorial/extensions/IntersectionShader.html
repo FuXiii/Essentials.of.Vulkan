@@ -6,7 +6,7 @@
 <link rel="index" title="索引" href="../../../genindex.html" /><link rel="search" title="搜索" href="../../../search.html" /><link rel="next" title="可调用着色器" href="CallableShaders.html" /><link rel="prev" title="动态更新" href="Animation.html" />
         <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/Literature/NVIDIAVulkanRayTracingTutorial/extensions/IntersectionShader.html" />
 
-    <link rel="shortcut icon" href="../../../_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+    <link rel="shortcut icon" href="../../../_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
         <title>相交着色器 - Vulkan入门精要</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b20cc3f5" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
@@ -275,7 +275,7 @@
         </div>
         <article role="main">
           <section id="id1">
-<h1>相交着色器<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
+<h1>相交着色器<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header sd-bg-muted sd-bg-text-muted">
 <span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-history" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M1.643 3.143L.427 1.927A.25.25 0 000 2.104V5.75c0 .138.112.25.25.25h3.646a.25.25 0 00.177-.427L2.715 4.215a6.5 6.5 0 11-1.18 4.458.75.75 0 10-1.493.154 8.001 8.001 0 101.6-5.684zM7.75 4a.75.75 0 01.75.75v2.992l2.028.812a.75.75 0 01-.557 1.392l-2.5-1A.75.75 0 017 8.25v-3.5A.75.75 0 017.75 4z"></path></svg></span>更新记录<div class="sd-summary-down docutils">
@@ -314,16 +314,16 @@
 <figure class="align-default" id="id15">
 <img alt="../../../_images/intersection.png" src="../../../_images/intersection.png" />
 <figcaption>
-<p><span class="caption-text">相交着色器结果示意图</span><a class="headerlink" href="#id15" title="Link to this image">#</a></p>
+<p><span class="caption-text">相交着色器结果示意图</span><a class="headerlink" href="#id15" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 <section id="id4">
-<h2>教程<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<h2>教程<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h2>
 <p>该教程为 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> <a class="reference external" href="../NVIDIAVulkanRayTracingTutorial.html">光线追踪教程</a> 的扩展。</p>
 <p>该教程展示如何使用相交着色器来渲染不同材质的不同图元。</p>
 </section>
 <section id="id5">
-<h2>上层实现<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<h2>上层实现<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h2>
 <p>从上层角度来看，我们将：</p>
 <ul class="simple">
 <li><p>在底层加速结构中增加 <span class="math notranslate nohighlight">\(2,000,000\)</span> 个轴对齐包围盒（ <code class="docutils literal notranslate"><span class="pre">axis</span> <span class="pre">aligned</span> <span class="pre">bounding</span> <span class="pre">box</span></code> 简写为 <code class="docutils literal notranslate"><span class="pre">AABB</span></code> ）</p></li>
@@ -338,7 +338,7 @@
 </ul>
 </section>
 <section id="id6">
-<h2>创建所有隐式对象<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<h2>创建所有隐式对象<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h2>
 <p>在 <code class="docutils literal notranslate"><span class="pre">host_device.h</span></code> ，我们将会声明我们需要的结构体。实现定义球体结构体。</p>
 <div class="note admonition">
 <p class="admonition-title">盒体</p>
@@ -499,7 +499,7 @@
 </div>
 </section>
 <section id="id7">
-<h2>布置场景<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<h2>布置场景<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h2>
 <p>在 <code class="docutils literal notranslate"><span class="pre">main.cpp</span></code> 中，加载 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 模型的地方，将其替换成如下：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">helloVk</span><span class="p">.</span><span class="n">loadModel</span><span class="p">(</span><span class="n">nvh</span><span class="o">::</span><span class="n">findFile</span><span class="p">(</span><span class="s">&quot;media/scenes/plane.obj&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">defaultSearchPaths</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">));</span>
 <span class="n">helloVk</span><span class="p">.</span><span class="n">createSpheres</span><span class="p">(</span><span class="mi">2000000</span><span class="p">);</span>
@@ -515,9 +515,9 @@
 </div>
 </section>
 <section id="id8">
-<h2>加速结构<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<h2>加速结构<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h2>
 <section id="id9">
-<h3>底层加速结构<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
+<h3>底层加速结构<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">createBottomLevelAS()</span></code> 函数会为每一个 <code class="docutils literal notranslate"><span class="pre">OBJ</span></code> 模型创建一个底层加速结构，我们需要增加一个新的底层加速结构用于承载所有球体的轴对齐包围盒。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">HelloVulkan::createBottomLevelAS</span><span class="p">()</span>
 <span class="p">{</span>
@@ -544,7 +544,7 @@
 </div>
 </section>
 <section id="id10">
-<h3>顶层加速结构<a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
+<h3>顶层加速结构<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h3>
 <p>与 <code class="docutils literal notranslate"><span class="pre">createTopLevelAS()</span></code> 类似，顶层加速结构将会引入承载所有球体的底层加速结构。我们将 <code class="docutils literal notranslate"><span class="pre">instanceCustomId</span></code> 和 <code class="docutils literal notranslate"><span class="pre">blasId</span></code> 设置为最后一个元素。这就是为什么存储球体的底层加速结构需要在所有模型加载完成之后加载。</p>
 <p><code class="docutils literal notranslate"><span class="pre">hitGroupId</span></code> 将会设置成 <code class="docutils literal notranslate"><span class="pre">1</span></code> 而不是 <code class="docutils literal notranslate"><span class="pre">0</span></code> 。我们需要为这些隐式图元增加一个新的命中组，由于我们没有提供类似三角形这样的图元，所以我们需要计算类似法线这样的图元属性。</p>
 <p>由于我们在创建隐式对象时增加了一个额外的实体，循环遍历时就会将最后一个元素忽略，循环将会少一次。因此循环将会类似于如下：</p>
@@ -575,7 +575,7 @@
 </section>
 </section>
 <section id="id11">
-<h2>描述符<a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
+<h2>描述符<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h2>
 <p>为了在着色器中能够访问到存储所有球体的缓存，需要对描述符进行一些改变。</p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">Binding</span></code> 中增加一个新的枚举。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">eImplicit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w">  </span><span class="c1">// 所有隐式对象</span>
@@ -594,7 +594,7 @@
 </div>
 </section>
 <section id="id12">
-<h2>相交着色器<a class="headerlink" href="#id12" title="Link to this heading">#</a></h2>
+<h2>相交着色器<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h2>
 <p>相交着色器是增加到类型为 <code class="docutils literal notranslate"><span class="pre">VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR</span></code> （ <code class="docutils literal notranslate"><span class="pre">VkRayTracingShaderGroupCreateInfoKHR::type</span></code> ）的命中组中。在本示例中，我们已经有一个用于与三角形和相应的最近命中交互的命中组了。想在我能增加一个新的，新增的命中组的 <code class="docutils literal notranslate"><span class="pre">Hit</span> <span class="pre">Group</span> <span class="pre">ID</span></code> 为 <code class="docutils literal notranslate"><span class="pre">1</span></code> 。</p>
 <p>如下是新的命中组相关代码：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">enum</span><span class="w"> </span><span class="nc">StageIndices</span>
@@ -626,7 +626,7 @@
 </pre></div>
 </div>
 <section id="raytrace-rint">
-<h3>raytrace.rint<a class="headerlink" href="#raytrace-rint" title="Link to this heading">#</a></h3>
+<h3>raytrace.rint<a class="headerlink" href="#raytrace-rint" title="Link to this heading">¶</a></h3>
 <p>相交着色器 <code class="docutils literal notranslate"><span class="pre">raytrace.rint</span></code> 需要添加到着色器目录下并重新执行 <code class="docutils literal notranslate"><span class="pre">CMake</span></code> 将其加入到项目工程中。当光线命中场景中的某一个轴对齐包围盒之后将会执行相交着色器。</p>
 <div class="note admonition">
 <p class="admonition-title">注意</p>
@@ -662,7 +662,7 @@
 </pre></div>
 </div>
 <section id="id13">
-<h4>光线与球体求交<a class="headerlink" href="#id13" title="Link to this heading">#</a></h4>
+<h4>光线与球体求交<a class="headerlink" href="#id13" title="Link to this heading">¶</a></h4>
 <div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="c1">// 光线-球体 求交</span>
 <span class="c1">// http://viclw17.github.io/2018/07/16/raytracing-ray-sphere-intersection/</span>
 <span class="kt">float</span><span class="w"> </span><span class="n">hitSphere</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Sphere</span><span class="w"> </span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Ray</span><span class="w"> </span><span class="n">r</span><span class="p">)</span>
@@ -685,7 +685,7 @@
 </div>
 </section>
 <section id="id14">
-<h4>光线与轴对齐包围盒求交<a class="headerlink" href="#id14" title="Link to this heading">#</a></h4>
+<h4>光线与轴对齐包围盒求交<a class="headerlink" href="#id14" title="Link to this heading">¶</a></h4>
 <div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="c1">// 光线-轴对齐包围盒 求交</span>
 <span class="kt">float</span><span class="w"> </span><span class="n">hitAabb</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Aabb</span><span class="w"> </span><span class="n">aabb</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Ray</span><span class="w"> </span><span class="n">r</span><span class="p">)</span>
 <span class="p">{</span>
@@ -745,7 +745,7 @@
 </section>
 </section>
 <section id="raytrace2-rchit">
-<h3>raytrace2.rchit<a class="headerlink" href="#raytrace2-rchit" title="Link to this heading">#</a></h3>
+<h3>raytrace2.rchit<a class="headerlink" href="#raytrace2-rchit" title="Link to this heading">¶</a></h3>
 <p>该最近命中着色器与之前的 <code class="docutils literal notranslate"><span class="pre">raytrace.rchit</span></code> 基本上是相同的，但是由于图元是隐式的，我们需要计算命中点处图元的法线。</p>
 <p>我们需要通过相交着色器返回的 <code class="docutils literal notranslate"><span class="pre">gl_HitTEXT</span></code> （命中点到光线起点间的距离）计算光线命中点：</p>
 <div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="kt">vec3</span><span class="w"> </span><span class="n">worldPos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">gl_WorldRayOriginEXT</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">gl_WorldRayDirectionEXT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">gl_HitTEXT</span><span class="p">;</span>
@@ -883,7 +883,7 @@
     </aside>
   </div>
 </div><script src="../../../_static/documentation_options.js?v=7d86a446"></script>
-    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>

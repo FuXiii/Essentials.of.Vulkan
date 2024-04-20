@@ -6,7 +6,7 @@
 <link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="搜索" href="../search.html" /><link rel="next" title="Visual Studio Code" href="VSCode.html" /><link rel="prev" title="VK_KHR_buffer_device_address" href="VK_KHR_buffer_device_address.html" />
         <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/InformalEssay/VulkanForAndroid.html" />
 
-    <link rel="shortcut icon" href="../_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+    <link rel="shortcut icon" href="../_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
         <title>Android 平台适配 - Vulkan入门精要</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b20cc3f5" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
@@ -275,7 +275,7 @@
         </div>
         <article role="main">
           <section id="android">
-<h1>Android 平台适配<a class="headerlink" href="#android" title="Link to this heading">#</a></h1>
+<h1>Android 平台适配<a class="headerlink" href="#android" title="Link to this heading">¶</a></h1>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header sd-bg-muted sd-bg-text-muted">
 <span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-history" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M1.643 3.143L.427 1.927A.25.25 0 000 2.104V5.75c0 .138.112.25.25.25h3.646a.25.25 0 00.177-.427L2.715 4.215a6.5 6.5 0 11-1.18 4.458.75.75 0 10-1.493.154 8.001 8.001 0 101.6-5.684zM7.75 4a.75.75 0 01.75.75v2.992l2.028.812a.75.75 0 01-.557 1.392l-2.5-1A.75.75 0 017 8.25v-3.5A.75.75 0 017.75 4z"></path></svg></span>更新记录<div class="sd-summary-down docutils">
@@ -301,7 +301,7 @@
 <p>从原理上来说， <code class="docutils literal notranslate"><span class="pre">C/C++</span></code> 接入 <code class="docutils literal notranslate"><span class="pre">Android</span></code> ，是通过实现 <code class="docutils literal notranslate"><span class="pre">Android</span></code> 对外开放的 <code class="docutils literal notranslate"><span class="pre">C/C++</span></code> 接口，并导出一个动态库，之后在 <code class="docutils literal notranslate"><span class="pre">Android</span></code> 的 <code class="docutils literal notranslate"><span class="pre">Java</span></code> 端加载该动态库即可。</p>
 <p>也就是说，如果单就 <code class="docutils literal notranslate"><span class="pre">C/C++</span></code> 端，只需要使用 <code class="docutils literal notranslate"><span class="pre">AGDK</span></code> 中提供的接口并实现，与 <code class="docutils literal notranslate"><span class="pre">NDK</span></code> 一起导出一个动态库即可。</p>
 <section id="id1">
-<h2>AGDK<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<h2>AGDK<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
 <p>下载下来的 <code class="docutils literal notranslate"><span class="pre">AGDK</span></code> 的 <code class="docutils literal notranslate"><span class="pre">zip</span></code> 包中可以找到 <code class="docutils literal notranslate"><span class="pre">GameActivity</span></code> 的源码。</p>
 <ol class="arabic simple">
 <li><p>解压缩下载的软件包</p></li>
@@ -317,7 +317,7 @@
 </ol>
 </section>
 <section id="game-activity">
-<h2>game-activity 使用<a class="headerlink" href="#game-activity" title="Link to this heading">#</a></h2>
+<h2>game-activity 使用<a class="headerlink" href="#game-activity" title="Link to this heading">¶</a></h2>
 <p>在项目的 <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> 文件中导入 <code class="docutils literal notranslate"><span class="pre">game-activity</span></code> 软件包，其中 <code class="docutils literal notranslate"><span class="pre">game-activity</span></code> 需要 <code class="docutils literal notranslate"><span class="pre">libandroid.so</span></code> 。</p>
 <div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">find_package</span><span class="p">(</span><span class="s">game-activity</span><span class="w"> </span><span class="s">REQUIRED</span><span class="w"> </span><span class="s">CONFIG</span><span class="p">)</span>
 
@@ -334,7 +334,7 @@
 </div>
 </section>
 <section id="android-main">
-<h2>实现 android_main<a class="headerlink" href="#android-main" title="Link to this heading">#</a></h2>
+<h2>实现 android_main<a class="headerlink" href="#android-main" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">android_native_app_glue</span></code> 库是一个源代码库，游戏使用它在单独的线程中管理 <code class="docutils literal notranslate"><span class="pre">GameActivity</span></code> 生命周期事件，以防止主线程中出现阻塞。使用该库时，您可以注册回调以处理生命周期事件，例如触控输入事件。</p>
 <div class="admonition note">
 <p class="admonition-title">备注</p>
@@ -357,7 +357,7 @@
 </div>
 </section>
 <section id="id2">
-<h2>游戏循环<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<h2>游戏循环<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
 <p>在游戏循环中处理 <code class="docutils literal notranslate"><span class="pre">android_app</span></code> ，比如在循环中处理 <a class="reference external" href="https://developer.android.com/reference/games/game-activity/group/android-native-app-glue?hl=zh-cn#nativeappglueappcmd">NativeAppGlueAppCmd</a> 中定义的应用周期事件。</p>
 <p>比如。一下代码中将 <code class="docutils literal notranslate"><span class="pre">您的事件处理回调函数</span></code> 注册为 <code class="docutils literal notranslate"><span class="pre">NativeAppGlueAppCmd</span></code> 的处理回调，之后循环查询周期事件，并将其发送到之前注册的事件处理回调中（在 <code class="docutils literal notranslate"><span class="pre">android_app::onAppCmd</span></code> 中）。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">NativeEngine::GameLoop</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
@@ -391,7 +391,7 @@
 </div>
 </section>
 <section id="id3">
-<h2>事件处理<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<h2>事件处理<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
 <p>如果想让 <code class="docutils literal notranslate"><span class="pre">C/C++</span></code> 应用获得 <code class="docutils literal notranslate"><span class="pre">Android</span></code> 端的输入事件的话，请使用 <a class="reference external" href="https://developer.android.com/reference/games/game-activity/group/android-native-app-glue?hl=zh-cn#android_app_set_motion_event_filter">android_app_set_motion_event_filter</a> 和 <a class="reference external" href="https://developer.android.com/reference/games/game-activity/group/android-native-app-glue?hl=zh-cn#android_app_set_key_event_filter">android_app_set_key_event_filter</a> 创建并注册事件过滤器。</p>
 <p>默认情况下， <code class="docutils literal notranslate"><span class="pre">native_app_glue</span></code> 库仅允许来自 <a class="reference external" href="https://developer.android.com/reference/android/view/InputDevice?hl=zh-cn#SOURCE_TOUCHSCREEN">SOURCE_TOUCHSCREEN</a> 的输入动作事件。</p>
 <p>如果需要处理输入事件，需要在循环中使用 <a class="reference external" href="https://developer.android.com/reference/games/game-activity/group/android-native-app-glue?hl=zh-cn#android_app_swap_input_buffers">android_app_swap_input_buffers()</a> 获取对 <code class="docutils literal notranslate"><span class="pre">android_input_buffer</span></code> 的引用。获取到的这些缓存中包含自上次循环以来发生的 <a class="reference external" href="https://developer.android.com/reference/android/view/MotionEvent?hl=zh-cn">动作事件</a> 和 <a class="reference external" href="https://developer.android.com/reference/android/view/KeyEvent?hl=zh-cn">按键事件</a> 。所包含的事件的数量分别存储在 <code class="docutils literal notranslate"><span class="pre">motionEventsCount</span></code> 和 <code class="docutils literal notranslate"><span class="pre">keyEventsCount</span></code> 中。</p>
@@ -463,7 +463,7 @@
 </div>
 </section>
 <section id="id6">
-<h2>导出动态库<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<h2>导出动态库<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h2>
 <p>导出 <code class="docutils literal notranslate"><span class="pre">Android</span></code> 需要的动态库，主要是参考 <code class="docutils literal notranslate"><span class="pre">NDK</span></code> 的 <a class="reference external" href="https://developer.android.com/ndk/guides/cmake?hl=zh-cn">CMake</a> 章节。</p>
 <p>需要使用 <a class="reference external" href="https://developer.android.com/ndk/downloads?hl=zh-cn">NDK</a> 。</p>
 <div class="admonition note">
@@ -471,7 +471,7 @@
 <p>如果已经安装了 <code class="docutils literal notranslate"><span class="pre">Android</span> <span class="pre">SDK</span></code> 的话，其下一般都自带有 <code class="docutils literal notranslate"><span class="pre">NDK</span></code> 。</p>
 </div>
 <section id="id7">
-<h3>CMake 指令<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
+<h3>CMake 指令<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h3>
 <p>常用的 <code class="docutils literal notranslate"><span class="pre">CMake</span></code> 指令模板如下：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cmake \
 -DCMAKE_TOOLCHAIN_FILE=$NDK/build/cmake/android.toolchain.cmake \
@@ -525,7 +525,7 @@ $OTHER_ARGS
 </section>
 </section>
 <section id="id8">
-<h2>GameActivity 引入库<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<h2>GameActivity 引入库<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h2>
 <p>此时需要 <code class="docutils literal notranslate"><span class="pre">Android</span> <span class="pre">Studio</span></code></p>
 <ol class="arabic simple">
 <li><p>创建继承自 <code class="docutils literal notranslate"><span class="pre">GameActivity</span></code> 的自定义类。</p></li>
@@ -655,7 +655,7 @@ $OTHER_ARGS
     </aside>
   </div>
 </div><script src="../_static/documentation_options.js?v=7d86a446"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>

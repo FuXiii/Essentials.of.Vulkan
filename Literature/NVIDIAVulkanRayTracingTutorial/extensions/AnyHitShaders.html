@@ -6,7 +6,7 @@
 <link rel="index" title="索引" href="../../../genindex.html" /><link rel="search" title="搜索" href="../../../search.html" /><link rel="next" title="实例化" href="Instances.html" /><link rel="prev" title="相机抖动抗锯齿教程" href="JitterCamera.html" />
         <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/Literature/NVIDIAVulkanRayTracingTutorial/extensions/AnyHitShaders.html" />
 
-    <link rel="shortcut icon" href="../../../_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+    <link rel="shortcut icon" href="../../../_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
         <title>任意命中着色器（Any Hit Shaders）教程 - Vulkan入门精要</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b20cc3f5" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
@@ -275,7 +275,7 @@
         </div>
         <article role="main">
           <section id="any-hit-shaders">
-<h1>任意命中着色器（Any Hit Shaders）教程<a class="headerlink" href="#any-hit-shaders" title="Link to this heading">#</a></h1>
+<h1>任意命中着色器（Any Hit Shaders）教程<a class="headerlink" href="#any-hit-shaders" title="Link to this heading">¶</a></h1>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header sd-bg-muted sd-bg-text-muted">
 <span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-history" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M1.643 3.143L.427 1.927A.25.25 0 000 2.104V5.75c0 .138.112.25.25.25h3.646a.25.25 0 00.177-.427L2.715 4.215a6.5 6.5 0 11-1.18 4.458.75.75 0 10-1.493.154 8.001 8.001 0 101.6-5.684zM7.75 4a.75.75 0 01.75.75v2.992l2.028.812a.75.75 0 01-.557 1.392l-2.5-1A.75.75 0 017 8.25v-3.5A.75.75 0 017.75 4z"></path></svg></span>更新记录<div class="sd-summary-down docutils">
@@ -315,18 +315,18 @@
 </ul>
 <figure class="align-default" id="id26">
 <img alt="../../../_images/NVIDIAAnyHit.svg" src="../../../_images/NVIDIAAnyHit.svg" /><figcaption>
-<p><span class="caption-text">着色器和着色器绑定表对应示意图</span><a class="headerlink" href="#id26" title="Link to this image">#</a></p>
+<p><span class="caption-text">着色器和着色器绑定表对应示意图</span><a class="headerlink" href="#id26" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 </div>
 <figure class="align-default" id="id27">
 <img alt="../../../_images/anyhit.png" src="../../../_images/anyhit.png" />
 <figcaption>
-<p><span class="caption-text">任意命中着色器结果示意图</span><a class="headerlink" href="#id27" title="Link to this image">#</a></p>
+<p><span class="caption-text">任意命中着色器结果示意图</span><a class="headerlink" href="#id27" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 <section id="id4">
-<h2>教程<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<h2>教程<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h2>
 <p>该教程为 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> <a class="reference external" href="../NVIDIAVulkanRayTracingTutorial.html">光线追踪教程</a> 的扩展。</p>
 <p>与最近命中着色器（ <code class="docutils literal notranslate"><span class="pre">closest</span> <span class="pre">hit</span> <span class="pre">shade</span></code> ）类似，任意命中着色器在光线与几何体相交处执行，与最近命中着色器不同的是，任意命中着色器将会在沿着光线与几何体的所有交点处执行。最近命中着色器只会在最近的交点处执行。</p>
 <p>任意命中着色器对于交点的剔除很有用，比如剔除透明的交点，但也可用于进行简单的透明化操作。在本示例中我们将会展示添加该着色器类型需要做什么并实现一个透明效果。</p>
@@ -336,7 +336,7 @@
 </div>
 </section>
 <section id="id7">
-<h2>任意命中着色器<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<h2>任意命中着色器<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h2>
 <p>创建一个新的着色器文件 <code class="docutils literal notranslate"><span class="pre">raytrace.rahit</span></code> 之后执行 <code class="docutils literal notranslate"><span class="pre">CMake</span></code> 使其加入到工程的解决方案中。</p>
 <p>该着色器一开始和 <code class="docutils literal notranslate"><span class="pre">raytrace.chit</span></code> 最近命中着色器相似，但使用的信息更少。</p>
 <div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="cp">#version 460</span>
@@ -392,7 +392,7 @@
 <p>正如你所见，我们生成一个随机数（ <code class="code docutils literal notranslate"><span class="pre">rnd(prd.seed)</span></code> ）来判断光线是否命中或忽略该物体。如果我们积累了足够多的光线的话，最终的结果将会趋向于我们希望的理想结果。</p>
 </section>
 <section id="id9">
-<h2>负载<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
+<h2>负载<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h2>
 <p>随机 <code class="docutils literal notranslate"><span class="pre">seed</span></code> 同样需要存入光线负载中。</p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">raycommon.glsl</span></code> 中，增加 <code class="docutils literal notranslate"><span class="pre">seed</span></code> 成员变量：</p>
 <div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="n">hitPayload</span>
@@ -404,7 +404,7 @@
 </div>
 </section>
 <section id="id10">
-<h2>将任意命中着色器加入光追管线中<a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
+<h2>将任意命中着色器加入光追管线中<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h2>
 <p>该任意命中着色器将会作为命中着色器组的成员。就目前为止，命中着色器组仅有一个最近命中着色器。</p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">createRtPipeline()</span></code> 中，在加载 <code class="docutils literal notranslate"><span class="pre">raytrace.rchit.spv</span></code> 之后加载 <code class="docutils literal notranslate"><span class="pre">raytrace.rahit.spv</span></code> 。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">enum</span><span class="w"> </span><span class="nc">StageIndices</span>
@@ -432,7 +432,7 @@
 </div>
 </section>
 <section id="id11">
-<h2>配置任意命中着色器中访问的缓存<a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
+<h2>配置任意命中着色器中访问的缓存<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h2>
 <p>在 <code class="docutils literal notranslate"><span class="pre">createDescriptorSetLayout()</span></code> 中我们配置描述符集布局使得任意命中着色器可访问场景描述缓存。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 物体描述</span>
 <span class="n">m_descSetLayoutBind</span><span class="p">.</span><span class="n">addBinding</span><span class="p">(</span><span class="n">eObjDescs</span><span class="p">,</span><span class="w"> </span><span class="n">VK_DESCRIPTOR_TYPE_STORAGE_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
@@ -442,7 +442,7 @@
 </div>
 </section>
 <section id="id12">
-<h2>不透明标志位<a class="headerlink" href="#id12" title="Link to this heading">#</a></h2>
+<h2>不透明标志位<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h2>
 <p>当该示例创建 <code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureGeometryKHR</span></code> 时，我们设置的标示位为 <code class="docutils literal notranslate"><span class="pre">VK_GEOMETRY_OPAQUE_BIT_KHR</span></code> 不透明标志位。然而该标志位会导致忽略任意命中着色器。</p>
 <p>我们可以简单的移除所有的 <code class="docutils literal notranslate"><span class="pre">VK_GEOMETRY_OPAQUE_BIT_KHR</span></code> 标志位，但这会导致另一个问题：<span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">同一个三角形可能会多次调用任意命中着色器</span> 。为了在每一个三角形上只执行一次任意命中着色器，设置 <code class="docutils literal notranslate"><span class="pre">VK_GEOMETRY_NO_DUPLICATE_ANY_HIT_INVOCATION_BIT_KHR</span></code> 标志位：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">asGeom</span><span class="p">.</span><span class="n">flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VK_GEOMETRY_NO_DUPLICATE_ANY_HIT_INVOCATION_BIT_KHR</span><span class="p">;</span><span class="w">  </span><span class="c1">// 避免重复命中</span>
@@ -450,7 +450,7 @@
 </div>
 </section>
 <section id="id13">
-<h2>光线生成着色器<a class="headerlink" href="#id13" title="Link to this heading">#</a></h2>
+<h2>光线生成着色器<a class="headerlink" href="#id13" title="Link to this heading">¶</a></h2>
 <p>如果您已经完成了 <a class="reference external" href="./JitterCamera.html">相机抖动抗锯齿教程</a> 的话，接下来只需要稍作修改即可。</p>
 <p>首先 <code class="docutils literal notranslate"><span class="pre">seed</span></code> 需要在任意命中着色器中使用，这就是为什么我们将其加入到 <code class="docutils literal notranslate"><span class="pre">hitPayload</span></code> 结构体中。</p>
 <p>将所有 <code class="docutils literal notranslate"><span class="pre">seed</span></code> 改成 <code class="docutils literal notranslate"><span class="pre">prd.seed</span></code> 。</p>
@@ -463,14 +463,14 @@
 </div>
 </section>
 <section id="id15">
-<h2>最近命中着色器<a class="headerlink" href="#id15" title="Link to this heading">#</a></h2>
+<h2>最近命中着色器<a class="headerlink" href="#id15" title="Link to this heading">¶</a></h2>
 <p>类似的，在最近命中着色器中将标志位修改成 <code class="docutils literal notranslate"><span class="pre">gl_RayFlagsSkipClosestHitShaderEXT</span></code> ，目的是我们希望激活任意命中着色器和未命中着色器，但我们还不关心最近命中着色器的阴影射线。这将会开启透明阴影。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">uint</span><span class="w">  </span><span class="n">flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gl_RayFlagsSkipClosestHitShaderEXT</span><span class="p">;</span>
 </pre></div>
 </div>
 </section>
 <section id="id16">
-<h2>场景和模型<a class="headerlink" href="#id16" title="Link to this heading">#</a></h2>
+<h2>场景和模型<a class="headerlink" href="#id16" title="Link to this heading">¶</a></h2>
 <p>您可以通过改变 <code class="docutils literal notranslate"><span class="pre">main()</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">helloVk.loadModel</span></code> 调用来组建更加有趣的场景：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">helloVk</span><span class="p">.</span><span class="n">loadModel</span><span class="p">(</span><span class="n">nvh</span><span class="o">::</span><span class="n">findFile</span><span class="p">(</span><span class="s">&quot;media/scenes/wuson.obj&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">defaultSearchPaths</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">));</span>
 <span class="n">helloVk</span><span class="p">.</span><span class="n">loadModel</span><span class="p">(</span><span class="n">nvh</span><span class="o">::</span><span class="n">findFile</span><span class="p">(</span><span class="s">&quot;media/scenes/sphere.obj&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">defaultSearchPaths</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">),</span>
@@ -481,7 +481,7 @@
 </div>
 </section>
 <section id="obj">
-<h2>OBJ 材质<a class="headerlink" href="#obj" title="Link to this heading">#</a></h2>
+<h2>OBJ 材质<a class="headerlink" href="#obj" title="Link to this heading">¶</a></h2>
 <p>默认情况下，所有的物体都是不透明的，您需要改变材质的描述信息。</p>
 <p>修改 <code class="docutils literal notranslate"><span class="pre">media/scenes/wuson.mtl</span></code> 和 <code class="docutils literal notranslate"><span class="pre">media/scenes/sphere.mtl</span></code> 前几行使得新的光照模型为 <code class="docutils literal notranslate"><span class="pre">4</span></code> ， <code class="docutils literal notranslate"><span class="pre">dissolve</span></code> 值为 <code class="docutils literal notranslate"><span class="pre">0.5</span></code> ：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">newmtl</span><span class="w">  </span><span class="k">default</span>
@@ -492,7 +492,7 @@
 </div>
 </section>
 <section id="id17">
-<h2>累积<a class="headerlink" href="#id17" title="Link to this heading">#</a></h2>
+<h2>累积<a class="headerlink" href="#id17" title="Link to this heading">¶</a></h2>
 <p>正如前面提到的，为了达到效果，我们需要随着时间累积每一帧，请实现 <a class="reference external" href="./JitterCamera.html">相机抖动抗锯齿教程</a> 中的：</p>
 <ul class="simple">
 <li><p><a class="reference external" href="./JitterCamera.html#id6">帧序</a></p></li>
@@ -501,7 +501,7 @@
 </ul>
 </section>
 <section id="id22">
-<h2>修正管线<a class="headerlink" href="#id22" title="Link to this heading">#</a></h2>
+<h2>修正管线<a class="headerlink" href="#id22" title="Link to this heading">¶</a></h2>
 <p>至此代码已经可以工作了，但是将来就不好说了。这是因为，最近命中着色器中的阴影光线追踪 <code class="docutils literal notranslate"><span class="pre">traceRayEXT</span></code> 调用使用的是负载 <code class="docutils literal notranslate"><span class="pre">1</span></code> ，但是当光线与物体相交时，任意命中着色器使用的是负载 <code class="docutils literal notranslate"><span class="pre">0</span></code> 。在写此篇文章时，当下的驱动会将漏洞进行自动补全并保证没有副作用，但这不是一个良构。</p>
 <p>每一个 <code class="docutils literal notranslate"><span class="pre">traceRayEXT</span></code> 光线追踪调用的命中组的数量需要与负载的数量一致。对于其他示例还好，因为其他示例中我们使用了 <code class="docutils literal notranslate"><span class="pre">gl_RayFlagsSkipClosestHitShaderEXT</span></code> 标志位确保最近命中着色器（负载 <code class="docutils literal notranslate"><span class="pre">0</span></code> ）不会被调用，并且该命中组中不包含任何任意命中着色器或相交着色器。但是本示例中我们虽说忽略了
 最近命中着色器，但是存在一个任意命中着色器。</p>
@@ -515,7 +515,7 @@
 <img alt="../../../_images/anyhit_01.png" src="../../../_images/anyhit_01.png" />
 </figure>
 <section id="id23">
-<h3>新着色器<a class="headerlink" href="#id23" title="Link to this heading">#</a></h3>
+<h3>新着色器<a class="headerlink" href="#id23" title="Link to this heading">¶</a></h3>
 <p>创建两个新文件 <code class="docutils literal notranslate"><span class="pre">raytrace_0.ahit</span></code> 和 <code class="docutils literal notranslate"><span class="pre">raytrace_1.ahit</span></code> ，并将 <code class="docutils literal notranslate"><span class="pre">raytrace.ahit</span></code> 重命名为 <code class="docutils literal notranslate"><span class="pre">raytrace_ahit.glsl</span></code> 。</p>
 <div class="admonition note">
 <p class="admonition-title">备注</p>
@@ -547,7 +547,7 @@
 </div>
 </section>
 <section id="id24">
-<h3>新负载<a class="headerlink" href="#id24" title="Link to this heading">#</a></h3>
+<h3>新负载<a class="headerlink" href="#id24" title="Link to this heading">¶</a></h3>
 <p>在阴影光线负载中不能简单的只包含一个布尔值。我们同样需要 <code class="docutils literal notranslate"><span class="pre">seed</span></code> 用于随机函数。</p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">raycommon.glsl</span></code> 文件中，增加如下结构：</p>
 <div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="n">shadowPayload</span>
@@ -592,7 +592,7 @@
 </div>
 </section>
 <section id="tracerayext">
-<h3>traceRayEXT<a class="headerlink" href="#tracerayext" title="Link to this heading">#</a></h3>
+<h3>traceRayEXT<a class="headerlink" href="#tracerayext" title="Link to this heading">¶</a></h3>
 <p>当我们调用 <code class="docutils literal notranslate"><span class="pre">traceRayEXT</span></code> 时，我们使用的是负载 <code class="docutils literal notranslate"><span class="pre">1</span></code> （最后一个参数），我们同样需要追踪另一个使用负载 <code class="docutils literal notranslate"><span class="pre">1</span></code> 命中组。为此我们需要将 <code class="docutils literal notranslate"><span class="pre">sbtRecordOffset</span></code> 设置为 <code class="docutils literal notranslate"><span class="pre">1</span></code> 。</p>
 <div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="n">traceRayEXT</span><span class="p">(</span><span class="n">topLevelAS</span><span class="p">,</span><span class="w">  </span><span class="c1">// acceleration structure</span>
 <span class="w">  </span><span class="n">flags</span><span class="p">,</span><span class="w">       </span><span class="c1">// rayFlags</span>
@@ -610,7 +610,7 @@
 </div>
 </section>
 <section id="id25">
-<h3>光追管线<a class="headerlink" href="#id25" title="Link to this heading">#</a></h3>
+<h3>光追管线<a class="headerlink" href="#id25" title="Link to this heading">¶</a></h3>
 <p>最后一步就是通过修改 <code class="docutils literal notranslate"><span class="pre">HelloVulkan::createRtPipeline()</span></code> 增加新的命中组。我们需要加载新的任意命中着色器并且创建一个新的命中组。</p>
 <p>将 <code class="docutils literal notranslate"><span class="pre">shaders/raytrace.rahit.spv</span></code> 替换成 <code class="docutils literal notranslate"><span class="pre">shaders/raytrace_0.rahit.spv</span></code></p>
 <p>加载新的着色器：</p>
@@ -757,7 +757,7 @@
     </aside>
   </div>
 </div><script src="../../../_static/documentation_options.js?v=7d86a446"></script>
-    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>

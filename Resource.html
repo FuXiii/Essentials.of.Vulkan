@@ -6,7 +6,7 @@
 <link rel="index" title="索引" href="genindex.html" /><link rel="search" title="搜索" href="search.html" /><link rel="next" title="资源与内存" href="ResourceAndMemory.html" /><link rel="prev" title="内存" href="Memory.html" />
         <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/Resource.html" />
 
-    <link rel="shortcut icon" href="_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+    <link rel="shortcut icon" href="_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
         <title>资源 - Vulkan入门精要</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b20cc3f5" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
@@ -275,7 +275,7 @@
         </div>
         <article role="main">
           <section id="id1">
-<h1>资源<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
+<h1>资源<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header sd-bg-muted sd-bg-text-muted">
 <span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-history" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M1.643 3.143L.427 1.927A.25.25 0 000 2.104V5.75c0 .138.112.25.25.25h3.646a.25.25 0 00.177-.427L2.715 4.215a6.5 6.5 0 11-1.18 4.458.75.75 0 10-1.493.154 8.001 8.001 0 101.6-5.684zM7.75 4a.75.75 0 01.75.75v2.992l2.028.812a.75.75 0 01-.557 1.392l-2.5-1A.75.75 0 017 8.25v-3.5A.75.75 0 017.75 4z"></path></svg></span>更新记录<div class="sd-summary-down docutils">
@@ -320,6 +320,16 @@
 <li><p class="sd-card-text">2024/4/14 增加 <code class="docutils literal notranslate"><span class="pre">格式属性</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/4/14 更新 <code class="docutils literal notranslate"><span class="pre">VkImageTiling</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/4/14 增加 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceFormatProperties</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/4/15 更新 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceFormatProperties</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/4/15 增加 <code class="docutils literal notranslate"><span class="pre">VkFormatFeatureFlagBits</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/4/16 更新 <code class="docutils literal notranslate"><span class="pre">VkFormatFeatureFlagBits</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/4/16 增加 <code class="docutils literal notranslate"><span class="pre">arrayLayers</span> <span class="pre">与</span> <span class="pre">VkImageCreateFlags</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/4/16 更新 <code class="docutils literal notranslate"><span class="pre">图片资源逻辑模型</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/4/17 更新 <code class="docutils literal notranslate"><span class="pre">arrayLayers</span> <span class="pre">与</span> <span class="pre">VkImageCreateFlags</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/4/18 更新 <code class="docutils literal notranslate"><span class="pre">arrayLayers</span> <span class="pre">与</span> <span class="pre">VkImageCreateFlags</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/4/18 增加 <code class="docutils literal notranslate"><span class="pre">VkImageCreateFlagBits</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/4/18 增加 <code class="docutils literal notranslate"><span class="pre">立方体</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/4/20 更新 <code class="docutils literal notranslate"><span class="pre">立方体</span></code> 章节。</p></li>
 </ul>
 </div>
 </details><p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中只有 <code class="docutils literal notranslate"><span class="pre">2</span></code> 种资源 :</p>
@@ -333,17 +343,17 @@
 </div>
 <p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中创建的所有资源都是 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">虚</span> 资源，换句话说就是，创建的资源仅仅是一个资源句柄，并没有对应存储资源数据的内存。资源需要绑定到合适的设备内存中才具有 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">完整的一生</span> （图桓宇给出了一个赞许的大拇指 (๑•̀ㅂ•́)و✧ ）。</p>
 <section id="buffer">
-<span id="id2"></span><h2>缓存资源<a class="headerlink" href="#buffer" title="Link to this heading">#</a></h2>
+<span id="id2"></span><h2>缓存资源<a class="headerlink" href="#buffer" title="Link to this heading">¶</a></h2>
 <p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中使用 <code class="docutils literal notranslate"><span class="pre">VkBuffer</span></code> 句柄代表缓存资源。其定义如下：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="n">VK_DEFINE_NON_DISPATCHABLE_HANDLE</span><span class="p">(</span><span class="n">VkBuffer</span><span class="p">)</span>
 </pre></div>
 </div>
 <section id="id3">
-<h3>创建缓存<a class="headerlink" href="#id3" title="Link to this heading">#</a></h3>
+<h3>创建缓存<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h3>
 <p>缓存资源通过 <code class="docutils literal notranslate"><span class="pre">vkCreateBuffer(...)</span></code> 函数创建，其定义如下：</p>
 <section id="vkcreatebuffer">
-<h4>vkCreateBuffer<a class="headerlink" href="#vkcreatebuffer" title="Link to this heading">#</a></h4>
+<h4>vkCreateBuffer<a class="headerlink" href="#vkcreatebuffer" title="Link to this heading">¶</a></h4>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="n">VkResult</span><span class="w"> </span><span class="nf">vkCreateBuffer</span><span class="p">(</span>
 <span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
@@ -361,7 +371,7 @@
 <p>其中 <code class="docutils literal notranslate"><span class="pre">pCreateInfo</span></code> 为缓存创建配置信息，对应的 <code class="docutils literal notranslate"><span class="pre">VkBufferCreateInfo</span></code> 类型定义如下：</p>
 </section>
 <section id="vkbuffercreateinfo">
-<h4>VkBufferCreateInfo<a class="headerlink" href="#vkbuffercreateinfo" title="Link to this heading">#</a></h4>
+<h4>VkBufferCreateInfo<a class="headerlink" href="#vkbuffercreateinfo" title="Link to this heading">¶</a></h4>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkBufferCreateInfo</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">VkStructureType</span><span class="w">        </span><span class="n">sType</span><span class="p">;</span>
@@ -421,7 +431,7 @@
 <p>由于设备队列的并行性，其对于缓存的读写也是并行的，所以需要协调好各个队列对该缓存的读写，否则就会导致缓存数据混乱。如果某资源是某设备队列独享的，这将会省去不必要的跨设备队列间的同步，提高效率。为此，其中的 <code class="docutils literal notranslate"><span class="pre">VkBufferCreateInfo::sharingMode</span></code> 、 <code class="docutils literal notranslate"><span class="pre">VkBufferCreateInfo::queueFamilyIndexCount</span></code> 和 <code class="docutils literal notranslate"><span class="pre">VkBufferCreateInfo::pQueueFamilyIndices</span></code> 就是用于配置各个设备队列对该资源的访问权限，进一步明确设备对该资源的访问方式以提高效率。</p>
 <p>其中 <code class="docutils literal notranslate"><span class="pre">VkBufferCreateInfo::usage</span></code> 的有效值被定义在了 <code class="docutils literal notranslate"><span class="pre">VkBufferUsageFlagBits</span></code> 枚举中，其定义如下：</p>
 <section id="vkbufferusageflagbits">
-<h5>VkBufferUsageFlagBits<a class="headerlink" href="#vkbufferusageflagbits" title="Link to this heading">#</a></h5>
+<h5>VkBufferUsageFlagBits<a class="headerlink" href="#vkbufferusageflagbits" title="Link to this heading">¶</a></h5>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkBufferUsageFlagBits</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">VK_BUFFER_USAGE_TRANSFER_SRC_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000001</span><span class="p">,</span>
@@ -483,7 +493,7 @@
 <p>其中 <code class="docutils literal notranslate"><span class="pre">VkBufferCreateInfo::sharingMode</span></code> 有效值定义在 <code class="docutils literal notranslate"><span class="pre">VkSharingMode</span></code> 枚举中，其定义如下：</p>
 </section>
 <section id="vksharingmode">
-<h5>VkSharingMode<a class="headerlink" href="#vksharingmode" title="Link to this heading">#</a></h5>
+<h5>VkSharingMode<a class="headerlink" href="#vksharingmode" title="Link to this heading">¶</a></h5>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkSharingMode</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">VK_SHARING_MODE_EXCLUSIVE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
@@ -502,7 +512,7 @@
 </section>
 </section>
 <section id="id4">
-<h4>示例<a class="headerlink" href="#id4" title="Link to this heading">#</a></h4>
+<h4>示例<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h4>
 <p>创建一个存储顶点数据的缓存</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkDevice</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前创建的逻辑设备</span><span class="p">;</span>
 
@@ -576,7 +586,7 @@
 </section>
 </section>
 <section id="id5">
-<h3>销毁缓存<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
+<h3>销毁缓存<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h3>
 <p>当缓存资源不再需要时就可以通过 <code class="docutils literal notranslate"><span class="pre">vkDestroyBuffer(...)</span></code> 函数将其销毁，该函数定义如下：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">vkDestroyBuffer</span><span class="p">(</span>
@@ -591,7 +601,7 @@
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pAllocator</span> 该缓存的句柄内存分配器。</p></li>
 </ul>
 <section id="id6">
-<h4>示例<a class="headerlink" href="#id6" title="Link to this heading">#</a></h4>
+<h4>示例<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h4>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkDevice</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前创建的逻辑设备</span><span class="p">;</span>
 <span class="n">VkBuffer</span><span class="w"> </span><span class="n">buffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前创建的缓存</span><span class="p">;</span>
 
@@ -602,17 +612,17 @@
 </section>
 </section>
 <section id="id7">
-<h2>图片资源<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<h2>图片资源<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h2>
 <p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中一个图片资源代表相同格式数据块的多维集合，比如 <code class="docutils literal notranslate"><span class="pre">一维/二维/三维</span></code> 图片等。其通过 <code class="docutils literal notranslate"><span class="pre">VkImage</span></code> 句柄代表其图片资源，其定义如下：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="n">VK_DEFINE_NON_DISPATCHABLE_HANDLE</span><span class="p">(</span><span class="n">VkImage</span><span class="p">)</span>
 </pre></div>
 </div>
 <section id="id8">
-<h3>创建图片<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
+<h3>创建图片<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h3>
 <p>图片资源通过 <code class="docutils literal notranslate"><span class="pre">vkCreateImage(...)</span></code> 函数创建，其定义如下：</p>
 <section id="vkcreateimage">
-<h4>vkCreateImage<a class="headerlink" href="#vkcreateimage" title="Link to this heading">#</a></h4>
+<h4>vkCreateImage<a class="headerlink" href="#vkcreateimage" title="Link to this heading">¶</a></h4>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="n">VkResult</span><span class="w"> </span><span class="nf">vkCreateImage</span><span class="p">(</span>
 <span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
@@ -630,7 +640,7 @@
 <p>其中 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo</span></code> 定义如下：</p>
 </section>
 <section id="vkimagecreateinfo">
-<h4>VkImageCreateInfo<a class="headerlink" href="#vkimagecreateinfo" title="Link to this heading">#</a></h4>
+<h4>VkImageCreateInfo<a class="headerlink" href="#vkimagecreateinfo" title="Link to this heading">¶</a></h4>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkImageCreateInfo</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">VkStructureType</span><span class="w">          </span><span class="n">sType</span><span class="p">;</span>
@@ -670,7 +680,7 @@
 </ul>
 <p>其中 <code class="docutils literal notranslate"><span class="pre">VkImageType</span></code> 定义如下：</p>
 <section id="vkimagetype">
-<h5>VkImageType<a class="headerlink" href="#vkimagetype" title="Link to this heading">#</a></h5>
+<h5>VkImageType<a class="headerlink" href="#vkimagetype" title="Link to this heading">¶</a></h5>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// Provided by VK_VERSION_1_0</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkImageType</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">VK_IMAGE_TYPE_1D</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
@@ -733,7 +743,7 @@
 <p>由此可见图片的各维度的大小是由 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo::extent</span></code> 定义的，其 <code class="docutils literal notranslate"><span class="pre">VkExtent3D</span></code> 类型定义如下：</p>
 </section>
 <section id="vkextent3d">
-<h5>VkExtent3D<a class="headerlink" href="#vkextent3d" title="Link to this heading">#</a></h5>
+<h5>VkExtent3D<a class="headerlink" href="#vkextent3d" title="Link to this heading">¶</a></h5>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkExtent3D</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="kt">uint32_t</span><span class="w">    </span><span class="n">width</span><span class="p">;</span>
@@ -769,7 +779,7 @@
 <p>其中 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo::format</span></code> 对应的 <code class="docutils literal notranslate"><span class="pre">VkFormat</span></code> 枚举类型中有非常多的枚举值，我们这里拿几个经典的进行讲解：</p>
 </section>
 <section id="vkformat">
-<h5>VkFormat<a class="headerlink" href="#vkformat" title="Link to this heading">#</a></h5>
+<h5>VkFormat<a class="headerlink" href="#vkformat" title="Link to this heading">¶</a></h5>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkFormat</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">VK_FORMAT_UNDEFINED</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
@@ -820,7 +830,7 @@
 <p>其中 <code class="docutils literal notranslate"><span class="pre">VK_FORMAT</span></code> 为枚举声明前缀，我们主要是关心 <code class="docutils literal notranslate"><span class="pre">格式布局</span></code> 和 <code class="docutils literal notranslate"><span class="pre">数据类型</span></code> 。</p>
 <p>其中 <code class="docutils literal notranslate"><span class="pre">格式布局</span></code> 如下：</p>
 <section id="id9">
-<h6>格式布局<a class="headerlink" href="#id9" title="Link to this heading">#</a></h6>
+<h6>格式布局<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h6>
 <p>格式布局主要是用于明确该格式下 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">纹素</span> 的 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">内部结构</span> 。</p>
 <ul class="simple">
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">R8</span> 拥有 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">红色通道</span> 数据，占 <code class="docutils literal notranslate"><span class="pre">8</span></code> 个比特。</p></li>
@@ -843,10 +853,10 @@
 <div class="note admonition">
 <p class="admonition-title">深度</p>
 <p>深度数据一般都是一个浮点数，其值一般用于表示图形表面到某一平面的距离信息。</p>
-<figure class="align-default" id="id14">
+<figure class="align-default" id="id15">
 <a class="reference internal image-reference" href="_images/depth.png"><img alt="_images/depth.png" src="_images/depth.png" style="width: 354.0px; height: 380.5px;" /></a>
 <figcaption>
-<p><span class="caption-text">如上图，深度数据存储着如图红线所示的距离。</span><a class="headerlink" href="#id14" title="Link to this image">#</a></p>
+<p><span class="caption-text">如上图，深度数据存储着如图红线所示的距离。</span><a class="headerlink" href="#id15" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 </div>
@@ -857,7 +867,7 @@
 <p>其中 <code class="docutils literal notranslate"><span class="pre">数据类型</span></code> 如下：</p>
 </section>
 <section id="id10">
-<h6>数据类型<a class="headerlink" href="#id10" title="Link to this heading">#</a></h6>
+<h6>数据类型<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h6>
 <p>数据类型主要是用于明确 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">纹素</span> <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">内部结构</span> 的 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">数据类型</span> 。</p>
 <ul class="simple">
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">UNORM</span> 无符号归一化数据。类型为 <code class="docutils literal notranslate"><span class="pre">float</span></code> 。数据有效范围为 <span class="math notranslate nohighlight">\([0, 1]\)</span> 。</p></li>
@@ -878,7 +888,7 @@
 </section>
 </section>
 <section id="vksamplecountflagbits">
-<h5>VkSampleCountFlagBits<a class="headerlink" href="#vksamplecountflagbits" title="Link to this heading">#</a></h5>
+<h5>VkSampleCountFlagBits<a class="headerlink" href="#vksamplecountflagbits" title="Link to this heading">¶</a></h5>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkSampleCountFlagBits</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">VK_SAMPLE_COUNT_1_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000001</span><span class="p">,</span>
@@ -901,10 +911,10 @@
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_SAMPLE_COUNT_64_BIT</span> 有 <code class="docutils literal notranslate"><span class="pre">64</span></code> 个采样点。即，纹素自身将分出 <code class="docutils literal notranslate"><span class="pre">64</span></code> 个子纹素。</p></li>
 </ul>
 <p>由于像素都是一块块的，并不能像一条线那样丝滑连续，当将连续的数据存入像像素这样的离散数据时，需要对连续数据进行采样，进而确定离散的像素值。像这样将连续数据转成离散数据必定会导致部分原始信息的丢失。在图像上就会产生锯齿。</p>
-<figure class="align-default" id="id15">
+<figure class="align-default" id="id16">
 <img alt="_images/samples.png" src="_images/samples.png" />
 <figcaption>
-<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">1</span></code> 个纹素仅进行 <code class="docutils literal notranslate"><span class="pre">1</span></code> 次采样</span><a class="headerlink" href="#id15" title="Link to this image">#</a></p>
+<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">1</span></code> 个纹素仅进行 <code class="docutils literal notranslate"><span class="pre">1</span></code> 次采样</span><a class="headerlink" href="#id16" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 <p>如上图中每个格子为一个纹素（像素），其中心的点为采样点。当黄色部分完全覆盖了对应的 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">采样点</span> 后，对应的纹素才会存储相应的数据，而部分覆盖纹素，但没有覆盖 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">采样点</span> 的地方将不会存储（采样）任何值。进而导致锯齿。</p>
@@ -914,23 +924,23 @@
 <p class="admonition-title">子纹素</p>
 <p>纹素会将各子纹素的采样结果根据权重进行汇总，并将汇总结果作为该（顶级）纹素的结果。</p>
 </div>
-<figure class="align-default" id="id16">
+<figure class="align-default" id="id17">
 <a class="reference internal image-reference" href="_images/multi_samples.png"><img alt="_images/multi_samples.png" src="_images/multi_samples.png" style="width: 659.75px; height: 471.25px;" /></a>
 <figcaption>
-<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">1</span></code> 个纹素进行 <code class="docutils literal notranslate"><span class="pre">16</span></code> 次采样（ <code class="docutils literal notranslate"><span class="pre">VkSampleCountFlagBits::VK_SAMPLE_COUNT_16_BIT</span></code> ）</span><a class="headerlink" href="#id16" title="Link to this image">#</a></p>
+<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">1</span></code> 个纹素进行 <code class="docutils literal notranslate"><span class="pre">16</span></code> 次采样（ <code class="docutils literal notranslate"><span class="pre">VkSampleCountFlagBits::VK_SAMPLE_COUNT_16_BIT</span></code> ）</span><a class="headerlink" href="#id17" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 <p>如下为 <code class="docutils literal notranslate"><span class="pre">VK_SAMPLE_COUNT_1_BIT</span></code> 和 <code class="docutils literal notranslate"><span class="pre">VK_SAMPLE_COUNT_8_BIT</span></code> 的成像对比：</p>
-<figure class="align-default" id="id17">
+<figure class="align-default" id="id18">
 <img alt="_images/sample.jpg" src="_images/sample.jpg" />
 <figcaption>
-<p><span class="caption-text">单次采样与 <code class="docutils literal notranslate"><span class="pre">8</span></code> 次采样对比示意图</span><a class="headerlink" href="#id17" title="Link to this image">#</a></p>
+<p><span class="caption-text">单次采样与 <code class="docutils literal notranslate"><span class="pre">8</span></code> 次采样对比示意图</span><a class="headerlink" href="#id18" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 <p>其中 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo::tiling</span></code> 的 <code class="docutils literal notranslate"><span class="pre">VkImageTiling</span></code> 类型定义如下：</p>
 </section>
 <section id="id11">
-<h5>图片资源逻辑模型<a class="headerlink" href="#id11" title="Link to this heading">#</a></h5>
+<h5>图片资源逻辑模型<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h5>
 <p>现在我们来讲解一下如何理解 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo</span></code> 中的各参数，并将他们从逻辑上关联起来，并建立一个易于理解的模型。</p>
 <p>其中 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo</span></code> 中与之有关的核心参数如下：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkImageCreateInfo</span><span class="w"> </span><span class="p">{</span>
@@ -975,19 +985,86 @@
 <span class="p">};</span>
 </pre></div>
 </div>
-<figure class="align-default" id="id18">
+<figure class="align-default" id="id19">
 <img alt="_images/image_create_info_struct.png" src="_images/image_create_info_struct.png" />
 <figcaption>
-<p><span class="caption-text">图片资源逻辑结构示意图</span><a class="headerlink" href="#id18" title="Link to this image">#</a></p>
+<p><span class="caption-text">图片资源逻辑结构示意图</span><a class="headerlink" href="#id19" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 <div class="note admonition">
 <p class="admonition-title">arrayLayers</p>
-<p><code class="docutils literal notranslate"><span class="pre">arrayLayers</span></code> <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">不可以</span> 随意指定数量，有一些限制。将会在之后的章节说明。</p>
+<p><code class="docutils literal notranslate"><span class="pre">arrayLayers</span></code> <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">不可以</span> 随意指定数量，有一些限制。具体见 <a class="reference internal" href="#arraylayersandvkimagecreateflags"><span class="std std-ref">arrayLayers 与 VkImageCreateFlags</span></a> 章节。</p>
 </div>
 </section>
+<section id="arraylayers-vkimagecreateflags">
+<span id="arraylayersandvkimagecreateflags"></span><h5>arrayLayers 与 VkImageCreateFlags<a class="headerlink" href="#arraylayers-vkimagecreateflags" title="Link to this heading">¶</a></h5>
+<p>在介绍 <code class="docutils literal notranslate"><span class="pre">VkImageCreateFlags</span></code> 之前，先来说明一下与 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo::flags</span></code> 无关的 <code class="docutils literal notranslate"><span class="pre">arrayLayers</span></code> 限制：</p>
+<ul class="simple">
+<li><p>如果 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo::imageType</span></code> 为 <code class="docutils literal notranslate"><span class="pre">VkImageType::VK_IMAGE_TYPE_2D</span></code> 并且 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo::tiling</span></code> 为 <code class="docutils literal notranslate"><span class="pre">VkImageTiling::VK_IMAGE_TILING_LINEAR</span></code> 的话， <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo::arrayLayers</span></code> <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 为 <code class="docutils literal notranslate"><span class="pre">1</span></code> 。</p></li>
+<li><p>如果 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo::imageType</span></code> 为 <code class="docutils literal notranslate"><span class="pre">VkImageType::VK_IMAGE_TYPE_3D</span></code> 的话， <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo::arrayLayers</span></code> <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 为 <code class="docutils literal notranslate"><span class="pre">1</span></code> 。</p></li>
+</ul>
+<p>接下来的话让我们看看 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo::flags</span></code> 的有效值，对应的有效值被声明在 <code class="docutils literal notranslate"><span class="pre">VkImageCreateFlagBits</span></code> 枚举类型中，其定义如下：</p>
+<section id="vkimagecreateflagbits">
+<h6>VkImageCreateFlagBits<a class="headerlink" href="#vkimagecreateflagbits" title="Link to this heading">¶</a></h6>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkImageCreateFlagBits</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VK_IMAGE_CREATE_SPARSE_BINDING_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000001</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000002</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_IMAGE_CREATE_SPARSE_ALIASED_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000004</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000008</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000010</span><span class="p">,</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkImageCreateFlagBits</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_IMAGE_CREATE_SPARSE_BINDING_BIT</span> 表示该图片将会使用 <code class="docutils literal notranslate"><span class="pre">稀疏</span></code> 内存进行绑定。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT</span> 表示该图片将会部分使用 <code class="docutils literal notranslate"><span class="pre">稀疏</span></code> 内存进行绑定。如果指定了该标志位，则 <code class="docutils literal notranslate"><span class="pre">VK_IMAGE_CREATE_SPARSE_BINDING_BIT</span></code> 也 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 使用开启。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_IMAGE_CREATE_SPARSE_ALIASED_BIT</span> 表示该图片将会部分使用 <code class="docutils literal notranslate"><span class="pre">稀疏</span></code> 内存进行绑定。并且这一部分内存可能同时被另一个图片使用（或部分使用），如果指定了该标志位，则 <code class="docutils literal notranslate"><span class="pre">VK_IMAGE_CREATE_SPARSE_BINDING_BIT</span></code> 也 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 使用开启。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT</span> 表示该图片可用于创建 <code class="docutils literal notranslate"><span class="pre">图片视图</span></code> 的格式可与该图片的格式不同。对于 <code class="docutils literal notranslate"><span class="pre">多平面</span></code> 格式， <code class="docutils literal notranslate"><span class="pre">VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT</span></code> 表示 <code class="docutils literal notranslate"><span class="pre">图片视图</span></code> 可以用于表示图片中的某平面。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT</span> 表示该图片可用于创建 <code class="docutils literal notranslate"><span class="pre">立方体</span></code> 图片。</p></li>
+</ul>
+<div class="note admonition">
+<p class="admonition-title">图片视图</p>
+<p>在通过 <code class="docutils literal notranslate"><span class="pre">vkCreateImage(...)</span></code> 创建完图片之后，需要创建相应的 <code class="docutils literal notranslate"><span class="pre">图片视图</span></code> （ <code class="docutils literal notranslate"><span class="pre">VkImageView</span></code> ）才能被 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 使用。具体将会在之后的章节讲解。</p>
+</div>
+<div class="warning admonition">
+<p class="admonition-title">多平面格式</p>
+<p>好像是一种压缩格式，具体没研究过。一般像如下格式是用于多平面格式：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkFormat</span><span class="o">::</span><span class="n">VK_FORMAT_G8B8G8R8_422_UNORM</span>
+<span class="n">VkFormat</span><span class="o">::</span><span class="n">VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM</span>
+<span class="n">VkFormat</span><span class="o">::</span><span class="n">VK_FORMAT_G10X6_B10X6_R10X6_3PLANE_420_UNORM_3PACK16</span>
+</pre></div>
+</div>
+<p>具体咋回事待研究。</p>
+</div>
+<p>其中我们主要关注 <code class="docutils literal notranslate"><span class="pre">VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT</span></code> 这个标志位。该标志位经常用于 <code class="docutils literal notranslate"><span class="pre">立方体</span></code> 图片：</p>
+</section>
 <section id="id12">
-<h5>多级渐远<a class="headerlink" href="#id12" title="Link to this heading">#</a></h5>
+<h6>立方体<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h6>
+<p>所谓 <code class="docutils literal notranslate"><span class="pre">立方体</span></code> 图片（有时也叫 <code class="docutils literal notranslate"><span class="pre">立方体纹理</span></code> 英文为 <code class="docutils literal notranslate"><span class="pre">Cubemap</span></code> ）其实就是 <code class="docutils literal notranslate"><span class="pre">6</span></code> 张 <code class="docutils literal notranslate"><span class="pre">二维</span></code> 图片拼成的一个盒子。示意图如下：</p>
+<figure class="align-default" id="id20">
+<img alt="_images/3d_image_cubemap.png" src="_images/3d_image_cubemap.png" />
+<figcaption>
+<p><span class="caption-text">立方体示意图</span><a class="headerlink" href="#id20" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>而立方体中的图片数据经常用于存储场景的环境信息，比如天空信息。所以也常被称为 <code class="docutils literal notranslate"><span class="pre">天空盒</span></code> 。示意图如下：</p>
+<figure class="align-center" id="id21">
+<a class="reference internal image-reference" href="_images/sky_cube_0.png"><img alt="_images/sky_cube_0.png" src="_images/sky_cube_0.png" style="width: 536.0px; height: 403.0px;" /></a>
+<figcaption>
+<p><span class="caption-text">天空盒示意图</span><a class="headerlink" href="#id21" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>当 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInf::flags</span></code> 中指定了 <code class="docutils literal notranslate"><span class="pre">VkImageCreateFlagBits::VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT</span></code> 标志位的话，则说明要创建一个立方体图片，则有如下限制要求：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">VkImageCreateInf::imageType</span></code> <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 为 <code class="docutils literal notranslate"><span class="pre">VkImageType::VK_IMAGE_TYPE_2D</span></code> 。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">VkImageCreateInf::arrayLayers</span></code> <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">大于等于</span> <code class="docutils literal notranslate"><span class="pre">6</span></code> 。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">VkImageCreateInf::extent</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">width</span></code> 和 <code class="docutils literal notranslate"><span class="pre">height</span></code> <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">相等</span> 。</p></li>
+</ul>
+</section>
+</section>
+<section id="id13">
+<h5>多级渐远<a class="headerlink" href="#id13" title="Link to this heading">¶</a></h5>
 <p>在 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo</span></code> 中有一个 <code class="docutils literal notranslate"><span class="pre">mipLevels</span></code> 参数。该参数用于设置该图片的 <code class="docutils literal notranslate"><span class="pre">多级渐远纹理级别</span></code> 。</p>
 <p>当使用透视投影（近大远小）相机加看向场景进行渲染时：</p>
 <ul class="simple">
@@ -999,17 +1076,17 @@
 <div class="table-wrapper docutils container">
 <table class="docutils align-default">
 <tbody>
-<tr class="row-odd"><td><figure class="align-default" id="id19">
+<tr class="row-odd"><td><figure class="align-default" id="id22">
 <img alt="_images/mip_mapping_off.jpg" src="_images/mip_mapping_off.jpg" />
 <figcaption>
-<p><span class="caption-text">无多级渐远效果示意</span><a class="headerlink" href="#id19" title="Link to this image">#</a></p>
+<p><span class="caption-text">无多级渐远效果示意</span><a class="headerlink" href="#id22" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 </td>
-<td><figure class="align-default" id="id20">
+<td><figure class="align-default" id="id23">
 <img alt="_images/mip_mapping_anisotropic.jpg" src="_images/mip_mapping_anisotropic.jpg" />
 <figcaption>
-<p><span class="caption-text">多级渐远效果示意</span><a class="headerlink" href="#id20" title="Link to this image">#</a></p>
+<p><span class="caption-text">多级渐远效果示意</span><a class="headerlink" href="#id23" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 </td>
@@ -1027,10 +1104,10 @@
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">W</span> 为一级渐远纹理（图片其本身）宽度。</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">H</span> 为一级渐远纹理（图片其本身）高度。</p></li>
 </ul>
-<figure class="align-default" id="id21">
+<figure class="align-default" id="id24">
 <img alt="_images/image_level.png" src="_images/image_level.png" />
 <figcaption>
-<p><span class="caption-text">二维图片多级渐远纹理结构示意图</span><a class="headerlink" href="#id21" title="Link to this image">#</a></p>
+<p><span class="caption-text">二维图片多级渐远纹理结构示意图</span><a class="headerlink" href="#id24" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 <div class="note admonition">
@@ -1039,7 +1116,7 @@
 </div>
 </section>
 <section id="vkimagetiling">
-<h5>VkImageTiling<a class="headerlink" href="#vkimagetiling" title="Link to this heading">#</a></h5>
+<h5>VkImageTiling<a class="headerlink" href="#vkimagetiling" title="Link to this heading">¶</a></h5>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkImageTiling</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">VK_IMAGE_TILING_OPTIMAL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
@@ -1057,7 +1134,7 @@
 <p>其中 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo::usage</span></code> 标志位的有效值定义在 <code class="docutils literal notranslate"><span class="pre">VkImageUsageFlagBits</span></code> 枚举中，其定义如下：</p>
 </section>
 <section id="vkimageusageflagbits">
-<h5>VkImageUsageFlagBits<a class="headerlink" href="#vkimageusageflagbits" title="Link to this heading">#</a></h5>
+<h5>VkImageUsageFlagBits<a class="headerlink" href="#vkimageusageflagbits" title="Link to this heading">¶</a></h5>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkImageUsageFlagBits</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">VK_IMAGE_USAGE_TRANSFER_SRC_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000001</span><span class="p">,</span>
@@ -1107,13 +1184,13 @@
 </div>
 </section>
 </section>
-<section id="id13">
-<h4>格式属性<a class="headerlink" href="#id13" title="Link to this heading">#</a></h4>
+<section id="id14">
+<h4>格式属性<a class="headerlink" href="#id14" title="Link to this heading">¶</a></h4>
 <p>在 <code class="docutils literal notranslate"><span class="pre">VkFormat</span></code> 中有各种各样的格式，每种格式都代表着不同的数据布局和数据类型。相应 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo::format</span></code> 的选择也会跟着 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo::usage</span></code> 中指定的图片用途的不同而不同。</p>
 <p>为此我们需要知道哪些格式在何种情况下会被使用。这就需要我们知道各种格式的属性。如果我们能够获取某一格式的属性，我们就能知道该格式支持何种使用方式。</p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中为我们提供了 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceFormatProperties(...)</span></code> 函数，用于获取某一格式的属性数据。其定义如下：</p>
 <section id="vkgetphysicaldeviceformatproperties">
-<h5>vkGetPhysicalDeviceFormatProperties<a class="headerlink" href="#vkgetphysicaldeviceformatproperties" title="Link to this heading">#</a></h5>
+<h5>vkGetPhysicalDeviceFormatProperties<a class="headerlink" href="#vkgetphysicaldeviceformatproperties" title="Link to this heading">¶</a></h5>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">vkGetPhysicalDeviceFormatProperties</span><span class="p">(</span>
 <span class="w">    </span><span class="n">VkPhysicalDevice</span><span class="w">                            </span><span class="n">physicalDevice</span><span class="p">,</span>
@@ -1121,10 +1198,110 @@
 <span class="w">    </span><span class="n">VkFormatProperties</span><span class="o">*</span><span class="w">                         </span><span class="n">pFormatProperties</span><span class="p">);</span>
 </pre></div>
 </div>
-<div class="admonition note">
-<p class="admonition-title">备注</p>
-<p>未完待续</p>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">physicalDevice</span> 要查询格式是否在该逻辑设备上支持。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">format</span> 要查询的格式。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pFormatProperties</span> 格式的支持信息。</p></li>
+</ul>
+<p>该函数用于查询 <code class="docutils literal notranslate"><span class="pre">format</span></code> 格式在 <code class="docutils literal notranslate"><span class="pre">physicalDevice</span></code> 上的支持情况，支持的信息数据将会写入 <code class="docutils literal notranslate"><span class="pre">pFormatProperties</span></code> 所指向的内存中。</p>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">pFormatProperties</span></code> 的 <code class="docutils literal notranslate"><span class="pre">VkFormatProperties</span></code> 类型定义如下：</p>
+<section id="vkformatproperties">
+<h6>VkFormatProperties<a class="headerlink" href="#vkformatproperties" title="Link to this heading">¶</a></h6>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkFormatProperties</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VkFormatFeatureFlags</span><span class="w">    </span><span class="n">linearTilingFeatures</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkFormatFeatureFlags</span><span class="w">    </span><span class="n">optimalTilingFeatures</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkFormatFeatureFlags</span><span class="w">    </span><span class="n">bufferFeatures</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkFormatProperties</span><span class="p">;</span>
+</pre></div>
 </div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">linearTilingFeatures</span> 中存储着 <code class="docutils literal notranslate"><span class="pre">VkFormatFeatureFlagBits</span></code> 枚举中定义的特性标志位。用于表示当图片使用 <code class="docutils literal notranslate"><span class="pre">VkImageTiling::VK_IMAGE_TILING_LINEAR</span></code> 线性排布时，该格式支持的特性。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">optimalTilingFeatures</span> 中存储着 <code class="docutils literal notranslate"><span class="pre">VkFormatFeatureFlagBits</span></code> 枚举中定义的特性标志位。用于表示当图片使用 <code class="docutils literal notranslate"><span class="pre">VkImageTiling::VK_IMAGE_TILING_OPTIMAL</span></code> 优化排布时，该格式支持的特性。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">bufferFeatures</span> 中存储着 <code class="docutils literal notranslate"><span class="pre">VkFormatFeatureFlagBits</span></code> 枚举中定义的特性标志位。用于表示当缓存资源中存储对应格式的纹素数据时，该格式支持的特性。</p></li>
+</ul>
+<div class="note admonition">
+<p class="admonition-title">缓存资源中存储对应格式的纹素数据</p>
+<p>缓存中可以存储任何形式的数据，缓存当然也可以用于存储一系列纹素数据。</p>
+</div>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">VkFormatFeatureFlags</span></code> 类型的有效标志位定义在 <code class="docutils literal notranslate"><span class="pre">VkFormatFeatureFlagBits</span></code> 中，其定义如下：</p>
+</section>
+<section id="vkformatfeatureflagbits">
+<h6>VkFormatFeatureFlagBits<a class="headerlink" href="#vkformatfeatureflagbits" title="Link to this heading">¶</a></h6>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">VkFormatFeatureFlagBits</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000001</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000002</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000004</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000008</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000010</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_ATOMIC_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000020</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000040</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000080</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000100</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000200</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_FORMAT_FEATURE_BLIT_SRC_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000400</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_FORMAT_FEATURE_BLIT_DST_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00000800</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00001000</span><span class="p">,</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkFormatFeatureFlagBits</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>如下为 <code class="docutils literal notranslate"><span class="pre">VkFormatProperties::linearTilingFeatures</span></code> 和 <code class="docutils literal notranslate"><span class="pre">VkFormatProperties::optimalTilingFeatures</span></code> 会拥有的标志位：</p>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT</span> 该格式图片支持采样（ <code class="docutils literal notranslate"><span class="pre">VkImageUsageFlagBits::VK_IMAGE_USAGE_SAMPLED_BIT</span></code> ）。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT</span> 该格式图片支持存储（ <code class="docutils literal notranslate"><span class="pre">VkImageUsageFlagBits::VK_IMAGE_USAGE_STORAGE_BIT</span></code> ）。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT</span> 该格式图片支持原子存储。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT</span> 该格式图片支持颜色附件（ <code class="docutils literal notranslate"><span class="pre">VkImageUsageFlagBits::VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT</span></code> ）和输入附件（ <code class="docutils literal notranslate"><span class="pre">VkImageUsageFlagBits::VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT</span></code> ）。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT</span> 该格式图片支持颜色附件（ <code class="docutils literal notranslate"><span class="pre">VkImageUsageFlagBits::VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT</span></code> ）并且支持颜色混合。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT</span> 该格式图片支持深度-模板附件（ <code class="docutils literal notranslate"><span class="pre">VkImageUsageFlagBits::VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT</span></code> ）。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_FORMAT_FEATURE_BLIT_SRC_BIT</span> 该格式图片支持作为 <code class="docutils literal notranslate"><span class="pre">构建</span></code> （ <code class="docutils literal notranslate"><span class="pre">Blit</span></code> ）源头数据。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_FORMAT_FEATURE_BLIT_DST_BIT</span> 该格式图片支持作为 <code class="docutils literal notranslate"><span class="pre">构建</span></code> （ <code class="docutils literal notranslate"><span class="pre">Blit</span></code> ）目标数据。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT</span> 如果同时支持 <code class="docutils literal notranslate"><span class="pre">VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT</span></code> 特性的话，该格式图片支持 <code class="docutils literal notranslate"><span class="pre">线性</span></code> 采样。如果同时支持 <code class="docutils literal notranslate"><span class="pre">VK_FORMAT_FEATURE_BLIT_SRC_BIT</span></code> 特性的话，该格式图片支持 <code class="docutils literal notranslate"><span class="pre">构建</span></code> （ <code class="docutils literal notranslate"><span class="pre">Blit</span></code> ）。当支持 <code class="docutils literal notranslate"><span class="pre">VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT</span></code> 或 <code class="docutils literal notranslate"><span class="pre">VK_FORMAT_FEATURE_BLIT_SRC_BIT</span></code> 时，则该 <code class="docutils literal notranslate"><span class="pre">VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT</span></code> 特性也 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 支持。</p></li>
+</ul>
+<p>如下为 <code class="docutils literal notranslate"><span class="pre">VkFormatProperties::bufferFeatures</span></code> 会拥有的标志位：</p>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT</span> 该格式缓存支持存储相应格式的纹素数据用于采样。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT</span> 该格式缓存支持存储相应格式的纹素数据用于存储。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_ATOMIC_BIT</span> 该格式缓存支持存储相应格式的纹素数据用于原子存储。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT</span> 该格式缓存支持存储相应格式的顶点缓存数据。</p></li>
+</ul>
+<div class="note admonition">
+<p class="admonition-title">线性采样</p>
+<p>为图片采样的一种方式，将会在专门的章节进行讲解。</p>
+<div class="note admonition">
+<p class="admonition-title">VkImageTiling::VK_IMAGE_TILING_LINEAR</p>
+<p>该线性采样与 <code class="docutils literal notranslate"><span class="pre">VkImageTiling::VK_IMAGE_TILING_LINEAR</span></code> 不是同一事物，不要搞混。</p>
+</div>
+</div>
+<div class="note admonition">
+<p class="admonition-title">构建 (Blit)</p>
+<p>用于图片与图片之间数据的拷贝和构建，将会在专门的章节进行讲解。</p>
+</div>
+<div class="note admonition">
+<p class="admonition-title">颜色混合</p>
+<p>用于图片与图片之间颜色的混合，经常用于实现透明效果。将会在专门的章节进行讲解。</p>
+</div>
+<div class="note admonition">
+<p class="admonition-title">原子操作</p>
+<p>原子操作只支持 <code class="docutils literal notranslate"><span class="pre">单通道</span></code> 格式数据（比如 <code class="docutils literal notranslate"><span class="pre">VK_FORMAT_R8_UNORM</span></code> 之类的）。</p>
+<div class="danger admonition">
+<p class="admonition-title">未知</p>
+<p>图片的原子操作笔者没有研究过，平时开发也没有碰到过，笔者也不知道具体是什么。需等笔者研究完或某位爱心大佬给出知识点说明。这里只给出笔者已知概念：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">C++</span></code> 中的原子操作为：某一系列操作指令是不可分割的， <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 在处理这一部分指令时不会执行任何其他操作（挂起等）。这在多线程无锁读写同一数据时会涉及到。</p></li>
+<li><p>图片的原子操作好像是通过着色器进行的。</p></li>
+</ul>
+<div class="note admonition">
+<p class="admonition-title">着色器</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 上执行的代码。将会在专门的章节进行讲解。</p>
+</div>
+</div>
+</div>
+<div class="note admonition">
+<p class="admonition-title">顶点缓存</p>
+<p>一个缓存（数组），内部的每一个 <code class="docutils literal notranslate"><span class="pre">项</span></code> 都是指定的相同格式。用于存储顶点数据（位置、法线等）。将会在专门的章节进行讲解。</p>
+</div>
+</section>
 </section>
 </section>
 </section>
@@ -1236,13 +1413,22 @@
 </li>
 <li><a class="reference internal" href="#vksamplecountflagbits">VkSampleCountFlagBits</a></li>
 <li><a class="reference internal" href="#id11">图片资源逻辑模型</a></li>
-<li><a class="reference internal" href="#id12">多级渐远</a></li>
+<li><a class="reference internal" href="#arraylayers-vkimagecreateflags">arrayLayers 与 VkImageCreateFlags</a><ul>
+<li><a class="reference internal" href="#vkimagecreateflagbits">VkImageCreateFlagBits</a></li>
+<li><a class="reference internal" href="#id12">立方体</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id13">多级渐远</a></li>
 <li><a class="reference internal" href="#vkimagetiling">VkImageTiling</a></li>
 <li><a class="reference internal" href="#vkimageusageflagbits">VkImageUsageFlagBits</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id13">格式属性</a><ul>
-<li><a class="reference internal" href="#vkgetphysicaldeviceformatproperties">vkGetPhysicalDeviceFormatProperties</a></li>
+<li><a class="reference internal" href="#id14">格式属性</a><ul>
+<li><a class="reference internal" href="#vkgetphysicaldeviceformatproperties">vkGetPhysicalDeviceFormatProperties</a><ul>
+<li><a class="reference internal" href="#vkformatproperties">VkFormatProperties</a></li>
+<li><a class="reference internal" href="#vkformatfeatureflagbits">VkFormatFeatureFlagBits</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -1261,7 +1447,7 @@
     </aside>
   </div>
 </div><script src="_static/documentation_options.js?v=7d86a446"></script>
-    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>

@@ -6,7 +6,7 @@
 <link rel="index" title="索引" href="../../../genindex.html" /><link rel="search" title="搜索" href="../../../search.html" /><link rel="next" title="多重最近命中着色器" href="MultipleClosestHitShaders.html" /><link rel="prev" title="实例化" href="Instances.html" />
         <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/Literature/NVIDIAVulkanRayTracingTutorial/extensions/Reflections.html" />
 
-    <link rel="shortcut icon" href="../../../_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+    <link rel="shortcut icon" href="../../../_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
         <title>反射 - Vulkan入门精要</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b20cc3f5" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
@@ -275,7 +275,7 @@
         </div>
         <article role="main">
           <section id="id1">
-<h1>反射<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
+<h1>反射<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header sd-bg-muted sd-bg-text-muted">
 <span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-history" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M1.643 3.143L.427 1.927A.25.25 0 000 2.104V5.75c0 .138.112.25.25.25h3.646a.25.25 0 00.177-.427L2.715 4.215a6.5 6.5 0 11-1.18 4.458.75.75 0 10-1.493.154 8.001 8.001 0 101.6-5.684zM7.75 4a.75.75 0 01.75.75v2.992l2.028.812a.75.75 0 01-.557 1.392l-2.5-1A.75.75 0 017 8.25v-3.5A.75.75 0 017.75 4z"></path></svg></span>更新记录<div class="sd-summary-down docutils">
@@ -315,15 +315,15 @@
 <figure class="align-default" id="id19">
 <img alt="../../../_images/reflections.png" src="../../../_images/reflections.png" />
 <figcaption>
-<p><span class="caption-text">反射结果示意图</span><a class="headerlink" href="#id19" title="Link to this image">#</a></p>
+<p><span class="caption-text">反射结果示意图</span><a class="headerlink" href="#id19" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 <section id="id7">
-<h2>教程<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<h2>教程<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h2>
 <p>该教程为 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> <a class="reference external" href="../NVIDIAVulkanRayTracingTutorial.html">光线追踪教程</a> 的扩展。</p>
 </section>
 <section id="id9">
-<h2>布置场景<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
+<h2>布置场景<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h2>
 <p>首先，我们将在场景中平行按一定间隔放置两个反光平面（压扁拉长的正方体），并在中间放置一个各面异色的正方体。将 <code class="docutils literal notranslate"><span class="pre">main()</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">helloVk.loadModel</span></code> 调用修改成如下：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">helloVk</span><span class="p">.</span><span class="n">loadModel</span><span class="p">(</span><span class="n">nvh</span><span class="o">::</span><span class="n">findFile</span><span class="p">(</span><span class="s">&quot;media/scenes/cube.obj&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">defaultSearchPaths</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">),</span>
 <span class="w">                  </span><span class="n">nvmath</span><span class="o">::</span><span class="n">translation_mat4</span><span class="p">(</span><span class="n">nvmath</span><span class="o">::</span><span class="n">vec3f</span><span class="p">(</span><span class="mi">-2</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span>
@@ -349,14 +349,14 @@ Ks 0.95 0.95 0.95
 </div>
 </section>
 <section id="id10">
-<h2>递归反射<a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
+<h2>递归反射<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的光线追踪允许递归调用 <code class="docutils literal notranslate"><span class="pre">traceRayEXT</span></code> ，对应的限制定义在 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceRayTracingPropertiesKHR</span></code> 中。</p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">hello_vulkan.cpp</span></code> 的 <code class="docutils literal notranslate"><span class="pre">createRtPipeline()</span></code> 中，将最大的递归深度设置为 <code class="docutils literal notranslate"><span class="pre">10</span></code> ，并确保不会超过物理设备允许的最大递归限制：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">rayPipelineInfo</span><span class="p">.</span><span class="n">maxPipelineRayRecursionDepth</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="p">(</span><span class="mi">10u</span><span class="p">,</span><span class="w"> </span><span class="n">m_rtProperties</span><span class="p">.</span><span class="n">maxRecursionDepth</span><span class="p">);</span><span class="w">  </span><span class="c1">// 光线递归深度</span>
 </pre></div>
 </div>
 <section id="raycommon-glsl">
-<h3>raycommon.glsl<a class="headerlink" href="#raycommon-glsl" title="Link to this heading">#</a></h3>
+<h3>raycommon.glsl<a class="headerlink" href="#raycommon-glsl" title="Link to this heading">¶</a></h3>
 <p>我们需要知道光线的递归深度和衰减。在 <code class="docutils literal notranslate"><span class="pre">raycommon.glsl</span></code> 的 <code class="docutils literal notranslate"><span class="pre">hitPayload</span></code> 结构体中增加如下：</p>
 <div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w">  </span><span class="n">depth</span><span class="p">;</span>
 <span class="kt">vec3</span><span class="w"> </span><span class="n">attenuation</span><span class="p">;</span>
@@ -364,7 +364,7 @@ Ks 0.95 0.95 0.95
 </div>
 </section>
 <section id="raytrace-rgen">
-<h3>raytrace.rgen<a class="headerlink" href="#raytrace-rgen" title="Link to this heading">#</a></h3>
+<h3>raytrace.rgen<a class="headerlink" href="#raytrace-rgen" title="Link to this heading">¶</a></h3>
 <p>在光线生成着色器中，我们在调用 <code class="docutils literal notranslate"><span class="pre">traceRayEXT</span></code> 之前初始化所有的负载。</p>
 <div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="n">prd</span><span class="p">.</span><span class="n">depth</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="mo">0</span><span class="p">;</span>
 <span class="n">prd</span><span class="p">.</span><span class="n">hitValue</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="kt">vec3</span><span class="p">(</span><span class="mo">0</span><span class="p">);</span>
@@ -373,7 +373,7 @@ Ks 0.95 0.95 0.95
 </div>
 </section>
 <section id="raytrace-rchit">
-<h3>raytrace.rchit<a class="headerlink" href="#raytrace-rchit" title="Link to this heading">#</a></h3>
+<h3>raytrace.rchit<a class="headerlink" href="#raytrace-rchit" title="Link to this heading">¶</a></h3>
 <p>在最近命中着色器的结尾，设置 <code class="docutils literal notranslate"><span class="pre">prd.hitValue</span></code> 之前，当材质是反射时我们需要发射一条光线。</p>
 <div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="c1">// 反射</span>
 <span class="k">if</span><span class="p">(</span><span class="n">mat</span><span class="p">.</span><span class="n">illum</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">prd</span><span class="p">.</span><span class="n">depth</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span>
@@ -405,22 +405,22 @@ Ks 0.95 0.95 0.95
 </div>
 </section>
 <section id="raytrace-rmiss">
-<h3>raytrace.rmiss<a class="headerlink" href="#raytrace-rmiss" title="Link to this heading">#</a></h3>
+<h3>raytrace.rmiss<a class="headerlink" href="#raytrace-rmiss" title="Link to this heading">¶</a></h3>
 <p>最后，未命中着色器中同样也需要进行衰减计算：</p>
 <div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="n">prd</span><span class="p">.</span><span class="n">hitValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">clearColor</span><span class="p">.</span><span class="n">xyz</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">0.8</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">prd</span><span class="p">.</span><span class="n">attenuation</span><span class="p">;</span>
 </pre></div>
 </div>
 </section>
 <section id="id11">
-<h3>可运行，但有限制<a class="headerlink" href="#id11" title="Link to this heading">#</a></h3>
+<h3>可运行，但有限制<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h3>
 <p>目前是可以运行的，但是 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 的递归能力有限制，并且会性能造成冲击。如果我们强制越过该递归限制的话，最终会造成设备丢失的错误。</p>
 </section>
 </section>
 <section id="id12">
-<h2>迭代反射<a class="headerlink" href="#id12" title="Link to this heading">#</a></h2>
+<h2>迭代反射<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h2>
 <p>之前是在最近命中着色器中发射一条新射线，现在我们将返回负载中的信息用于判断是否需要发射新的射线。</p>
 <section id="id13">
-<h3>raycommon.glsl<a class="headerlink" href="#id13" title="Link to this heading">#</a></h3>
+<h3>raycommon.glsl<a class="headerlink" href="#id13" title="Link to this heading">¶</a></h3>
 <p>在负载中增加如下信息用于发射新射线。</p>
 <div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w">  </span><span class="n">done</span><span class="p">;</span>
 <span class="kt">vec3</span><span class="w"> </span><span class="n">rayOrigin</span><span class="p">;</span>
@@ -429,7 +429,7 @@ Ks 0.95 0.95 0.95
 </div>
 </section>
 <section id="id14">
-<h3>raytrace.rgen<a class="headerlink" href="#id14" title="Link to this heading">#</a></h3>
+<h3>raytrace.rgen<a class="headerlink" href="#id14" title="Link to this heading">¶</a></h3>
 <p>初始化负载的新成员：</p>
 <div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="n">prd</span><span class="p">.</span><span class="n">done</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
 <span class="n">prd</span><span class="p">.</span><span class="n">rayOrigin</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="n">origin</span><span class="p">.</span><span class="n">xyz</span><span class="p">;</span>
@@ -461,7 +461,7 @@ Ks 0.95 0.95 0.95
 </div>
 </section>
 <section id="id15">
-<h3>raytrace.rchit<a class="headerlink" href="#id15" title="Link to this heading">#</a></h3>
+<h3>raytrace.rchit<a class="headerlink" href="#id15" title="Link to this heading">¶</a></h3>
 <p>现在我们就不需要在最近命中着色器中发射光线了，所以我们可以将结尾的代码改成如下：</p>
 <div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="p">(</span><span class="n">mat</span><span class="p">.</span><span class="n">illum</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span>
 <span class="p">{</span>
@@ -480,14 +480,14 @@ Ks 0.95 0.95 0.95
 </div>
 </section>
 <section id="id16">
-<h3>raytrace.rmiss<a class="headerlink" href="#id16" title="Link to this heading">#</a></h3>
+<h3>raytrace.rmiss<a class="headerlink" href="#id16" title="Link to this heading">¶</a></h3>
 <p>现在衰减有光线生成着色器负责处理，未命中着色器中就不需要衰减光线了：</p>
 <div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="n">prd</span><span class="p">.</span><span class="n">hitValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">clearColor</span><span class="p">.</span><span class="n">xyz</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">0.8</span><span class="p">;</span>
 </pre></div>
 </div>
 </section>
 <section id="id17">
-<h3>最大递归<a class="headerlink" href="#id17" title="Link to this heading">#</a></h3>
+<h3>最大递归<a class="headerlink" href="#id17" title="Link to this heading">¶</a></h3>
 <p>最后，我们不再需要 <code class="docutils literal notranslate"><span class="pre">createRtPipeline</span></code> 时设置的更高递归层级，仅使用 <code class="docutils literal notranslate"><span class="pre">2</span></code> 层递归层级即可，一个用于初始发射光线，一个用于阴影射线。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">rayPipelineInfo</span><span class="p">.</span><span class="n">maxPipelineRayRecursionDepth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w">  </span><span class="c1">// Ray depth</span>
 </pre></div>
@@ -496,7 +496,7 @@ Ks 0.95 0.95 0.95
 </section>
 </section>
 <section id="id18">
-<h2>控制递归深度<a class="headerlink" href="#id18" title="Link to this heading">#</a></h2>
+<h2>控制递归深度<a class="headerlink" href="#id18" title="Link to this heading">¶</a></h2>
 <p>此外，我们还可以增加一个 <code class="docutils literal notranslate"><span class="pre">UI</span></code> 控件来控制最大的递归深度</p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">PushConstantRay</span></code> 结构体中，增加一个新的 <code class="docutils literal notranslate"><span class="pre">maxDepths</span></code> 成员传递到着色器中。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">PushConstantRay</span>
@@ -631,7 +631,7 @@ Ks 0.95 0.95 0.95
     </aside>
   </div>
 </div><script src="../../../_static/documentation_options.js?v=7d86a446"></script>
-    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>

@@ -6,7 +6,7 @@
 <link rel="index" title="索引" href="genindex.html" /><link rel="search" title="搜索" href="search.html" /><link rel="next" title="逻辑设备" href="LogicDevice.html" /><link rel="prev" title="物理设备" href="PhysicalDevice.html" />
         <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/DeviceQueue.html" />
 
-    <link rel="shortcut icon" href="_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+    <link rel="shortcut icon" href="_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
         <title>设备队列 - Vulkan入门精要</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b20cc3f5" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
@@ -275,7 +275,7 @@
         </div>
         <article role="main">
           <section id="id1">
-<h1>设备队列<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
+<h1>设备队列<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header sd-bg-muted sd-bg-text-muted">
 <span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-history" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M1.643 3.143L.427 1.927A.25.25 0 000 2.104V5.75c0 .138.112.25.25.25h3.646a.25.25 0 00.177-.427L2.715 4.215a6.5 6.5 0 11-1.18 4.458.75.75 0 10-1.493.154 8.001 8.001 0 101.6-5.684zM7.75 4a.75.75 0 01.75.75v2.992l2.028.812a.75.75 0 01-.557 1.392l-2.5-1A.75.75 0 017 8.25v-3.5A.75.75 0 017.75 4z"></path></svg></span>更新记录<div class="sd-summary-down docutils">
@@ -309,7 +309,7 @@
 </div>
 <p>我们可以通过 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceQueueFamilyProperties(...)</span></code> 函数获取设备队列（族）信息，其定义如下：</p>
 <section id="vkgetphysicaldevicequeuefamilyproperties">
-<h2>vkGetPhysicalDeviceQueueFamilyProperties<a class="headerlink" href="#vkgetphysicaldevicequeuefamilyproperties" title="Link to this heading">#</a></h2>
+<h2>vkGetPhysicalDeviceQueueFamilyProperties<a class="headerlink" href="#vkgetphysicaldevicequeuefamilyproperties" title="Link to this heading">¶</a></h2>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">vkGetPhysicalDeviceQueueFamilyProperties</span><span class="p">(</span>
 <span class="w">    </span><span class="n">VkPhysicalDevice</span><span class="w">                            </span><span class="n">physicalDevice</span><span class="p">,</span>
@@ -335,7 +335,7 @@
 <p>该函数将物理设备的一系列设备队列（族）信息写入了 <code class="docutils literal notranslate"><span class="pre">VkQueueFamilyProperties</span></code> 类型数组当中，该类型定义如下：</p>
 </section>
 <section id="vkqueuefamilyproperties">
-<h2>VkQueueFamilyProperties<a class="headerlink" href="#vkqueuefamilyproperties" title="Link to this heading">#</a></h2>
+<h2>VkQueueFamilyProperties<a class="headerlink" href="#vkqueuefamilyproperties" title="Link to this heading">¶</a></h2>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkQueueFamilyProperties</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">VkQueueFlags</span><span class="w">    </span><span class="n">queueFlags</span><span class="p">;</span>
@@ -379,7 +379,7 @@
 </ul>
 </section>
 <section id="id2">
-<h2>示例<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<h2>示例<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkPhysicalDevice</span><span class="w"> </span><span class="n">physical_device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前获取到的物理设备句柄</span><span class="p">;</span>
 
 <span class="kt">uint32_t</span><span class="w"> </span><span class="n">queue_family_count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
@@ -503,7 +503,7 @@
     </aside>
   </div>
 </div><script src="_static/documentation_options.js?v=7d86a446"></script>
-    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>

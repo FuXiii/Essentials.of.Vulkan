@@ -6,7 +6,7 @@
 <link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="搜索" href="../search.html" /><link rel="next" title="NVIDIA Vulkan 光线追踪教程" href="NVIDIAVulkanRayTracingTutorial/NVIDIAVulkanRayTracingTutorial.html" /><link rel="prev" title="Vulkan 光线追踪最终标准发布" href="VulkanRayTracingFinalSpecificationRelease.html" />
         <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/Literature/Vulkan-GuideRayTracing.html" />
 
-    <link rel="shortcut icon" href="../_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+    <link rel="shortcut icon" href="../_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
         <title>光线追踪 - Vulkan入门精要</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b20cc3f5" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
@@ -275,7 +275,7 @@
         </div>
         <article role="main">
           <section id="id1">
-<h1>光线追踪<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
+<h1>光线追踪<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header sd-bg-muted sd-bg-text-muted">
 <span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-history" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M1.643 3.143L.427 1.927A.25.25 0 000 2.104V5.75c0 .138.112.25.25.25h3.646a.25.25 0 00.177-.427L2.715 4.215a6.5 6.5 0 11-1.18 4.458.75.75 0 10-1.493.154 8.001 8.001 0 101.6-5.684zM7.75 4a.75.75 0 01.75.75v2.992l2.028.812a.75.75 0 01-.557 1.392l-2.5-1A.75.75 0 017 8.25v-3.5A.75.75 0 017.75 4z"></path></svg></span>更新记录<div class="sd-summary-down docutils">
@@ -317,7 +317,7 @@
 此外一些驱动实现可能根本不会在32位系统中显示支持。</p>
 </div>
 <section id="id3">
-<h2>VK_KHR_acceleration_structure<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<h2>VK_KHR_acceleration_structure<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
 <p>加速结构在光追中用于描述几何物体的（内部具体实现是驱动自定义的）。通过将几何体构建进加速结构，光追可基于此种已知的数据布局进行高效计算。
 <code class="docutils literal notranslate"><span class="pre">VK_KHR_acceleration_structure</span></code> 扩展提供了构建和拷贝加速结构的功能，并且支持与内存进行序列化。</p>
 <p>加速结构需要光追管线 <code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_tracing_pipeline</span></code> 和光线查询 <code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_query</span></code> 两个扩展</p>
@@ -335,7 +335,7 @@
 </ul>
 </section>
 <section id="id4">
-<h2>VK_KHR_ray_tracing_pipeline<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<h2>VK_KHR_ray_tracing_pipeline<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_tracing_pipeline</span></code> 扩展用于光追管线。光追管线是区别于常见光栅化管线的独立渲染管线，光追管线使用一组专用着色器，与传统的顶点、几何、片元着色器独立。并且光追管线也提供独立的渲染指令（ <code class="docutils literal notranslate"><span class="pre">vkCmdTraceRaysKHR</span></code> 和 <code class="docutils literal notranslate"><span class="pre">vkCmdTraceRaysIndirectKHR</span></code> ）。
 这与传统的光栅化绘制类似（ <code class="docutils literal notranslate"><span class="pre">vkCmdDraw</span></code> 和 <code class="docutils literal notranslate"><span class="pre">vkCmdDrawIndirect</span></code> ）。</p>
 <p>为了追踪光线：</p>
@@ -354,7 +354,7 @@
 </ul>
 </section>
 <section id="id5">
-<h2>VK_KHR_ray_query<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<h2>VK_KHR_ray_query<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_query</span></code> 扩展支持在所有类型着色器中进行光线追踪，包括图形、计算和光追管线。</p>
 <p>光线查询要求光线遍历代码必须位于着色器中。与光追管线不同的是，在光追管线中光线生成、求交测试和光线与几何体击中处理，都是在独立不同的着色器阶段。
 所以光线查询允许在广泛的着色器阶段进行光线追踪，当然也有代价，这会限值 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的驱动实现对于光追调度的优化。</p>
@@ -374,7 +374,7 @@
 </div>
 </section>
 <section id="id6">
-<h2>VK_KHR_pipeline_library<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<h2>VK_KHR_pipeline_library<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">VK_KHR_pipeline_library</span></code> 用于管线库，一个管线库是使用 <code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_CREATE_LIBRARY_BIT_KHR</span></code> 创建的特殊管线，其并不能直接绑定和使用，而是用于代表一组着色器或着色器组和相关其他管线相关的状态。</p>
 <p><code class="docutils literal notranslate"><span class="pre">VK_KHR_pipeline_library</span></code> 并没有直接增加新 <code class="docutils literal notranslate"><span class="pre">API</span></code> 也没有定义如何创建管线库，而相关的功能是交于那些使用 <code class="docutils literal notranslate"><span class="pre">VK_KHR_pipeline_library</span></code> 提供功能的扩展。
 当前仅仅提供了 <code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_tracing_pipeline</span></code> 的例子。</p>
@@ -394,7 +394,7 @@
 </ul>
 </section>
 <section id="id8">
-<h2>VK_KHR_deferred_host_operations<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<h2>VK_KHR_deferred_host_operations<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">VK_KHR_deferred_host_operations</span></code> 提供了将繁重的 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 的工作通过多线程进行分摊的机制。 <code class="docutils literal notranslate"><span class="pre">VK_KHR_deferred_host_operations</span></code> 被设计成允许应用创建和管理线程。</p>
 <p>和 <code class="docutils literal notranslate"><span class="pre">VK_KHR_pipeline_library</span></code> 类似， <code class="docutils literal notranslate"><span class="pre">VK_KHR_deferred_host_operations</span></code> 也是个独立的扩展，目的也是为了在未来其他扩展共用该扩展功能。</p>
 <p>只有在标注了支持延迟操作时才可以进行延迟操作。当前支持的延迟操作为 <code class="docutils literal notranslate"><span class="pre">vkCreateRayTracingPipelinesKHR</span></code> 、 <code class="docutils literal notranslate"><span class="pre">vkBuildAccelerationStructuresKHR</span></code> 、 <code class="docutils literal notranslate"><span class="pre">vkCopyAccelerationStructureKHR</span></code> 、 <code class="docutils literal notranslate"><span class="pre">vkCopyMemoryToAccelerationStructureKHR</span></code> 和 <code class="docutils literal notranslate"><span class="pre">vkCopyAccelerationStructureToMemoryKHR</span></code> 。</p>
@@ -428,20 +428,20 @@
 <p>当一个延迟操作完成后（比如 <code class="docutils literal notranslate"><span class="pre">vkDeferredOperationJoinKHR</span></code> 返回了  <code class="docutils literal notranslate"><span class="pre">VK_SUCCESS</span></code> ），调用 <code class="docutils literal notranslate"><span class="pre">vkGetDeferredOperationResultKHR</span></code> 获取延迟操作的结果。</p>
 </section>
 <section id="id9">
-<h2>光追最佳实践<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
+<h2>光追最佳实践<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h2>
 <section id="id10">
-<h3>最小化并行访问光线查询对象的线程数量<a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
+<h3>最小化并行访问光线查询对象的线程数量<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h3>
 <p>光线查询对象对于线程的部分私有存储是非常昂贵的，对性能的消耗也是如此，所以用的越少越好。在绝大多数情况下应该使用一个光线查询对象就算追踪多条光线，当一个结束的
 光线发射了其他光线的话亦可以使用同一个光线查询对象。只用当多个光线遍历需要并行执行时光线查询才可在同一着色器中。</p>
 </section>
 <section id="id11">
-<h3>最小化光线、击中属性和可调用数据大小<a class="headerlink" href="#id11" title="Link to this heading">#</a></h3>
+<h3>最小化光线、击中属性和可调用数据大小<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h3>
 <p>光追着色器各阶段可以通过光线负载结构在所有的遍历阶段、遍历控制着色器的击中属性结构、可调用着色器的可调用数据之间进行参数和结果的访问。</p>
 <p>这三个结构体都会消耗驱动管理内存，具体消耗多少依赖于结构本身、并行的光线数量和其他因素，比如递归层级。</p>
 <p>着色器需要保持这些结构尽量的小。</p>
 </section>
 <section id="id12">
-<h3>多用设备本地的内存<a class="headerlink" href="#id12" title="Link to this heading">#</a></h3>
+<h3>多用设备本地的内存<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h3>
 <div class="note admonition">
 <p class="admonition-title">设备本地的内存</p>
 <p>设备本地的内存，多称为 <code class="docutils literal notranslate"><span class="pre">device-local</span></code> 或 <code class="docutils literal notranslate"><span class="pre">device</span></code> 端，其多指 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 设备中的内存。而 <code class="docutils literal notranslate"><span class="pre">host</span></code> 端多指 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 使用的内存条的内存，为系统内存。
@@ -551,7 +551,7 @@
     </aside>
   </div>
 </div><script src="../_static/documentation_options.js?v=7d86a446"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>

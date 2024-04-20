@@ -6,7 +6,7 @@
 <link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="搜索" href="../search.html" /><link rel="next" title="光线追踪" href="Vulkan-GuideRayTracing.html" /><link rel="prev" title="文献" href="index.html" />
         <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/Literature/VulkanRayTracingFinalSpecificationRelease.html" />
 
-    <link rel="shortcut icon" href="../_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+    <link rel="shortcut icon" href="../_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
         <title>Vulkan 光线追踪最终标准发布 - Vulkan入门精要</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b20cc3f5" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
@@ -275,7 +275,7 @@
         </div>
         <article role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="vulkan">
-<h1>Vulkan 光线追踪最终标准发布<a class="headerlink" href="#vulkan" title="Link to this heading">#</a></h1>
+<h1>Vulkan 光线追踪最终标准发布<a class="headerlink" href="#vulkan" title="Link to this heading">¶</a></h1>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header sd-bg-muted sd-bg-text-muted">
 <span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-history" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M1.643 3.143L.427 1.927A.25.25 0 000 2.104V5.75c0 .138.112.25.25.25h3.646a.25.25 0 00.177-.427L2.715 4.215a6.5 6.5 0 11-1.18 4.458.75.75 0 10-1.493.154 8.001 8.001 0 101.6-5.684zM7.75 4a.75.75 0 01.75.75v2.992l2.028.812a.75.75 0 01-.557 1.392l-2.5-1A.75.75 0 017 8.25v-3.5A.75.75 0 017.75 4z"></path></svg></span>更新记录<div class="sd-summary-down docutils">
@@ -289,11 +289,11 @@
 </div>
 </details><p><a class="reference external" href="https://www.khronos.org/blog/vulkan-ray-tracing-final-specification-release">文献源</a></p>
 <section id="id1">
-<h2>历史回顾<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<h2>历史回顾<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
 <p>对于基于硬件的实时光追，最早是<code class="docutils literal notranslate"><span class="pre">NVIDIA</span></code>在2018年10月10日在<code class="docutils literal notranslate"><span class="pre">DirectX</span> <span class="pre">12</span></code>中正式发布的名为<code class="docutils literal notranslate"><span class="pre">DirectX</span> <span class="pre">Raytracing</span> <span class="pre">(DXR)</span></code>的功能。而<code class="docutils literal notranslate"><span class="pre">Khronos</span></code>组织也在2018年的1月成立了<code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>光追组制定<code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>的光追标准，并在2020年3月发布了一个临时扩展（没记错的话应该是<code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.2</span></code>，当时的扩展名为<code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_tracing</span></code>，而<code class="docutils literal notranslate"><span class="pre">VK_NV_ray_tracing</span></code>扩展在这之前就已经发布了），经过一些用户和硬件供应商的反馈，最终在2020年的11月份发布了<code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>实时光追标准的最终版（<code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.2.162</span></code>）。<code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>实时光追标准的发布是里程碑式的存在，标志着第一个工业级开源、跨平台、跨设备的光追加速标准问世（甚至可以在移动设备上使用光追加速）。</p>
 </section>
 <section id="id2">
-<h2>光追标准<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<h2>光追标准<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
 <p>最终发布版与临时发布版大体上没什么区别，最终发布版如下：</p>
 <p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>的扩展标准：</p>
 <ul class="simple">
@@ -316,7 +316,7 @@
 </ul>
 </section>
 <section id="id3">
-<h2>扩展结构<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<h2>扩展结构<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
 <p>最终发布版与临时发布版最显著的区别在于临时发布版的<code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_tracing</span></code>扩展在最终发布版中被分成了三个扩展:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">VK_KHR_acceleration_structure</span></code>：用于加速结构的构建和管理</p></li>
@@ -363,7 +363,7 @@
 </ul>
 </section>
 <section id="acceleration-structures">
-<h2>加速结构（Acceleration Structures）<a class="headerlink" href="#acceleration-structures" title="Link to this heading">#</a></h2>
+<h2>加速结构（Acceleration Structures）<a class="headerlink" href="#acceleration-structures" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>对于光追扩展标准的最终版中变化最大的就是加速结构的创建和布局。</p>
 <p>我们接纳了<code class="docutils literal notranslate"><span class="pre">API</span></code>转换层作者们的意见（比如<a class="reference external" href="https://github.com/HansKristian-Work/vkd3d-proton">vkd3d-proton</a>），对于将<code class="docutils literal notranslate"><span class="pre">DXR</span></code>层置于<code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>光追加速结构的顶层是不明智的。这使得加速结构的创建大小和存储在<code class="docutils literal notranslate"><span class="pre">VkBuffer</span></code>中发生了改变，而不是使用单独专用的加速结构进行存储。对应的变化位于<code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureKHR</span></code>和<code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureNV</span></code>句柄不再是指代同一实例句柄，并且不能混用。与之相似的结构或者函数在使用这个两个句柄时也不再相同，也不能混用。</p>
 <p>我们同时增加了加速结构类型声明<code class="docutils literal notranslate"><span class="pre">VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHR</span></code>。可以用在当加速结构在创建时还不知道确切的加速结构类型（在顶部或是在底部），确切的加速结构类型必须是<code class="docutils literal notranslate"><span class="pre">VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR</span></code>或者<code class="docutils literal notranslate"><span class="pre">VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR</span></code>，并且一旦创建就不能改变。开发<code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>应用时不应该使用<code class="docutils literal notranslate"><span class="pre">VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHR</span></code>，这会在将来影响设备功能和效率。</p>
@@ -374,14 +374,14 @@
 <p>最后，我们将所有的扩展更改成一致使用设备地址。这其中有很多命名建议，其中一些已被采纳，并且一些名称和命名风格被修改成统一并且可扩展的方式。有关更多细节请查阅<code class="docutils literal notranslate"><span class="pre">VK_KHR_acceleration_structure</span></code>的问题<code class="docutils literal notranslate"><span class="pre">3</span></code>和<code class="docutils literal notranslate"><span class="pre">4</span></code>的更新日志。</p>
 </section>
 <section id="host-deferred-host-operations">
-<h2>Host端的延迟操作（Deferred Host Operations）<a class="headerlink" href="#host-deferred-host-operations" title="Link to this heading">#</a></h2>
+<h2>Host端的延迟操作（Deferred Host Operations）<a class="headerlink" href="#host-deferred-host-operations" title="Link to this heading">¶</a></h2>
 <p><em>注：<code class="docutils literal notranslate"><span class="pre">Host</span></code>端一般指<code class="docutils literal notranslate"><span class="pre">CPU</span></code>端</em></p>
 <p>我么改造了<code class="docutils literal notranslate"><span class="pre">vkBuildAccelerationStructuresKHR</span></code>和<code class="docutils literal notranslate"><span class="pre">vkCreateRayTracingPipelinesKHR</span></code>指令的延迟<code class="docutils literal notranslate"><span class="pre">Host</span></code>端操作。取消了使用<code class="docutils literal notranslate"><span class="pre">pNext</span></code>对于各种独立创建和构造的链式操作，现在延迟操作通过指令的上层参数来设置指令是否为延迟操作。当指令为延迟操作的话，应用必须在延迟操作结束之后获取返回的数据。如果之前有一些延迟操作并且没有其他的措施防止不清晰的行为发生，这时难以明确合适能够获取安全数据。我们相信新的语义是清晰的并且对于并行友好，但是付诸的代价就是需要一直开启<code class="docutils literal notranslate"><span class="pre">VK_KHR_deferred_host_operations</span></code>扩展。</p>
 <p><img alt="Acceleration-Structures" src="../_images/2020-Deferred-Host-Operations-enable-Acceleration-Structures-to-be-built-using-multiple-CPU-cores-for-faster-frame-rates-and-elimination-of-frame-stuttering-2.jpg" /></p>
 <p><em>如上图为：<code class="docutils literal notranslate"><span class="pre">Host</span></code>延迟操作使用加速结构在多核<code class="docutils literal notranslate"><span class="pre">CPU</span></code>上部署已达到更高的帧率和限制帧停顿</em></p>
 </section>
 <section id="id4">
-<h2>光追管线<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<h2>光追管线<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h2>
 <p>对于光追管线的改变并不多，基本上都是改变内部的<code class="docutils literal notranslate"><span class="pre">SPIR-V</span></code>和着色器编译链相关。</p>
 <p>此外<code class="docutils literal notranslate"><span class="pre">vkCreateRayTracingPipelinesKHR</span></code>中增加了适用延迟操作的修改，并且将<code class="docutils literal notranslate"><span class="pre">VkPipelineLibraryCreateInfoKHR</span></code>和<code class="docutils literal notranslate"><span class="pre">VkRayTracingPipelineInterfaceCreateInfoKHR</span></code>更改成可选项，这样如果<code class="docutils literal notranslate"><span class="pre">VkPipelineLibraryCreateInfoKHR</span></code>和<code class="docutils literal notranslate"><span class="pre">VkRayTracingPipelineInterfaceCreateInfoKHR</span></code>没有使用就不须要激活<code class="docutils literal notranslate"><span class="pre">VK_KHR_pipeline_library</span></code>扩展了。</p>
 <p>对于光追管线最大的改变就是明确的增加了栈大小的管理。光追管线在进行光线追踪时需要调用所有的有关执行链，这潜在会有大量的着色器集。当着色器执行时，驱动实现可能会使用栈去存储参数数据，这也间接要求栈要足够大，进而可以处理所有着色器的任何执行链的调用。默认的栈大小可能相当的大，所以我们给应用提供在管线编译之后使用更优栈大小的可能。一般当应用可以计算出紧凑型栈内存理应使用更优的策略。并且增加了一个新的动态状态<code class="docutils literal notranslate"><span class="pre">VK_DYNAMIC_STATE_RAY_TRACING_PIPELINE_STACK_SIZE_KHR</span></code>用于使用光追管线去查询着色器组<code class="docutils literal notranslate"><span class="pre">vkGetRayTracingShaderGroupStackSizeKHR</span></code>的栈大小时使用，与此对应的设置管线栈大小的函数即为<code class="docutils literal notranslate"><span class="pre">vkCmdSetRayTracingPipelineStackSizeKHR</span></code>。</p>
@@ -396,7 +396,7 @@
 <p>其他的改变包括增加创建2023年5月9日15:23:32捕获和着色器组句柄的回溯标志位，增加了一些之前忽略的属性和限值，和一些为了明确用途的重命名。有关更多细节请查阅<code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_tracing_pipeline</span></code>的问题<code class="docutils literal notranslate"><span class="pre">3</span></code>和<code class="docutils literal notranslate"><span class="pre">4</span></code>，<code class="docutils literal notranslate"><span class="pre">SPV_KHR_ray_tracing</span></code>的问题<code class="docutils literal notranslate"><span class="pre">2</span></code>还有扩展的更新日志。</p>
 </section>
 <section id="id5">
-<h2>光线查询<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<h2>光线查询<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h2>
 <p>考虑到<code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>接口对于表面光线查询欠缺，大部分的光线查询改变都在<code class="docutils literal notranslate"><span class="pre">SPIR-V</span></code>扩展和交互中。</p>
 <p><code class="docutils literal notranslate"><span class="pre">SPV_KHR_ray_query</span></code>也是支持通过加速结构地址进行发射光线查询，并且增加<code class="docutils literal notranslate"><span class="pre">OpConvertUToAccelerationStructureKHR</span></code>用于将加速结构设备地址转变成<code class="docutils literal notranslate"><span class="pre">OpTypeAccelerationStructureKHR</span></code>描述符。这些在之后可以通过加速结构使用<code class="docutils literal notranslate"><span class="pre">OpRayQueryInitializeKHR</span></code>进行追踪。</p>
 <p>对于光追管线，也新增了功能和枚举<code class="docutils literal notranslate"><span class="pre">RayQueryKHR</span></code>，这可以是的驱动的实现者将老版的临时版本与最终版明确区分开。我们同时为提出遮罩使用一套位域值，并且不允许查询<code class="docutils literal notranslate"><span class="pre">AABB</span></code>图元的候选<code class="docutils literal notranslate"><span class="pre">T</span></code>值。</p>
@@ -406,17 +406,17 @@
 <p><em>如上图为：光线查询提供从任意着色器中明确光线管理</em></p>
 </section>
 <section id="id6">
-<h2>正路在此<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<h2>正路在此<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h2>
 <p>这一章将会给出创建加速结构新流程的纵览和对于资源创建与光追进行同步的快速入门。</p>
 <section id="id7">
-<h3>加速结构的创建<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
+<h3>加速结构的创建<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h3>
 <p><em>注：加速结构的创建和构建是两个不同的东西，创建指的是创建加速结构句柄，构建指的是创建加速结构内部数据和结构</em></p>
 <p>为了创建加速结构，应用必须首先确定加速结构需要的大小。对于创建时的加速结构、缓存大小和更新可通过<code class="docutils literal notranslate"><span class="pre">vkGetAccelerationStructureBuildSizesKHR</span></code>指令使用<code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildSizesInfoKHR</span></code>获得。对于创建加速结构时指定的<code class="docutils literal notranslate"><span class="pre">shape</span></code>和<code class="docutils literal notranslate"><span class="pre">type</span></code>位于<code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildGeometryInfoKHR</span></code>结构体中，该结构体之后也被用于真正的加速结构构建，但是此时加速结构的参数和几何数据并不需要全都填充完善（虽然可以填补完善），仅仅完善加速结构的类型、几何类型、数量和最大大小即可。这个大小可以支持任意足够相似的加速结构。对于加速结构目标会进行紧凑拷贝，这需要从<code class="docutils literal notranslate"><span class="pre">vkCmdWriteAccelerationStructuresPropertiesKHR</span></code>指令中获取大小。一旦需求的大小确定了，为加速结构创建<code class="docutils literal notranslate"><span class="pre">VkBuffer</span></code>（<code class="docutils literal notranslate"><span class="pre">accelerationStructureSize</span></code>），并且一个或多个<code class="docutils literal notranslate"><span class="pre">VkBuffer</span></code>用于创建（<code class="docutils literal notranslate"><span class="pre">buildScratchSize</span></code>）和更新（<code class="docutils literal notranslate"><span class="pre">updateScratchSize</span></code>）缓冲。</p>
 <p>之后，加速结构<code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureKHR</span></code>对象就可以使用<code class="docutils literal notranslate"><span class="pre">vkCreateAccelerationStructureKHR</span></code>指令根据<code class="docutils literal notranslate"><span class="pre">type</span></code>和<code class="docutils literal notranslate"><span class="pre">size</span></code>创建，并将结果存放在<code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureCreateInfoKHR</span></code>中指定的<code class="docutils literal notranslate"><span class="pre">buffer</span></code>的<code class="docutils literal notranslate"><span class="pre">offset</span></code>位置中。与<code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>中的其他资源不同，指定的这一部分魂村将会完全用于加速结构，并不需要额外的缓存用于加速结构的查询或者内存绑定。如果你愿意，多个加速结构甚至可以放在同一个<code class="docutils literal notranslate"><span class="pre">VkBuffer</span></code>中，只需要多个加速结构之间不互相覆盖即可。</p>
 <p>最后，使用<code class="docutils literal notranslate"><span class="pre">vkCmdBuildAccelerationStructuresKHR</span></code>指令可以用于去构建加速结构。此构建使用的是与创建时相同的<code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildGeometryInfoKHR</span></code>结构体，但是此时此时需要指定所有的几何数据（顶点，索引，变换，<code class="docutils literal notranslate"><span class="pre">aabbs</span></code>包围盒，和实例）和缓存数据。一旦构建完成此加速结构将会完全自完善（<code class="docutils literal notranslate"><span class="pre">self-contained</span></code>），并且构建的输入和缓存可以重复利用除非在之后的构建更新中有计划使用他们。</p>
 </section>
 <section id="id8">
-<h3>资源使用和同步<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
+<h3>资源使用和同步<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h3>
 <p>本章将提供各种缓存使用纵观，并且简单讲解光追操作有关的同步使用。</p>
 <p>用于备份加速结构的缓存将会使用<code class="docutils literal notranslate"><span class="pre">VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR</span></code>进行创建。缓存将会使用<code class="docutils literal notranslate"><span class="pre">VK_BUFFER_USAGE_STORAGE_BUFFER_BIT</span></code>用于暂存空间，并且使用<code class="docutils literal notranslate"><span class="pre">VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR</span></code>用于加速结构的构建输入（比如顶点，索引，变换，<code class="docutils literal notranslate"><span class="pre">aabbs</span></code>包围盒，和实例）。如果缓存用于着色器绑定表将会使用<code class="docutils literal notranslate"><span class="pre">VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR</span></code>创建，并且如果使用间接构建的话追踪参数将会使用<code class="docutils literal notranslate"><span class="pre">VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT</span></code>创建使用。</p>
 <p>为了与加速结构的构建指令（<code class="docutils literal notranslate"><span class="pre">vkCmdBuildAccelerationStructuresKHR</span></code>和<code class="docutils literal notranslate"><span class="pre">vkCmdBuildAccelerationStructuresIndirectKHR</span></code>）进行同步，需要使用<code class="docutils literal notranslate"><span class="pre">VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR</span></code>管线阶段声明。访问加速结构的数据源或目标数据缓存将使用<code class="docutils literal notranslate"><span class="pre">VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR</span></code>或<code class="docutils literal notranslate"><span class="pre">VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR</span></code>。构建时访问输入缓存（顶点，索引，变换，<code class="docutils literal notranslate"><span class="pre">aabbs</span></code>包围盒，和实例）使用<code class="docutils literal notranslate"><span class="pre">VK_ACCESS_SHADER_READ_BIT</span></code>访问类型并且访问间接参数使用<code class="docutils literal notranslate"><span class="pre">VK_ACCESS_INDIRECT_COMMAND_READ_BIT</span></code>访问类型。</p>
@@ -428,7 +428,7 @@
 </section>
 </section>
 <section id="id9">
-<h2>结论和资源<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
+<h2>结论和资源<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h2>
 <p>现在最终版的<code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>光追扩展已经发布，现在支持临时版本的嵌入式也会在不久支持最终版光追扩展，有关其他工具和组件可通过<a class="reference external" href="https://khr.io/vulkanrtfeedback">GitHub</a>进行查阅。我们推荐所有的开发者转去使用最终的<code class="docutils literal notranslate"><span class="pre">Khronos</span></code>发布的<code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>光追最终版。</p>
 <p>支持<code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>光追扩展的<code class="docutils literal notranslate"><span class="pre">NVIDIA</span></code>显卡驱动以及哪些显卡支持的信息可在<a class="reference external" href="https://developer.nvidia.com/vulkan-driver">developer.nvidia.com/vulkan-driver</a>中找到。对于<code class="docutils literal notranslate"><span class="pre">AMD</span></code>显卡驱动可在<a class="reference external" href="https://www.amd.com/en/support/kb/release-notes/rn-rad-win-20-11-2-vrt-beta">https://www.amd.com/en/support/kb/release-notes/rn-rad-win-20-11-2-vrt-beta</a>中找到。光追扩展同样可以通过2021年的<code class="docutils literal notranslate"><span class="pre">Intel</span></code>的<code class="docutils literal notranslate"><span class="pre">Xe-HPG</span></code>显卡支持，通过定期的驱动程序更新提供支持。</p>
 <p>有关如何使用<code class="docutils literal notranslate"><span class="pre">Vulkan</span></code>光追用于混合渲染，同时使用光栅化和光追，以此来达到令人信服和画面同时保持交互程度请查看<a class="reference external" href="https://www.khronos.org/blog/vulkan-ray-tracing-best-practices-for-hybrid-rendering">Vulkan Ray Tracing Best Practices for Hybrid Rendering</a>博客讨论有关在<code class="docutils literal notranslate"><span class="pre">Wolfenstein:Youngblood</span></code>（德军总部：新血脉）中使用最终版光追扩展实现的反射效果。</p>
@@ -538,7 +538,7 @@
     </aside>
   </div>
 </div><script src="../_static/documentation_options.js?v=7d86a446"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>

@@ -6,7 +6,7 @@
 <link rel="index" title="索引" href="../../../genindex.html" /><link rel="search" title="搜索" href="../../../search.html" /><link rel="next" title="相交着色器" href="IntersectionShader.html" /><link rel="prev" title="多重最近命中着色器" href="MultipleClosestHitShaders.html" />
         <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/Literature/NVIDIAVulkanRayTracingTutorial/extensions/Animation.html" />
 
-    <link rel="shortcut icon" href="../../../_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+    <link rel="shortcut icon" href="../../../_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
         <title>动态更新 - Vulkan入门精要</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b20cc3f5" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
@@ -275,7 +275,7 @@
         </div>
         <article role="main">
           <section id="id1">
-<h1>动态更新<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
+<h1>动态更新<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header sd-bg-muted sd-bg-text-muted">
 <span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-history" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M1.643 3.143L.427 1.927A.25.25 0 000 2.104V5.75c0 .138.112.25.25.25h3.646a.25.25 0 00.177-.427L2.715 4.215a6.5 6.5 0 11-1.18 4.458.75.75 0 10-1.493.154 8.001 8.001 0 101.6-5.684zM7.75 4a.75.75 0 01.75.75v2.992l2.028.812a.75.75 0 01-.557 1.392l-2.5-1A.75.75 0 017 8.25v-3.5A.75.75 0 017.75 4z"></path></svg></span>更新记录<div class="sd-summary-down docutils">
@@ -313,11 +313,11 @@
 <figure class="align-default" id="id20">
 <img alt="../../../_images/animation2.gif" src="../../../_images/animation2.gif" />
 <figcaption>
-<p><span class="caption-text">动态更新结果示意图</span><a class="headerlink" href="#id20" title="Link to this image">#</a></p>
+<p><span class="caption-text">动态更新结果示意图</span><a class="headerlink" href="#id20" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 <section id="id8">
-<h2>教程<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<h2>教程<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h2>
 <p>该教程为 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> <a class="reference external" href="../NVIDIAVulkanRayTracingTutorial.html">光线追踪教程</a> 的扩展。</p>
 <p>我们将会实现两种更新方式：</p>
 <ol class="arabic simple">
@@ -326,10 +326,10 @@
 </ol>
 </section>
 <section id="id9">
-<h2>更新变换矩阵<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
+<h2>更新变换矩阵<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h2>
 <p>定一个示例是通过更新顶层加速结构中实体对应的变换矩阵进行的动态更新。</p>
 <section id="id10">
-<h3>创建一个场景<a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
+<h3>创建一个场景<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h3>
 <p>在 <code class="docutils literal notranslate"><span class="pre">main.cpp</span></code> 中替换掉之前的通过 <code class="docutils literal notranslate"><span class="pre">main()</span></code> 中 <code class="docutils literal notranslate"><span class="pre">helloVk.loadModel</span></code> 的函数调用，这次我们使用一个地板和使用 <code class="docutils literal notranslate"><span class="pre">Wuson</span></code> 模型组成的 <code class="docutils literal notranslate"><span class="pre">21</span></code> 个实体组成的场景。如下代码是在同一位置创建所有的实体，我们将会在之后的更新函数中更新这些数据。如果此时运行示例，你会发现现在渲染的非常慢，这是因为所有的几何体都叠在了一起并且加速结构不能很好的处理此种情况。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">helloVk</span><span class="p">.</span><span class="n">loadModel</span><span class="p">(</span><span class="n">nvh</span><span class="o">::</span><span class="n">findFile</span><span class="p">(</span><span class="s">&quot;media/scenes/plane.obj&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">defaultSearchPaths</span><span class="p">),</span>
 <span class="w">                  </span><span class="n">nvmath</span><span class="o">::</span><span class="n">scale_mat4</span><span class="p">(</span><span class="n">nvmath</span><span class="o">::</span><span class="n">vec3f</span><span class="p">(</span><span class="mf">2.f</span><span class="p">,</span><span class="w"> </span><span class="mf">1.f</span><span class="p">,</span><span class="w"> </span><span class="mf">2.f</span><span class="p">)));</span>
@@ -342,7 +342,7 @@
 </div>
 </section>
 <section id="id11">
-<h3>更新函数<a class="headerlink" href="#id11" title="Link to this heading">#</a></h3>
+<h3>更新函数<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h3>
 <p>我们现在想让这些 <code class="docutils literal notranslate"><span class="pre">Wuson</span></code> 模型绕着圈转，我们首先使用光栅化进行更新渲染，此示例将会在 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 端进行变换更新，之后再将变换结果拷贝至 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 。而下一个示例中，我们将在 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 上使用计算着色器进行更新。</p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">HelloVulkan</span></code> 类中声明更新函数。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">animationInstances</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">time</span><span class="p">);</span>
@@ -368,7 +368,7 @@
 </div>
 </section>
 <section id="id12">
-<h3>循环更新函数<a class="headerlink" href="#id12" title="Link to this heading">#</a></h3>
+<h3>循环更新函数<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h3>
 <p>在 <code class="docutils literal notranslate"><span class="pre">main()</span></code> 中，在进入主循环之前增加一个用于记录开始时间的变量，该变量将会被更新函数使用。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">system_clock</span><span class="o">::</span><span class="n">now</span><span class="p">();</span>
 </pre></div>
@@ -382,7 +382,7 @@
 </section>
 </section>
 <section id="id13">
-<h2>更新顶层加速结构<a class="headerlink" href="#id13" title="Link to this heading">#</a></h2>
+<h2>更新顶层加速结构<a class="headerlink" href="#id13" title="Link to this heading">¶</a></h2>
 <p>由于我们要更新顶层加速结构中的变换矩阵，我们需要保存在创建时的对象信息，这样才能知道顶层加速结构中都有哪些实体。</p>
 <p>首先，将 <code class="docutils literal notranslate"><span class="pre">HelloVulkan::createTopLevelAS()</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">nvvk::RaytracingBuilder::Instance</span></code> 数组转移至 <code class="docutils literal notranslate"><span class="pre">HelloVulkan</span></code> 类中：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">nvvk</span><span class="o">::</span><span class="n">RaytracingBuilder</span><span class="o">::</span><span class="n">Instance</span><span class="o">&gt;</span><span class="w"> </span><span class="n">m_tlas</span><span class="p">;</span>
@@ -418,7 +418,7 @@
 <img alt="../../../_images/animation1.gif" src="../../../_images/animation1.gif" />
 </figure>
 <section id="nvvk-raytracingbuilder-buildtlas">
-<h3>nvvk::RaytracingBuilder::buildTlas （实现）<a class="headerlink" href="#nvvk-raytracingbuilder-buildtlas" title="Link to this heading">#</a></h3>
+<h3>nvvk::RaytracingBuilder::buildTlas （实现）<a class="headerlink" href="#nvvk-raytracingbuilder-buildtlas" title="Link to this heading">¶</a></h3>
 <p>为了方便这里我们使用了 <code class="docutils literal notranslate"><span class="pre">nvvk::RaytracingBuilder</span></code> 来更新变换矩阵。对于加速结构的更新和构建，两者之间只有很小的区别。最主要的区别为：</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">VkAccelerationStructureBuildGeometryInfoKHR</span></code> 将会设置成 <code class="docutils literal notranslate"><span class="pre">VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR</span></code> 更新模式。</p></li>
@@ -429,10 +429,10 @@
 </section>
 </section>
 <section id="id14">
-<h2>更新底层加速结构<a class="headerlink" href="#id14" title="Link to this heading">#</a></h2>
+<h2>更新底层加速结构<a class="headerlink" href="#id14" title="Link to this heading">¶</a></h2>
 <p>在之前的章节中，我们更新的变换矩阵。这次我们将会在计算着色器中修改顶点数据。</p>
 <section id="id15">
-<h3>增加一个球体<a class="headerlink" href="#id15" title="Link to this heading">#</a></h3>
+<h3>增加一个球体<a class="headerlink" href="#id15" title="Link to this heading">¶</a></h3>
 <p>本章节，我们将会更新一个球体的顶点。在 <code class="docutils literal notranslate"><span class="pre">main.cpp</span></code> 中设置场景如下：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">helloVk</span><span class="p">.</span><span class="n">loadModel</span><span class="p">(</span><span class="n">nvh</span><span class="o">::</span><span class="n">findFile</span><span class="p">(</span><span class="s">&quot;media/scenes/plane.obj&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">defaultSearchPaths</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">),</span>
 <span class="w">                  </span><span class="n">nvmath</span><span class="o">::</span><span class="n">scale_mat4</span><span class="p">(</span><span class="n">nvmath</span><span class="o">::</span><span class="n">vec3f</span><span class="p">(</span><span class="mf">2.f</span><span class="p">,</span><span class="w"> </span><span class="mf">1.f</span><span class="p">,</span><span class="w"> </span><span class="mf">2.f</span><span class="p">)));</span>
@@ -452,7 +452,7 @@
 </div>
 </section>
 <section id="id16">
-<h3>计算着色器<a class="headerlink" href="#id16" title="Link to this heading">#</a></h3>
+<h3>计算着色器<a class="headerlink" href="#id16" title="Link to this heading">¶</a></h3>
 <p>我们使用计算着色器来为模型的顶点做更新。</p>
 <p>将如下的所有申明加入 <code class="docutils literal notranslate"><span class="pre">HelloVulkan</span></code> 类中成为其成员：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">createCompDescriptors</span><span class="p">();</span>
@@ -523,7 +523,7 @@
 </div>
 </section>
 <section id="anim-comp">
-<h3>anim.comp<a class="headerlink" href="#anim-comp" title="Link to this heading">#</a></h3>
+<h3>anim.comp<a class="headerlink" href="#anim-comp" title="Link to this heading">¶</a></h3>
 <p>该计算着色器比较简单。我们在解决方案中的 <code class="docutils literal notranslate"><span class="pre">shaders</span></code> 中增加一个新着色器文件 <code class="docutils literal notranslate"><span class="pre">anim.com</span></code> 。</p>
 <p>该着色器将会随时间将每个顶点来回上下移动。</p>
 <div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="cp">#version 460</span>
@@ -576,7 +576,7 @@
 </div>
 </section>
 <section id="id17">
-<h3>更新物体<a class="headerlink" href="#id17" title="Link to this heading">#</a></h3>
+<h3>更新物体<a class="headerlink" href="#id17" title="Link to this heading">¶</a></h3>
 <p>首先在 <code class="docutils literal notranslate"><span class="pre">HelloVulkan</span></code> 中增加更新函数的声明：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">animationObject</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">time</span><span class="p">);</span>
 </pre></div>
@@ -607,7 +607,7 @@
 </div>
 </section>
 <section id="id18">
-<h3>执行更新<a class="headerlink" href="#id18" title="Link to this heading">#</a></h3>
+<h3>执行更新<a class="headerlink" href="#id18" title="Link to this heading">¶</a></h3>
 <p>在 <code class="docutils literal notranslate"><span class="pre">main.cpp</span></code> 中，在其他资源创建完成之后，添加计算着色器的创建函数。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">helloVk</span><span class="p">.</span><span class="n">createCompDescriptors</span><span class="p">();</span>
 <span class="n">helloVk</span><span class="p">.</span><span class="n">createCompPipelines</span><span class="p">();</span>
@@ -628,7 +628,7 @@
 </section>
 </section>
 <section id="id19">
-<h2>底层加速结构的更新<a class="headerlink" href="#id19" title="Link to this heading">#</a></h2>
+<h2>底层加速结构的更新<a class="headerlink" href="#id19" title="Link to this heading">¶</a></h2>
 <p>在 <code class="docutils literal notranslate"><span class="pre">raytrace_vkpp.hpp</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">nvvk::RaytracingBuilder</span></code> 中，我们可以增加一个函数用于将之前更新的顶点数据更新到底层加速结构中。这与之前更新实体类似，只不过这次没有缓存传输这一说了。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">//--------------------------------------------------------------------------------------------------</span>
 <span class="c1">// 从更新的缓存中重组底层加速结构的 blasIdx 数量</span>
@@ -817,7 +817,7 @@
     </aside>
   </div>
 </div><script src="../../../_static/documentation_options.js?v=7d86a446"></script>
-    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>

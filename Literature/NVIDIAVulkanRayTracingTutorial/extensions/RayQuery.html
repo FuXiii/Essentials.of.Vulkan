@@ -6,7 +6,7 @@
 <link rel="index" title="索引" href="../../../genindex.html" /><link rel="search" title="搜索" href="../../../search.html" /><link rel="next" title="glTF 场景" href="glTFScene.html" /><link rel="prev" title="可调用着色器" href="CallableShaders.html" />
         <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/Literature/NVIDIAVulkanRayTracingTutorial/extensions/RayQuery.html" />
 
-    <link rel="shortcut icon" href="../../../_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+    <link rel="shortcut icon" href="../../../_static/VulkanLogo.png"/><!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
         <title>光线查询 - Vulkan入门精要</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b20cc3f5" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
@@ -275,7 +275,7 @@
         </div>
         <article role="main">
           <section id="id1">
-<h1>光线查询<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
+<h1>光线查询<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header sd-bg-muted sd-bg-text-muted">
 <span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-history" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M1.643 3.143L.427 1.927A.25.25 0 000 2.104V5.75c0 .138.112.25.25.25h3.646a.25.25 0 00.177-.427L2.715 4.215a6.5 6.5 0 11-1.18 4.458.75.75 0 10-1.493.154 8.001 8.001 0 101.6-5.684zM7.75 4a.75.75 0 01.75.75v2.992l2.028.812a.75.75 0 01-.557 1.392l-2.5-1A.75.75 0 017 8.25v-3.5A.75.75 0 017.75 4z"></path></svg></span>更新记录<div class="sd-summary-down docutils">
@@ -299,21 +299,21 @@
 <figure class="align-default" id="id11">
 <img alt="../../../_images/rayquery.png" src="../../../_images/rayquery.png" />
 <figcaption>
-<p><span class="caption-text">光线查询结果示意图</span><a class="headerlink" href="#id11" title="Link to this image">#</a></p>
+<p><span class="caption-text">光线查询结果示意图</span><a class="headerlink" href="#id11" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 <section id="id4">
-<h2>教程<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<h2>教程<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h2>
 <p>该教程为 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> <a class="reference external" href="../NVIDIAVulkanRayTracingTutorial.html">光线追踪教程</a> 的扩展。</p>
 <p>该教程将使用 <a class="reference external" href="https://github.com/KhronosGroup/GLSL/blob/master/extensions/ext/GLSL_EXT_ray_query.txt">GLSL_EXT_ray_query</a> 扩展。该扩展运行在任意一个着色器中进行光线相交查询。在本示例中我们将通过在片元着色器中进行查询投射到阴影中的那一部分光线来生成阴影。</p>
 <p>与其他添加新内容代码的示例不同，这次我们要删减代码。本例中不再需要着色器绑定表和光追管线，而加速结构是唯一需要留下的资源。</p>
 <p>我们将从 <a class="reference external" href="../NVIDIAVulkanRayTracingTutorial.html">光线追踪教程</a> 开始移除所有与光线追踪相关的代码，除了将底层加速结构和顶层加速结构进行保留。</p>
 </section>
 <section id="id5">
-<h2>清除<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<h2>清除<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h2>
 <p>首先清除所有不需要的代码。</p>
 <section id="hello-vulkan">
-<h3>hello_vulkan (头文件)<a class="headerlink" href="#hello-vulkan" title="Link to this heading">#</a></h3>
+<h3>hello_vulkan (头文件)<a class="headerlink" href="#hello-vulkan" title="Link to this heading">¶</a></h3>
 <p>仅留下加速结构相关代码，其他没有用的都去掉：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// #VKRay</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">initRayTracing</span><span class="p">();</span>
@@ -327,16 +327,16 @@
 </div>
 </section>
 <section id="id6">
-<h3>hello_vulkan (源文件)<a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
+<h3>hello_vulkan (源文件)<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h3>
 <p>对于源文件，移除之前相关的所有代码。</p>
 </section>
 <section id="id7">
-<h3>着色器<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
+<h3>着色器<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h3>
 <p>您可以直接移除所有名为 <code class="docutils literal notranslate"><span class="pre">raytrace.*</span></code> 的着色器。</p>
 </section>
 </section>
 <section id="id8">
-<h2>激活扩展<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<h2>激活扩展<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h2>
 <p>在激活加速结构扩展后面增加对于 <code class="docutils literal notranslate"><span class="pre">VK_KHR_ray_query</span></code> 扩展的激活：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkPhysicalDeviceRayQueryFeaturesKHR</span><span class="w"> </span><span class="n">rayQueryFeatures</span><span class="p">{</span><span class="n">VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_QUERY_FEATURES_KHR</span><span class="p">};</span>
 <span class="n">contextInfo</span><span class="p">.</span><span class="n">addDeviceExtension</span><span class="p">(</span><span class="n">VK_KHR_RAY_QUERY_EXTENSION_NAME</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">rayQueryFeatures</span><span class="p">);</span>
@@ -344,7 +344,7 @@
 </div>
 </section>
 <section id="id9">
-<h2>片元着色器相关配置<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
+<h2>片元着色器相关配置<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h2>
 <p>在 <code class="docutils literal notranslate"><span class="pre">HelloVulkan::createDescriptorSetLayout</span></code> 中增加在加速结构描述符中增加片元着色器的访问配置。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 顶层加速结构</span>
 <span class="n">m_descSetLayoutBind</span><span class="p">.</span><span class="n">addBinding</span><span class="p">(</span><span class="n">eTlas</span><span class="p">,</span><span class="w"> </span><span class="n">VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_FRAGMENT_BIT</span><span class="p">);</span>
@@ -366,7 +366,7 @@
 </pre></div>
 </div>
 <section id="id10">
-<h3>片元着色器<a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
+<h3>片元着色器<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h3>
 <p>最后需要修改片元着色器，我们将增加光线与加速结构的相交查询用于追踪生成阴影的光线。</p>
 <p>首先。着色器的版本需要升级到 <code class="docutils literal notranslate"><span class="pre">460</span></code> ：</p>
 <div class="highlight-glsl notranslate"><div class="highlight"><pre><span></span><span class="cp">#version 460</span>
@@ -508,7 +508,7 @@
     </aside>
   </div>
 </div><script src="../../../_static/documentation_options.js?v=7d86a446"></script>
-    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
