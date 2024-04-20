@@ -41,6 +41,16 @@
    * 2024/4/14 增加 ``格式属性`` 章节。
    * 2024/4/14 更新 ``VkImageTiling`` 章节。
    * 2024/4/14 增加 ``vkGetPhysicalDeviceFormatProperties`` 章节。
+   * 2024/4/15 更新 ``vkGetPhysicalDeviceFormatProperties`` 章节。
+   * 2024/4/15 增加 ``VkFormatFeatureFlagBits`` 章节。
+   * 2024/4/16 更新 ``VkFormatFeatureFlagBits`` 章节。
+   * 2024/4/16 增加 ``arrayLayers 与 VkImageCreateFlags`` 章节。
+   * 2024/4/16 更新 ``图片资源逻辑模型`` 章节。
+   * 2024/4/17 更新 ``arrayLayers 与 VkImageCreateFlags`` 章节。
+   * 2024/4/18 更新 ``arrayLayers 与 VkImageCreateFlags`` 章节。
+   * 2024/4/18 增加 ``VkImageCreateFlagBits`` 章节。
+   * 2024/4/18 增加 ``立方体`` 章节。
+   * 2024/4/20 更新 ``立方体`` 章节。
 
 在 ``Vulkan`` 中只有 ``2`` 种资源 :
 
@@ -750,7 +760,85 @@ VkSampleCountFlagBits
 .. admonition:: arrayLayers
    :class: note
 
-   ``arrayLayers`` :bdg-danger:`不可以` 随意指定数量，有一些限制。将会在之后的章节说明。
+   ``arrayLayers`` :bdg-danger:`不可以` 随意指定数量，有一些限制。具体见 :ref:`arrayLayersAndVkImageCreateFlags` 章节。
+
+.. _arrayLayersAndVkImageCreateFlags:
+
+arrayLayers 与 VkImageCreateFlags
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+在介绍 ``VkImageCreateFlags`` 之前，先来说明一下与 ``VkImageCreateInfo::flags`` 无关的 ``arrayLayers`` 限制：
+
+* 如果 ``VkImageCreateInfo::imageType`` 为 ``VkImageType::VK_IMAGE_TYPE_2D`` 并且 ``VkImageCreateInfo::tiling`` 为 ``VkImageTiling::VK_IMAGE_TILING_LINEAR`` 的话， ``VkImageCreateInfo::arrayLayers`` :bdg-danger:`必须` 为 ``1`` 。
+* 如果 ``VkImageCreateInfo::imageType`` 为 ``VkImageType::VK_IMAGE_TYPE_3D`` 的话， ``VkImageCreateInfo::arrayLayers`` :bdg-danger:`必须` 为 ``1`` 。
+
+接下来的话让我们看看 ``VkImageCreateInfo::flags`` 的有效值，对应的有效值被声明在 ``VkImageCreateFlagBits`` 枚举类型中，其定义如下：
+
+VkImageCreateFlagBits
+"""""""""""""""""""""""""
+
+.. code-block:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef enum VkImageCreateFlagBits {
+       VK_IMAGE_CREATE_SPARSE_BINDING_BIT = 0x00000001,
+       VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT = 0x00000002,
+       VK_IMAGE_CREATE_SPARSE_ALIASED_BIT = 0x00000004,
+       VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT = 0x00000008,
+       VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT = 0x00000010,
+   } VkImageCreateFlagBits;
+
+* :bdg-secondary:`VK_IMAGE_CREATE_SPARSE_BINDING_BIT` 表示该图片将会使用 ``稀疏`` 内存进行绑定。
+* :bdg-secondary:`VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT` 表示该图片将会部分使用 ``稀疏`` 内存进行绑定。如果指定了该标志位，则 ``VK_IMAGE_CREATE_SPARSE_BINDING_BIT`` 也 :bdg-danger:`必须` 使用开启。
+* :bdg-secondary:`VK_IMAGE_CREATE_SPARSE_ALIASED_BIT` 表示该图片将会部分使用 ``稀疏`` 内存进行绑定。并且这一部分内存可能同时被另一个图片使用（或部分使用），如果指定了该标志位，则 ``VK_IMAGE_CREATE_SPARSE_BINDING_BIT`` 也 :bdg-danger:`必须` 使用开启。
+* :bdg-secondary:`VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT` 表示该图片可用于创建 ``图片视图`` 的格式可与该图片的格式不同。对于 ``多平面`` 格式， ``VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT`` 表示 ``图片视图`` 可以用于表示图片中的某平面。
+* :bdg-secondary:`VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT` 表示该图片可用于创建 ``立方体`` 图片。
+
+.. admonition:: 图片视图
+   :class: note
+
+   在通过 ``vkCreateImage(...)`` 创建完图片之后，需要创建相应的 ``图片视图`` （ ``VkImageView`` ）才能被 ``Vulkan`` 使用。具体将会在之后的章节讲解。
+
+.. admonition:: 多平面格式
+   :class: warning
+
+   好像是一种压缩格式，具体没研究过。一般像如下格式是用于多平面格式：
+
+   .. code:: c++
+
+      VkFormat::VK_FORMAT_G8B8G8R8_422_UNORM
+      VkFormat::VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM
+      VkFormat::VK_FORMAT_G10X6_B10X6_R10X6_3PLANE_420_UNORM_3PACK16
+
+   具体咋回事待研究。
+
+其中我们主要关注 ``VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT`` 这个标志位。该标志位经常用于 ``立方体`` 图片：
+
+立方体
+"""""""""""""""""""""
+
+所谓 ``立方体`` 图片（有时也叫 ``立方体纹理`` 英文为 ``Cubemap`` ）其实就是 ``6`` 张 ``二维`` 图片拼成的一个盒子。示意图如下：
+
+.. figure:: ./_static/3d_image_cubemap.png
+
+   立方体示意图
+
+而立方体中的图片数据经常用于存储场景的环境信息，比如天空信息。所以也常被称为 ``天空盒`` 。示意图如下：
+
+.. figure:: ./_static/sky_cube_0.png
+   :scale: 50%
+   :align: center
+
+   天空盒示意图
+
+当 ``VkImageCreateInf::flags`` 中指定了 ``VkImageCreateFlagBits::VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT`` 标志位的话，则说明要创建一个立方体图片，则有如下限制要求：
+
+* ``VkImageCreateInf::imageType`` :bdg-danger:`必须` 为 ``VkImageType::VK_IMAGE_TYPE_2D`` 。
+* ``VkImageCreateInf::arrayLayers`` :bdg-danger:`必须` :bdg-danger:`大于等于` ``6`` 。
+* ``VkImageCreateInf::extent`` 中的 ``width`` 和 ``height`` :bdg-danger:`必须` :bdg-danger:`相等` 。
+
+..
+   If flags contains VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT, arrayLayers must be greater than or equal to 6
 
 多级渐远
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -902,15 +990,121 @@ vkGetPhysicalDeviceFormatProperties
        VkFormat                                    format,
        VkFormatProperties*                         pFormatProperties);
 
-.. note:: 未完待续
+* :bdg-secondary:`physicalDevice` 要查询格式是否在该逻辑设备上支持。
+* :bdg-secondary:`format` 要查询的格式。
+* :bdg-secondary:`pFormatProperties` 格式的支持信息。
+
+该函数用于查询 ``format`` 格式在 ``physicalDevice`` 上的支持情况，支持的信息数据将会写入 ``pFormatProperties`` 所指向的内存中。
+
+其中 ``pFormatProperties`` 的 ``VkFormatProperties`` 类型定义如下：
+
+VkFormatProperties
+"""""""""""""""""""""
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef struct VkFormatProperties {
+       VkFormatFeatureFlags    linearTilingFeatures;
+       VkFormatFeatureFlags    optimalTilingFeatures;
+       VkFormatFeatureFlags    bufferFeatures;
+   } VkFormatProperties;
+
+* :bdg-secondary:`linearTilingFeatures` 中存储着 ``VkFormatFeatureFlagBits`` 枚举中定义的特性标志位。用于表示当图片使用 ``VkImageTiling::VK_IMAGE_TILING_LINEAR`` 线性排布时，该格式支持的特性。
+* :bdg-secondary:`optimalTilingFeatures` 中存储着 ``VkFormatFeatureFlagBits`` 枚举中定义的特性标志位。用于表示当图片使用 ``VkImageTiling::VK_IMAGE_TILING_OPTIMAL`` 优化排布时，该格式支持的特性。
+* :bdg-secondary:`bufferFeatures` 中存储着 ``VkFormatFeatureFlagBits`` 枚举中定义的特性标志位。用于表示当缓存资源中存储对应格式的纹素数据时，该格式支持的特性。
+
+.. admonition:: 缓存资源中存储对应格式的纹素数据
+   :class: note
+
+   缓存中可以存储任何形式的数据，缓存当然也可以用于存储一系列纹素数据。
+
+其中 ``VkFormatFeatureFlags`` 类型的有效标志位定义在 ``VkFormatFeatureFlagBits`` 中，其定义如下：
+
+VkFormatFeatureFlagBits
+""""""""""""""""""""""""""""""""""""""
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef enum VkFormatFeatureFlagBits {
+       VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT = 0x00000001,
+       VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT = 0x00000002,
+       VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT = 0x00000004,
+       VK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT = 0x00000008,
+       VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT = 0x00000010,
+       VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_ATOMIC_BIT = 0x00000020,
+       VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT = 0x00000040,
+       VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT = 0x00000080,
+       VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT = 0x00000100,
+       VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT = 0x00000200,
+       VK_FORMAT_FEATURE_BLIT_SRC_BIT = 0x00000400,
+       VK_FORMAT_FEATURE_BLIT_DST_BIT = 0x00000800,
+       VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT = 0x00001000,
+   } VkFormatFeatureFlagBits;
+
+如下为 ``VkFormatProperties::linearTilingFeatures`` 和 ``VkFormatProperties::optimalTilingFeatures`` 会拥有的标志位：
+
+* :bdg-secondary:`VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT` 该格式图片支持采样（ ``VkImageUsageFlagBits::VK_IMAGE_USAGE_SAMPLED_BIT`` ）。
+* :bdg-secondary:`VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT` 该格式图片支持存储（ ``VkImageUsageFlagBits::VK_IMAGE_USAGE_STORAGE_BIT`` ）。
+* :bdg-secondary:`VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT` 该格式图片支持原子存储。
+* :bdg-secondary:`VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT` 该格式图片支持颜色附件（ ``VkImageUsageFlagBits::VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT`` ）和输入附件（ ``VkImageUsageFlagBits::VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT`` ）。
+* :bdg-secondary:`VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT` 该格式图片支持颜色附件（ ``VkImageUsageFlagBits::VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT`` ）并且支持颜色混合。
+* :bdg-secondary:`VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT` 该格式图片支持深度-模板附件（ ``VkImageUsageFlagBits::VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT`` ）。
+* :bdg-secondary:`VK_FORMAT_FEATURE_BLIT_SRC_BIT` 该格式图片支持作为 ``构建`` （ ``Blit`` ）源头数据。
+* :bdg-secondary:`VK_FORMAT_FEATURE_BLIT_DST_BIT` 该格式图片支持作为 ``构建`` （ ``Blit`` ）目标数据。
+* :bdg-secondary:`VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT` 如果同时支持 ``VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT`` 特性的话，该格式图片支持 ``线性`` 采样。如果同时支持 ``VK_FORMAT_FEATURE_BLIT_SRC_BIT`` 特性的话，该格式图片支持 ``构建`` （ ``Blit`` ）。当支持 ``VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT`` 或 ``VK_FORMAT_FEATURE_BLIT_SRC_BIT`` 时，则该 ``VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT`` 特性也 :bdg-danger:`必须` 支持。
+
+如下为 ``VkFormatProperties::bufferFeatures`` 会拥有的标志位：
+
+* :bdg-secondary:`VK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT` 该格式缓存支持存储相应格式的纹素数据用于采样。
+* :bdg-secondary:`VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT` 该格式缓存支持存储相应格式的纹素数据用于存储。
+* :bdg-secondary:`VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_ATOMIC_BIT` 该格式缓存支持存储相应格式的纹素数据用于原子存储。
+* :bdg-secondary:`VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT` 该格式缓存支持存储相应格式的顶点缓存数据。
+
+.. admonition:: 线性采样
+   :class: note
+
+   为图片采样的一种方式，将会在专门的章节进行讲解。
+
+   .. admonition:: VkImageTiling::VK_IMAGE_TILING_LINEAR
+      :class: note 
+      
+      该线性采样与 ``VkImageTiling::VK_IMAGE_TILING_LINEAR`` 不是同一事物，不要搞混。
+
+.. admonition:: 构建 (Blit)
+   :class: note
+
+   用于图片与图片之间数据的拷贝和构建，将会在专门的章节进行讲解。
+
+.. admonition:: 颜色混合
+   :class: note
+
+   用于图片与图片之间颜色的混合，经常用于实现透明效果。将会在专门的章节进行讲解。
+
+.. admonition:: 原子操作
+   :class: note
+
+   原子操作只支持 ``单通道`` 格式数据（比如 ``VK_FORMAT_R8_UNORM`` 之类的）。
+
+   .. admonition:: 未知
+      :class: danger
+
+      图片的原子操作笔者没有研究过，平时开发也没有碰到过，笔者也不知道具体是什么。需等笔者研究完或某位爱心大佬给出知识点说明。这里只给出笔者已知概念：
+
+      * ``C++`` 中的原子操作为：某一系列操作指令是不可分割的， ``CPU`` 在处理这一部分指令时不会执行任何其他操作（挂起等）。这在多线程无锁读写同一数据时会涉及到。
+      * 图片的原子操作好像是通过着色器进行的。
+
+      .. admonition:: 着色器
+         :class: note
+
+         在 ``GPU`` 上执行的代码。将会在专门的章节进行讲解。
+
+.. admonition:: 顶点缓存
+   :class: note
+
+   一个缓存（数组），内部的每一个 ``项`` 都是指定的相同格式。用于存储顶点数据（位置、法线等）。将会在专门的章节进行讲解。
 
 .. 
-   获取支持的格式
-      vkGetPhysicalDeviceFormatProperties
-
    图片创建示例
-   哪些格式支持颜色
-   哪些格式支持深度
-
-   imageview 和 bufferview 在单独的章节展开（在资源与内存之后）
    
