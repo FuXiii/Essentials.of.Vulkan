@@ -51,6 +51,11 @@
    * 2024/4/18 增加 ``VkImageCreateFlagBits`` 章节。
    * 2024/4/18 增加 ``立方体`` 章节。
    * 2024/4/20 更新 ``立方体`` 章节。
+   * 2024/4/23 增加 ``示例`` 章节。
+   * 2024/4/23 增加 ``二维纹理`` 章节。
+   * 2024/4/23 增加 ``图片布局`` 章节。
+   * 2024/4/23 增加 ``VkImageLayout`` 章节。
+   * 2024/4/25 更新 ``VkImageLayout`` 章节。
 
 在 ``Vulkan`` 中只有 ``2`` 种资源 :
 
@@ -963,6 +968,93 @@ VkImageUsageFlagBits
 
    ``VkImageUsageFlagBits`` 中有些枚举值对应的图片用途或都支持读，或都支持写，但不同类型的图片用途在读写途径上不尽相同。这将会在之后的章节展开。
 
+图片布局
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+在 ``VkImageCreateInfo`` 的结构体中，最后一个成员为 ``initialLayout`` ，其用于设置目标图片的 ``布局`` 。 ``Vulkan`` 之所以在此声明一个布局，其最终目的还是为了提高设备对于该图片的操作效率。 :bdg-danger:`在某些特定场合下，如果图片布局为高效布局，则会提高设备的执行效率` 。其中支持的 ``VkImageLayout`` 布局枚举定义如下：
+
+VkImageLayout
+"""""""""""""""""""""
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   typedef enum VkImageLayout {
+       VK_IMAGE_LAYOUT_UNDEFINED = 0,
+       VK_IMAGE_LAYOUT_GENERAL = 1,
+       VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL = 2,
+       VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL = 3,
+       VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL = 4,
+       VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL = 5,
+       VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL = 6,
+       VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL = 7,
+       VK_IMAGE_LAYOUT_PREINITIALIZED = 8,
+
+       // 由 VK_KHR_swapchain 提供
+       VK_IMAGE_LAYOUT_PRESENT_SRC_KHR = 1000001002,
+   } VkImageLayout;
+
+* :bdg-secondary:`VK_IMAGE_LAYOUT_UNDEFINED` 未定义布局。
+* :bdg-secondary:`VK_IMAGE_LAYOUT_GENERAL` 通用布局。
+* :bdg-secondary:`VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL` 图片附件最优布局。
+* :bdg-secondary:`VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL` 深度-模板附件最优布局。
+* :bdg-secondary:`VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL` 深度-模板只读最优布局。
+* :bdg-secondary:`VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL` 着色器只读最优布局。
+* :bdg-secondary:`VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL` 数据传输源最优布局。
+* :bdg-secondary:`VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL` 数据传输目标最优布局。
+* :bdg-secondary:`VK_IMAGE_LAYOUT_PREINITIALIZED` 数据预初始化布局。
+* :bdg-secondary:`VK_IMAGE_LAYOUT_PRESENT_SRC_KHR` 显示源布局。
+
+在通过 ``VkImageCreateInfo`` 创建图片资源时，对应的 ``VkImageCreateInfo::initialLayout`` :bdg-danger:`必须` 为如下两种布局中的一个：
+
+* :bdg-secondary:`VK_IMAGE_LAYOUT_UNDEFINED`
+* :bdg-secondary:`VK_IMAGE_LAYOUT_PREINITIALIZED`
+
+一般创建图片资源时，初始布局都是 ``VK_IMAGE_LAYOUT_UNDEFINED`` 。但如果图片资源对应的资源内存中，其有初始数据，并且按照一定布局存储在内存中，但此时还未被驱动初始化（识别），则其初始布局为 ``VK_IMAGE_LAYOUT_PREINITIALIZED`` 。
+
+``VK_IMAGE_LAYOUT_PREINITIALIZED`` 布局一般用于在 ``Host`` 端提前写入数据的 ``线性`` （ ``VkImageTiling::VK_IMAGE_TILING_LINEAR`` ）图片。
+
+.. admonition:: VK_IMAGE_LAYOUT_PREINITIALIZED
+   :class: note
+
+   该图片布局平时用的并不多，当图片数据为 ``Host`` 端写入数据后，其 ``VkImageCreateInfo::initialLayout`` 可以为 ``VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED`` 。之后在使用时将布局转成成目标布局即可。
+
+.. admonition:: 布局转换
+   :class: note
+
+   图片布局在图片创建完成之后，可以从当前布局，转换成另一个布局。但 ``VkImageLayout::VK_IMAGE_LAYOUT_PREINITIALIZED`` 布局 :bdg-danger:`不能` 用于转换的目标布局。
+
+   有关如何转换布局将会在之后的章节进行讲解。
+
+像其他类型的布局适用如下情形：
+
+* :bdg-secondary:`VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL` 该布局适用于 ``VkImageCreateInfo::usage`` 中包含 ``VkImageUsageFlagBits::VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT`` 用于颜色附件的图片资源。
+* :bdg-secondary:`VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL` 该布局适用于 ``VkImageCreateInfo::usage`` 中包含 ``VkImageUsageFlagBits::VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT`` 用于深度-模板附件的图片资源。
+* :bdg-secondary:`VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL` 该布局适用于 ``只读`` 深度-模板（附件）的图片资源。
+* :bdg-secondary:`VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL`  该布局适用于 ``VkImageCreateInfo::usage`` 中包含 ``VkImageUsageFlagBits::VK_IMAGE_USAGE_SAMPLED_BIT`` 用于图片采样。
+* :bdg-secondary:`VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL` 该布局适用于 ``VkImageCreateInfo::usage`` 中包含 ``VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_SRC_BIT`` 用于数据传输源。
+* :bdg-secondary:`VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL` 该布局适用于 ``VkImageCreateInfo::usage`` 中包含 ``VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_DST_BIT`` 用于数据传输目标。
+
+其中 ``VkImageLayout::VK_IMAGE_LAYOUT_GENERAL`` 通用布局需要强调一下，如果您对于维护各种布局感到麻烦，可以直接转换成该通用布局。通用布局支持所有设备访问类型。像 `google 的 filament 渲染引擎 <https://github.com/google/filament>`_ 中基本上都是 `转换成通用布局 <https://github.com/google/filament/blob/c8335fade732f1f42ca877743384c5cf6139dbbf/filament/backend/src/vulkan/VulkanStagePool.cpp#L121>`_ 后进行使用的。其关键代码如下：
+
+.. code:: c++
+
+   // 位于 filament/filament/backend/src/vulkan/VulkanStagePool.cpp
+   ...
+   VulkanImageUtility::transitionLayout(cmdbuffer, {
+            .image = image->image,
+            .oldLayout = VulkanLayout::UNDEFINED,
+            .newLayout = VulkanLayout::READ_WRITE, // (= VK_IMAGE_LAYOUT_GENERAL)
+            .subresources = { aspectFlags, 0, 1, 0, 1 },
+        });
+    return image;
+   }
+
+.. admonition:: VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
+   :class: note
+
+   该布局属于交换链的图片扩展布局。将会在之后专门的章节进行讲解。目前只需要知道该布局的图片用于显示器窗口显示即可。
+
 现在基本上将 ``VkImageCreateInfo`` 中相关的核心概念过了一遍，但目前还有一个问题需要解决：
 
 .. admonition:: 问题
@@ -1107,4 +1199,36 @@ VkFormatFeatureFlagBits
 
 .. 
    图片创建示例
-   
+
+示例
+***************************
+
+二维纹理
+--------------------
+
+在渲染时经常需要对纹理进行采样获取颜色信息。这需要我们准备用于采样的二维纹理：
+
+.. code:: c++
+
+   VkImageCreateInfo sample_image_create_info = {};
+   sample_image_create_info.sType = VkStructureType::VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+   sample_image_create_info.pNext = nullptr;
+   sample_image_create_info.flags = 0;
+   sample_image_create_info.imageType = VkImageType::VK_IMAGE_TYPE_2D;
+   sample_image_create_info.format = VkFormat::VK_FORMAT_R8G8B8A8_UNORMS; 
+   sample_image_create_info.extent.width = 512;
+   sample_image_create_info.extent.height = 512;
+   sample_image_create_info.extent.depth = 1;
+   sample_image_create_info.mipLevels = 1;
+   sample_image_create_info.arrayLayers = 1;
+   sample_image_create_info.samples = VkSampleCountFlagBits::VK_SAMPLE_COUNT_1_BIT;
+   sample_image_create_info.tiling = VkImageTiling::VK_IMAGE_TILING_OPTIMAL;
+   sample_image_create_info.usage = VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_DST_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_SAMPLED_BIT;
+   sample_image_create_info.sharingMode = VkSharingMode ::VK_SHARING_MODE_EXCLUSIVE;
+   sample_image_create_info.queueFamilyIndexCount = 0;
+   sample_image_create_info.pQueueFamilyIndices = nullptr;
+   sample_image_create_info.initialLayout = VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED;
+
+.. note::
+
+   未完待续
