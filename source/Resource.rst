@@ -55,6 +55,7 @@
    * 2024/4/23 增加 ``二维纹理`` 章节。
    * 2024/4/23 增加 ``图片布局`` 章节。
    * 2024/4/23 增加 ``VkImageLayout`` 章节。
+   * 2024/4/25 更新 ``VkImageLayout`` 章节。
 
 在 ``Vulkan`` 中只有 ``2`` 种资源 :
 
@@ -988,6 +989,9 @@ VkImageLayout
        VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL = 6,
        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL = 7,
        VK_IMAGE_LAYOUT_PREINITIALIZED = 8,
+
+       // 由 VK_KHR_swapchain 提供
+       VK_IMAGE_LAYOUT_PRESENT_SRC_KHR = 1000001002,
    } VkImageLayout;
 
 * :bdg-secondary:`VK_IMAGE_LAYOUT_UNDEFINED` 未定义布局。
@@ -999,11 +1003,57 @@ VkImageLayout
 * :bdg-secondary:`VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL` 数据传输源最优布局。
 * :bdg-secondary:`VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL` 数据传输目标最优布局。
 * :bdg-secondary:`VK_IMAGE_LAYOUT_PREINITIALIZED` 数据预初始化布局。
+* :bdg-secondary:`VK_IMAGE_LAYOUT_PRESENT_SRC_KHR` 显示源布局。
 
-..
-   VK_IMAGE_LAYOUT_UNDEFINED
-   VK_IMAGE_LAYOUT_PREINITIALIZED
-   VK_IMAGE_LAYOUT_GENERAL
+在通过 ``VkImageCreateInfo`` 创建图片资源时，对应的 ``VkImageCreateInfo::initialLayout`` 必须为如下两种布局枚举中的一个：
+
+* :bdg-secondary:`VK_IMAGE_LAYOUT_UNDEFINED`
+* :bdg-secondary:`VK_IMAGE_LAYOUT_PREINITIALIZED`
+
+一般创建图片资源时，初始布局都是 ``VK_IMAGE_LAYOUT_UNDEFINED`` 。但如果图片资源对应的资源内存中，其有初始数据，并且按照一定布局存储在内存中，但此时还未被驱动初始化（识别），则其初始布局为 ``VK_IMAGE_LAYOUT_PREINITIALIZED`` 。
+
+``VK_IMAGE_LAYOUT_PREINITIALIZED`` 布局一般用于在 ``Host`` 端提前写入数据的 ``线性`` （ ``VkImageTiling::VK_IMAGE_TILING_LINEAR`` ）图片。
+
+.. admonition:: VK_IMAGE_LAYOUT_PREINITIALIZED
+   :class: note
+
+   该图片布局平时用的并不多，当图片数据为 ``Host`` 端写入数据后，其 ``VkImageCreateInfo::initialLayout`` 可以为 ``VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED`` 。之后在使用时将布局转成成目标布局即可。
+
+.. admonition:: 布局转换
+   :class: note
+
+   图片布局在图片创建完成之后，可以从当前布局，转换成另一个布局。但 ``VkImageLayout::VK_IMAGE_LAYOUT_PREINITIALIZED`` 布局 :bdg-danger:`不能` 用于转换的目标布局。
+
+   有关如何转换布局将会在之后的章节进行讲解。
+
+像其他类型的布局适用如下情形：
+
+* :bdg-secondary:`VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL` 该布局适用于 ``VkImageCreateInfo::usage`` 中包含 ``VkImageUsageFlagBits::VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT`` 用于颜色附件的图片资源。
+* :bdg-secondary:`VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL` 该布局适用于 ``VkImageCreateInfo::usage`` 中包含 ``VkImageUsageFlagBits::VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT`` 用于深度-模板附件的图片资源。
+* :bdg-secondary:`VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL` 该布局适用于 ``只读`` 深度-模板（附件）的图片资源。
+* :bdg-secondary:`VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL`  该布局适用于 ``VkImageCreateInfo::usage`` 中包含 ``VkImageUsageFlagBits::VK_IMAGE_USAGE_SAMPLED_BIT`` 用于图片采样。
+* :bdg-secondary:`VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL` 该布局适用于 ``VkImageCreateInfo::usage`` 中包含 ``VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_SRC_BIT`` 用于数据传输源。
+* :bdg-secondary:`VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL` 该布局适用于 ``VkImageCreateInfo::usage`` 中包含 ``VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_DST_BIT`` 用于数据传输目标。
+
+其中 ``VkImageLayout::VK_IMAGE_LAYOUT_GENERAL`` 通用布局需要强调一下，如果您对于维护各种布局感到麻烦，可以直接转换成该通用布局。通用布局支持所有设备访问类型。像 `google 的 filament 渲染引擎 <https://github.com/google/filament>`_ 中基本上都是 `转换成通用布局 <https://github.com/google/filament/blob/c8335fade732f1f42ca877743384c5cf6139dbbf/filament/backend/src/vulkan/VulkanStagePool.cpp#L121>`_ 后进行使用的。其关键代码如下：
+
+.. code:: c++
+
+   // 位于 filament/filament/backend/src/vulkan/VulkanStagePool.cpp
+   ...
+   VulkanImageUtility::transitionLayout(cmdbuffer, {
+            .image = image->image,
+            .oldLayout = VulkanLayout::UNDEFINED,
+            .newLayout = VulkanLayout::READ_WRITE, // (= VK_IMAGE_LAYOUT_GENERAL)
+            .subresources = { aspectFlags, 0, 1, 0, 1 },
+        });
+    return image;
+   }
+
+.. admonition:: VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
+   :class: note
+
+   该布局属于交换链的图片扩展布局。将会在之后专门的章节进行讲解。目前只需要知道该布局的图片用于显示器窗口显示即可。
 
 现在基本上将 ``VkImageCreateInfo`` 中相关的核心概念过了一遍，但目前还有一个问题需要解决：
 
@@ -1178,3 +1228,7 @@ VkFormatFeatureFlagBits
    sample_image_create_info.queueFamilyIndexCount = 0;
    sample_image_create_info.pQueueFamilyIndices = nullptr;
    sample_image_create_info.initialLayout = VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED;
+
+.. note::
+
+   未完待续
