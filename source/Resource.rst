@@ -1005,7 +1005,7 @@ VkImageLayout
 * :bdg-secondary:`VK_IMAGE_LAYOUT_PREINITIALIZED` 数据预初始化布局。
 * :bdg-secondary:`VK_IMAGE_LAYOUT_PRESENT_SRC_KHR` 显示源布局。
 
-在通过 ``VkImageCreateInfo`` 创建图片资源时，对应的 ``VkImageCreateInfo::initialLayout`` 必须为如下两种布局枚举中的一个：
+在通过 ``VkImageCreateInfo`` 创建图片资源时，对应的 ``VkImageCreateInfo::initialLayout`` :bdg-danger:`必须` 为如下两种布局中的一个：
 
 * :bdg-secondary:`VK_IMAGE_LAYOUT_UNDEFINED`
 * :bdg-secondary:`VK_IMAGE_LAYOUT_PREINITIALIZED`
