@@ -56,6 +56,10 @@
    * 2024/4/23 增加 ``图片布局`` 章节。
    * 2024/4/23 增加 ``VkImageLayout`` 章节。
    * 2024/4/25 更新 ``VkImageLayout`` 章节。
+   * 2024/4/29 更新 ``二维纹理`` 章节。
+   * 2024/4/29 增加 ``销毁图片`` 章节。
+   * 2024/4/29 增加 ``vkDestroyImage`` 章节。
+   * 2024/4/29 ``vkDestroyImage`` 章节下增加 ``示例`` 章节。
 
 在 ``Vulkan`` 中只有 ``2`` 种资源 :
 
@@ -350,7 +354,7 @@ VkSharingMode
    VkDevice device = 之前创建的逻辑设备;
    VkBuffer buffer = 之前创建的缓存;
 
-   vkDestroyBuffer(device, buffer, nullptr);
+   vkDestroyBuffer(device, buffer, nullptr); // 此处假定缓存创建时，指定的内部分配器
 
 图片资源
 ###########
@@ -1197,6 +1201,37 @@ VkFormatFeatureFlagBits
 
    一个缓存（数组），内部的每一个 ``项`` 都是指定的相同格式。用于存储顶点数据（位置、法线等）。将会在专门的章节进行讲解。
 
+销毁图片
+****************************
+
+销毁一个图片只需要通过调用 ``vkDestroyImage(...)`` 函数即可，其定义如下：
+
+
+vkDestroyImage
+-----------------------
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   void vkDestroyImage(
+       VkDevice                                    device,
+       VkImage                                     image,
+       const VkAllocationCallbacks*                pAllocator);
+
+* :bdg-secondary:`device` 目标逻辑设备。
+* :bdg-secondary:`image` 要销毁的目标图片。
+* :bdg-secondary:`pAllocator` 目标图片句柄的分配器。
+
+示例
+^^^^^^^^^^^^^^^^^^^^
+
+.. code:: c++
+
+   VkDevice device = 图片资源对应的逻辑设备;
+   VkImage image = 之前成功创建的图片资源;
+
+   vkDestroyImage(device, image, nullptr); // 此处假定图片创建时，指定的内部分配器
+
 .. 
    图片创建示例
 
@@ -1209,6 +1244,8 @@ VkFormatFeatureFlagBits
 在渲染时经常需要对纹理进行采样获取颜色信息。这需要我们准备用于采样的二维纹理：
 
 .. code:: c++
+
+   VkDevice device = 之前创建的逻辑设备;
 
    VkImageCreateInfo sample_image_create_info = {};
    sample_image_create_info.sType = VkStructureType::VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -1229,6 +1266,23 @@ VkFormatFeatureFlagBits
    sample_image_create_info.pQueueFamilyIndices = nullptr;
    sample_image_create_info.initialLayout = VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED;
 
+   VkImage sample_image = VK_NULL_HANDLE;
+   VkResult result = vkCreateImage(device, &sample_image_create_info, nullptr, &sample_image);
+   if(result != VkResult::VK_SUCCESS)
+   {
+      throw std::runtime_error("VkImage 图片资源创建失败");
+   }
+
 .. note::
 
    未完待续
+
+..
+   CPU写入数据图片
+   VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_DST_BIT
+   二维纹理
+   三维纹理
+   深度-模板附件纹理
+   颜色附件纹理
+   立方体纹理
+   多级渐远
