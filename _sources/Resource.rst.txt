@@ -56,6 +56,17 @@
    * 2024/4/23 增加 ``图片布局`` 章节。
    * 2024/4/23 增加 ``VkImageLayout`` 章节。
    * 2024/4/25 更新 ``VkImageLayout`` 章节。
+   * 2024/4/29 更新 ``二维纹理`` 章节。
+   * 2024/4/29 增加 ``销毁图片`` 章节。
+   * 2024/4/29 增加 ``vkDestroyImage`` 章节。
+   * 2024/4/29 ``vkDestroyImage`` 章节下增加 ``示例`` 章节。
+   * 2024/5/7 更新 ``二维纹理`` 示例章节。
+   * 2024/5/7 增加 ``三维纹理`` 示例章节。
+   * 2024/5/7 增加 ``立方体纹理`` 示例章节。
+   * 2024/5/7 增加 ``二维多级渐远纹理`` 示例章节。
+   * 2024/5/7 增加 ``多采样二维颜色附件纹理`` 示例章节。
+   * 2024/5/7 增加 ``深度-模板附件纹理`` 示例章节。
+
 
 在 ``Vulkan`` 中只有 ``2`` 种资源 :
 
@@ -350,7 +361,7 @@ VkSharingMode
    VkDevice device = 之前创建的逻辑设备;
    VkBuffer buffer = 之前创建的缓存;
 
-   vkDestroyBuffer(device, buffer, nullptr);
+   vkDestroyBuffer(device, buffer, nullptr); // 此处假定缓存创建时，指定的内部分配器
 
 图片资源
 ###########
@@ -1197,11 +1208,55 @@ VkFormatFeatureFlagBits
 
    一个缓存（数组），内部的每一个 ``项`` 都是指定的相同格式。用于存储顶点数据（位置、法线等）。将会在专门的章节进行讲解。
 
+销毁图片
+****************************
+
+销毁一个图片只需要通过调用 ``vkDestroyImage(...)`` 函数即可，其定义如下：
+
+
+vkDestroyImage
+-----------------------
+
+.. code:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   void vkDestroyImage(
+       VkDevice                                    device,
+       VkImage                                     image,
+       const VkAllocationCallbacks*                pAllocator);
+
+* :bdg-secondary:`device` 目标逻辑设备。
+* :bdg-secondary:`image` 要销毁的目标图片。
+* :bdg-secondary:`pAllocator` 目标图片句柄的分配器。
+
+示例
+^^^^^^^^^^^^^^^^^^^^
+
+.. code:: c++
+
+   VkDevice device = 图片资源对应的逻辑设备;
+   VkImage image = 之前成功创建的图片资源;
+
+   vkDestroyImage(device, image, nullptr); // 此处假定图片创建时，指定的内部分配器
+
 .. 
    图片创建示例
 
 示例
 ***************************
+
+..
+   Host 端图片
+   --------------------
+
+   我们经常需要将 ``Host`` 端的图片数据（比如 ``png/jpg/jpeg/ktx`` 等格式的图片数据）存储到 ``Vulkan`` 的 ``图片资源`` 中。有如下几点需要注意（以二维纹理为例）：
+
+   * ``VkImageCreateInfo::tiling`` 需要设置为 ``VkImageTiling::VK_IMAGE_TILING_LINEAR`` 。是因为 ``Host`` 端的数据都是线性的， ``图片资源`` 也需要是线性的。
+   * ``VkImageCreateInfo::usage`` 需要拥有 ``VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_SRC_BIT`` 位域。是因为 ``Host`` 端的图片资源一般会用作纹素 ``数据源`` ，将数据转移至 ``Device`` 端（ ``VkImageCreateInfo::tiling`` 为 ``VkImageTiling::VK_IMAGE_TILING_OPTIMAL`` ）的 ``图片资源`` 中。 
+
+   NOTE: 考虑到 Host 端图片 有时的需要是双向的
+
+.. _Create2DTexture:
 
 二维纹理
 --------------------
@@ -1210,25 +1265,238 @@ VkFormatFeatureFlagBits
 
 .. code:: c++
 
-   VkImageCreateInfo sample_image_create_info = {};
-   sample_image_create_info.sType = VkStructureType::VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-   sample_image_create_info.pNext = nullptr;
-   sample_image_create_info.flags = 0;
-   sample_image_create_info.imageType = VkImageType::VK_IMAGE_TYPE_2D;
-   sample_image_create_info.format = VkFormat::VK_FORMAT_R8G8B8A8_UNORMS; 
-   sample_image_create_info.extent.width = 512;
-   sample_image_create_info.extent.height = 512;
-   sample_image_create_info.extent.depth = 1;
-   sample_image_create_info.mipLevels = 1;
-   sample_image_create_info.arrayLayers = 1;
-   sample_image_create_info.samples = VkSampleCountFlagBits::VK_SAMPLE_COUNT_1_BIT;
-   sample_image_create_info.tiling = VkImageTiling::VK_IMAGE_TILING_OPTIMAL;
-   sample_image_create_info.usage = VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_DST_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_SAMPLED_BIT;
-   sample_image_create_info.sharingMode = VkSharingMode ::VK_SHARING_MODE_EXCLUSIVE;
-   sample_image_create_info.queueFamilyIndexCount = 0;
-   sample_image_create_info.pQueueFamilyIndices = nullptr;
-   sample_image_create_info.initialLayout = VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED;
+   VkDevice device = 之前创建的逻辑设备;
 
-.. note::
+   VkImageCreateInfo image_create_info = {};
+   image_create_info.sType = VkStructureType::VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+   image_create_info.pNext = nullptr;
+   image_create_info.flags = 0;
+   image_create_info.imageType = VkImageType::VK_IMAGE_TYPE_2D;
+   image_create_info.format = VkFormat::VK_FORMAT_R8G8B8A8_UNORMS; // 假如设备支持该格式
+   image_create_info.extent.width = 512;
+   image_create_info.extent.height = 512;
+   image_create_info.extent.depth = 1;
+   image_create_info.mipLevels = 1;
+   image_create_info.arrayLayers = 1;
+   image_create_info.samples = VkSampleCountFlagBits::VK_SAMPLE_COUNT_1_BIT;
+   image_create_info.tiling = VkImageTiling::VK_IMAGE_TILING_OPTIMAL;
+   image_create_info.usage = VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_DST_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_SAMPLED_BIT;
+   image_create_info.sharingMode = VkSharingMode::VK_SHARING_MODE_EXCLUSIVE;
+   image_create_info.queueFamilyIndexCount = 0;
+   image_create_info.pQueueFamilyIndices = nullptr;
+   image_create_info.initialLayout = VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED;
 
-   未完待续
+   VkImage image = VK_NULL_HANDLE;
+   VkResult result = vkCreateImage(device, &image_create_info, nullptr, &image);
+   if(result != VkResult::VK_SUCCESS)
+   {
+      throw std::runtime_error("VkImage 图片资源创建失败");
+   }
+
+其中 ``image_create_info.usage`` 中设置 ``VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_DST_BIT`` 是因为：作为采样纹理，其纹素数据一般都是外部拷贝进来的。该纹理作为数据的转移目的地而存在。
+
+..
+   VK_IMAGE_TILING_OPTIMAL 并不能直接接受 CPU 端的数据
+
+三维纹理
+--------------------
+
+与 :ref:`Create2DTexture` 类似，这里创建三维的。
+
+.. code:: c++
+
+   VkDevice device = 之前创建的逻辑设备;
+
+   VkImageCreateInfo image_create_info = {};
+   image_create_info.sType = VkStructureType::VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+   image_create_info.pNext = nullptr;
+   image_create_info.flags = 0;
+   image_create_info.imageType = VkImageType::VK_IMAGE_TYPE_3D;
+   image_create_info.format = VkFormat::VK_FORMAT_R8G8B8A8_UNORMS; // 假如设备支持该格式
+   image_create_info.extent.width = 512;
+   image_create_info.extent.height = 512;
+   image_create_info.extent.depth = 512;
+   image_create_info.mipLevels = 1;
+   image_create_info.arrayLayers = 1;
+   image_create_info.samples = VkSampleCountFlagBits::VK_SAMPLE_COUNT_1_BIT;
+   image_create_info.tiling = VkImageTiling::VK_IMAGE_TILING_OPTIMAL;
+   image_create_info.usage = VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_DST_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_SAMPLED_BIT;
+   image_create_info.sharingMode = VkSharingMode::VK_SHARING_MODE_EXCLUSIVE;
+   image_create_info.queueFamilyIndexCount = 0;
+   image_create_info.pQueueFamilyIndices = nullptr;
+   image_create_info.initialLayout = VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED;
+
+   VkImage image = VK_NULL_HANDLE;
+   VkResult result = vkCreateImage(device, &image_create_info, nullptr, &image);
+   if(result != VkResult::VK_SUCCESS)
+   {
+      throw std::runtime_error("VkImage 图片资源创建失败");
+   }
+
+* ``image_create_info.imageType`` 设置为 ``VkImageType::VK_IMAGE_TYPE_3D`` 。
+* ``image_create_info.extent.depth`` 设置为大于 ``1`` 的 ``512`` 。
+
+立方体纹理
+--------------------
+
+.. code:: c++
+
+   VkDevice device = 之前创建的逻辑设备;
+
+   VkImageCreateInfo image_create_info = {};
+   image_create_info.sType = VkStructureType::VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+   image_create_info.pNext = nullptr;
+   image_create_info.flags = VkImageCreateFlagBits::VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
+   image_create_info.imageType = VkImageType::VK_IMAGE_TYPE_2D;
+   image_create_info.format = VkFormat::VK_FORMAT_R8G8B8A8_UNORMS; // 假如设备支持该格式
+   image_create_info.extent.width = 512;
+   image_create_info.extent.height = 512;
+   image_create_info.extent.depth = 1;
+   image_create_info.mipLevels = 1;
+   image_create_info.arrayLayers = 6;
+   image_create_info.samples = VkSampleCountFlagBits::VK_SAMPLE_COUNT_1_BIT;
+   image_create_info.tiling = VkImageTiling::VK_IMAGE_TILING_OPTIMAL;
+   image_create_info.usage = VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_DST_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_SAMPLED_BIT;
+   image_create_info.sharingMode = VkSharingMode::VK_SHARING_MODE_EXCLUSIVE;
+   image_create_info.queueFamilyIndexCount = 0;
+   image_create_info.pQueueFamilyIndices = nullptr;
+   image_create_info.initialLayout = VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED;
+
+   VkImage image = VK_NULL_HANDLE;
+   VkResult result = vkCreateImage(device, &image_create_info, nullptr, &image);
+   if(result != VkResult::VK_SUCCESS)
+   {
+      throw std::runtime_error("VkImage 图片资源创建失败");
+   }
+
+* ``image_create_info.flags`` 设置为 ``VkImageCreateFlagBits::VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT`` 。
+* ``image_create_info.extent.width`` 与 ``image_create_info.extent.height`` 设置为相同的值 ``512`` 。
+* ``image_create_info.extent.depth`` 设置为 ``1`` 。
+* ``image_create_info.arrayLayers`` 设置为 ``6`` 。
+
+二维多级渐远纹理
+--------------------
+
+.. code:: c++
+
+   VkDevice device = 之前创建的逻辑设备;
+
+   VkImageCreateInfo image_create_info = {};
+   image_create_info.sType = VkStructureType::VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+   image_create_info.pNext = nullptr;
+   image_create_info.flags = 0;
+   image_create_info.imageType = VkImageType::VK_IMAGE_TYPE_2D;
+   image_create_info.format = VkFormat::VK_FORMAT_R8G8B8A8_UNORMS; // 假如设备支持该格式
+   image_create_info.extent.width = 512;
+   image_create_info.extent.height = 512;
+   image_create_info.extent.depth = 1;
+   image_create_info.mipLevels = 4;
+   image_create_info.arrayLayers = 1;
+   image_create_info.samples = VkSampleCountFlagBits::VK_SAMPLE_COUNT_1_BIT;
+   image_create_info.tiling = VkImageTiling::VK_IMAGE_TILING_OPTIMAL;
+   image_create_info.usage = VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_DST_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_SAMPLED_BIT;
+   image_create_info.sharingMode = VkSharingMode::VK_SHARING_MODE_EXCLUSIVE;
+   image_create_info.queueFamilyIndexCount = 0;
+   image_create_info.pQueueFamilyIndices = nullptr;
+   image_create_info.initialLayout = VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED;
+
+   VkImage image = VK_NULL_HANDLE;
+   VkResult result = vkCreateImage(device, &image_create_info, nullptr, &image);
+   if(result != VkResult::VK_SUCCESS)
+   {
+      throw std::runtime_error("VkImage 图片资源创建失败");
+   }
+
+* ``image_create_info.mipLevels`` 设置为 ``4`` 。
+
+多采样二维颜色附件纹理
+-----------------------
+
+.. code:: c++
+
+   VkDevice device = 之前创建的逻辑设备;
+
+   VkImageCreateInfo image_create_info = {};
+   image_create_info.sType = VkStructureType::VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+   image_create_info.pNext = nullptr;
+   image_create_info.flags = 0;
+   image_create_info.imageType = VkImageType::VK_IMAGE_TYPE_2D;
+   image_create_info.format = VkFormat::VK_FORMAT_R8G8B8A8_UNORMS; // 假如设备支持该格式
+   image_create_info.extent.width = 512;
+   image_create_info.extent.height = 512;
+   image_create_info.extent.depth = 1;
+   image_create_info.mipLevels = 1;
+   image_create_info.arrayLayers = 1;
+   image_create_info.samples = VkSampleCountFlagBits::VK_SAMPLE_COUNT_8_BIT;
+   image_create_info.tiling = VkImageTiling::VK_IMAGE_TILING_OPTIMAL;
+   image_create_info.usage = VkImageUsageFlagBits::VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+   image_create_info.sharingMode = VkSharingMode::VK_SHARING_MODE_EXCLUSIVE;
+   image_create_info.queueFamilyIndexCount = 0;
+   image_create_info.pQueueFamilyIndices = nullptr;
+   image_create_info.initialLayout = VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED;
+
+   VkImage image = VK_NULL_HANDLE;
+   VkResult result = vkCreateImage(device, &image_create_info, nullptr, &image);
+   if(result != VkResult::VK_SUCCESS)
+   {
+      throw std::runtime_error("VkImage 图片资源创建失败");
+   }
+
+* ``image_create_info.samples`` 设置为 ``VkSampleCountFlagBits::VK_SAMPLE_COUNT_8_BIT`` 。
+* ``image_create_info.usage`` 设置为 ``VkImageUsageFlagBits::VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT`` 。
+
+.. admonition:: 颜色附件
+   :class: note
+
+   有关 ``颜色附件`` 具体是什么，如何使用将会在之后的章节展开。可以简单理解为：画家的画纸。
+
+深度-模板附件纹理
+--------------------
+
+.. code:: c++
+
+   VkDevice device = 之前创建的逻辑设备;
+
+   VkImageCreateInfo image_create_info = {};
+   image_create_info.sType = VkStructureType::VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+   image_create_info.pNext = nullptr;
+   image_create_info.flags = 0;
+   image_create_info.imageType = VkImageType::VK_IMAGE_TYPE_2D;
+   image_create_info.format = VkFormat::VK_FORMAT_D32_SFLOAT_S8_UINT; // 假如设备支持该格式
+   image_create_info.extent.width = 512;
+   image_create_info.extent.height = 512;
+   image_create_info.extent.depth = 1;
+   image_create_info.mipLevels = 1;
+   image_create_info.arrayLayers = 1;
+   image_create_info.samples = VkSampleCountFlagBits::VK_SAMPLE_COUNT_1_BIT;
+   image_create_info.tiling = VkImageTiling::VK_IMAGE_TILING_OPTIMAL;
+   image_create_info.usage = VkImageUsageFlagBits::VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+   image_create_info.sharingMode = VkSharingMode::VK_SHARING_MODE_EXCLUSIVE;
+   image_create_info.queueFamilyIndexCount = 0;
+   image_create_info.pQueueFamilyIndices = nullptr;
+   image_create_info.initialLayout = VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED;
+
+   VkImage image = VK_NULL_HANDLE;
+   VkResult result = vkCreateImage(device, &image_create_info, nullptr, &image);
+   if(result != VkResult::VK_SUCCESS)
+   {
+      throw std::runtime_error("VkImage 图片资源创建失败");
+   }
+
+* ``image_create_info.format`` 设置为 ``VkFormat::VK_FORMAT_D32_SFLOAT_S8_UINT`` 。
+* ``image_create_info.usage`` 设置为 ``VkImageUsageFlagBits::VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT`` 。
+
+.. admonition:: 深度-模板附件
+   :class: note
+
+   有关 ``深度-模板附件`` 具体是什么，如何使用将会在之后的章节展开。可以简单理解为：用于计算远近物体间的遮挡关系。
+
+..
+   CPU写入数据图片
+   VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_DST_BIT
+   二维纹理
+   三维纹理
+   深度-模板附件纹理
+   颜色附件纹理
+   立方体纹理
+   多级渐远
