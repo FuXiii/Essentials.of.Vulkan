@@ -60,9 +60,12 @@
    * 2024/4/29 增加 ``销毁图片`` 章节。
    * 2024/4/29 增加 ``vkDestroyImage`` 章节。
    * 2024/4/29 ``vkDestroyImage`` 章节下增加 ``示例`` 章节。
+   * 2024/5/7 更新 ``二维纹理`` 示例章节。
    * 2024/5/7 增加 ``三维纹理`` 示例章节。
    * 2024/5/7 增加 ``立方体纹理`` 示例章节。
    * 2024/5/7 增加 ``二维多级渐远纹理`` 示例章节。
+   * 2024/5/7 增加 ``多采样二维颜色附件纹理`` 示例章节。
+   * 2024/5/7 增加 ``深度-模板附件纹理`` 示例章节。
 
 
 在 ``Vulkan`` 中只有 ``2`` 种资源 :
@@ -1406,6 +1409,47 @@ vkDestroyImage
 
 * ``image_create_info.mipLevels`` 设置为 ``4`` 。
 
+多采样二维颜色附件纹理
+-----------------------
+
+.. code:: c++
+
+   VkDevice device = 之前创建的逻辑设备;
+
+   VkImageCreateInfo image_create_info = {};
+   image_create_info.sType = VkStructureType::VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+   image_create_info.pNext = nullptr;
+   image_create_info.flags = 0;
+   image_create_info.imageType = VkImageType::VK_IMAGE_TYPE_2D;
+   image_create_info.format = VkFormat::VK_FORMAT_R8G8B8A8_UNORMS; // 假如设备支持该格式
+   image_create_info.extent.width = 512;
+   image_create_info.extent.height = 512;
+   image_create_info.extent.depth = 1;
+   image_create_info.mipLevels = 1;
+   image_create_info.arrayLayers = 1;
+   image_create_info.samples = VkSampleCountFlagBits::VK_SAMPLE_COUNT_8_BIT;
+   image_create_info.tiling = VkImageTiling::VK_IMAGE_TILING_OPTIMAL;
+   image_create_info.usage = VkImageUsageFlagBits::VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+   image_create_info.sharingMode = VkSharingMode::VK_SHARING_MODE_EXCLUSIVE;
+   image_create_info.queueFamilyIndexCount = 0;
+   image_create_info.pQueueFamilyIndices = nullptr;
+   image_create_info.initialLayout = VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED;
+
+   VkImage image = VK_NULL_HANDLE;
+   VkResult result = vkCreateImage(device, &image_create_info, nullptr, &image);
+   if(result != VkResult::VK_SUCCESS)
+   {
+      throw std::runtime_error("VkImage 图片资源创建失败");
+   }
+
+* ``image_create_info.samples`` 设置为 ``VkSampleCountFlagBits::VK_SAMPLE_COUNT_8_BIT`` 。
+* ``image_create_info.usage`` 设置为 ``VkImageUsageFlagBits::VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT`` 。
+
+.. admonition:: 颜色附件
+   :class: note
+
+   有关 ``颜色附件`` 具体是什么，如何使用将会在之后的章节展开。可以简单理解为：画家的画纸。
+
 深度-模板附件纹理
 --------------------
 
@@ -1440,12 +1484,12 @@ vkDestroyImage
    }
 
 * ``image_create_info.format`` 设置为 ``VkFormat::VK_FORMAT_D32_SFLOAT_S8_UINT`` 。
-* ``image_create_info.usage`` 设置为 ``VkFormat::VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT`` 。
+* ``image_create_info.usage`` 设置为 ``VkImageUsageFlagBits::VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT`` 。
 
 .. admonition:: 深度-模板附件
    :class: note
 
-   有关 ``深度-模板附件`` 具体是什么，如何使用将会在之后的章节展开。
+   有关 ``深度-模板附件`` 具体是什么，如何使用将会在之后的章节展开。可以简单理解为：用于计算远近物体间的遮挡关系。
 
 ..
    CPU写入数据图片
