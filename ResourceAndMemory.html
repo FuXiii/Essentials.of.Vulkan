@@ -199,7 +199,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -327,7 +327,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
@@ -344,9 +344,165 @@
 </summary><div class="sd-summary-content sd-card-body docutils">
 <ul class="simple">
 <li><p class="sd-card-text">2024/1/2 增加该文档</p></li>
+<li><p class="sd-card-text">2024/5/11 更新该文档</p></li>
+<li><p class="sd-card-text">2024/5/13 更新该文档</p></li>
+<li><p class="sd-card-text">2024/5/13 增加 <code class="docutils literal notranslate"><span class="pre">获取支持的设备内存</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/5/13 增加 <code class="docutils literal notranslate"><span class="pre">vkGetBufferMemoryRequirements</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/5/13 增加 <code class="docutils literal notranslate"><span class="pre">vkGetImageMemoryRequirements</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/5/13 增加 <code class="docutils literal notranslate"><span class="pre">VkMemoryRequirements</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/5/17 更新 <code class="docutils literal notranslate"><span class="pre">VkMemoryRequirements</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/5/18 更新 <code class="docutils literal notranslate"><span class="pre">VkMemoryRequirements</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/5/21 更新 <code class="docutils literal notranslate"><span class="pre">VkMemoryRequirements</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/5/21 增加 <code class="docutils literal notranslate"><span class="pre">资源与设备内存绑定</span></code> 章节。</p></li>
 </ul>
 </div>
-</details></section>
+</details><p>在 <a class="reference external" href="./Resource.html">资源</a> 章节中我们知道一个资源仅仅是一个 <code class="docutils literal notranslate"><span class="pre">虚拟资源句柄</span></code> ，其本质上并没有相应的内存实体用于存储数据。所以在创建完资源后，需要分配内存并与资源进行绑定，用于之后的数据读写。</p>
+<p>根据不同资源的不同配置，相应支持资源的内存策略不尽相同，比如：</p>
+<ul class="simple">
+<li><p>当创建图片指定 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo::tiling</span></code> 为 <code class="docutils literal notranslate"><span class="pre">VkImageTiling::VK_IMAGE_TILING_OPTIMAL</span></code> 的话，一般期望是在 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端的本地内存 （ <code class="docutils literal notranslate"><span class="pre">VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT</span></code> ） 上进行内存分配并绑定。</p></li>
+<li><p>当创建图片指定 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo::tiling</span></code> 为 <code class="docutils literal notranslate"><span class="pre">VkImageTiling::VK_IMAGE_TILING_LINEAR</span></code> 的话，一般期望是在 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端的内存 （ <code class="docutils literal notranslate"><span class="pre">VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT</span></code> ） 上进行内存分配并绑定。</p></li>
+</ul>
+<p>为了能够获取支持资源的内存信息， <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 为我们提供了如下查询接口：</p>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">vkGetBufferMemoryRequirements(…)</span> 获取支持该缓存资源的内存信息。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">vkGetImageMemoryRequirements(…)</span> 获取支持该图片资源的内存信息。</p></li>
+</ul>
+<section id="id3">
+<h2>获取支持的设备内存<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">vkGetBufferMemoryRequirements(...)</span></code> 和 <code class="docutils literal notranslate"><span class="pre">vkGetImageMemoryRequirements(...)</span></code> 定义如下：</p>
+<section id="vkgetbuffermemoryrequirements">
+<h3>vkGetBufferMemoryRequirements<a class="headerlink" href="#vkgetbuffermemoryrequirements" title="Link to this heading">¶</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">vkGetBufferMemoryRequirements</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkBuffer</span><span class="w">                                    </span><span class="n">buffer</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkMemoryRequirements</span><span class="o">*</span><span class="w">                       </span><span class="n">pMemoryRequirements</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">device</span> 对应的逻辑设备。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">buffer</span> 目标缓存。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pMemoryRequirements</span> 支持该缓存资源的内存信息。</p></li>
+</ul>
+</section>
+<section id="vkgetimagememoryrequirements">
+<h3>vkGetImageMemoryRequirements<a class="headerlink" href="#vkgetimagememoryrequirements" title="Link to this heading">¶</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">vkGetImageMemoryRequirements</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkImage</span><span class="w">                                     </span><span class="n">image</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkMemoryRequirements</span><span class="o">*</span><span class="w">                       </span><span class="n">pMemoryRequirements</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">device</span> 对应的逻辑设备。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">image</span> 目标图片。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">pMemoryRequirements</span> 支持该图片资源的内存信息。</p></li>
+</ul>
+<p>无论是获取缓存支持的内存信息，还是图片的，其都会将资源支持的设备内存信息写入类型为 <code class="docutils literal notranslate"><span class="pre">pMemoryRequirements</span></code> 成员中，其类型为 <code class="docutils literal notranslate"><span class="pre">VkMemoryRequirements</span></code> ，定义如下：</p>
+</section>
+<section id="vkmemoryrequirements">
+<h3>VkMemoryRequirements<a class="headerlink" href="#vkmemoryrequirements" title="Link to this heading">¶</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkMemoryRequirements</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VkDeviceSize</span><span class="w">    </span><span class="n">size</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkDeviceSize</span><span class="w">    </span><span class="n">alignment</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">        </span><span class="n">memoryTypeBits</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkMemoryRequirements</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">size</span> 资源需要分配的设备内存大小。单位为 <code class="docutils literal notranslate"><span class="pre">字节</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">alignment</span> 为该资源绑定的设备内存起始地址 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">必须</span> 进行内存对齐位数。单位为 <code class="docutils literal notranslate"><span class="pre">字节</span></code> 。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">memoryTypeBits</span> 支持的设备内存索引位域。</p></li>
+</ul>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">memoryTypeBits</span></code> 成员变量是最重要的设备内存信息。该参数为一个 <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code> 类型变量，也就是一个 <code class="docutils literal notranslate"><span class="pre">32</span></code> 位的整形。</p>
+<p>在 <a class="reference external" href="./Memory.html#id6">设备内存</a> 章节的 <a class="reference external" href="/Memory.html#vkphysicaldevicememoryproperties">VkPhysicalDeviceMemoryProperties</a> 中给出了其定义，如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkPhysicalDeviceMemoryProperties</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">        </span><span class="n">memoryTypeCount</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkMemoryType</span><span class="w">    </span><span class="n">memoryTypes</span><span class="p">[</span><span class="n">VK_MAX_MEMORY_TYPES</span><span class="p">];</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w">        </span><span class="n">memoryHeapCount</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VkMemoryHeap</span><span class="w">    </span><span class="n">memoryHeaps</span><span class="p">[</span><span class="n">VK_MAX_MEMORY_HEAPS</span><span class="p">];</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkPhysicalDeviceMemoryProperties</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>再此之前反复强调过 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties::memoryTypes</span></code> 数组索引值非常重要，是因为 <code class="docutils literal notranslate"><span class="pre">VkMemoryRequirements::memoryTypeBits</span></code> 与 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties::memoryTypes</span></code> 有对应关系。其对应关系如下：</p>
+<div class="important admonition">
+<p class="admonition-title">对应关系</p>
+<p><code class="docutils literal notranslate"><span class="pre">VkMemoryRequirements::memoryTypeBits</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">32</span></code> 个位，如果对应第 <code class="docutils literal notranslate"><span class="pre">i</span></code> 位为 <code class="docutils literal notranslate"><span class="pre">1</span></code> 说明 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties::memoryTypes[i]</span></code> 对应的设备内存支持用于相应的资源。</p>
+<div class="note admonition">
+<p class="admonition-title">VK_MAX_MEMORY_TYPES</p>
+<p>由于 <code class="docutils literal notranslate"><span class="pre">VK_MAX_MEMORY_TYPES</span></code> 为 <code class="docutils literal notranslate"><span class="pre">32</span></code> ，其定义如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#define VK_MAX_MEMORY_TYPES 32U</span>
+</pre></div>
+</div>
+<p>所以一个 <code class="docutils literal notranslate"><span class="pre">32</span></code> 位的 <code class="docutils literal notranslate"><span class="pre">VkMemoryRequirements::memoryTypeBits</span></code> 完全可以覆盖到所有的 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties::memoryTypes</span></code> 对应索引。</p>
+</div>
+</div>
+<p>由于 <code class="docutils literal notranslate"><span class="pre">VkMemoryRequirements::memoryTypeBits</span></code> 中是按比特位存储的索引，所以我们需要遍历 <code class="docutils literal notranslate"><span class="pre">32</span></code> 位的每一位，来确定对应位是否为 <code class="docutils literal notranslate"><span class="pre">1</span></code> 。示例代码如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkMemoryRequirements</span><span class="w"> </span><span class="n">memory_requirements</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前通过</span><span class="w"> </span><span class="n">vkGetBufferMemoryRequirements</span><span class="p">(...)</span><span class="w"> </span><span class="n">或</span><span class="w"> </span><span class="n">vkGetImageMemoryRequirements</span><span class="p">(...)</span><span class="w"> </span><span class="n">获得的</span><span class="w"> </span><span class="n">VkMemoryRequirements</span><span class="w"> </span><span class="n">信息</span><span class="p">;</span>
+
+<span class="kt">uint32_t</span><span class="w"> </span><span class="n">memory_type_bits</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">memory_requirements</span><span class="p">.</span><span class="n">memoryTypeBits</span><span class="p">;</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">support_memory_type_indices</span><span class="p">;</span><span class="w"> </span><span class="c1">// 存储所有支持的设备内存类型索引</span>
+
+<span class="k">for</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">VK_MAX_MEMORY_TYPES</span><span class="p">;</span><span class="w"> </span><span class="n">index</span><span class="o">++</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">if</span><span class="p">((</span><span class="n">memory_type_bits</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="w">   </span><span class="p">{</span>
+<span class="w">      </span><span class="n">support_memory_type_indices</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">index</span><span class="p">);</span>
+<span class="w">   </span><span class="p">}</span>
+
+<span class="w">   </span><span class="n">memory_type_bits</span><span class="w"> </span><span class="o">&gt;&gt;=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="c1">// 向右移1位，依次遍历所有比特位</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>如上，便得到了所有支持对应资源的设备内存类型索引。之后就可以根据这些索引来筛选出满足需求的设备内存。比如筛选出带有 <code class="docutils literal notranslate"><span class="pre">VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT</span></code> 的设备本地内存：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkPhysicalDeviceMemoryProperties</span><span class="w"> </span><span class="n">physical_device_memory_properties</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前通过</span><span class="w"> </span><span class="n">vkGetPhysicalDeviceMemoryProperties</span><span class="p">(...)</span><span class="w"> </span><span class="n">获取到的设备内存信息</span><span class="p">;</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">support_memory_type_indices</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前筛选出的所有支持对应资源的设备内存索引</span><span class="p">;</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">available_device_local_memory_type_indices</span><span class="p">;</span><span class="w"> </span><span class="c1">// 存储支持 VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT 的设备内存类型索引</span>
+
+<span class="k">for</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">support_memory_type_indices</span><span class="p">.</span><span class="n">size</span><span class="p">();</span><span class="w"> </span><span class="n">index</span><span class="o">++</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">memory_type_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">support_memory_type_indices</span><span class="p">[</span><span class="n">index</span><span class="p">];</span>
+<span class="w">   </span><span class="n">VkMemoryType</span><span class="w"> </span><span class="n">memory_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">physical_device_memory_properties</span><span class="p">.</span><span class="n">memoryTypes</span><span class="p">[</span><span class="n">memory_type_index</span><span class="p">];</span>
+
+<span class="w">   </span><span class="c1">// 如果对应的设备内存支持 VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT，则为我们期望的设备内存，存储其索引</span>
+<span class="w">   </span><span class="k">if</span><span class="p">((</span><span class="n">memory_type</span><span class="p">.</span><span class="n">propertyFlags</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">VkMemoryPropertyFlagBits</span><span class="o">::</span><span class="n">VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">VkMemoryPropertyFlagBits</span><span class="o">::</span><span class="n">VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT</span><span class="p">)</span>
+<span class="w">   </span><span class="p">{</span>
+<span class="w">      </span><span class="n">available_device_local_memory_type_indices</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">memory_type_index</span><span class="p">);</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">available_device_local_memory_type_indices</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="c1">// 找到了既支持资源也支持 VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT 的设备内存类型索引</span>
+<span class="w">   </span><span class="k">for</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">available_device_local_memory_type_indices</span><span class="p">.</span><span class="n">size</span><span class="p">();</span><span class="w"> </span><span class="n">index</span><span class="o">++</span><span class="p">)</span>
+<span class="w">   </span><span class="p">{</span>
+<span class="w">      </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">memory_type_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">available_device_local_memory_type_indices</span><span class="p">[</span><span class="n">index</span><span class="p">];</span>
+<span class="w">      </span><span class="p">...</span><span class="w"> </span><span class="c1">// 使用 memory_type_index 分配内存</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="p">}</span>
+<span class="k">else</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="s">&quot;没找到支持的内存类型&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>以此类推，我们就可以根据不同的需求，筛选出不同情况下最理想的设备内存索引，并在之后用于 <a class="reference external" href="./Memory.html#id9">内存分配</a> 。</p>
+</section>
+</section>
+<section id="id6">
+<h2>资源与设备内存绑定<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>未完待续</p>
+</div>
+</section>
+</section>
 
         </article>
       </div>
@@ -410,8 +566,33 @@
 
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+
+<div class="toc-sticky toc-scroll" style="width: 500px;">
+    <div class="toc-title-container" style="width: 500px;">
+        <span class="toc-title" style="width: 500px;">
+            On this page
+        </span>
+    </div>
+    <div class="toc-tree-container" style="width: 500px;">
+        <div class="toc-tree" style="width: 500px;">
+            <ul>
+<li><a class="reference internal" href="#">资源与内存</a><ul>
+<li><a class="reference internal" href="#id3">获取支持的设备内存</a><ul>
+<li><a class="reference internal" href="#vkgetbuffermemoryrequirements">vkGetBufferMemoryRequirements</a></li>
+<li><a class="reference internal" href="#vkgetimagememoryrequirements">vkGetImageMemoryRequirements</a></li>
+<li><a class="reference internal" href="#vkmemoryrequirements">VkMemoryRequirements</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id6">资源与设备内存绑定</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+    </div>
+</div>
 
 
     </aside>
