@@ -14,6 +14,8 @@
    * 2024/5/13 增加 ``VkMemoryRequirements`` 章节。
    * 2024/5/17 更新 ``VkMemoryRequirements`` 章节。
    * 2024/5/18 更新 ``VkMemoryRequirements`` 章节。
+   * 2024/5/21 更新 ``VkMemoryRequirements`` 章节。
+   * 2024/5/21 增加 ``资源与设备内存绑定`` 章节。
 
 在 `资源 <./Resource.html>`_ 章节中我们知道一个资源仅仅是一个 ``虚拟资源句柄`` ，其本质上并没有相应的内存实体用于存储数据。所以在创建完资源后，需要分配内存并与资源进行绑定，用于之后的数据读写。
 
@@ -110,7 +112,65 @@ VkMemoryRequirements
 
          #define VK_MAX_MEMORY_TYPES 32U
 
-      所以一个 ``32`` 位的 ``VkMemoryRequirements::memoryTypeBits`` 完全可以覆盖到所有的 ``VkPhysicalDeviceMemoryProperties::memoryTypes`` 对应索引中。
+      所以一个 ``32`` 位的 ``VkMemoryRequirements::memoryTypeBits`` 完全可以覆盖到所有的 ``VkPhysicalDeviceMemoryProperties::memoryTypes`` 对应索引。
+
+由于 ``VkMemoryRequirements::memoryTypeBits`` 中是按比特位存储的索引，所以我们需要遍历 ``32`` 位的每一位，来确定对应位是否为 ``1`` 。示例代码如下：
+
+.. code:: c++
+
+   VkMemoryRequirements memory_requirements = 之前通过 vkGetBufferMemoryRequirements(...) 或 vkGetImageMemoryRequirements(...) 获得的 VkMemoryRequirements 信息;
+
+   uint32_t memory_type_bits = memory_requirements.memoryTypeBits;
+
+   std::vector<uint32_t> support_memory_type_indices; // 存储所有支持的设备内存类型索引
+
+   for(uint32_t index = 0; index < VK_MAX_MEMORY_TYPES; index++)
+   {
+      if((memory_type_bits & 1) == 1)
+      {
+         support_memory_type_indices.push_back(index);
+      }
+
+      memory_type_bits >>= 1; // 向右移1位，依次遍历所有比特位
+   }
+
+如上，便得到了所有支持对应资源的设备内存类型索引。之后就可以根据这些索引来筛选出满足需求的设备内存。比如筛选出带有 ``VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT`` 的设备本地内存：
+
+.. code:: c++
+
+   VkPhysicalDeviceMemoryProperties physical_device_memory_properties = 之前通过 vkGetPhysicalDeviceMemoryProperties(...) 获取到的设备内存信息;
+
+   std::vector<uint32_t> support_memory_type_indices = 之前筛选出的所有支持对应资源的设备内存索引;
+
+   std::vector<uint32_t> available_device_local_memory_type_indices; // 存储支持 VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT 的设备内存类型索引 
+
+   for(uint32_t index = 0; index < support_memory_type_indices.size(); index++)
+   {
+      uint32_t memory_type_index = support_memory_type_indices[index];
+      VkMemoryType memory_type = physical_device_memory_properties.memoryTypes[memory_type_index];
+
+      // 如果对应的设备内存支持 VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT，则为我们期望的设备内存，存储其索引
+      if((memory_type.propertyFlags & VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT) == VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
+      {
+         available_device_local_memory_type_indices.push_back(memory_type_index);
+      }
+   }
+
+   if(!available_device_local_memory_type_indices.empty())
+   {
+      // 找到了既支持资源也支持 VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT 的设备内存类型索引
+      for(uint32_t index = 0; index < available_device_local_memory_type_indices.size(); index++)
+      {
+         uint32_t memory_type_index = available_device_local_memory_type_indices[index];
+         ... // 使用 memory_type_index 分配内存
+      }
+   }
+   else
+   {
+      throw std::runtime_error("没找到支持的内存类型");
+   }
+
+以此类推，我们就可以根据不同的需求，筛选出不同情况下最理想的设备内存索引，并在之后用于 `内存分配 <./Memory.html#id9>`_ 。
 
 ..
    bool memory_type_from_properties(struct sample_info &info, uint32_t typeBits, VkFlags requirements_mask, uint32_t *typeIndex) 
@@ -136,3 +196,10 @@ VkMemoryRequirements
 
 .. 
    memoryTypeBits
+
+资源与设备内存绑定
+##################
+
+.. note:: 
+
+   未完待续
