@@ -620,8 +620,18 @@ Vulkan 三角形
 编译
 ******
 
-1. 下载解压
-2. 找到 ``README.md`` 文件，在 ``README.md`` 同级目录中新建 ``build`` 文件夹
-3. 在 ``build`` 文件夹目录下打开 ``命令行`` 程序
-4. 输入 ``cmake ..`` 并回车，将会在 ``build`` 文件夹下生成项目工程
-5. 打开执行即可
+.. tab-set::
+
+    .. tab-item:: Windows
+
+     1. 下载解压
+     2. 找到 ``README.md`` 文件，在 ``README.md`` 同级目录中新建 ``build`` 文件夹
+     3. 在 ``build`` 文件夹目录下打开 ``命令行`` 程序
+     4. 输入 ``cmake ..`` 并回车，将会在 ``build`` 文件夹下生成项目工程
+     5. 打开执行即可
+
+    .. tab-item:: Linux
+
+      待适配
+
+.. figure:: ./_static/vulkan_triangle.png
