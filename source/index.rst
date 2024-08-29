@@ -24,6 +24,8 @@
    * 2024/1/2 增加 ``资源`` 文档链接
    * 2024/1/2 增加 ``资源与内存`` 文档链接
    * 2024/4/14 增加 ``相关链接`` 文章链接
+   * 2024/8/29 增加 ``指正`` 链接
+   * 2024/8/29 增加 ``讨论`` 链接
 
 .. image:: https://img.shields.io/badge/QQ%20Group-128656761-deepgreen?logo=tencentqq
    :target: https://jq.qq.com/?_wv=1027&k=rZGd2LHr
@@ -68,7 +70,7 @@
 
 致良知，知行合一。让我们步入 ``Vulkan`` 的学习吧~ (๑•̀ㅂ•́)و✧
 
-.. important:: 文章来源于本人学习总结，会出现讲解错误，请各位及时提出指正，谢谢。
+.. important:: 文章来源于本人学习总结，会出现讲解错误，请各位及时提出 `指正 <https://github.com/FuXiii/Essentials.of.Vulkan/issues>`_ 或进行 `讨论 <https://github.com/FuXiii/Essentials.of.Vulkan/discussions>`_ ，非常感谢。
 
 .. toctree::
    :caption: 入门精要

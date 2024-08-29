@@ -24,6 +24,8 @@
    * 2023/6/29 更新 ``安装 Vulkan SDK`` 章节，改成 ``Tab`` 标签呈现
    * 2023/7/10 增加 ``查看 Vulkan 所有相关信息`` 章节
    * 2024/1/2 更新 ``Vulkan的库`` 章节。修正不推荐使用 ``vulkan-1.lib`` 的跳转说明链接。
+   * 2024/8/29 增加 ``Vulkan 三角形`` 章节。
+   * 2024/8/29 增加 ``编译`` 章节。
 
 ``Khronos`` 这次推出了 ``Vulkan`` 官方的软件开发工具包 `Vulkan SDK <https://vulkan.lunarg.com/home/welcome>`_ ，这避免了像 ``OpenGL`` 开发环境混乱的情形再次上演。
 
@@ -602,3 +604,24 @@ Vulkan SDK 最佳实践
    :class: caution
 
    理论上来说是不需要依赖 ``Vulkan SDK`` 的，但是如果使用一些第三方库，这些第三方库可能会依赖  ``Vulkan SDK`` ，比如 `VulkanMemoryAllocator <https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator>`_ 。此时 ``Vulkan SDK`` 还是需要的。
+
+Vulkan 三角形
+######################
+
+对于 ``Vulkan`` 来说，想要绘制一个三角形需要学习各种前置知识，才能够整理出一个简单三角形的绘制流程 ，且代码量往往比较大，而很多新入门小伙伴对 ``Vulkan`` 绘制一个三角形的具体代码为何样很感兴趣。在这里提供一个完整的 ``Vulkan`` 绘制三角形的示例代码：
+
+.. card:: VulkanTriangle.rar
+   :link: ./_static/VulkanTriangle.rar
+   :shadow: md
+   :text-align: center
+
+   点击下载
+
+编译
+******
+
+1. 下载解压
+2. 找到 ``README.md`` 文件，在 ``README.md`` 同级目录中新建 ``build`` 文件夹
+3. 在 ``build`` 文件夹目录下打开 ``命令行`` 程序
+4. 输入 ``cmake ..`` 并回车，将会在 ``build`` 文件夹下生成项目工程
+5. 打开执行即可
