@@ -16,7 +16,7 @@ author = 'FuXii'
 
 extensions = [
     'sphinxcontrib.mermaid', 
-    'sphinxcontrib.images',
+    #'sphinxcontrib.images',# Sphinx 8.0 版本中遗弃了 status_iterator 接口，sphinxcontrib.images 需要适配新版本的 Sphinx（https://github.com/sphinx-contrib/images/issues/40）
     'myst_parser', 
     'sphinx_copybutton',
     'sphinx_inline_tabs',
