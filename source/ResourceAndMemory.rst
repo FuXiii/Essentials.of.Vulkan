@@ -16,6 +16,7 @@
    * 2024/5/18 更新 ``VkMemoryRequirements`` 章节。
    * 2024/5/21 更新 ``VkMemoryRequirements`` 章节。
    * 2024/5/21 增加 ``资源与设备内存绑定`` 章节。
+   * 2024/9/6 更新 ``对应关系`` 章节。
 
 在 `资源 <./Resource.html>`_ 章节中我们知道一个资源仅仅是一个 ``虚拟资源句柄`` ，其本质上并没有相应的内存实体用于存储数据。所以在创建完资源后，需要分配内存并与资源进行绑定，用于之后的数据读写。
 
@@ -113,6 +114,14 @@ VkMemoryRequirements
          #define VK_MAX_MEMORY_TYPES 32U
 
       所以一个 ``32`` 位的 ``VkMemoryRequirements::memoryTypeBits`` 完全可以覆盖到所有的 ``VkPhysicalDeviceMemoryProperties::memoryTypes`` 对应索引。
+
+      示意图如下：
+
+      .. figure:: ../_static/memory_type_bits.png
+
+         memoryTypeBits 与 memoryTypes
+
+      假如， ``VkPhysicalDeviceMemoryProperties::memoryTypes`` 有 ``10`` 个内存类型，其中 ``VkMemoryRequirements::memoryTypeBits`` 比特位为 ``1`` 所对应的内存索引的那个 ``设备内存`` 支持该为资源分配内存。
 
 由于 ``VkMemoryRequirements::memoryTypeBits`` 中是按比特位存储的索引，所以我们需要遍历 ``32`` 位的每一位，来确定对应位是否为 ``1`` 。示例代码如下：
 
