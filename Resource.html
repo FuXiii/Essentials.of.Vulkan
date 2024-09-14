@@ -386,6 +386,7 @@
 <li><p class="sd-card-text">2024/5/7 增加 <code class="docutils literal notranslate"><span class="pre">二维多级渐远纹理</span></code> 示例章节。</p></li>
 <li><p class="sd-card-text">2024/5/7 增加 <code class="docutils literal notranslate"><span class="pre">多采样二维颜色附件纹理</span></code> 示例章节。</p></li>
 <li><p class="sd-card-text">2024/5/7 增加 <code class="docutils literal notranslate"><span class="pre">深度-模板附件纹理</span></code> 示例章节。</p></li>
+<li><p class="sd-card-text">2024/9/3 修正 <code class="docutils literal notranslate"><span class="pre">VkImageTiling</span></code> 打印错误。</p></li>
 </ul>
 </div>
 </details><p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中只有 <code class="docutils literal notranslate"><span class="pre">2</span></code> 种资源 :</p>
@@ -995,7 +996,6 @@
 <p><span class="caption-text">单次采样与 <code class="docutils literal notranslate"><span class="pre">8</span></code> 次采样对比示意图</span><a class="headerlink" href="#id29" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
-<p>其中 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo::tiling</span></code> 的 <code class="docutils literal notranslate"><span class="pre">VkImageTiling</span></code> 类型定义如下：</p>
 </section>
 <section id="id11">
 <h5>图片资源逻辑模型<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h5>
@@ -1173,6 +1173,7 @@
 <p class="admonition-title">多级渐远纹理内部数据</p>
 <p>如上示意图中各级的渐远纹理中每个像素都是有确切图像值的，这些只是帮助您从逻辑上理解多级渐远，但是在实际通过 <code class="docutils literal notranslate"><span class="pre">vkCreateImage(...)</span></code> 创建带有多级渐远纹理中，图片数据全都是初始值（可能为 <code class="docutils literal notranslate"><span class="pre">0</span></code> ）。每一级别的多级渐远图片中每个像素具体为何值，需要通过执行 <code class="docutils literal notranslate"><span class="pre">GPU指令</span></code> 手动运算赋值。这将会在之后的章节进行讲解。</p>
 </div>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">VkImageCreateInfo::tiling</span></code> 的 <code class="docutils literal notranslate"><span class="pre">VkImageTiling</span></code> 类型定义如下：</p>
 </section>
 <section id="vkimagetiling">
 <h5>VkImageTiling<a class="headerlink" href="#vkimagetiling" title="Link to this heading">¶</a></h5>

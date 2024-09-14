@@ -336,6 +336,7 @@
 <li><p class="sd-card-text">2024/5/18 更新 <code class="docutils literal notranslate"><span class="pre">VkMemoryRequirements</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/5/21 更新 <code class="docutils literal notranslate"><span class="pre">VkMemoryRequirements</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/5/21 增加 <code class="docutils literal notranslate"><span class="pre">资源与设备内存绑定</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/9/6 更新 <code class="docutils literal notranslate"><span class="pre">对应关系</span></code> 章节。</p></li>
 </ul>
 </div>
 </details><p>在 <a class="reference external" href="./Resource.html">资源</a> 章节中我们知道一个资源仅仅是一个 <code class="docutils literal notranslate"><span class="pre">虚拟资源句柄</span></code> ，其本质上并没有相应的内存实体用于存储数据。所以在创建完资源后，需要分配内存并与资源进行绑定，用于之后的数据读写。</p>
@@ -420,6 +421,14 @@
 </pre></div>
 </div>
 <p>所以一个 <code class="docutils literal notranslate"><span class="pre">32</span></code> 位的 <code class="docutils literal notranslate"><span class="pre">VkMemoryRequirements::memoryTypeBits</span></code> 完全可以覆盖到所有的 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties::memoryTypes</span></code> 对应索引。</p>
+<p>示意图如下：</p>
+<figure class="align-default" id="id7">
+<img alt="../_static/memory_type_bits.png" src="../_static/memory_type_bits.png" />
+<figcaption>
+<p><span class="caption-text">memoryTypeBits 与 memoryTypes</span><a class="headerlink" href="#id7" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>假如， <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceMemoryProperties::memoryTypes</span></code> 有 <code class="docutils literal notranslate"><span class="pre">10</span></code> 个内存类型，其中 <code class="docutils literal notranslate"><span class="pre">VkMemoryRequirements::memoryTypeBits</span></code> 比特位为 <code class="docutils literal notranslate"><span class="pre">1</span></code> 所对应的内存索引的那个 <code class="docutils literal notranslate"><span class="pre">设备内存</span></code> 支持该为资源分配内存。</p>
 </div>
 </div>
 <p>由于 <code class="docutils literal notranslate"><span class="pre">VkMemoryRequirements::memoryTypeBits</span></code> 中是按比特位存储的索引，所以我们需要遍历 <code class="docutils literal notranslate"><span class="pre">32</span></code> 位的每一位，来确定对应位是否为 <code class="docutils literal notranslate"><span class="pre">1</span></code> 。示例代码如下：</p>

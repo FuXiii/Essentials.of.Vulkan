@@ -498,6 +498,7 @@
 <li><p class="sd-card-text">2024/1/20 增加 <code class="docutils literal notranslate"><span class="pre">vkWaitForFences</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/2/4 增加 <code class="docutils literal notranslate"><span class="pre">VkInstanceCreateFlags</span></code> 章节。并增加 <code class="docutils literal notranslate"><span class="pre">VkFlags</span> <span class="pre">与</span> <span class="pre">位域</span></code> 说明。</p></li>
 <li><p class="sd-card-text">2024/2/4 更新 <code class="docutils literal notranslate"><span class="pre">VkQueueFlags</span></code> 章节。将其中的 <code class="docutils literal notranslate"><span class="pre">VkFlags</span></code> 说明转移至 <code class="docutils literal notranslate"><span class="pre">VkInstanceCreateFlags</span></code> 章节的 <code class="docutils literal notranslate"><span class="pre">VkFlags</span> <span class="pre">与</span> <span class="pre">位域</span></code> 说明中。</p></li>
+<li><p class="sd-card-text">2024/9/14 增加 <code class="docutils literal notranslate"><span class="pre">模棱两可的函数获取</span></code> 注释说明。</p></li>
 </ul>
 </div>
 </details><p>由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 比较复杂，为了更好的入门 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> ，还是大致过一遍 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的核心思路，这对以后的学习很有帮助。</p>
@@ -745,7 +746,12 @@ Linux 加载</label><div class="sd-tab-content docutils">
 </div>
 <div class="note admonition">
 <p class="admonition-title">vkGetInstanceProcAddr 和 Device 域函数</p>
-<p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中并没有禁止用户使用 <code class="docutils literal notranslate"><span class="pre">vkGetInstanceProcAddr</span></code> 获得 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 域函数，但这是不推荐的，当有多个硬件设备时会造成模棱两可的函数获取。比如电脑上插着两个显卡，一个是摩尔线程的，一个是景嘉微的，这两个设备都支持绘制函数 <code class="docutils literal notranslate"><span class="pre">vkCmdDraw</span></code> 函数 ，但是到底获取的是哪个设备的实现是由 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 定义的，用户并不能知道返回的函数是哪个设备的实现。</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中并没有禁止用户使用 <code class="docutils literal notranslate"><span class="pre">vkGetInstanceProcAddr</span></code> 获得 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 域函数，但这是不推荐的，当有多个硬件设备时会造成 “模棱两可” 的函数获取。比如电脑上插着两个显卡，一个是摩尔线程的，一个是景嘉微的，这两个设备都支持绘制函数 <code class="docutils literal notranslate"><span class="pre">vkCmdDraw</span></code> 函数 ，但是到底获取的是哪个设备的实现是由 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 定义的，用户并不能知道返回的函数是哪个设备的实现。</p>
+<div class="seealso admonition">
+<p class="admonition-title">模棱两可的函数获取</p>
+<p><code class="docutils literal notranslate"><span class="pre">vkGetInstanceProcAddr</span></code> 对于获取 <code class="docutils literal notranslate"><span class="pre">Device</span> <span class="pre">域</span></code> 函数：当调用这些 <code class="docutils literal notranslate"><span class="pre">Device</span> <span class="pre">域</span></code> 函数时 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">一定</span> 是作用在某一个句柄（设备句柄或其子句柄）上，而句柄间有明确的子父关系 ， <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 会根据句柄的子父关系查找到对应的设备句柄，并调用对应设备上的函数实现。
+<code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">Loader</span></code> 在其中作为中间商进行了内部的函数调度，这种调度是需要消耗一部分调度时间的，为了得到更加高效的执行效率，推荐直接 <a class="reference internal" href="#get-deivce-function"><span class="std std-ref">获取 Device 域函数</span></a> 并调用，这将直接省去内部函数调度。</p>
+</div>
 </div>
 </section>
 <section id="vkgetinstanceprocaddr">
@@ -1582,7 +1588,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
 </section>
 </section>
 <section id="device">
-<h2>获取 Device 域函数<a class="headerlink" href="#device" title="Link to this heading">¶</a></h2>
+<span id="get-deivce-function"></span><h2>获取 Device 域函数<a class="headerlink" href="#device" title="Link to this heading">¶</a></h2>
 <p>在创建完逻辑设备 <code class="docutils literal notranslate"><span class="pre">VkDevice</span></code> 之后，与 <code class="docutils literal notranslate"><span class="pre">VkDevice</span></code> 及其产生的子对象（句柄）的所有交互函数都属于 <code class="docutils literal notranslate"><span class="pre">Device</span> <span class="pre">域函数</span></code> 。我们通过 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 提供的 <code class="docutils literal notranslate"><span class="pre">vkGetDeviceProcAddr</span></code> 函数获取 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 域函数。</p>
 <section id="vkgetdeviceprocaddr">
 <h3>vkGetDeviceProcAddr<a class="headerlink" href="#vkgetdeviceprocaddr" title="Link to this heading">¶</a></h3>

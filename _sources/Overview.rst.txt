@@ -178,6 +178,7 @@
    * 2024/1/20 增加 ``vkWaitForFences`` 章节。
    * 2024/2/4 增加 ``VkInstanceCreateFlags`` 章节。并增加 ``VkFlags 与 位域`` 说明。
    * 2024/2/4 更新 ``VkQueueFlags`` 章节。将其中的 ``VkFlags`` 说明转移至 ``VkInstanceCreateFlags`` 章节的 ``VkFlags 与 位域`` 说明中。
+   * 2024/9/14 增加 ``模棱两可的函数获取`` 注释说明。
 
 由于 ``Vulkan`` 比较复杂，为了更好的入门 ``Vulkan`` ，还是大致过一遍 ``Vulkan`` 的核心思路，这对以后的学习很有帮助。
 
@@ -442,7 +443,13 @@ Vulkan 函数分类
 .. admonition:: vkGetInstanceProcAddr 和 Device 域函数
    :class: note
 
-   在 ``Vulkan`` 中并没有禁止用户使用 ``vkGetInstanceProcAddr`` 获得 ``Device`` 域函数，但这是不推荐的，当有多个硬件设备时会造成模棱两可的函数获取。比如电脑上插着两个显卡，一个是摩尔线程的，一个是景嘉微的，这两个设备都支持绘制函数 ``vkCmdDraw`` 函数 ，但是到底获取的是哪个设备的实现是由 ``Vulkan Loader`` 定义的，用户并不能知道返回的函数是哪个设备的实现。
+   在 ``Vulkan`` 中并没有禁止用户使用 ``vkGetInstanceProcAddr`` 获得 ``Device`` 域函数，但这是不推荐的，当有多个硬件设备时会造成 “模棱两可” 的函数获取。比如电脑上插着两个显卡，一个是摩尔线程的，一个是景嘉微的，这两个设备都支持绘制函数 ``vkCmdDraw`` 函数 ，但是到底获取的是哪个设备的实现是由 ``Vulkan Loader`` 定义的，用户并不能知道返回的函数是哪个设备的实现。
+
+   .. admonition:: 模棱两可的函数获取
+      :class: seealso
+
+      ``vkGetInstanceProcAddr`` 对于获取 ``Device 域`` 函数：当调用这些 ``Device 域`` 函数时 :bdg-danger:`一定` 是作用在某一个句柄（设备句柄或其子句柄）上，而句柄间有明确的子父关系 ， ``Vulkan Loader`` 会根据句柄的子父关系查找到对应的设备句柄，并调用对应设备上的函数实现。
+      ``Vulkan Loader`` 在其中作为中间商进行了内部的函数调度，这种调度是需要消耗一部分调度时间的，为了得到更加高效的执行效率，推荐直接 :ref:`Get_Deivce_Function` 并调用，这将直接省去内部函数调度。
 
 vkGetInstanceProcAddr
 ************************
@@ -1425,6 +1432,8 @@ VkDeviceQueueCreateInfo
    VkResult result = vkCreateDevice(physical_device, &device_create_info, nullptr, &device);
 
    assert(result == VkResult::VK_SUCCESS) //是否创建成功
+
+.. _Get_Deivce_Function:
 
 获取 Device 域函数
 ############################
