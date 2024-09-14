@@ -1,0 +1,1 @@
+资源与内存->VkMemoryRequirements->对应关系 给出图示
