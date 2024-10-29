@@ -17,6 +17,7 @@
    * 2024/5/21 更新 ``VkMemoryRequirements`` 章节。
    * 2024/5/21 增加 ``资源与设备内存绑定`` 章节。
    * 2024/9/6 更新 ``对应关系`` 章节。
+   * 2024/10/29 更新 ``资源与设备内存绑定`` 章节。
 
 在 `资源 <./Resource.html>`_ 章节中我们知道一个资源仅仅是一个 ``虚拟资源句柄`` ，其本质上并没有相应的内存实体用于存储数据。所以在创建完资源后，需要分配内存并与资源进行绑定，用于之后的数据读写。
 
@@ -208,6 +209,68 @@ VkMemoryRequirements
 
 资源与设备内存绑定
 ##################
+
+通过之前的介绍，我们已经知道两件事：
+
+* 如何在我们需要的设备内存上申请内存
+* 如何创建我们需要的资源
+
+现在 ``资源`` 和 ``设备内存`` 都有了，接下来就可以将两者进行关联，即 ``绑定`` 。
+
+``绑定`` 主要有两种：
+
+* ``缓存`` 与 ``设备内存`` 进行绑定。对应的接口为 ``vkBindBufferMemory(...)`` 。
+* ``图片`` 与 ``设备内存`` 进行绑定。对应的接口为 ``vkBindImageMemory(...)`` 。
+
+接口定义如下：
+
+.. code-block:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   VkResult vkBindBufferMemory(
+       VkDevice                                    device,
+       VkBuffer                                    buffer,
+       VkDeviceMemory                              memory,
+       VkDeviceSize                                memoryOffset);
+
+* :bdg-secondary:`device` 对应的逻辑设备。
+* :bdg-secondary:`buffer` 对应绑定的缓存。
+* :bdg-secondary:`memory` 对应绑定的设备内存。
+* :bdg-secondary:`memoryOffset` 对应绑定的设备内存的相对偏移。
+
+.. code-block:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   VkResult vkBindImageMemory(
+       VkDevice                                    device,
+       VkImage                                     image,
+       VkDeviceMemory                              memory,
+       VkDeviceSize                                memoryOffset);
+
+* :bdg-secondary:`device` 对应的逻辑设备。
+* :bdg-secondary:`image` 对应绑定的图片。
+* :bdg-secondary:`memory` 对应绑定的设备内存。
+* :bdg-secondary:`memoryOffset` 对应绑定的设备内存的相对偏移。
+
+其中  ``buffer`` 、 ``memory`` 和 ``image`` 都需要从 ``device`` 中创建出来，这个不需要再赘述。这里主要需要说明一下 ``memoryOffset`` 参数的作用。
+
+在 ``Vulkan`` 中其鼓励用户创建一个大的设备内存，不同的资源占用该设备不同的部分。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 .. note:: 
 
