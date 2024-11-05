@@ -62,6 +62,8 @@ vkEnumeratePhysicalDevices
    枚举的 ``VkPhysicalDevice`` 句柄是在调用 ``vkCreateInstance(...)`` 创建 ``VkInstance`` 时驱动内部创建的。换句话说就是：
    ``VkPhysicalDevice`` 句柄的生命周期与 ``VkInstance`` 相同， ``VkInstance`` 创建 ``VkPhysicalDevice`` 句柄们也会创建， ``VkInstance`` 销毁 ``VkPhysicalDevice`` 句柄们也会销毁。
 
+.. _Get_Physical_Devicce_Properties:
+
 获取物理设备信息
 ######################
 
@@ -166,6 +168,8 @@ VkPhysicalDeviceType
 一般首选使用 ``VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU`` 独立显卡，之后再考虑使用 ``VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU`` 集成显卡。
 
 其中 ``VkPhysicalDeviceLimits`` 用于表述该设备的一些限制，比如最大支持的图片像素大小。
+
+.. _Vk_Physical_Device_Limits:
 
 VkPhysicalDeviceLimits
 *************************

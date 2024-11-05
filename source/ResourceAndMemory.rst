@@ -17,6 +17,8 @@
    * 2024/5/21 更新 ``VkMemoryRequirements`` 章节。
    * 2024/5/21 增加 ``资源与设备内存绑定`` 章节。
    * 2024/9/6 更新 ``对应关系`` 章节。
+   * 2024/10/29 更新 ``资源与设备内存绑定`` 章节。
+   * 2024/11/5 更新 ``资源与设备内存绑定`` 章节。
 
 在 `资源 <./Resource.html>`_ 章节中我们知道一个资源仅仅是一个 ``虚拟资源句柄`` ，其本质上并没有相应的内存实体用于存储数据。所以在创建完资源后，需要分配内存并与资源进行绑定，用于之后的数据读写。
 
@@ -209,6 +211,72 @@ VkMemoryRequirements
 资源与设备内存绑定
 ##################
 
-.. note:: 
+通过之前的介绍，我们已经知道两件事：
 
-   未完待续
+* 如何在我们需要的设备内存上申请内存
+* 如何创建我们需要的资源
+
+现在 ``资源`` 和 ``设备内存`` 都有了，接下来就可以将两者进行关联，即 ``绑定`` 。
+
+``绑定`` 主要有两种：
+
+* ``缓存`` 与 ``设备内存`` 进行绑定。对应的接口为 ``vkBindBufferMemory(...)`` 。
+* ``图片`` 与 ``设备内存`` 进行绑定。对应的接口为 ``vkBindImageMemory(...)`` 。
+
+接口定义如下：
+
+.. code-block:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   VkResult vkBindBufferMemory(
+       VkDevice                                    device,
+       VkBuffer                                    buffer,
+       VkDeviceMemory                              memory,
+       VkDeviceSize                                memoryOffset);
+
+* :bdg-secondary:`device` 对应的逻辑设备。
+* :bdg-secondary:`buffer` 对应绑定的缓存。
+* :bdg-secondary:`memory` 对应绑定的设备内存。
+* :bdg-secondary:`memoryOffset` 对应绑定的设备内存的相对偏移。
+
+.. code-block:: c++
+
+   // 由 VK_VERSION_1_0 提供
+   VkResult vkBindImageMemory(
+       VkDevice                                    device,
+       VkImage                                     image,
+       VkDeviceMemory                              memory,
+       VkDeviceSize                                memoryOffset);
+
+* :bdg-secondary:`device` 对应的逻辑设备。
+* :bdg-secondary:`image` 对应绑定的图片。
+* :bdg-secondary:`memory` 对应绑定的设备内存。
+* :bdg-secondary:`memoryOffset` 对应绑定的设备内存的相对偏移。
+
+其中  ``buffer`` 、 ``memory`` 和 ``image`` 都需要从 ``device`` 中创建出来，这个不需要再赘述。这里主要需要说明一下 ``memoryOffset`` 参数的作用。
+
+在 ``Vulkan`` 中其鼓励用户创建分配一块大的设备内存，不同的资源占用该设备内存不同的部分。这不仅能够最大化重复利用一块内存，优化内存使用率，也为用户制定自定义内存管理机制提供途径。这样设计的根本原因是： ``Vulkan`` 对于 ``VkDeviceMemory`` 创建的数量有 :bdg-danger:`上限` 。
+
+在 :ref:`Get_Physical_Devicce_Properties` 章节中我们知道其内部有 :ref:`Vk_Physical_Device_Limits` 限制信息。其中有 ``maxMemoryAllocationCount`` 成员：
+
+.. code-block:: c++
+
+   // 由 VK_VERSION_1_0 提供s
+   typedef struct VkPhysicalDeviceLimits {
+       ...
+       uint32_t maxMemoryAllocationCount;
+       ...
+   } VkPhysicalDeviceLimits;
+
+* :bdg-secondary:`maxMemoryAllocationCount` 可通过 :ref:`vk_Allocate_Memory` 创建的最大同时存在的设备内存数量。且 ``Vulkan`` 要求该限制数量不能小于 ``4096``
+
+.. figure:: ./_static/resource_bind_in_memory.png
+
+   设备内存与资源绑定示意图
+
+当 ``vkBind[Buffer/Image]Memory(...)`` 函数返回  ``VkResult::VK_SUCCESS`` 说明只有躯壳的资源终于拥有了灵魂，它的一生完整了！
+
+.. admonition:: Vulkan 设备内存管理
+   :class: note
+
+   ``Vulkan`` 为用户自定义内存管理提供了可能，但实现一个高效稳健的内存管理系统并不是一件容易事。用户可以使用 ``AMD`` 在 ``GPU Open`` 计划中推出的 `Vulkan® Memory Allocator (VMA) <https://gpuopen.com/vulkan-memory-allocator/>`_ 进行设备内存管理。有关如何使用 ``VMA`` 将会在专门的章节中进行讲解。
