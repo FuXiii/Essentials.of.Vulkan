@@ -272,6 +272,8 @@ VkMemoryRequirements
 
 .. figure:: ./_static/resource_bind_in_memory.png
 
+   设备内存与资源绑定示意图
+
 
 
 
