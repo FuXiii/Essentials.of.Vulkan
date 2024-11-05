@@ -6,7 +6,7 @@
 <link rel="index" title="索引" href="genindex.html" /><link rel="search" title="搜索" href="search.html" /><link rel="next" title="最初之物 VkInstance" href="Instance.html" /><link rel="prev" title="环境配置" href="EnvironmentalConfig.html" />
         <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/Overview.html" />
 
-    <link rel="shortcut icon" href="_static/VulkanLogo.png"/><!-- Generated with Sphinx 8.0.2 and Furo 2024.08.06 -->
+    <link rel="shortcut icon" href="_static/VulkanLogo.png"/><!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
         <title>纵览 - Vulkan入门精要</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b20cc3f5" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
@@ -920,8 +920,8 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <p>初次学习 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 时会有个疑问： <code class="docutils literal notranslate"><span class="pre">VkInstanceCreateInfo</span></code> 已经是一个结构体了为什么还有使用 <code class="docutils literal notranslate"><span class="pre">sType</span></code> 再指定一遍结构体类型呢？而且 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中几乎所有的结构体内都声明了 <code class="docutils literal notranslate"><span class="pre">sType</span></code> 成员，为什么？</p>
 <p>这就不得不说明一下 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的扩展模块了。随着时代的发展，类似于 <code class="docutils literal notranslate"><span class="pre">VkInstanceCreateInfo</span></code> 结构体中的数据可能并不满足于技术背景，需要进行扩展，为此 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 引入了 <code class="docutils literal notranslate"><span class="pre">pNext</span></code> 成员， <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中几乎所有的结构体内都声明了 <code class="docutils literal notranslate"><span class="pre">pNext</span></code> 成员，而 <code class="docutils literal notranslate"><span class="pre">pNext</span></code> 为 <code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">void*</span></code> 类型，这也就是说 <code class="docutils literal notranslate"><span class="pre">pNext</span></code> 可以
 指向任意一个类型对象的数据地址。由于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中几乎所有的结构体内都声明了 <code class="docutils literal notranslate"><span class="pre">pNext</span></code> 成员，这样每个结构体都可以使用 <code class="docutils literal notranslate"><span class="pre">pNext</span></code> 指向下一个 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 的结构体，这样一个接着一个将结构体进行串链就形成了一个扩展链。</p>
-<div class="mermaid">
-            flowchart LR
+<pre  class="mermaid">
+        flowchart LR
    subgraph VkInstanceCreateInfo
       direction TB
          VkInstanceCreateInfo_sType[&quot;sType = VkStructureType::VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO&quot;]
@@ -946,7 +946,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
    VkInstanceCreateInfo_pNext--&gt;VulkanSomeStructureA
    VulkanSomeStructureA_pNext--&gt;VulkanSomeStructureB
    VulkanSomeStructureB_pNext--&gt;a2[&quot;...&quot;]
-        </div><p>这样驱动就可以根据 <code class="docutils literal notranslate"><span class="pre">pNext</span></code> 指针链遍历所有的结构体数据了，但是有一个问题 <code class="docutils literal notranslate"><span class="pre">pNext</span></code> 只是个 <code class="docutils literal notranslate"><span class="pre">void*</span></code> 指针，驱动在获取到 <code class="docutils literal notranslate"><span class="pre">pNext</span></code> 指向的地址时并不知道这个地址应该按照哪种结构体类型进行解析，这时 <code class="docutils literal notranslate"><span class="pre">sType</span></code> 的作用就体现出来了，驱动获取该地址下的 <code class="docutils literal notranslate"><span class="pre">sType</span></code> 的数据，这样驱动就知道如何解析此块地址了。</p>
+    </pre><p>这样驱动就可以根据 <code class="docutils literal notranslate"><span class="pre">pNext</span></code> 指针链遍历所有的结构体数据了，但是有一个问题 <code class="docutils literal notranslate"><span class="pre">pNext</span></code> 只是个 <code class="docutils literal notranslate"><span class="pre">void*</span></code> 指针，驱动在获取到 <code class="docutils literal notranslate"><span class="pre">pNext</span></code> 指向的地址时并不知道这个地址应该按照哪种结构体类型进行解析，这时 <code class="docutils literal notranslate"><span class="pre">sType</span></code> 的作用就体现出来了，驱动获取该地址下的 <code class="docutils literal notranslate"><span class="pre">sType</span></code> 的数据，这样驱动就知道如何解析此块地址了。</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 驱动内部可能的实现</span>
 
 <span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">pNext</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">某个结构体的地址</span><span class="p">;</span>
@@ -1128,8 +1128,8 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.0</span></code> 中硬件设备是有相关的 <code class="docutils literal notranslate"><span class="pre">Layer</span></code> 功能的，但用处不大，比较鸡肋，后来 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准组将硬件设备的 <code class="docutils literal notranslate"><span class="pre">Layer</span></code> 遗弃，但对外的接口还保留着。</p>
 </div>
 <p>由于在支持 <code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">1.0</span></code> 的实现中 <code class="docutils literal notranslate"><span class="pre">vkCreateInstance</span></code> 可能由于 <code class="docutils literal notranslate"><span class="pre">VK_ERROR_INCOMPATIBLE_DRIVER</span></code> 失败返回，所以需要在调用 <code class="docutils literal notranslate"><span class="pre">vkCreateInstance</span></code> 之前获取支持的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 版本。获取流程如下：</p>
-<div class="mermaid">
-            flowchart TD
+<pre  class="mermaid">
+        flowchart TD
    TryToGetvkEnumerateInstanceVersion[&quot;尝试获取 vkEnumerateInstanceVersion 函数接口实现&quot;]
    IsNull{&quot;是否为 NULL&quot;}
    SupportVulkan_1_0[&quot;支持Vulkan 1.0&quot;]
@@ -1138,7 +1138,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
    TryToGetvkEnumerateInstanceVersion--&gt;IsNull
    IsNull--是--&gt;SupportVulkan_1_0
    IsNull--否--&gt;SupportVulkanFromvkEnumerateInstanceVersion
-        </div><section id="vkenumerateinstanceversion">
+    </pre><section id="vkenumerateinstanceversion">
 <h3>vkEnumerateInstanceVersion<a class="headerlink" href="#vkenumerateinstanceversion" title="Link to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">vkEnumerateInstanceVersion</span></code> 函数定义如下：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_1 提供</span>
@@ -1698,15 +1698,15 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <p>这里可以看出内存条上的内存和 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 上的显存都属于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 可访问的内存范畴。</p>
 <p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中我们往往在 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端将数据准备好，之后使用 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 设备访问该数据进行计算。然而 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端准备的数据只有 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 能够访问， <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 设备并不能直接访问 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端内存，为此 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准中为我们提供了可被 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 访问的 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端内存。
 也就是说这一部分内存既可以被 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端访问也可以被 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端访问。一般来说，我们会先将 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端的数据拷贝至可以被 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端访问也可以被 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端访问的内存中，之后再将这部分数据拷贝至 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端内存中被 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 访问使用。</p>
-<div class="mermaid">
-            flowchart LR
+<pre  class="mermaid">
+        flowchart LR
 
    Host[&quot;Host 端\n（使用 new 或 malloc 分配内存）&quot;]
    HostAndDevice[&quot;Host 端与 Device 都可访问的内存&quot;]
    Device[&quot;Device 端内存&quot;]
 
    Host--拷贝--&gt;HostAndDevice--&quot;（总线）拷贝&quot;--&gt;Device
-        </div><div class="tip admonition">
+    </pre><div class="tip admonition">
 <p class="admonition-title">既然数据在 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端与 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端都可以访问的内存中，为什么还需要拷贝至 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端中？</p>
 <p>在硬件层面 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端与 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端都可以访问的内存，这类内存对于 <code class="docutils literal notranslate"><span class="pre">CPU</span></code> 这种处理连续内存非常友好，而像 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 这种大量并行计算的设备来说就不尽人意了，拷贝至 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 端中的目的是将这一步分数据转换成设备友好的内存结构，提高内存读写性能。</p>
 <p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中可以在 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 设备上直接访问 <code class="docutils literal notranslate"><span class="pre">Host</span></code> 端与 <code class="docutils literal notranslate"><span class="pre">Device</span></code> 都可访问的内存。只不过我们经常将这部分内存数据拷贝至 <code class="docutils literal notranslate"><span class="pre">GPU</span></code> 专属内存中提高性能。</p>
@@ -2747,8 +2747,8 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中创建一个资源（ <code class="docutils literal notranslate"><span class="pre">VkImage</span></code> 或 <code class="docutils literal notranslate"><span class="pre">VkBuffer</span></code> ）仅仅表示一个资源符号，其内部仅有对于该资源的描述，没有确切的内存空间。所以在创建资源之后需要绑定一个内存，这样就给了该资源完整的一生。 <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">✧(๑≖ ◡ ≖๑)</span></p>
 <p>在创建完资源后，需要绑定内存，这就需要创建内存，创建内存需要设置 <code class="docutils literal notranslate"><span class="pre">VkMemoryAllocateInfo::allocationSize</span></code> 内存分配的大小。但是此时该资源需要多大的内存呢？ <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 为我们提供了两个函数来获取相应资源需要的内存信息：</p>
 <ul class="simple">
-<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">vkGetBufferMemoryRequirements(…)</span> 获取缓存资源需要的内存信息</p></li>
-<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">vkGetImageMemoryRequirements(…)</span> 获取图片资源需要的内存信息</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">vkGetBufferMemoryRequirements(...)</span> 获取缓存资源需要的内存信息</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">vkGetImageMemoryRequirements(...)</span> 获取图片资源需要的内存信息</p></li>
 </ul>
 <p>这两个函数的定义如下：</p>
 <section id="vkgetbuffermemoryrequirements">
@@ -2826,8 +2826,8 @@ Linux 获取</label><div class="sd-tab-content docutils">
 <section id="id34">
 <h3>资源与内存的绑定<a class="headerlink" href="#id34" title="Link to this heading">¶</a></h3>
 <p>现在我们知道如何创建资源和内存，并且能够获取到在哪个内存类型（堆）上分配内存。如此，我们就可以进行资源绑定了。大致流程如下：</p>
-<div class="mermaid">
-            flowchart TB
+<pre  class="mermaid">
+        flowchart TB
 
    CreateResource[&quot;创建资源&quot;]
    GetMemoryRequirement[&quot;获取资源的内存要求&quot;]
@@ -2837,7 +2837,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
    CreateResource--&gt;GetMemoryRequirement
    GetMemoryRequirement--&gt;AllocateMemory
    AllocateMemory--&gt;Binding
-        </div><p>假如说我们现在已经成功创建了一个 <code class="docutils literal notranslate"><span class="pre">VkBuffer</span></code> 的话，现在我们需要筛选要在哪一个内存类型（堆）上分配内存，如下：</p>
+    </pre><p>假如说我们现在已经成功创建了一个 <code class="docutils literal notranslate"><span class="pre">VkBuffer</span></code> 的话，现在我们需要筛选要在哪一个内存类型（堆）上分配内存，如下：</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">VkDevice</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">逻辑设备句柄</span><span class="p">;</span>
 <span class="n">VkBuffer</span><span class="w"> </span><span class="n">buffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">之前成功创建的缓存资源句柄</span><span class="p">;</span>
 
@@ -4028,7 +4028,7 @@ Linux 获取</label><div class="sd-tab-content docutils">
     </aside>
   </div>
 </div><script src="_static/documentation_options.js?v=7d86a446"></script>
-    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=5fa4622c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -4039,8 +4039,14 @@ Linux 获取</label><div class="sd-tab-content docutils">
     <script src="_static/design-tabs.js?v=f930bc37"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script src="https://unpkg.com/mermaid@10.2.0/dist/mermaid.min.js"></script>
-    <script>mermaid.initialize({startOnLoad:true});</script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs"></script>
+    <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";import elkLayouts from "https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs";mermaid.registerLayoutLoaders(elkLayouts);mermaid.initialize({startOnLoad:false});</script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+    <script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";
+window.addEventListener("load", () => mermaid.run());
+</script>
     <script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
     </body>
 </html>

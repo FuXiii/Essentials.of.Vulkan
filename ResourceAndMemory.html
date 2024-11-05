@@ -6,7 +6,7 @@
 <link rel="index" title="索引" href="genindex.html" /><link rel="search" title="搜索" href="search.html" /><link rel="next" title="文献" href="Literature/index.html" /><link rel="prev" title="资源" href="Resource.html" />
         <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/ResourceAndMemory.html" />
 
-    <link rel="shortcut icon" href="_static/VulkanLogo.png"/><!-- Generated with Sphinx 8.0.2 and Furo 2024.08.06 -->
+    <link rel="shortcut icon" href="_static/VulkanLogo.png"/><!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
         <title>资源与内存 - Vulkan入门精要</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b20cc3f5" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
@@ -337,6 +337,8 @@
 <li><p class="sd-card-text">2024/5/21 更新 <code class="docutils literal notranslate"><span class="pre">VkMemoryRequirements</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/5/21 增加 <code class="docutils literal notranslate"><span class="pre">资源与设备内存绑定</span></code> 章节。</p></li>
 <li><p class="sd-card-text">2024/9/6 更新 <code class="docutils literal notranslate"><span class="pre">对应关系</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/10/29 更新 <code class="docutils literal notranslate"><span class="pre">资源与设备内存绑定</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/11/5 更新 <code class="docutils literal notranslate"><span class="pre">资源与设备内存绑定</span></code> 章节。</p></li>
 </ul>
 </div>
 </details><p>在 <a class="reference external" href="./Resource.html">资源</a> 章节中我们知道一个资源仅仅是一个 <code class="docutils literal notranslate"><span class="pre">虚拟资源句柄</span></code> ，其本质上并没有相应的内存实体用于存储数据。所以在创建完资源后，需要分配内存并与资源进行绑定，用于之后的数据读写。</p>
@@ -347,8 +349,8 @@
 </ul>
 <p>为了能够获取支持资源的内存信息， <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 为我们提供了如下查询接口：</p>
 <ul class="simple">
-<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">vkGetBufferMemoryRequirements(…)</span> 获取支持该缓存资源的内存信息。</p></li>
-<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">vkGetImageMemoryRequirements(…)</span> 获取支持该图片资源的内存信息。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">vkGetBufferMemoryRequirements(...)</span> 获取支持该缓存资源的内存信息。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">vkGetImageMemoryRequirements(...)</span> 获取支持该图片资源的内存信息。</p></li>
 </ul>
 <section id="id3">
 <h2>获取支持的设备内存<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
@@ -488,9 +490,70 @@
 </section>
 <section id="id6">
 <h2>资源与设备内存绑定<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h2>
-<div class="admonition note">
-<p class="admonition-title">备注</p>
-<p>未完待续</p>
+<p>通过之前的介绍，我们已经知道两件事：</p>
+<ul class="simple">
+<li><p>如何在我们需要的设备内存上申请内存</p></li>
+<li><p>如何创建我们需要的资源</p></li>
+</ul>
+<p>现在 <code class="docutils literal notranslate"><span class="pre">资源</span></code> 和 <code class="docutils literal notranslate"><span class="pre">设备内存</span></code> 都有了，接下来就可以将两者进行关联，即 <code class="docutils literal notranslate"><span class="pre">绑定</span></code> 。</p>
+<p><code class="docutils literal notranslate"><span class="pre">绑定</span></code> 主要有两种：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">缓存</span></code> 与 <code class="docutils literal notranslate"><span class="pre">设备内存</span></code> 进行绑定。对应的接口为 <code class="docutils literal notranslate"><span class="pre">vkBindBufferMemory(...)</span></code> 。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">图片</span></code> 与 <code class="docutils literal notranslate"><span class="pre">设备内存</span></code> 进行绑定。对应的接口为 <code class="docutils literal notranslate"><span class="pre">vkBindImageMemory(...)</span></code> 。</p></li>
+</ul>
+<p>接口定义如下：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="n">VkResult</span><span class="w"> </span><span class="nf">vkBindBufferMemory</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkBuffer</span><span class="w">                                    </span><span class="n">buffer</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkDeviceMemory</span><span class="w">                              </span><span class="n">memory</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkDeviceSize</span><span class="w">                                </span><span class="n">memoryOffset</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">device</span> 对应的逻辑设备。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">buffer</span> 对应绑定的缓存。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">memory</span> 对应绑定的设备内存。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">memoryOffset</span> 对应绑定的设备内存的相对偏移。</p></li>
+</ul>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
+<span class="n">VkResult</span><span class="w"> </span><span class="nf">vkBindImageMemory</span><span class="p">(</span>
+<span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkImage</span><span class="w">                                     </span><span class="n">image</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkDeviceMemory</span><span class="w">                              </span><span class="n">memory</span><span class="p">,</span>
+<span class="w">    </span><span class="n">VkDeviceSize</span><span class="w">                                </span><span class="n">memoryOffset</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">device</span> 对应的逻辑设备。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">image</span> 对应绑定的图片。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">memory</span> 对应绑定的设备内存。</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">memoryOffset</span> 对应绑定的设备内存的相对偏移。</p></li>
+</ul>
+<p>其中  <code class="docutils literal notranslate"><span class="pre">buffer</span></code> 、 <code class="docutils literal notranslate"><span class="pre">memory</span></code> 和 <code class="docutils literal notranslate"><span class="pre">image</span></code> 都需要从 <code class="docutils literal notranslate"><span class="pre">device</span></code> 中创建出来，这个不需要再赘述。这里主要需要说明一下 <code class="docutils literal notranslate"><span class="pre">memoryOffset</span></code> 参数的作用。</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中其鼓励用户创建分配一块大的设备内存，不同的资源占用该设备内存不同的部分。这不仅能够最大化重复利用一块内存，优化内存使用率，也为用户制定自定义内存管理机制提供途径。这样设计的根本原因是： <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 对于 <code class="docutils literal notranslate"><span class="pre">VkDeviceMemory</span></code> 创建的数量有 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">上限</span> 。</p>
+<p>在 <a class="reference internal" href="PhysicalDevice.html#get-physical-devicce-properties"><span class="std std-ref">获取物理设备信息</span></a> 章节中我们知道其内部有 <a class="reference internal" href="PhysicalDevice.html#vk-physical-device-limits"><span class="std std-ref">VkPhysicalDeviceLimits</span></a> 限制信息。其中有 <code class="docutils literal notranslate"><span class="pre">maxMemoryAllocationCount</span></code> 成员：</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供s</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">VkPhysicalDeviceLimits</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">maxMemoryAllocationCount</span><span class="p">;</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="p">}</span><span class="w"> </span><span class="n">VkPhysicalDeviceLimits</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">maxMemoryAllocationCount</span> 可通过 <a class="reference internal" href="Memory.html#vk-allocate-memory"><span class="std std-ref">vkAllocateMemory</span></a> 创建的最大同时存在的设备内存数量。且 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 要求该限制数量不能小于 <code class="docutils literal notranslate"><span class="pre">4096</span></code></p></li>
+</ul>
+<figure class="align-default" id="id8">
+<img alt="_images/resource_bind_in_memory.png" src="_images/resource_bind_in_memory.png" />
+<figcaption>
+<p><span class="caption-text">设备内存与资源绑定示意图</span><a class="headerlink" href="#id8" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>当 <code class="docutils literal notranslate"><span class="pre">vkBind[Buffer/Image]Memory(...)</span></code> 函数返回  <code class="docutils literal notranslate"><span class="pre">VkResult::VK_SUCCESS</span></code> 说明只有躯壳的资源终于拥有了灵魂，它的一生完整了！</p>
+<div class="note admonition">
+<p class="admonition-title">Vulkan 设备内存管理</p>
+<p><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 为用户自定义内存管理提供了可能，但实现一个高效稳健的内存管理系统并不是一件容易事。用户可以使用 <code class="docutils literal notranslate"><span class="pre">AMD</span></code> 在 <code class="docutils literal notranslate"><span class="pre">GPU</span> <span class="pre">Open</span></code> 计划中推出的 <a class="reference external" href="https://gpuopen.com/vulkan-memory-allocator/">Vulkan® Memory Allocator (VMA)</a> 进行设备内存管理。有关如何使用 <code class="docutils literal notranslate"><span class="pre">VMA</span></code> 将会在专门的章节中进行讲解。</p>
 </div>
 </section>
 </section>
@@ -589,7 +652,7 @@
     </aside>
   </div>
 </div><script src="_static/documentation_options.js?v=7d86a446"></script>
-    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=5fa4622c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>

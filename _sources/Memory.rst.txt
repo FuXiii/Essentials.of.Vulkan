@@ -986,6 +986,8 @@ vkGetDeviceMemoryCommitment
 
 通过之前 ``vkGetPhysicalDeviceMemoryProperties(...)`` 函数我们可以获取到设备的内存信息，现在我们就可以通过这些信息进行内存分配了。为此 ``Vulkan`` 为我们提供了 ``vkAllocateMemory(...)`` 函数进行内存分配。该函数定义如下：
 
+.. _vk_Allocate_Memory:
+
 vkAllocateMemory
 ----------------------------
 

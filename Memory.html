@@ -6,7 +6,7 @@
 <link rel="index" title="索引" href="genindex.html" /><link rel="search" title="搜索" href="search.html" /><link rel="next" title="资源" href="Resource.html" /><link rel="prev" title="逻辑设备" href="LogicDevice.html" />
         <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/Memory.html" />
 
-    <link rel="shortcut icon" href="_static/VulkanLogo.png"/><!-- Generated with Sphinx 8.0.2 and Furo 2024.08.06 -->
+    <link rel="shortcut icon" href="_static/VulkanLogo.png"/><!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
         <title>内存 - Vulkan入门精要</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b20cc3f5" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
@@ -1270,7 +1270,7 @@ Windows</label><div class="sd-tab-content docutils">
 <h3>内存分配<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h3>
 <p>通过之前 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceMemoryProperties(...)</span></code> 函数我们可以获取到设备的内存信息，现在我们就可以通过这些信息进行内存分配了。为此 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 为我们提供了 <code class="docutils literal notranslate"><span class="pre">vkAllocateMemory(...)</span></code> 函数进行内存分配。该函数定义如下：</p>
 <section id="vkallocatememory">
-<h4>vkAllocateMemory<a class="headerlink" href="#vkallocatememory" title="Link to this heading">¶</a></h4>
+<span id="vk-allocate-memory"></span><h4>vkAllocateMemory<a class="headerlink" href="#vkallocatememory" title="Link to this heading">¶</a></h4>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// 由 VK_VERSION_1_0 提供</span>
 <span class="n">VkResult</span><span class="w"> </span><span class="nf">vkAllocateMemory</span><span class="p">(</span>
 <span class="w">    </span><span class="n">VkDevice</span><span class="w">                                    </span><span class="n">device</span><span class="p">,</span>
@@ -1840,7 +1840,7 @@ Windows</label><div class="sd-tab-content docutils">
     </aside>
   </div>
 </div><script src="_static/documentation_options.js?v=7d86a446"></script>
-    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=5fa4622c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>

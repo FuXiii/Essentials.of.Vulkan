@@ -6,7 +6,7 @@
 <link rel="index" title="索引" href="genindex.html" /><link rel="search" title="搜索" href="search.html" /><link rel="next" title="开始于 Vulkan SDK" href="StartFromVulkanSDK.html" /><link rel="prev" title="欢迎来到 Vulkan 入门精要" href="index.html" />
         <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/Introduction.html" />
 
-    <link rel="shortcut icon" href="_static/VulkanLogo.png"/><!-- Generated with Sphinx 8.0.2 and Furo 2024.08.06 -->
+    <link rel="shortcut icon" href="_static/VulkanLogo.png"/><!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
         <title>介绍 - Vulkan入门精要</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b20cc3f5" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
@@ -358,7 +358,7 @@
 </section>
 <section id="id5">
 <h2>图形接口<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h2>
-<p>图形接口，也称图形 <code class="docutils literal notranslate"><span class="pre">API</span></code> ，其目的是定义一套规范用于与图形功能硬件设备进行沟通。由于市面上硬件设备产品众多每一家都可以定义一套自己设备的图形接口，这就会导致设备使用用户需要每一个设备单独适配，其工作了繁重重复不稳定，
+<p>图形接口，也称图形 <code class="docutils literal notranslate"><span class="pre">API</span></code> ，其目的是定义一套规范用于与图形功能硬件设备进行沟通。由于市面上硬件设备产品众多，每一家都可以定义一套自己设备的图形接口，这就会导致设备使用用户需要每一个设备单独适配，其工作了繁重重复不稳定，
 所以硬件设备生产商联合起来定一个统一的图形接口，使用此接口可以与任何支持该接口的设备进行沟通。当今天下有四套图形标准：</p>
 <ol class="arabic simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> ：隶属于 <code class="docutils literal notranslate"><span class="pre">Khronos</span></code> 组织</p></li>
@@ -371,7 +371,7 @@
 <h2>Khronos组织<a class="headerlink" href="#khronos" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">Khronos</span></code> 原本指代的是古希腊神话传说中掌管时间的神祗 <code class="docutils literal notranslate"><span class="pre">克罗诺斯</span></code> ，是俄耳甫斯教（ <code class="docutils literal notranslate"><span class="pre">Orphism</span></code> ）的原始神，此神祗经常与宙斯他爹 <code class="docutils literal notranslate"><span class="pre">克洛诺斯</span></code> ( <code class="docutils literal notranslate"><span class="pre">Kronos</span></code> ) 搞混，因为发音基本没区别。
 虽然克罗诺斯和克洛诺斯都属于古希腊神话体系，但不是同一派别（可能类似于道教中的全真和正一）。在俄耳甫斯教中克罗诺斯被称为宇宙第一因或宇宙的源头（类似道家中的道生一）。</p>
-<p>扯远了。 <a class="reference external" href="https://www.khronos.org/">Khronos组织</a> 是一家非常著名的开源标准规范组织，像大家熟知的 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 、 <code class="docutils literal notranslate"><span class="pre">OpenCL</span></code> 、 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 、 <code class="docutils literal notranslate"><span class="pre">WebGL</span></code> 还有 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 标准都是出自该组织。</p>
+<p>扯远了。 <a class="reference external" href="https://www.khronos.org/">Khronos组织</a> 是一家非常著名的开源标准规范组织，像大家熟知的 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 、 <code class="docutils literal notranslate"><span class="pre">OpenCL</span></code> 、 <code class="docutils literal notranslate"><span class="pre">SPIR</span></code> 、 <code class="docutils literal notranslate"><span class="pre">WebGL</span></code> 还有 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 等等标准都是出自该组织。</p>
 </section>
 <section id="opengl">
 <h2>OpenGL<a class="headerlink" href="#opengl" title="Link to this heading">¶</a></h2>
@@ -388,7 +388,7 @@
 <p>作为新一代的图形 <code class="docutils literal notranslate"><span class="pre">API</span></code> ，可以说完全重新设计了架构，摒弃了 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 的基于上下文的架构执行指令，而是使用基于 <code class="docutils literal notranslate"><span class="pre">CommandBuffer</span></code> 指令缓存推送到设备工作 <code class="docutils literal notranslate"><span class="pre">Queue</span></code> 队列的方式，进行指令执行。支持 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 不支持的多线程和硬件光线追踪。在 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 中对于函数的获取，
 有的用 <code class="docutils literal notranslate"><span class="pre">GLEW</span></code> 有的用 <code class="docutils literal notranslate"><span class="pre">GLAD</span></code> 有的函数获取在某些平台甚至都是么棱两可的， <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中规避了该诟病，使用统一的接口获取所有接口函数。明确绘制结果如何呈现，而不是像 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 那样有默认的颜色、深度缓存。等等，可以说 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 和 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 是完全不一样的，
 硬要说 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 与 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 之间是什么关系，可以说 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 是将 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 中的很多原本由驱动负责的任务，现在将其开放出来由 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 开发者自己管理，这也就是为什么很多人觉得 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 困难的原因，使用 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 开发总有一种开发 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 驱动的感觉，但好处是架构清晰，性能优良，完全可以基于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 去
-实现 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 的接口，反之则不行。要说 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 与 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 之间有什么相同点？确切说，除了图新学上统一的概念在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 与 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 中是相同的（比如顶点属性，顶点着色器，片元着色器等等），其他没有任何相似的地方。读者完全
+实现 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 的接口，反之则不行。要说 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 与 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 之间有什么相同点？确切说，除了图形学上统一的概念在 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 与 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 中是相同的（比如顶点属性，顶点着色器，片元着色器等等），其他没有任何相似的地方。读者完全
 可以把 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 当做全新的架构去学，不需要提前学完 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> ，当然如果提前了解了 <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> ，对于 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 中的一些概念是相通的，会对理解起一些帮助。但是读者放心，您在学习本教程时不需要会  <code class="docutils literal notranslate"><span class="pre">OpenGL</span></code> 也可以理解其中的奥妙。</p>
 <div class="tip admonition">
 <p class="admonition-title"><code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 与 <code class="docutils literal notranslate"><span class="pre">DirectX</span> <span class="pre">12</span></code></p>
@@ -495,7 +495,7 @@
     </aside>
   </div>
 </div><script src="_static/documentation_options.js?v=7d86a446"></script>
-    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=5fa4622c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>

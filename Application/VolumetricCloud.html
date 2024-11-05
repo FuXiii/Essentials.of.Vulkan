@@ -6,7 +6,7 @@
 <link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="搜索" href="../search.html" /><link rel="next" title="WebGPU ImGui" href="WebGPUImGui.html" /><link rel="prev" title="应用" href="index.html" />
         <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/Application/VolumetricCloud.html" />
 
-    <link rel="shortcut icon" href="../_static/VulkanLogo.png"/><!-- Generated with Sphinx 8.0.2 and Furo 2024.08.06 -->
+    <link rel="shortcut icon" href="../_static/VulkanLogo.png"/><!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
         <title>体积云 - Vulkan入门精要</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b20cc3f5" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
@@ -1531,7 +1531,7 @@
 </div>
 <p>渲染结果如下：</p>
 <p><img alt="camera pixel pos" src="../_images/ray_marching_bounding_box_sample_3d_noise.gif" /></p>
-<p>你会发现会有生硬的一圈圈的条纹状结果，之所以会出现这种现象是因为采样步长都是定长，这就会导致上一步和下一步之间的过渡数据被完全忽略，为了解决此问题，只需要在采样点临域内随机做个位移即可，宏观上看就是采样点随机“抖动”。（还有一种方案是“抖动”射线的起点或者是射线的方向，无论是什么方式，最终都是随机偏移采样点）</p>
+<p>你会发现会有生硬的一圈圈的条纹状结果，之所以会出现这种现象是因为采样步长都是定长，这就会导致上一步和下一步之间的过渡数据被完全忽略，为了解决此问题，只需要在采样点临域内随机做个位移即可，宏观上看就是采样点随机“抖动”。（还有一种方案是“抖动&quot;射线的起点或者是射线的方向，无论是什么方式，最终都是随机偏移采样点）</p>
 <p>我们使用之前的<code class="docutils literal notranslate"><span class="pre">hash(...)</span></code>函数生成一个随机值，以此来抖动采样点。</p>
 <div class="highlight-CPP notranslate"><div class="highlight"><pre><span></span><span class="c1">//使用hash(...)函数抖动采样点</span>
 <span class="c1">//其中vec3(12.256, 2.646, 6.356)随便写的，也可以是其他的</span>
@@ -2011,7 +2011,7 @@ $<span class="math notranslate nohighlight">\((w\cdot\nabla)L(x,w)=\sigma_s(x)\i
     </aside>
   </div>
 </div><script src="../_static/documentation_options.js?v=7d86a446"></script>
-    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>

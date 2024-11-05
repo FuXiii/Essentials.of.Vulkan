@@ -6,7 +6,7 @@
 <link rel="index" title="索引" href="genindex.html" /><link rel="search" title="搜索" href="search.html" /><link rel="next" title="设备队列" href="DeviceQueue.html" /><link rel="prev" title="最初之物 VkInstance" href="Instance.html" />
         <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/PhysicalDevice.html" />
 
-    <link rel="shortcut icon" href="_static/VulkanLogo.png"/><!-- Generated with Sphinx 8.0.2 and Furo 2024.08.06 -->
+    <link rel="shortcut icon" href="_static/VulkanLogo.png"/><!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
         <title>物理设备 - Vulkan入门精要</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b20cc3f5" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
@@ -376,8 +376,8 @@
 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDevice</span></code> 句柄的生命周期与 <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 相同， <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 创建 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDevice</span></code> 句柄们也会创建， <code class="docutils literal notranslate"><span class="pre">VkInstance</span></code> 销毁 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDevice</span></code> 句柄们也会销毁。</p>
 </div>
 </section>
-<section id="id2">
-<h2>获取物理设备信息<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<section id="get-physical-devicce-properties">
+<span id="id2"></span><h2>获取物理设备信息<a class="headerlink" href="#get-physical-devicce-properties" title="Link to this heading">¶</a></h2>
 <p>在通过 <code class="docutils literal notranslate"><span class="pre">vkEnumeratePhysicalDevices(...)</span></code> 获取系统中支持的物理设备句柄后，我们需要筛选出我们需要的物理设备，比如，相比于使用集成显卡，我们往往倾向于使用性能更强悍的独立显卡。</p>
 <p>我们可以通过 <code class="docutils literal notranslate"><span class="pre">vkGetPhysicalDeviceProperties(...)</span></code> 函数获取物理设备信息：</p>
 <section id="vkgetphysicaldeviceproperties">
@@ -423,8 +423,8 @@
 </ul>
 <p>其中 <code class="docutils literal notranslate"><span class="pre">apiVersion</span></code> 是最为 <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">重要</span> 的参数，该参数表明该设备支持的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 最高版本。该版本与 <code class="docutils literal notranslate"><span class="pre">VkApplicationInfo::apiVersion</span></code> 中的版本类似，您只能获取到 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceProperties::apiVersion</span></code> 版本及之前版本 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 对应的 <code class="docutils literal notranslate"><span class="pre">Device</span> <span class="pre">域函数</span></code> 。</p>
 <p>所以能够获取到的 <code class="docutils literal notranslate"><span class="pre">Vulkan</span></code> 函数逻辑如下：</p>
-<div class="mermaid">
-            flowchart TD
+<pre  class="mermaid">
+        flowchart TD
    VulkanAPI[&quot;Vulkan 某一个函数&quot;]
    IsLessEqualInstanceVulkanVersion{&quot;小于等于 VkApplicationInfo::apiVersion 版本&quot;}
    IsInstanceAPI{&quot;为 Instance/PhysicalDevice 域函数&quot;}
@@ -446,7 +446,7 @@
 
    IsLessEqualDeviceVulkanVersion--是--&gt;ReturnValidAPI
    IsLessEqualDeviceVulkanVersion--否--&gt;ReturnNullAPI
-        </div><p>其中 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceType</span></code> 定义如下：</p>
+    </pre><p>其中 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceType</span></code> 定义如下：</p>
 </section>
 <section id="vkphysicaldevicetype">
 <h3>VkPhysicalDeviceType<a class="headerlink" href="#vkphysicaldevicetype" title="Link to this heading">¶</a></h3>
@@ -471,7 +471,7 @@
 <p>其中 <code class="docutils literal notranslate"><span class="pre">VkPhysicalDeviceLimits</span></code> 用于表述该设备的一些限制，比如最大支持的图片像素大小。</p>
 </section>
 <section id="vkphysicaldevicelimits">
-<h3>VkPhysicalDeviceLimits<a class="headerlink" href="#vkphysicaldevicelimits" title="Link to this heading">¶</a></h3>
+<span id="vk-physical-device-limits"></span><h3>VkPhysicalDeviceLimits<a class="headerlink" href="#vkphysicaldevicelimits" title="Link to this heading">¶</a></h3>
 <div class="admonition note">
 <p class="admonition-title">备注</p>
 <p>由于该结构体中有很多还没有涉及到的知识，并且成员过多，所以这里只给出定义。用户只需要知道该结构体中存有物理设备的上限信息即可。</p>
@@ -709,7 +709,7 @@
             <ul>
 <li><a class="reference internal" href="#">物理设备</a><ul>
 <li><a class="reference internal" href="#vkenumeratephysicaldevices">vkEnumeratePhysicalDevices</a></li>
-<li><a class="reference internal" href="#id2">获取物理设备信息</a><ul>
+<li><a class="reference internal" href="#get-physical-devicce-properties">获取物理设备信息</a><ul>
 <li><a class="reference internal" href="#vkgetphysicaldeviceproperties">vkGetPhysicalDeviceProperties</a></li>
 <li><a class="reference internal" href="#vkphysicaldeviceproperties">VkPhysicalDeviceProperties</a></li>
 <li><a class="reference internal" href="#vkphysicaldevicetype">VkPhysicalDeviceType</a></li>
@@ -730,7 +730,7 @@
     </aside>
   </div>
 </div><script src="_static/documentation_options.js?v=7d86a446"></script>
-    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=5fa4622c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -739,8 +739,14 @@
     <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
     <script src="_static/translations.js?v=beaddf03"></script>
     <script src="_static/design-tabs.js?v=f930bc37"></script>
-    <script src="https://unpkg.com/mermaid@10.2.0/dist/mermaid.min.js"></script>
-    <script>mermaid.initialize({startOnLoad:true});</script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs"></script>
+    <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";import elkLayouts from "https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs";mermaid.registerLayoutLoaders(elkLayouts);mermaid.initialize({startOnLoad:false});</script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+    <script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";
+window.addEventListener("load", () => mermaid.run());
+</script>
     <script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
     </body>
 </html>
