@@ -274,18 +274,9 @@ VkMemoryRequirements
 
    设备内存与资源绑定示意图
 
+当 ``vkBind[Buffer/Image]Memory(...)`` 函数返回  ``VkResult::VK_SUCCESS`` 说明只有躯壳的资源终于拥有了灵魂，它的一生完整了！
 
+.. admonition:: Vulkan 设备内存管理
+   :class: note
 
-
-
-
-
-
-
-
-
-
-
-.. note:: 
-
-   未完待续
+   ``Vulkan`` 为用户自定义内存管理提供了可能，但实现一个高效稳健的内存管理系统并不是一件容易事。用户可以使用 ``AMD`` 在 ``GPU Open`` 计划中推出的 `Vulkan® Memory Allocator (VMA) <https://gpuopen.com/vulkan-memory-allocator/>`_ 进行设备内存管理。有关如何使用 ``VMA`` 将会在专门的章节中进行讲解。
