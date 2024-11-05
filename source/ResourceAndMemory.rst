@@ -119,7 +119,7 @@ VkMemoryRequirements
 
       示意图如下：
 
-      .. figure:: ../_static/memory_type_bits.png
+      .. figure:: ./_static/memory_type_bits.png
 
          memoryTypeBits 与 memoryTypes
 
