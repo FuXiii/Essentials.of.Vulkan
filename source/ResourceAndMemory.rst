@@ -18,6 +18,7 @@
    * 2024/5/21 增加 ``资源与设备内存绑定`` 章节。
    * 2024/9/6 更新 ``对应关系`` 章节。
    * 2024/10/29 更新 ``资源与设备内存绑定`` 章节。
+   * 2024/11/5 更新 ``资源与设备内存绑定`` 章节。
 
 在 `资源 <./Resource.html>`_ 章节中我们知道一个资源仅仅是一个 ``虚拟资源句柄`` ，其本质上并没有相应的内存实体用于存储数据。所以在创建完资源后，需要分配内存并与资源进行绑定，用于之后的数据读写。
 
@@ -254,11 +255,22 @@ VkMemoryRequirements
 
 其中  ``buffer`` 、 ``memory`` 和 ``image`` 都需要从 ``device`` 中创建出来，这个不需要再赘述。这里主要需要说明一下 ``memoryOffset`` 参数的作用。
 
-在 ``Vulkan`` 中其鼓励用户创建一个大的设备内存，不同的资源占用该设备不同的部分。
+在 ``Vulkan`` 中其鼓励用户创建分配一块大的设备内存，不同的资源占用该设备内存不同的部分。这不仅能够最大化重复利用一块内存，优化内存使用率，也为用户制定自定义内存管理机制提供途径。这样设计的根本原因是： ``Vulkan`` 对于 ``VkDeviceMemory`` 创建的数量有 :bdg-danger:`上限` 。
 
+在 :ref:`Get_Physical_Devicce_Properties` 章节中我们知道其内部有 :ref:`Vk_Physical_Device_Limits` 限制信息。其中有 ``maxMemoryAllocationCount`` 成员：
 
+.. code-block:: c++
 
+   // 由 VK_VERSION_1_0 提供s
+   typedef struct VkPhysicalDeviceLimits {
+       ...
+       uint32_t maxMemoryAllocationCount;
+       ...
+   } VkPhysicalDeviceLimits;
 
+* :bdg-secondary:`maxMemoryAllocationCount` 可通过 :ref:`vk_Allocate_Memory` 创建的最大同时存在的设备内存数量。且 ``Vulkan`` 要求该限制数量不能小于 ``4096``
+
+.. figure:: ./_static/resource_bind_in_memory.png
 
 
 
