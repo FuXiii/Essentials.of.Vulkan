@@ -107,6 +107,7 @@
    :caption: 工程应用
    :maxdepth: 2
 
+   ./Application/VulkanTriangle.rst
    ./Application/index.rst
 
 .. toctree::

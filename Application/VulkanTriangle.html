@@ -3,11 +3,11 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="搜索" href="../search.html" /><link rel="next" title="WebGPU Hello Triangle" href="WebGPUHelloTriangle.html" /><link rel="prev" title="体积云" href="VolumetricCloud.html" />
-        <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/Application/WebGPUImGui.html" />
+<link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="搜索" href="../search.html" /><link rel="next" title="应用" href="index.html" /><link rel="prev" title="相关链接" href="../InformalEssay/SomeLinks.html" />
+        <link rel="canonical" href="https://github.com/FuXiii/Essentials.of.Vulkan/Application/VulkanTriangle.html" />
 
     <link rel="shortcut icon" href="../_static/VulkanLogo.png"/><!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
-        <title>WebGPU ImGui - Vulkan入门精要</title>
+        <title>Vulkan 三角形 - Vulkan入门精要</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b20cc3f5" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -264,10 +264,10 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">工程应用</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="VulkanTriangle.html">Vulkan 三角形</a></li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">应用</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of 应用</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Vulkan 三角形</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="index.html">应用</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of 应用</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="VolumetricCloud.html">体积云</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">WebGPU ImGui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WebGPUImGui.html">WebGPU ImGui</a></li>
 <li class="toctree-l2"><a class="reference internal" href="WebGPUHelloTriangle.html">WebGPU Hello Triangle</a></li>
 <li class="toctree-l2"><a class="reference internal" href="WebGPUShaderCompiler.html">WebGPU Shader Compiler</a></li>
 </ul>
@@ -296,12 +296,12 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="https://github.com/FuXiii/Essentials.of.Vulkan/blob/main/source/Application/WebGPUImGui.rst?plain=true" title="View this page">
+  <a class="muted-link" href="https://github.com/FuXiii/Essentials.of.Vulkan/blob/main/source/Application/VulkanTriangle.rst?plain=true" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
 </div><div class="edit-this-page">
-  <a class="muted-link" href="https://github.com/FuXiii/Essentials.of.Vulkan/edit/main/source/Application/WebGPUImGui.rst" title="Edit this page">
+  <a class="muted-link" href="https://github.com/FuXiii/Essentials.of.Vulkan/edit/main/source/Application/VulkanTriangle.rst" title="Edit this page">
     <svg><use href="#svg-pencil"></use></svg>
     <span class="visually-hidden">Edit this page</span>
   </a>
@@ -320,16 +320,83 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="webgpu-imgui">
-<h1>WebGPU ImGui<a class="headerlink" href="#webgpu-imgui" title="Link to this heading">¶</a></h1>
+          <section id="vulkan">
+<h1>Vulkan 三角形<a class="headerlink" href="#vulkan" title="Link to this heading">¶</a></h1>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header sd-bg-muted sd-bg-text-muted">
 <span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-history" viewBox="0 0 16 16" aria-hidden="true"><path d="m.427 1.927 1.215 1.215a8.002 8.002 0 1 1-1.6 5.685.75.75 0 1 1 1.493-.154 6.5 6.5 0 1 0 1.18-4.458l1.358 1.358A.25.25 0 0 1 3.896 6H.25A.25.25 0 0 1 0 5.75V2.104a.25.25 0 0 1 .427-.177ZM7.75 4a.75.75 0 0 1 .75.75v2.992l2.028.812a.75.75 0 0 1-.557 1.392l-2.5-1A.751.751 0 0 1 7 8.25v-3.5A.75.75 0 0 1 7.75 4Z"></path></svg></span><span class="sd-summary-text">更新记录</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
 <ul class="simple">
-<li><p class="sd-card-text">2023/7/24 增加该文档</p></li>
+<li><p class="sd-card-text">2024/11/7 增加该文章</p></li>
+<li><p class="sd-card-text">2024/11/8 更新该文章</p></li>
 </ul>
 </div>
-</details><p><a class="reference external" href="../_static/WebGPU/ImGuiTest/WasmImGuiTest.html">WebGPU ImGui</a> 示例可在线浏览。</p>
+</details><div class="sd-card sd-sphinx-override sd-mb-3 sd-shadow-lg sd-card-hover sd-text-center docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Vulkan 三角形</div>
+<p class="sd-card-text">点击下载源码</p>
+</div>
+<div class="sd-card-footer docutils">
+<blockquote>
+<div><figure class="align-default">
+<a class="reference internal image-reference" href="../_images/vulkan_triangle.png"><img alt="../_images/vulkan_triangle.png" src="../_images/vulkan_triangle.png" style="width: 256.0px; height: 271.0px;" />
+</a>
+</figure>
+</div></blockquote>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference external" href="https://github.com/FuXiii/VulkanTriangle/archive/refs/heads/main.zip"><span>https://github.com/FuXiii/VulkanTriangle/archive/refs/heads/main.zip</span></a></div>
+<div class="note admonition">
+<p class="admonition-title">项目要求</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">CMake</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">C/C++</span></code> 的编译环境</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Vulkan</span> <span class="pre">运行时</span></code> （一般系统都默认自带）</p></li>
+</ul>
+</div>
+<div class="tip admonition">
+<p class="admonition-title">支持平台</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Windows</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Linux</span></code></p></li>
+</ul>
+</div>
+<ol class="arabic simple">
+<li><p>下载并解压</p></li>
+<li><p>在同级目录下创建 <code class="docutils literal notranslate"><span class="pre">build</span></code> 文件夹</p></li>
+</ol>
+<figure class="align-default" id="id1">
+<img alt="../_images/create_build_folder.png" src="../_images/create_build_folder.png" />
+<figcaption>
+<p><span class="caption-text">创建 build 文件夹</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<ol class="arabic simple" start="3">
+<li><p>命令行定位到 <code class="docutils literal notranslate"><span class="pre">build</span></code> 文件夹，执行如下指令：</p></li>
+</ol>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cmake ..</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p>编译生成可执行程序</p></li>
+</ol>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-0">
+Visual Studio</label><div class="sd-tab-content docutils">
+<p>打开 <code class="docutils literal notranslate"><span class="pre">build</span></code> 文件夹下的 <code class="docutils literal notranslate"><span class="pre">.sln</span></code> 文件，编译执行即可。</p>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-1">
+Linux</label><div class="sd-tab-content docutils">
+<p>命令行中执行如下指令即可：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">make</span>
+</pre></div>
+</div>
+</div>
+</div>
+<figure class="align-default">
+<img alt="../_images/vulkan_triangle.png" src="../_images/vulkan_triangle.png" />
+</figure>
 </section>
 
         </article>
@@ -337,18 +404,18 @@
       <footer>
         
 <div class="related-pages">
-    <a class="next-page" href="WebGPUHelloTriangle.html">
+    <a class="next-page" href="index.html">
         <div class="page-info">
             <div class="context">
                 <span>Next</span>
             </div>
-            <div class="title">WebGPU Hello Triangle</div>
+            <div class="title">应用</div>
         </div>
         <svg class="furo-related-icon">
             <use href="#svg-arrow-right"></use>
         </svg>
     </a>
-    <a class="prev-page" href="VolumetricCloud.html">
+    <a class="prev-page" href="../InformalEssay/SomeLinks.html">
         <svg class="furo-related-icon">
             <use href="#svg-arrow-right"></use>
         </svg>
@@ -357,7 +424,7 @@
                 <span>Previous</span>
             </div>
             
-            <div class="title">体积云</div>
+            <div class="title">相关链接</div>
             
         </div>
     </a>
