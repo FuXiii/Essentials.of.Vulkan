@@ -51,3 +51,36 @@ BufferView
 格式要求的 ``texel`` 大小中的较小值。如果 ``texel`` 的大小是 ``3 byte`` 倍数，则使用格式中单组件（通道？）的大小？
 
 BufferView 文档阅读完毕
+
+---
+
+VkImageCreateInfo::arrayLayers
+
+``RTX 3070`` 显卡中 ``VkPhysicalDeviceLimits::maxImageArrayLayers`` 为 ``2048`` （标准要求最小为 ``256`` ，如果满足 ``Roadmap 2022`` 则最小为 ``2048``）
+
+* ``arrayLayers`` 必须要大于 ``0`` （不能为 ``0`` ）
+* ``arrayLayers`` 必须小于等于 ``imageCreateMaxArrayLayers``
+* 如果 ``imageType`` 是 ``3D`` ， ``arrayLayers`` 必须是 ``1``
+
+如果 ``tiling`` 是 ``LINEAR`` 的话，有如下要求：
+
+* ``imageType`` 是 ``2D``
+* ``format`` 不能是 ``depth/stencil`` 格式
+* ``mipLevel`` 是 ``1``
+* ``arrayLayers`` 是 ``1``
+* ``samples`` 是 ``COUNT_1_BIT``
+* ``usage`` 只能是 ``TRANSFER_SRC_BIT`` 和/或 ``TRANSFER_DST_BIT``
+
+如果格式是 ``Y'CBCR`` ，有如下要求：
+
+* ``imageType`` 是 ``2D``
+* ``mipLevel`` 是 ``1``
+* ``arrayLayers`` 是 ``1`` ，要么就是 ``VkImageFormatProperties::maxArrayLayers``
+* ``samples`` 是 ``COUNT_1_BIT``
+
+如果 ``flags`` 包含 ``VK_IMAGE_CREATE_SPLIT_INSTANCE_BIND_REGIONS_BIT`` ，有如下要求：
+
+* ``mipLevels`` 必须是 ``1``
+* ``arrayLayers`` 必须是 ``1``
+* ``imageType`` 必须是 ``VK_IMAGE_TYPE_2D``
+* ``imageCreateMaybeLinear`` 必须是 ``VK_FALSE``
