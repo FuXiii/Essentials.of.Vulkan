@@ -52,6 +52,14 @@ BufferView
 
 BufferView 文档阅读完毕
 
+.. code-block:: glsl
+
+    // Texture Buffer(Uniform Texel Buffers)
+    layout(set=m, binding=n) uniform textureBuffer myUniformTexelBuffer;
+
+    // Texture Buffer(Storage Texel Buffers)
+    layout(set=m, binding=n, r32f) uniform imageBuffer myStorageTexelBuffer;
+
 ---
 
 VkImageCreateInfo::arrayLayers
@@ -84,3 +92,34 @@ VkImageCreateInfo::arrayLayers
 * ``arrayLayers`` 必须是 ``1``
 * ``imageType`` 必须是 ``VK_IMAGE_TYPE_2D``
 * ``imageCreateMaybeLinear`` 必须是 ``VK_FALSE``
+
+---
+
+VkPhysicalDeviceLiits::maxFramebufferWidth
+VkPhysicalDeviceLiits::maxFramebufferHeight
+
+---
+
+# VkImageView
+
+View 的 usage 是继承自 Image 的：
+
+* 如果 View 设置了 ``VkImageViewUsageCreateInfo`` 的话（pNext），可以覆写该 View 的 usage ，但必须是 image 的 usage 的子集。
+* 如果 image 是 depth-stencil 格式，并且使用 ``VkImageStencilUsageCreateInfo`` 创建的 image，View 的 usage 是依据 ``subresource.aspectMask`` 确定：
+    * 如果 ``aspectMask`` 只包含 ``VK_IMAGE_ASPECT_STENCILE_BIT`` ，这意味着 usage 使用 ``VkImageStencilUsageCreateInfo::stencilUsage`` 的配置
+    * 如果 ``aspectMask`` 只包含 ``VK_IMAGE_ASPECT_DEPTH_BIT`` ，这意味着 usage 使用 ``VkImageCreateInfo::usage`` 的配置
+    * 如果 ``aspectMask`` 中上述两个都包含，这意味着 usage 使用 ``VkImageCreateInfo::usage`` 和 ``VkImageStencilUsageCreateInfo::stencilUsage`` 
+
+如果 image 创建的时候指定了 ``VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT`` ，并且 ``format`` 不是 ``multi-planar`` 的话， view 的 format 可以和 image 的 format 不同，
+此外如果 image 没有使用 ``VK_IMAGE_CREATE_BLOCK_TEXEL_VIEW_COMPATIBLE_BIT`` 创建的话，view 的 format 可以和 image 的 format 不同，但需要 ``兼容`` 。
+
+* ``VK_IMAGE_CREATE_BLOCK_TEXEL_VIEW_COMPATIBLE_BIT`` 表示 image 使用的压缩格式，并且该压缩格式可在 View 端进行解压缩
+
+相互兼容格式的 View 将会在 纹素坐标-内存地址 之间具有相同的映射，这仅仅是二进制解释样式发生了改变。
+
+如果 image 使用 ``VK_IMAGE_CREATE_BLOCK_TEXEL_VIEW_COMPATIBLE_BIT`` 创建的话， View 的 format 必须与 image 的 format 相兼容，要么 view 的 format 必须是压缩格式，且必须是 size-comatible （大小相兼容的）。在这种情况下，
+获取到的 view 的 texel 维度 = 四舍五入((选择的 mip 等级 / 压缩的 texel 块大小))
+
+## VkImageView ComponentMap
+
+如果 view 用于 storage image/ input attachment / framebuffer attachment 和与 Y'CbCr 采样器相结合的 View，必须使用 一致性排列 （identify swizzle，也就是 ``VkComponentSwizzle::VK_COMPONENT_SWIZZLE_IDENTITY``）。
