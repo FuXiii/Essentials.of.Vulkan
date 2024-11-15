@@ -7,6 +7,7 @@ Vulkan 三角形
 
    * 2024/11/7 增加该文章
    * 2024/11/8 更新该文章
+   * 2024/11/15 更新该文章。增加编译流程说明和 ``MacOS`` 适配。
 
 .. sidebar::
 
@@ -41,6 +42,39 @@ Vulkan 三角形
 
     * ``Windows``
     * ``Linux``
+    * ``MacOS``
+
+0. 配置环境
+
+.. tab-set::
+
+    .. tab-item:: Windows
+
+        ``Visual Studio``
+
+    .. tab-item:: Linux
+
+        命令行中执行如下指令：
+
+        .. code-block:: console
+
+            sudo apt-get install libxrandr-dev
+            sudo apt-get install libxinerama-dev
+            sudo apt-get install libxcursor-dev
+            sudo apt-get install libxi-dev
+            sudo apt-get install freeglut3-dev
+    
+    .. tab-item:: MacOS
+
+        命令行中执行如下指令：
+
+        .. code-block:: console
+
+            brew install libxrandr
+            brew install libxinerama
+            brew install libxcursor
+            brew install libxi
+            brew install freeglut
 
 1. 下载并解压
 2. 在同级目录下创建 ``build`` 文件夹
@@ -59,9 +93,9 @@ Vulkan 三角形
 
 .. tab-set::
 
-    .. tab-item:: Visual Studio
+    .. tab-item:: Windows
 
-        打开 ``build`` 文件夹下的 ``.sln`` 文件，编译执行即可。
+        使用 ``Visual Studio`` 打开 ``build`` 文件夹下的 ``.sln`` 文件，编译执行即可。
 
     .. tab-item:: Linux
 
@@ -70,3 +104,11 @@ Vulkan 三角形
         .. code-block:: console
 
             make
+
+    .. tab-item:: MacOS
+
+        命令行中执行如下指令即可：
+
+        .. code-block:: console
+
+            cmake --build .
