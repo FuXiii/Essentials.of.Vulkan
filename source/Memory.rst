@@ -927,6 +927,11 @@ VkMemoryPropertyFlagBits
 
    具体如何进行内存同步将会在之后的章节进行讲解。
 
+..
+   Vulkan 标准要求
+   * 必须有一个内存类型同时包含 HOST_VISIBLE 和 HOST_COHERENT
+   * 必须有一个内存类型包含 DEVICE_LOCAL
+
 惰性内存
 ^^^^^^^^^^^^^^^^^^^^
 
