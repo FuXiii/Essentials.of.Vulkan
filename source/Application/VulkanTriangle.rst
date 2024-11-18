@@ -8,6 +8,8 @@ Vulkan 三角形
    * 2024/11/7 增加该文章
    * 2024/11/8 更新该文章
    * 2024/11/15 更新该文章。增加编译流程说明和 ``MacOS`` 适配。
+   * 2024/11/18 增加 ``更新日志`` 章节。
+   * 2024/11/18 增加 ``讲解`` 章节。
 
 .. sidebar::
 
@@ -112,3 +114,36 @@ Vulkan 三角形
         .. code-block:: console
 
             cmake --build .
+
+
+.. dropdown:: 更新日志
+
+    .. admonition:: 2024/11/18
+        :class: note
+    
+        * 适配 ``Swapchain`` 大小改变。
+        * 优化代码结构。
+    
+    .. admonition:: 2024/11/15
+        :class: note
+    
+        * ``macOS`` 平台成功编译（由于本人没有苹果环境，没有执行测试，只能得到是否编译成功）。
+        
+    .. admonition:: 2024/11/14
+        :class: note
+    
+        * 动态判断加载 ``Layer`` 和 ``Extension`` 。
+        * 适配了一版 ``苹果`` 系统，还未进行测试，不知是否可行。
+        
+    .. admonition:: 2024/11/13
+        :class: note
+    
+        * 成功适配 ``Deepin V23`` （ ``Linux`` ）。
+
+讲解
+#########
+
+.. admonition:: 备注
+    :class: warning
+
+    未完待续
