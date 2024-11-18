@@ -185,7 +185,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -314,7 +314,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
@@ -329,6 +329,8 @@
 <li><p class="sd-card-text">2024/11/7 增加该文章</p></li>
 <li><p class="sd-card-text">2024/11/8 更新该文章</p></li>
 <li><p class="sd-card-text">2024/11/15 更新该文章。增加编译流程说明和 <code class="docutils literal notranslate"><span class="pre">MacOS</span></code> 适配。</p></li>
+<li><p class="sd-card-text">2024/11/18 增加 <code class="docutils literal notranslate"><span class="pre">更新日志</span></code> 章节。</p></li>
+<li><p class="sd-card-text">2024/11/18 增加 <code class="docutils literal notranslate"><span class="pre">讲解</span></code> 章节。</p></li>
 </ul>
 </div>
 </details><aside class="sidebar">
@@ -402,10 +404,10 @@ MacOS</label><div class="sd-tab-content docutils">
 <li><p>下载并解压</p></li>
 <li><p>在同级目录下创建 <code class="docutils literal notranslate"><span class="pre">build</span></code> 文件夹</p></li>
 </ol>
-<figure class="align-default" id="id1">
+<figure class="align-default" id="id2">
 <img alt="../_images/create_build_folder.png" src="../_images/create_build_folder.png" />
 <figcaption>
-<p><span class="caption-text">创建 build 文件夹</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
+<p><span class="caption-text">创建 build 文件夹</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 <ol class="arabic simple" start="3">
@@ -440,6 +442,43 @@ MacOS</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-text">更新日志</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<div class="note admonition">
+<p class="admonition-title">2024/11/18</p>
+<ul class="simple">
+<li><p class="sd-card-text">适配 <code class="docutils literal notranslate"><span class="pre">Swapchain</span></code> 大小改变。</p></li>
+<li><p class="sd-card-text">优化代码结构。</p></li>
+</ul>
+</div>
+<div class="note admonition">
+<p class="admonition-title">2024/11/15</p>
+<ul class="simple">
+<li><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">macOS</span></code> 平台成功编译（由于本人没有苹果环境，没有执行测试，只能得到是否编译成功）。</p></li>
+</ul>
+</div>
+<div class="note admonition">
+<p class="admonition-title">2024/11/14</p>
+<ul class="simple">
+<li><p class="sd-card-text">动态判断加载 <code class="docutils literal notranslate"><span class="pre">Layer</span></code> 和 <code class="docutils literal notranslate"><span class="pre">Extension</span></code> 。</p></li>
+<li><p class="sd-card-text">适配了一版 <code class="docutils literal notranslate"><span class="pre">苹果</span></code> 系统，还未进行测试，不知是否可行。</p></li>
+</ul>
+</div>
+<div class="note admonition">
+<p class="admonition-title">2024/11/13</p>
+<ul class="simple">
+<li><p class="sd-card-text">成功适配 <code class="docutils literal notranslate"><span class="pre">Deepin</span> <span class="pre">V23</span></code> （ <code class="docutils literal notranslate"><span class="pre">Linux</span></code> ）。</p></li>
+</ul>
+</div>
+</div>
+</details><section id="id1">
+<h2>讲解<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
+<div class="warning admonition">
+<p class="admonition-title">备注</p>
+<p>未完待续</p>
+</div>
+</section>
 </section>
 
         </article>
@@ -504,8 +543,27 @@ MacOS</label><div class="sd-tab-content docutils">
 
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+
+<div class="toc-sticky toc-scroll" style="width: 500px;">
+    <div class="toc-title-container" style="width: 500px;">
+        <span class="toc-title" style="width: 500px;">
+            On this page
+        </span>
+    </div>
+    <div class="toc-tree-container" style="width: 500px;">
+        <div class="toc-tree" style="width: 500px;">
+            <ul>
+<li><a class="reference internal" href="#">Vulkan 三角形</a><ul>
+<li><a class="reference internal" href="#id1">讲解</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+    </div>
+</div>
 
 
     </aside>
