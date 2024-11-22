@@ -123,3 +123,16 @@ View 的 usage 是继承自 Image 的：
 ## VkImageView ComponentMap
 
 如果 view 用于 storage image/ input attachment / framebuffer attachment 和与 Y'CbCr 采样器相结合的 View，必须使用 一致性排列 （identify swizzle，也就是 ``VkComponentSwizzle::VK_COMPONENT_SWIZZLE_IDENTITY``）。
+
+
+
+## Image
+
+如果创建的 ``Image`` 之后用于 ``ImageView`` 的创建的话，则 ``Image`` 必须使用已下其中之一进行创建：
+
+* VK_IMAGE_USAGE_SAMPLED_BIT
+* VK_IMAGE_USAGE_STORAGE_BIT
+* VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
+* VK_IMAGE_USAGE_DEPTH_STENCIL_BIT
+* VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT
+* VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT
